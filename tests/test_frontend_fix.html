@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端修复测试</title>
+</head>
+<body>
+    <h1>前端修复测试</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        // 测试所有必需的元素是否存在
+        function testElements() {
+            const results = document.getElementById('test-results');
+            const elements = [
+                'fileInput',
+                'uploadButton', 
+                'uploadSection',
+                'loading',
+                'resultsSection',
+                'statusBadge',
+                'statusMessage',
+                'progressFill',
+                'summaryStats',
+                'issuesList',
+                'enableStatic',
+                'enablePylint',
+                'enableFlake8',
+                'enableAI'
+            ];
+            
+            let html = '<h2>元素存在性测试</h2><ul>';
+            let allExist = true;
+            
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                const exists = element !== null;
+                allExist = allExist && exists;
+                html += `<li>${id}: ${exists ? '✅ 存在' : '❌ 不存在'}</li>`;
+            });
+            
+            html += '</ul>';
+            html += `<h3>总体结果: ${allExist ? '✅ 所有元素都存在' : '❌ 有元素缺失'}</h3>`;
+            
+            results.innerHTML = html;
+        }
+        
+        // 页面加载完成后运行测试
+        window.addEventListener('load', testElements);
+    </script>
+</body>
+</html>

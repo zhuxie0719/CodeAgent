@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent 代码检测系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .upload-section.dragover {
+            border-color: #4facfe;
+            background: #e3f2fd;
+        }
+
+        .analysis-type-selector {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .analysis-type-selector h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-label:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .radio-label input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .radio-label input[type="radio"]:checked + .radio-text {
+            color: #4facfe;
+            font-weight: 600;
+        }
+
+        .radio-label:has(input[type="radio"]:checked) {
+            border-color: #4facfe;
+            background: #e3f2fd;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 20px;
+            text-align: center;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+
+        .file-input-label:hover {
+            background: #f8f9fa;
+            border-color: #4facfe;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .options-section {
+            margin-bottom: 30px;
+        }
+
+        .options-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .option-item:hover {
+            border-color: #4facfe;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.1);
+        }
+
+        .option-checkbox {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .option-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .upload-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .upload-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .results-title {
+            font-size: 1.5em;
+            color: #495057;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.3s ease;
+        }
+
+        .issues-list {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+
+        .issue-item {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .issue-item:last-child {
+            border-bottom: none;
+        }
+
+        .issue-severity {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .severity-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .severity-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .severity-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .issue-content {
+            flex: 1;
+        }
+
+        .issue-message {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        .issue-details {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Agent 代码检测系统</h1>
+            <p>智能静态代码分析，发现潜在问题，提升代码质量</p>
+        </div>
+
+        <div class="main-content">
+            <div class="upload-section" id="uploadSection">
+                <div class="analysis-type-selector">
+                    <h3>🔍 分析类型</h3>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="analysisType" value="file" checked>
+                            <span class="radio-text">单文件分析</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="analysisType" value="project">
+                            <span class="radio-text">项目分析</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" class="file-input" accept=".py,.java,.c,.cpp,.h,.hpp,.js,.ts,.go,.zip,.tar,.tar.gz" multiple>
+                    <label for="fileInput" class="file-input-label">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text" id="uploadText">点击选择代码文件或拖拽文件到此处</div>
+                        <div class="upload-hint" id="uploadHint">支持Python文件(.py)，最大10MB</div>
+                    </label>
+                </div>
+
+                <div class="options-section">
+                    <div class="options-title">检测选项</div>
+                    <div class="options-grid">
+                        <div class="option-item">
+                            <input type="checkbox" id="enableStatic" class="option-checkbox" checked>
+                            <label for="enableStatic" class="option-label">自定义静态检测</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="enablePylint" class="option-checkbox" checked>
+                            <label for="enablePylint" class="option-label">Pylint检测</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="enableFlake8" class="option-checkbox" checked>
+                            <label for="enableFlake8" class="option-label">Flake8检测</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="enableAI" class="option-checkbox" checked>
+                            <label for="enableAI" class="option-label">AI智能分析</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="uploadButton" class="upload-button">开始检测</button>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>正在分析代码，请稍候...</div>
+            </div>
+
+            <div class="results-section" id="resultsSection">
+                <div class="results-header">
+                    <div class="results-title">检测结果</div>
+                    <div class="status-badge" id="statusBadge">等待中</div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                
+                <div id="statusMessage" style="margin: 10px 0; color: #6c757d;"></div>
+
+                <div class="summary-stats" id="summaryStats" style="display: none;">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalIssues">0</div>
+                        <div class="stat-label">总问题数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="errorCount">0</div>
+                        <div class="stat-label">错误</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="warningCount">0</div>
+                        <div class="stat-label">警告</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="infoCount">0</div>
+                        <div class="stat-label">信息</div>
+                    </div>
+                </div>
+
+                <div class="issues-list" id="issuesList" style="display: none;">
+                    <!-- 问题列表将在这里动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8001/api/v1';
+        let currentTaskId = null;
+        let pollInterval = null;
+
+        // DOM元素
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadSection = document.getElementById('uploadSection');
+        const loading = document.getElementById('loading');
+        const resultsSection = document.getElementById('resultsSection');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusMessage = document.getElementById('statusMessage');
+        const progressFill = document.getElementById('progressFill');
+        const summaryStats = document.getElementById('summaryStats');
+        const issuesList = document.getElementById('issuesList');
+
+        // 文件拖拽处理
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+
+        uploadSection.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileDisplay();
+            }
+        });
+
+        // 文件选择处理
+        fileInput.addEventListener('change', updateFileDisplay);
+        
+        // 分析类型切换处理
+        const analysisTypeRadios = document.querySelectorAll('input[name="analysisType"]');
+        analysisTypeRadios.forEach(radio => {
+            radio.addEventListener('change', updateAnalysisType);
+        });
+        
+        function updateAnalysisType() {
+            const selectedType = document.querySelector('input[name="analysisType"]:checked').value;
+            const uploadText = document.getElementById('uploadText');
+            const uploadHint = document.getElementById('uploadHint');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (selectedType === 'project') {
+                uploadText.textContent = '点击选择项目文件或拖拽压缩包到此处';
+                uploadHint.textContent = '支持.zip, .tar, .tar.gz等压缩文件，最大100MB';
+                fileInput.accept = '.zip,.tar,.tar.gz,.rar,.7z';
+                fileInput.removeAttribute('multiple');
+            } else {
+                uploadText.textContent = '点击选择代码文件或拖拽文件到此处';
+                uploadHint.textContent = '支持Python, Java, C/C++, JavaScript, Go等文件，最大10MB';
+                fileInput.accept = '.py,.java,.c,.cpp,.h,.hpp,.js,.ts,.go';
+                fileInput.setAttribute('multiple', '');
+            }
+        }
+
+        function updateFileDisplay() {
+            const files = fileInput.files;
+            if (files.length > 0) {
+                const fileNames = Array.from(files).map(f => f.name).join(', ');
+                document.querySelector('.upload-text').textContent = `已选择: ${fileNames}`;
+                uploadButton.disabled = false;
+            } else {
+                document.querySelector('.upload-text').textContent = '点击选择Python文件或拖拽文件到此处';
+                uploadButton.disabled = true;
+            }
+        }
+
+        // 上传按钮点击处理
+        uploadButton.addEventListener('click', async () => {
+            const files = fileInput.files;
+            if (files.length === 0) {
+                alert('请先选择文件');
+                return;
+            }
+
+            // 显示加载状态
+            loading.style.display = 'block';
+            resultsSection.style.display = 'block';
+            uploadButton.disabled = true;
+
+            try {
+                // 上传第一个文件（简化版本，只支持单个文件）
+                const file = files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // 添加检测选项
+                const enableStatic = document.getElementById('enableStatic').checked;
+                const enablePylint = document.getElementById('enablePylint').checked;
+                const enableFlake8 = document.getElementById('enableFlake8').checked;
+                const enableAI = document.getElementById('enableAI').checked;
+                const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
+
+                const response = await fetch(`${API_BASE_URL}/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=${enableAI}&analysis_type=${analysisType}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    currentTaskId = result.data.task_id;
+                    startPolling();
+                } else {
+                    throw new Error(result.error || '上传失败');
+                }
+            } catch (error) {
+                showError('上传失败: ' + error.message);
+                loading.style.display = 'none';
+                uploadButton.disabled = false;
+            }
+        });
+
+        // 开始轮询任务状态
+        function startPolling() {
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/tasks/${currentTaskId}`);
+                    const status = await response.json();
+
+                    updateStatus(status.data);
+
+                    if (status.data.status === 'completed' || status.data.status === 'failed') {
+                        clearInterval(pollInterval);
+                        if (status.data.status === 'completed') {
+                            await loadResults();
+                        }
+                    }
+                } catch (error) {
+                    console.error('轮询状态失败:', error);
+                }
+            }, 1000);
+        }
+
+        // 更新状态显示
+        function updateStatus(status) {
+            statusBadge.textContent = getStatusText(status.status);
+            statusBadge.className = `status-badge status-${status.status}`;
+            statusMessage.textContent = status.message;
+            progressFill.style.width = `${status.progress}%`;
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '等待中',
+                'processing': '检测中',
+                'completed': '已完成',
+                'failed': '失败'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 加载检测结果
+        async function loadResults() {
+            try {
+                const response = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/tasks/${currentTaskId}`);
+                const taskInfo = await response.json();
+                
+                if (taskInfo.data.result) {
+                    displayResults(taskInfo.data.result);
+                } else {
+                    showError('检测结果不可用');
+                }
+                
+                loading.style.display = 'none';
+                uploadButton.disabled = false;
+            } catch (error) {
+                showError('加载结果失败: ' + error.message);
+                loading.style.display = 'none';
+                uploadButton.disabled = false;
+            }
+        }
+
+        // 显示检测结果
+        function displayResults(results) {
+            // 更新统计信息
+            document.getElementById('totalIssues').textContent = results.detection_results.total_issues;
+            document.getElementById('errorCount').textContent = results.detection_results.summary.error_count;
+            document.getElementById('warningCount').textContent = results.detection_results.summary.warning_count;
+            document.getElementById('infoCount').textContent = results.detection_results.summary.info_count;
+
+            summaryStats.style.display = 'grid';
+
+            // 添加按钮容器
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.cssText = `
+                display: flex;
+                gap: 10px;
+                margin: 10px 0;
+                flex-wrap: wrap;
+            `;
+            
+            // 添加AI报告按钮
+            const aiReportBtn = document.createElement('button');
+            aiReportBtn.textContent = '🤖 查看AI报告';
+            aiReportBtn.className = 'ai-report-btn';
+            aiReportBtn.onclick = showAIReport;
+            aiReportBtn.style.cssText = `
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+            `;
+            
+            // 添加下载JSON报告按钮
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = '📥 下载JSON报告';
+            downloadBtn.className = 'download-btn';
+            downloadBtn.onclick = downloadReport;
+            downloadBtn.style.cssText = `
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+            `;
+            
+            // 添加下载AI报告按钮
+            const downloadAIBtn = document.createElement('button');
+            downloadAIBtn.textContent = '📄 下载AI报告';
+            downloadAIBtn.className = 'download-ai-btn';
+            downloadAIBtn.onclick = downloadAIReport;
+            downloadAIBtn.style.cssText = `
+                background: #17a2b8;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+            `;
+            
+            buttonContainer.appendChild(aiReportBtn);
+            buttonContainer.appendChild(downloadBtn);
+            buttonContainer.appendChild(downloadAIBtn);
+            
+            // 将按钮容器添加到统计信息区域
+            const summaryContainer = document.querySelector('.summary-stats').parentElement;
+            if (!summaryContainer.querySelector('.button-container')) {
+                summaryContainer.appendChild(buttonContainer);
+            }
+
+            // 显示问题列表
+            if (results.detection_results.issues.length > 0) {
+                issuesList.innerHTML = results.detection_results.issues.map(issue => {
+                    const severityInfo = issue.severity_info || {};
+                    const codeSnippet = issue.code_snippet || [];
+                    const detailedDescription = issue.detailed_description || issue.message;
+                    const fixSuggestions = issue.fix_suggestions || [];
+                    
+                    return `
+                        <div class="issue-item">
+                            <div class="issue-severity severity-${issue.severity}" style="color: ${severityInfo.color || '#666'}">
+                                ${severityInfo.name || getSeverityText(issue.severity)}
+                            </div>
+                            <div class="issue-content">
+                                <div class="issue-message">${detailedDescription}</div>
+                                <div class="issue-details">
+                                    文件: ${issue.file} | 行: ${issue.line} | 类型: ${issue.type}
+                                </div>
+                                
+                                ${codeSnippet.length > 0 ? `
+                                    <div class="code-snippet" style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                                        <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #495057;">代码片段:</h4>
+                                        <pre style="margin: 0; font-size: 12px; line-height: 1.4;"><code>${codeSnippet.map(line => 
+                                            `${line.line_number.toString().padStart(3, ' ')} | ${line.content}${line.is_issue_line ? ' ← 问题行' : ''}`
+                                        ).join('\n')}</code></pre>
+                                    </div>
+                                ` : ''}
+                                
+                                ${fixSuggestions.length > 0 ? `
+                                    <div class="fix-suggestions" style="margin: 10px 0; padding: 10px; background: #e7f3ff; border-radius: 5px;">
+                                        <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #0056b3;">修复建议:</h4>
+                                        <ul style="margin: 0; padding-left: 20px;">
+                                            ${fixSuggestions.map(suggestion => `<li style="margin: 5px 0; font-size: 13px;">${suggestion}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                issuesList.style.display = 'block';
+            } else {
+                issuesList.innerHTML = '<div style="padding: 20px; text-align: center; color: #6c757d;">🎉 恭喜！未发现任何问题</div>';
+                issuesList.style.display = 'block';
+            }
+        }
+        
+        function downloadReport() {
+            if (currentTaskId) {
+                const downloadUrl = `${API_BASE_URL.replace('/api/v1', '')}/api/v1/reports/${currentTaskId}`;
+                window.open(downloadUrl, '_blank');
+            } else {
+                alert('没有可下载的报告');
+            }
+        }
+        
+        function downloadAIReport() {
+            if (currentTaskId) {
+                const downloadUrl = `${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}/download`;
+                window.open(downloadUrl, '_blank');
+            } else {
+                alert('没有可下载的AI报告');
+            }
+        }
+        
+        async function showAIReport() {
+            if (!currentTaskId) {
+                alert('没有可查看的AI报告');
+                return;
+            }
+            
+            try {
+                // 显示加载状态
+                const loadingDiv = document.createElement('div');
+                loadingDiv.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <p style="margin: 10px 0; color: #666;">正在生成AI报告...</p>
+                    </div>
+                `;
+                
+                // 创建模态框
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                `;
+                
+                const modalContent = document.createElement('div');
+                modalContent.style.cssText = `
+                    background: white;
+                    border-radius: 10px;
+                    padding: 20px;
+                    max-width: 80%;
+                    max-height: 80%;
+                    overflow-y: auto;
+                    position: relative;
+                `;
+                
+                const closeBtn = document.createElement('button');
+                closeBtn.innerHTML = '×';
+                closeBtn.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    right: 15px;
+                    background: none;
+                    border: none;
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: #666;
+                `;
+                closeBtn.onclick = () => document.body.removeChild(modal);
+                
+                modalContent.appendChild(closeBtn);
+                modalContent.appendChild(loadingDiv);
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+                
+                // 获取AI报告
+                const response = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 显示AI报告内容
+                    modalContent.innerHTML = `
+                        <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+                        <div style="padding: 20px;">
+                            <h2 style="margin: 0 0 20px 0; color: #333;">🤖 AI智能分析报告</h2>
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+                                <pre style="white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; margin: 0;">${result.data.ai_report}</pre>
+                            </div>
+                            <div style="margin-top: 20px; text-align: center;">
+                                <button onclick="downloadAIReport()" style="background: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">📄 下载报告</button>
+                                <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    modalContent.innerHTML = `
+                        <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+                        <div style="padding: 20px; text-align: center;">
+                            <h3 style="color: #dc3545;">获取AI报告失败</h3>
+                            <p>${result.message || '未知错误'}</p>
+                            <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('获取AI报告失败:', error);
+                alert('获取AI报告失败: ' + error.message);
+            }
+        }
+
+        // 获取严重程度文本
+        function getSeverityText(severity) {
+            const severityMap = {
+                'error': '错误',
+                'warning': '警告',
+                'info': '信息'
+            };
+            return severityMap[severity] || severity;
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            resultsSection.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // 初始化
+        uploadButton.disabled = true;
+    </script>
+</body>
+</html>

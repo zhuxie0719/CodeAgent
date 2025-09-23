@@ -1,47 +1,54 @@
-# AI AGENT系统
+# AI Agent 多语言代码检测系统
 
-一个基于多AGENT协作的智能软件开发系统，用于自主进行缺陷检测与修复。
+一个基于多Agent协作的智能软件开发系统，专注于多语言代码缺陷检测与AI智能分析。
 
-## 系统架构
+## 🌟 主要特性
+
+- **🌍 多语言支持**: Python, Java, C/C++, JavaScript, Go
+- **🤖 AI智能分析**: 集成DeepSeek API进行智能代码分析
+- **📁 项目级检测**: 支持大型项目文件上传和分析
+- **📊 自然语言报告**: 生成专业的AI分析报告
+- **🔧 实时检测**: 支持单文件和项目批量检测
+- **📈 可视化界面**: 现代化的Web前端界面
+
+## 🏗️ 系统架构
 
 ### 核心组件
 
 1. **协调中心 (Coordinator)**
    - 任务分配和调度
-   - AGENT间通信协调
+   - Agent间通信协调
    - 工作流管理
    - 决策制定
 
-2. **AGENT团队**
-   - **代码分析AGENT**: 理解项目结构、代码逻辑和依赖关系
-   - **缺陷检测AGENT**: 主动发现代码中的潜在缺陷和问题
-   - **修复执行AGENT**: 根据检测结果自动生成和执行修复方案
-   - **测试验证AGENT**: 确保修复后的代码质量和功能正确性
-   - **性能优化AGENT**: 持续监控和优化应用性能
-   - **代码质量AGENT**: 维护代码质量和编码标准
+2. **Agent团队**
+   - **缺陷检测Agent**: 多语言代码缺陷检测，支持AI分析
+   - **代码分析Agent**: 理解项目结构、代码逻辑和依赖关系
+   - **修复执行Agent**: 根据检测结果自动生成和执行修复方案
+   - **测试验证Agent**: 确保修复后的代码质量和功能正确性
+   - **性能优化Agent**: 持续监控和优化应用性能
+   - **代码质量Agent**: 维护代码质量和编码标准
 
 3. **工具集成层**
-   - 静态分析工具 (Pylint, Flake8, Bandit, MyPy)
-   - 动态测试工具 (Pytest, Selenium, Locust)
-   - 代码生成工具 (AI模型集成)
-   - 监控工具 (Prometheus, Grafana)
+   - 静态分析工具 (Pylint, Flake8, 自定义检测器)
+   - AI分析工具 (DeepSeek API集成)
+   - 多语言检测引擎
+   - 项目分析工具
 
-## 项目结构
+## 📁 项目结构
 
 ```
 ai_agent_system/
-├── agents/                          # AGENT模块
-│   ├── code_analysis_agent/        # 代码分析AGENT
-│   ├── bug_detection_agent/        # 缺陷检测AGENT
-│   ├── fix_execution_agent/        # 修复执行AGENT
-│   ├── test_validation_agent/      # 测试验证AGENT
-│   ├── performance_optimization_agent/  # 性能优化AGENT
-│   └── code_quality_agent/         # 代码质量AGENT
+├── agents/                          # Agent模块
+│   ├── bug_detection_agent/         # 缺陷检测Agent
+│   ├── code_analysis_agent/         # 代码分析Agent
+│   ├── fix_execution_agent/         # 修复执行Agent
+│   ├── test_validation_agent/       # 测试验证Agent
+│   ├── performance_optimization_agent/ # 性能优化Agent
+│   └── code_quality_agent/          # 代码质量Agent
 ├── coordinator/                     # 协调中心
-│   ├── coordinator.py              # 协调中心主类
-│   ├── task_manager.py             # 任务管理器
-│   ├── event_bus.py                # 事件总线
-│   └── decision_engine.py          # 决策引擎
+│   ├── coordinator.py              # 主协调器
+│   └── task_manager.py             # 任务管理器
 ├── tools/                          # 工具集成层
 │   ├── static_analysis/            # 静态分析工具
 │   ├── dynamic_testing/            # 动态测试工具
@@ -49,198 +56,219 @@ ai_agent_system/
 │   └── monitoring/                 # 监控工具
 ├── config/                         # 配置文件
 │   ├── settings.py                 # 系统设置
-│   └── agent_config.py             # AGENT配置
-├── docs/                           # 文档
-├── tests/                          # 测试文件
-├── logs/                           # 日志文件
-├── data/                           # 数据文件
-├── main.py                         # 主程序入口
-└── requirements.txt                # 依赖包列表
+│   └── agent_config.py             # Agent配置
+├── api/                           # API接口层
+│   ├── bug_detection_api.py       # 缺陷检测API
+│   ├── deepseek_config.py         # DeepSeek配置
+│   └── requirements.txt           # API依赖
+├── frontend/                      # 前端界面
+│   └── index.html                 # Web界面
+├── demo/                          # 演示文件
+├── tests/                         # 测试文件
+├── docs/                          # 文档
+├── main.py                        # 主程序入口
+├── start_api.py                   # API启动脚本
+└── README.md                      # 项目说明
 ```
 
-## 安装和运行
+## 🚀 快速开始
 
 ### 环境要求
-
 - Python 3.8+
-- PostgreSQL 12+
-- Redis 6+
-- Node.js 16+ (可选，用于前端工具)
+- 现代浏览器 (Chrome, Firefox, Safari, Edge)
 
 ### 安装步骤
 
-1. 克隆项目
+1. **克隆项目**
 ```bash
 git clone <repository-url>
 cd ai_agent_system
 ```
 
-2. 创建虚拟环境
+2. **创建虚拟环境**
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # 或
-venv\Scripts\activate  # Windows
+venv\Scripts\activate     # Windows
 ```
 
-3. 安装依赖
+3. **安装依赖**
 ```bash
 pip install -r requirements.txt
+pip install -r api/requirements.txt
 ```
 
-4. 配置环境变量
+4. **配置AI分析**
 ```bash
-cp .env.example .env
-# 编辑 .env 文件，设置数据库和API密钥
+# 方法1: 环境变量
+export DEEPSEEK_API_KEY="your_api_key_here"
+
+# 方法2: 直接编辑配置文件
+# 编辑 api/deepseek_config.py 文件
 ```
 
-5. 初始化数据库
+5. **启动系统**
 ```bash
-# 创建数据库表
-python scripts/init_db.py
+# 启动API服务
+python start_api.py
+
+# 打开前端界面
+# 浏览器访问: frontend/index.html
 ```
 
-6. 运行系统
-```bash
-python main.py
-```
+## 🌍 多语言支持
 
-## 配置说明
+### 支持的语言
+- **Python**: 使用 Pylint + Flake8 + 自定义检测器 + AI分析
+- **Java**: 使用 AI分析检测空指针、内存泄漏等问题
+- **C/C++**: 使用 AI分析检测缓冲区溢出、内存泄漏等问题
+- **JavaScript/TypeScript**: 使用 AI分析检测 XSS、内存泄漏等问题
+- **Go**: 使用 AI分析检测并发安全、错误处理等问题
 
-### 系统配置
+### 检测类型
+- **语法错误和编译问题**
+- **逻辑错误和算法问题**
+- **内存泄漏和资源管理问题**
+- **安全漏洞和输入验证问题**
+- **性能问题和优化建议**
+- **代码规范和最佳实践问题**
 
-在 `config/settings.py` 中可以配置：
+## 📁 项目分析功能
 
-- 数据库连接
-- Redis配置
-- 日志设置
-- AGENT启用状态
-- 工具参数
-- AI模型配置
+### 支持的项目格式
+- **压缩文件**: `.zip`, `.tar`, `.tar.gz`, `.rar`, `.7z`
+- **目录**: 直接上传项目文件夹
 
-### AGENT配置
+### 项目分析特性
+- **自动语言检测**: 根据文件扩展名和内容自动识别编程语言
+- **并行分析**: 支持多文件并行检测，提高分析效率
+- **文件过滤**: 自动过滤大文件和无关文件
+- **结果合并**: 将多个文件的检测结果合并为统一报告
 
-每个AGENT都有独立的配置文件，可以设置：
+### 项目限制
+- **最大项目大小**: 100MB
+- **最大文件数量**: 1000个文件
+- **单文件大小限制**: 10MB
+- **每种语言最多分析**: 50个文件
 
-- 执行间隔
-- 工作线程数
-- 特定参数
-- 启用/禁用状态
+## 🤖 AI智能分析
 
-## 使用示例
+### AI分析优势
+- **编译无关**: 不需要编译代码即可分析
+- **跨语言**: 支持多种编程语言
+- **智能检测**: 能够发现传统工具难以检测的问题
+- **上下文理解**: 理解代码的业务逻辑和设计意图
 
-### 基本使用
+### AI检测类型
+1. **语法错误和编译问题**
+2. **逻辑错误和算法问题**
+3. **内存泄漏和资源管理问题**
+4. **安全漏洞和输入验证问题**
+5. **性能问题和优化建议**
+6. **代码规范和最佳实践问题**
 
+## 📊 使用方法
+
+### 单文件分析
+1. 选择"单文件分析"模式
+2. 上传代码文件（支持多种语言）
+3. 选择检测选项
+4. 查看检测结果和AI报告
+
+### 项目分析
+1. 选择"项目分析"模式
+2. 上传项目压缩包或文件夹
+3. 系统自动解压和扫描
+4. 查看多文件综合检测报告
+
+## 📈 检测结果
+
+### 结果格式
+- **文件级别**: 每个文件的详细检测结果
+- **项目级别**: 整个项目的综合统计
+- **语言分类**: 按编程语言分类的检测结果
+- **严重性分级**: 错误、警告、信息三个级别
+
+### AI自然语言报告
+- **总体评估**: 代码质量整体评价
+- **主要问题分析**: 重点问题详细说明
+- **改进建议**: 具体的修复建议
+- **优先级排序**: 按重要性排序的问题列表
+
+## 🔧 配置选项
+
+### 检测选项
+- **enable_static**: 启用自定义静态检测（Python）
+- **enable_pylint**: 启用Pylint检测（Python）
+- **enable_flake8**: 启用Flake8检测（Python）
+- **enable_ai_analysis**: 启用AI分析（所有语言）
+
+### 分析类型
+- **file**: 单文件分析
+- **project**: 项目分析
+
+## 📝 示例
+
+### Python文件检测
 ```python
-from main import AIAgentSystem
-
-# 创建系统实例
-system = AIAgentSystem()
-
-# 初始化系统
-await system.initialize()
-
-# 启动系统
-await system.start()
-
-# 处理项目
-await system.process_project("/path/to/your/project")
-
-# 停止系统
-await system.stop()
+# 上传 test.py 文件
+# 系统使用 Pylint + Flake8 + 自定义检测器 + AI分析
+# 返回详细的缺陷报告和AI自然语言分析
 ```
 
-### 自定义工作流
-
-```python
-# 创建自定义任务
-task_id = await coordinator.create_task('custom_task', {
-    'project_path': '/path/to/project',
-    'custom_params': {...}
-})
-
-# 分配给特定AGENT
-await coordinator.assign_task(task_id, 'code_analysis_agent')
+### Java项目检测
+```bash
+# 上传 java_project.zip
+# 系统解压后扫描所有 .java 文件
+# 使用AI分析每个文件
+# 生成项目级别的综合报告
 ```
 
-## 工作流程
+### 混合语言项目
+```bash
+# 上传包含 Python + Java + C++ 的项目
+# 系统自动识别不同语言的文件
+# 分别使用相应的检测工具
+# 生成多语言综合报告
+```
 
-1. **项目初始化**
-   - 代码分析AGENT扫描项目结构
-   - 建立代码基线和质量指标
-   - 初始化监控和日志系统
+## 🎯 最佳实践
 
-2. **持续监控**
-   - 代码分析AGENT监控代码变更
-   - 缺陷检测AGENT执行定期扫描
-   - 性能优化AGENT监控系统指标
+1. **选择合适的分析类型**: 单文件用于快速检测，项目用于全面分析
+2. **启用AI分析**: 获得更智能的检测结果和修复建议
+3. **关注高优先级问题**: 优先修复错误级别的问题
+4. **定期检测**: 建议在代码提交前进行检测
+5. **结合人工审查**: AI检测结果需要结合人工判断
 
-3. **问题发现**
-   - 缺陷检测AGENT识别问题
-   - 协调中心评估问题优先级
-   - 分配给相应的修复AGENT
+## 📚 文档
 
-4. **修复执行**
-   - 修复执行AGENT生成修复方案
-   - 测试验证AGENT验证修复效果
-   - 代码质量AGENT检查代码标准
+- [API接口文档](API_DOCUMENTATION.md) - 详细的API使用说明
+- [DeepSeek API指南](DEEPSEEK_API_GUIDE.md) - AI分析功能配置指南
+- [Agent架构文档](AGENT_DOCUMENTATION.md) - 系统架构和Agent设计
 
-5. **部署验证**
-   - 集成测试执行
-   - 性能基准测试
-   - 用户验收测试
+## 🔮 未来扩展
 
-6. **反馈优化**
-   - 收集用户反馈
-   - 分析修复效果
-   - 优化AGENT策略
+- 支持更多编程语言（Rust, Swift, Kotlin等）
+- 集成更多专业检测工具
+- 支持自定义检测规则
+- 提供代码修复建议
+- 支持CI/CD集成
 
-## 扩展开发
+## 📄 许可证
 
-### 添加新AGENT
+本项目采用 MIT 许可证。
 
-1. 在 `agents/` 目录下创建新的AGENT文件夹
-2. 实现AGENT主类和核心功能
-3. 在 `coordinator.py` 中注册新AGENT
-4. 在配置文件中添加AGENT配置
+## 🤝 贡献
 
-### 添加新工具
+欢迎提交 Issue 和 Pull Request！
 
-1. 在 `tools/` 目录下创建工具封装
-2. 实现工具接口
-3. 在相应的AGENT中集成工具
-4. 更新配置文件
-
-## 监控和日志
-
-- 系统运行状态监控
-- AGENT执行日志
-- 任务执行统计
-- 性能指标收集
-- 错误报告和告警
-
-## 贡献指南
-
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 推送到分支
-5. 创建 Pull Request
-
-## 许可证
-
-MIT License
-
-## 联系方式
+## 📞 联系方式
 
 如有问题或建议，请通过以下方式联系：
+- 提交 GitHub Issue
+- 发送邮件至项目维护者
 
-- 项目Issues: [GitHub Issues](https://github.com/your-repo/issues)
-- 邮箱: your-email@example.com
+---
 
-## 更新日志
-
-### v1.0.0 (2024-01-01)
-- 初始版本发布
-- 实现基础AGENT架构
-- 支持基本的缺陷检测和修复流程
+*最后更新: 2024年*
