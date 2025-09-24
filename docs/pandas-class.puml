@@ -1,0 +1,77 @@
+@startuml
+skinparam dpi 160
+skinparam classAttributeIconSize 0
+skinparam Shadowing false
+skinparam ArrowColor #444444
+skinparam ClassBorderColor #444444
+skinparam ClassAttributeFontColor #222222
+skinparam ClassFontColor #222222
+
+title Pandas Core Class Diagram 
+
+abstract class NDFrame {
+  +index: Index
+  +dtypes: Series
+  +shape: tuple
+  +copy(deep: bool): NDFrame
+  +astype(dtype): NDFrame
+}
+
+class Series {
+  +name: str
+  +array: ExtensionArray
+  +__getitem__(key: Any): Any
+  +__setitem__(key: Any, value: Any): void
+}
+
+class DataFrame {
+  -data: BlockManager
+  +columns: Index
+  +loc: _LocIndexer
+  +iloc: _iLocIndexer
+  +merge(right: DataFrame, how: str): DataFrame
+  +groupby(by: Any): DataFrameGroupBy
+  +apply(func: Callable): DataFrame
+}
+
+abstract class Index {
+  +name: str
+  +dtype: Dtype
+  +unique(): Index
+  +reindex(target: Index): Index
+}
+
+class BlockManager {
+  -blocks: List<Block>
+  -axes: List<Index>
+  +get_block(blkno: int): Block
+  +consolidate(): BlockManager
+}
+
+interface ExtensionArray {
+  +dtype: ExtensionDtype
+  +isna(): ndarray
+  +take(indices: List<int>): ExtensionArray
+  +astype(dtype: ExtensionDtype): ExtensionArray
+}
+
+class Block {
+  +values: ndarray
+  +mgr_locs: Any
+  +is_categorical: bool
+  +is_sparse: bool
+}
+
+NDFrame <|-- Series
+NDFrame <|-- DataFrame
+
+NDFrame o-- "1" Index : has
+DataFrame *-- "1" BlockManager : manages
+BlockManager *-- "1..*" Block : owns
+BlockManager o-- "1..*" Index : axes
+Series o-- "1" ExtensionArray : holds
+
+
+@enduml
+
+

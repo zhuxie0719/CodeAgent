@@ -1,0 +1,75 @@
+@startuml
+skinparam dpi 160
+skinparam classAttributeIconSize 0
+skinparam Shadowing false
+skinparam ArrowColor #444444
+skinparam ClassBorderColor #444444
+skinparam ClassAttributeFontColor #222222
+skinparam ClassFontColor #222222
+
+title Django Core Class Diagram 
+
+class HttpRequest {
+  +method: str
+  +path: str
+  +GET: QueryDict
+  +POST: QueryDict
+  +user: User
+  +session: SessionStore
+}
+
+class HttpResponse {
+  +status_code: int
+  +content: bytes
+  +headers: dict
+}
+
+abstract class MiddlewareMixin {
+  +process_request(request: HttpRequest): HttpRequest
+  +process_response(request: HttpRequest, response: HttpResponse): HttpResponse
+  +process_exception(request: HttpRequest, exception: Exception): HttpResponse
+}
+
+class URLResolver {
+  +url_patterns: List<URLPattern>
+  +resolve(path: str): ResolverMatch
+}
+
+abstract class View {
+  +dispatch(request: HttpRequest, args: Any, kwargs: Any): HttpResponse
+  +get(request: HttpRequest, args: Any, kwargs: Any): HttpResponse
+  +post(request: HttpRequest, args: Any, kwargs: Any): HttpResponse
+}
+
+abstract class Model {
+  +_meta: Options
+  +save(): Model
+  +delete(): void
+}
+
+class Manager {
+  -model: Model
+  +get_queryset(): QuerySet
+  +create(**kwargs): Model
+}
+
+class QuerySet {
+  -model: Model
+  +filter(**kwargs): QuerySet
+  +select_related(*fields): QuerySet
+}
+
+'
+MiddlewareMixin --> HttpRequest
+MiddlewareMixin --> HttpResponse
+URLResolver --> View
+View --> HttpRequest
+View --> HttpResponse
+Model --> Manager
+Manager --> QuerySet
+QuerySet --> Model
+
+
+@enduml
+
+
