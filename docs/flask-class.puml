@@ -1,0 +1,59 @@
+@startuml
+skinparam dpi 160
+skinparam classAttributeIconSize 0
+skinparam Shadowing false
+skinparam ArrowColor #444444
+skinparam ClassBorderColor #444444
+skinparam ClassAttributeFontColor #222222
+skinparam ClassFontColor #222222
+
+title Flask Core Class Diagram 
+
+class Flask {
+  +name: str
+  +config: Config
+  +url_map: Map
+  +view_functions: dict
+  +route(rule: str, **options): callable
+  +register_blueprint(bp: Blueprint): void
+  +wsgi_app(environ: dict, start_response: callable): Response
+}
+
+class Blueprint {
+  +name: str
+  +url_prefix: str
+  +route(rule: str, **options): callable
+  +before_request(f: callable): callable
+  +after_request(f: callable): callable
+}
+
+class Request {
+  +method: str
+  +url: str
+  +args: MultiDict
+  +form: MultiDict
+  +files: MultiDict
+}
+
+class Response {
+  +status_code: int
+  +data: bytes
+  +headers: Headers
+}
+
+class Jinja2Environment {
+  +get_template(name: str): Template
+  +render_template(template: str, **context): str
+}
+
+Flask --> Request
+Flask --> Response
+Flask --> Jinja2Environment
+Flask --> Blueprint
+Blueprint --> Request
+Blueprint --> Response
+
+
+@enduml
+
+
