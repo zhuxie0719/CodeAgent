@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 / 注册</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9fafc;
+      color: #333;
+    }
+    .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+    }
+    .sidebar {
+  display: none;
+    }
+    .sidebar .logo {
+      width: 40px;
+      height: 40px;
+      background: #f7d78c;
+      color: #333;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9fafc;
+    }
+    .login-box {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      padding: 40px 32px 32px 32px;
+      min-width: 340px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .login-or {
+      margin: 10px 0 8px 0;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
+    .github-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #24292f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .github-circle:hover {
+      background: #444d56;
+    }
+    .github-circle i {
+      color: #fff;
+      font-size: 22px;
+    }
+    .login-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 18px;
+      color: #1c2330;
+    }
+    .login-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .login-form input {
+      padding: 10px 12px;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      font-size: 15px;
+      background: #f9fafc;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .login-form input:focus {
+      border: 1.5px solid #4f46e5;
+    }
+    .login-btn {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: background 0.2s;
+    }
+    .login-btn:hover {
+      background: #3730a3;
+    }
+    .github-btn {
+      background: #24292f;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      transition: background 0.2s;
+    }
+    .github-btn:hover {
+      background: #444d56;
+    }
+    .switch-link {
+      font-size: 14px;
+      color: #4f46e5;
+      text-decoration: none;
+      margin-top: 8px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .switch-link:hover {
+      color: #3730a3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="main">
+      <div class="login-box">
+      <div class="login-title" id="form-title">登录</div>
+        <form class="login-form" id="loginForm">
+          <input type="email" id="email" placeholder="邮箱" required>
+          <input type="password" id="password" placeholder="密码" required>
+          <button type="submit" class="login-btn">登录</button>
+        </form>
+        <div class="login-or" id="loginOr">或者使用以下方式登录</div>
+        <div class="github-circle" id="githubLogin">
+          <i class="fab fa-github"></i>
+        </div>
+        <a class="switch-link" id="switchLink">还没有账号？注册</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 登录/注册切换
+    const formTitle = document.getElementById('form-title');
+    const loginForm = document.getElementById('loginForm');
+    const switchLink = document.getElementById('switchLink');
+    const loginOr = document.getElementById('loginOr');
+    let isLogin = true;
+    switchLink.onclick = function() {
+      isLogin = !isLogin;
+      if (isLogin) {
+        formTitle.textContent = '登录';
+        switchLink.textContent = '还没有账号？注册';
+        loginForm.querySelector('button').textContent = '登录';
+        loginOr.textContent = '或者使用以下方式登录';
+      } else {
+        formTitle.textContent = '注册';
+        switchLink.textContent = '已有账号？去登录';
+        loginForm.querySelector('button').textContent = '注册';
+        loginOr.textContent = '或者使用以下方式注册';
+      }
+    };
+    // 阻止默认提交
+    loginForm.onsubmit = function(e) {
+      e.preventDefault();
+      alert(isLogin ? '已提交登录！' : '已提交注册！');
+    };
+    document.getElementById('githubLogin').onclick = function() {
+      alert(isLogin ? '点击了 GitHub 登录！' : '点击了 GitHub 注册！');
+    };
+  </script>
+</body>
+</html>

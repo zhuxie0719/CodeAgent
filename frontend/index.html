@@ -712,7 +712,26 @@
                 const taskInfo = await response.json();
                 
                 if (taskInfo.data.result) {
-                    displayResults(taskInfo.data.result);
+                    // 保存结果、任务ID、文件名、API基础地址
+                    localStorage.setItem('analysisResult', JSON.stringify(taskInfo.data.result));
+                    localStorage.setItem('taskId', currentTaskId);
+                    localStorage.setItem('fileName', fileInput.files[0]?.name || 'Unknown File');
+                    localStorage.setItem('apiBase', API_BASE_URL.replace('/api/v1', ''));
+
+                    // 预取AI报告（若可用），存储后再跳转
+                    try {
+                        const aiResp = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}`);
+                        const aiData = await aiResp.json();
+                        if (aiData && aiData.success && aiData.data && aiData.data.ai_report) {
+                            localStorage.setItem('aiReport', aiData.data.ai_report);
+                            localStorage.setItem('aiReportDownloadUrl', `${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}/download`);
+                        }
+                    } catch (e) {
+                        // 忽略AI报告失败，仍然跳转
+                    }
+
+                    // 跳转到main.html
+                    window.location.href = 'main.html';
                 } else {
                     showError('检测结果不可用');
                 }

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>探索项目</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      color: #111827;
+    }
+
+    .topbar {
+      height: 60px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #111827;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .search-input {
+      flex: 1;
+      max-width: 400px;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .filter-select {
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .project-card:hover {
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .project-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .project-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 14px;
+    }
+
+    .project-details h3 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .project-details p {
+      margin: 0;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-failed {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .status-passed {
+      background: #f0fdf4;
+      color: #16a34a;
+    }
+
+    .code-info {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      background: #f9fafb;
+      border: 1px solid #f3f4f6;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .metric-grade {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .grade-a { background: #dcfce7; color: #166534; }
+    .grade-b { background: #fef3c7; color: #92400e; }
+    .grade-c { background: #fed7aa; color: #c2410c; }
+    .grade-d { background: #fecaca; color: #dc2626; }
+    .grade-e { background: #fecaca; color: #dc2626; }
+
+    .coverage-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .coverage-item {
+      background: #f9fafb;
+      border: 1px solid #f3f4f6;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .coverage-label {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .coverage-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0 auto 4px;
+      position: relative;
+    }
+
+    .coverage-circle::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(var(--color) 0deg, var(--color) var(--percentage), #e5e7eb var(--percentage), #e5e7eb 360deg);
+      z-index: -1;
+    }
+
+    .coverage-good { --color: #10b981; }
+    .coverage-poor { --color: #ef4444; }
+
+    .languages {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .lang-bar {
+      height: 4px;
+      background: #f3f4f6;
+      border-radius: 2px;
+      display: flex;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .lang-segment {
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="title">探索项目</div>
+    <div style="color: #6b7280; font-size: 14px;">公开项目</div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1>探索精选公开项目</h1>
+      <p>了解平台如何帮助团队持续改进代码质量</p>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" type="text" placeholder="搜索项目..." id="searchInput">
+      <select class="filter-select" id="filterSelect">
+        <option value="">所有语言</option>
+        <option value="java">Java</option>
+        <option value="python">Python</option>
+        <option value="javascript">JavaScript</option>
+        <option value="csharp">C#</option>
+        <option value="cpp">C++</option>
+      </select>
+    </div>
+
+    <div id="projectsGrid" class="projects-grid"></div>
+  </div>
+
+  <script>
+    const featuredProjects = [
+      {
+        id: 'aws-java-sdk',
+        name: 'Amazon Web Services',
+        sdk: 'AWS Java SDK',
+        logo: 'AWS',
+        logoColor: '#ff9900',
+        status: 'failed',
+        linesOfCode: '240k',
+        languages: [
+          { name: 'Java', color: '#f89820', percentage: 70 },
+          { name: 'XML', color: '#ff6b35', percentage: 30 }
+        ],
+        metrics: {
+          security: { value: 3, grade: 'B' },
+          reliability: { value: 54, grade: 'E' },
+          maintainability: { value: '3.6k', grade: 'A' },
+          hotspots: { value: '94.5%', grade: 'A' },
+          coverage: { value: 72.7, good: true },
+          duplications: { value: 4.0, good: true }
+        }
+      },
+      {
+        id: 'microsoft-kiota',
+        name: 'Microsoft',
+        sdk: 'kiota',
+        logo: 'MS',
+        logoColor: '#0078d4',
+        status: 'failed',
+        linesOfCode: '44k',
+        languages: [
+          { name: 'C#', color: '#239120', percentage: 60 },
+          { name: 'TypeScript', color: '#3178c6', percentage: 30 },
+          { name: 'Python', color: '#3776ab', percentage: 10 }
+        ],
+        metrics: {
+          security: { value: 0, grade: 'A' },
+          reliability: { value: 7, grade: 'C' },
+          maintainability: { value: 633, grade: 'A' },
+          hotspots: { value: '0.0%', grade: 'E' },
+          coverage: { value: 83.1, good: true },
+          duplications: { value: 1.2, good: true }
+        }
+      },
+      {
+        id: 'apache-kvrocks',
+        name: 'The Apache Software Foundation',
+        sdk: 'kvrocks',
+        logo: 'ASF',
+        logoColor: '#d22128',
+        status: 'failed',
+        linesOfCode: '92k',
+        languages: [
+          { name: 'C++', color: '#00599c', percentage: 80 },
+          { name: 'Go', color: '#00add8', percentage: 15 },
+          { name: 'Python', color: '#3776ab', percentage: 5 }
+        ],
+        metrics: {
+          security: { value: 2, grade: 'D' },
+          reliability: { value: 13, grade: 'E' },
+          maintainability: { value: '3.9k', grade: 'A' },
+          hotspots: { value: '27.6%', grade: 'E' },
+          coverage: { value: 63.3, good: true },
+          duplications: { value: 1.6, good: true }
+        }
+      },
+      {
+        id: 'react',
+        name: 'Facebook',
+        sdk: 'react',
+        logo: 'R',
+        logoColor: '#61dafb',
+        status: 'passed',
+        linesOfCode: '180k',
+        languages: [
+          { name: 'JavaScript', color: '#f7df1e', percentage: 85 },
+          { name: 'TypeScript', color: '#3178c6', percentage: 15 }
+        ],
+        metrics: {
+          security: { value: 0, grade: 'A' },
+          reliability: { value: 2, grade: 'A' },
+          maintainability: { value: '2.1k', grade: 'A' },
+          hotspots: { value: '100%', grade: 'A' },
+          coverage: { value: 89.2, good: true },
+          duplications: { value: 0.8, good: true }
+        }
+      },
+      {
+        id: 'tensorflow',
+        name: 'Google',
+        sdk: 'tensorflow',
+        logo: 'TF',
+        logoColor: '#ff6f00',
+        status: 'failed',
+        linesOfCode: '1.2M',
+        languages: [
+          { name: 'Python', color: '#3776ab', percentage: 70 },
+          { name: 'C++', color: '#00599c', percentage: 25 },
+          { name: 'JavaScript', color: '#f7df1e', percentage: 5 }
+        ],
+        metrics: {
+          security: { value: 12, grade: 'C' },
+          reliability: { value: 89, grade: 'D' },
+          maintainability: { value: '15.2k', grade: 'B' },
+          hotspots: { value: '45.3%', grade: 'D' },
+          coverage: { value: 67.8, good: false },
+          duplications: { value: 8.4, good: false }
+        }
+      },
+      {
+        id: 'spring-boot',
+        name: 'Pivotal',
+        sdk: 'spring-boot',
+        logo: 'SB',
+        logoColor: '#6db33f',
+        status: 'passed',
+        linesOfCode: '320k',
+        languages: [
+          { name: 'Java', color: '#f89820', percentage: 95 },
+          { name: 'XML', color: '#ff6b35', percentage: 5 }
+        ],
+        metrics: {
+          security: { value: 1, grade: 'A' },
+          reliability: { value: 5, grade: 'B' },
+          maintainability: { value: '4.8k', grade: 'A' },
+          hotspots: { value: '98.2%', grade: 'A' },
+          coverage: { value: 91.5, good: true },
+          duplications: { value: 2.1, good: true }
+        }
+      }
+    ];
+
+    function renderProjects(projects) {
+      const grid = document.getElementById('projectsGrid');
+      grid.innerHTML = projects.map(project => `
+        <div class="project-card" onclick="viewProject('${project.id}')">
+          <div class="card-header">
+            <div class="project-info">
+              <div class="project-logo" style="background: ${project.logoColor}">
+                ${project.logo}
+              </div>
+              <div class="project-details">
+                <h3>${project.name}</h3>
+                <p>${project.sdk}</p>
+              </div>
+            </div>
+            <div class="status-badge status-${project.status}">
+              <i class="fas fa-${project.status === 'failed' ? 'times' : 'check'}"></i>
+              ${project.status === 'failed' ? 'Failed' : 'Passed'}
+            </div>
+          </div>
+          
+          <div class="code-info">
+            ${project.linesOfCode} Lines of Code • ${project.languages.map(l => l.name).join(', ')}
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Security</div>
+              <div class="metric-value">
+                ${project.metrics.security.value}
+                <span class="metric-grade grade-${project.metrics.security.grade.toLowerCase()}">${project.metrics.security.grade}</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Reliability</div>
+              <div class="metric-value">
+                ${project.metrics.reliability.value}
+                <span class="metric-grade grade-${project.metrics.reliability.grade.toLowerCase()}">${project.metrics.reliability.grade}</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Maintainability</div>
+              <div class="metric-value">
+                ${project.metrics.maintainability.value}
+                <span class="metric-grade grade-${project.metrics.maintainability.grade.toLowerCase()}">${project.metrics.maintainability.grade}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Hotspots Reviewed</div>
+              <div class="metric-value">
+                ${project.metrics.hotspots.value}
+                <span class="metric-grade grade-${project.metrics.hotspots.grade.toLowerCase()}">${project.metrics.hotspots.grade}</span>
+              </div>
+            </div>
+            <div class="coverage-section">
+              <div class="coverage-item">
+                <div class="coverage-label">Coverage</div>
+                <div class="coverage-circle coverage-${project.metrics.coverage.good ? 'good' : 'poor'}" 
+                     style="--percentage: ${project.metrics.coverage.value * 3.6}deg">
+                  ${project.metrics.coverage.value}%
+                </div>
+              </div>
+              <div class="coverage-item">
+                <div class="coverage-label">Duplications</div>
+                <div class="coverage-circle coverage-${project.metrics.duplications.good ? 'good' : 'poor'}" 
+                     style="--percentage: ${project.metrics.duplications.value * 3.6}deg">
+                  ${project.metrics.duplications.value}%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="languages">
+            <div class="lang-bar">
+              ${project.languages.map(lang => 
+                `<div class="lang-segment" style="width: ${lang.percentage}%; background: ${lang.color}" title="${lang.name} ${lang.percentage}%"></div>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function viewProject(projectId) {
+      // Navigate to project analysis page
+      window.location.href = `analyse.html?project=${encodeURIComponent(projectId)}`;
+    }
+
+    function filterProjects() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const languageFilter = document.getElementById('filterSelect').value.toLowerCase();
+      
+      const filtered = featuredProjects.filter(project => {
+        const matchesSearch = project.name.toLowerCase().includes(searchTerm) || 
+                            project.sdk.toLowerCase().includes(searchTerm);
+        const matchesLanguage = !languageFilter || 
+                              project.languages.some(lang => lang.name.toLowerCase().includes(languageFilter));
+        return matchesSearch && matchesLanguage;
+      });
+      
+      renderProjects(filtered);
+    }
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', filterProjects);
+    document.getElementById('filterSelect').addEventListener('change', filterProjects);
+
+    // Initial render
+    renderProjects(featuredProjects);
+  </script>
+</body>
+</html>
