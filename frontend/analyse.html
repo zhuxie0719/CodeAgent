@@ -265,16 +265,19 @@
         </div>
       </div>
 
-      <button class="continue-btn">Continue</button>
+      <button class="continue-btn" id="continueBtn">Continue</button>
     </div>
   </div>
 
   <script>
+    const API_BASE_URL = 'http://localhost:8001/api/v1';
     const githubSection = document.getElementById('githubSection');
     const localSection = document.getElementById('localSection');
     const radios = document.querySelectorAll('input[name="source"]');
     const analysisRadios = document.querySelectorAll('input[name="analysis"]');
     const noteArea = document.getElementById('noteArea');
+    const continueBtn = document.getElementById('continueBtn');
+    const fileInput = document.getElementById('fileInput');
 
     radios.forEach(radio => {
       radio.addEventListener('change', () => {
@@ -292,11 +295,78 @@
       radio.addEventListener('change', () => {
         if (radio.value === "single") {
           noteArea.textContent = "支持Python，Java/C/C++，JavaScript，Go等文件，最大10MB";
+          fileInput.setAttribute('multiple', '');
         } else if (radio.value === "project") {
           noteArea.textContent = "支持.zip, .tar, .tar.gz等压缩文件，最大100MB";
+          fileInput.removeAttribute('multiple');
         }
       });
     });
+
+    // Continue button click handler
+    continueBtn.addEventListener('click', async () => {
+      const selectedSource = document.querySelector('input[name="source"]:checked').value;
+      
+      if (selectedSource === 'local') {
+        await handleLocalUpload();
+      } else {
+        alert('GitHub集成功能暂未实现，请选择本地文件上传');
+      }
+    });
+
+    async function handleLocalUpload() {
+      const files = fileInput.files;
+      if (files.length === 0) {
+        alert('请先选择文件');
+        return;
+      }
+
+      const analysisType = document.querySelector('input[name="analysis"]:checked').value;
+      const detectionOptions = Array.from(document.querySelectorAll('input[name="detect"]:checked')).map(cb => cb.value);
+      
+      // Show loading state
+      continueBtn.disabled = true;
+      continueBtn.textContent = '分析中...';
+
+      try {
+        const file = files[0]; // For now, only handle single file
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Build query parameters
+        const params = new URLSearchParams({
+          enable_static: detectionOptions.includes('custom'),
+          enable_pylint: detectionOptions.includes('pylint'),
+          enable_flake8: detectionOptions.includes('flake8'),
+          enable_ai_analysis: detectionOptions.includes('ai'),
+          analysis_type: analysisType === 'single' ? 'file' : 'project'
+        });
+
+        const response = await fetch(`${API_BASE_URL}/detection/upload?${params}`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Store task info and redirect to main page
+          localStorage.setItem('taskId', result.data.task_id);
+          localStorage.setItem('fileName', file.name);
+          localStorage.setItem('analysisType', analysisType === 'single' ? 'file' : 'project');
+          localStorage.setItem('apiBase', API_BASE_URL.replace('/api/v1', ''));
+          
+          // Redirect to main page
+          window.location.href = 'main.html';
+        } else {
+          throw new Error(result.error || '上传失败');
+        }
+      } catch (error) {
+        alert('上传失败: ' + error.message);
+        continueBtn.disabled = false;
+        continueBtn.textContent = 'Continue';
+      }
+    }
   </script>
 
 </body>

@@ -1,0 +1,19 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-27T21:54:56.285420",
+    "file_path": "uploads\\test_zip.zip",
+    "task_id": "task_54c7d73f725f",
+    "total_issues": 0,
+    "summary": {
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0
+    },
+    "detection_tools": []
+  },
+  "issues": [],
+  "statistics": {
+    "by_severity": {},
+    "by_type": {}
+  }
+}

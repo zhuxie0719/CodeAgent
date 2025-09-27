@@ -1,0 +1,152 @@
+{
+  "task_id": "task_4a9fad8e7964",
+  "file_path": "uploads\\test_zip.zip",
+  "analysis_type": "project",
+  "timestamp": "2025-09-27T22:07:52.522228",
+  "summary": {
+    "total_issues": 12,
+    "error_count": 3,
+    "warning_count": 3,
+    "info_count": 6,
+    "languages_detected": [
+      "python",
+      "java"
+    ],
+    "total_files": 2
+  },
+  "issues_by_priority": {
+    "critical": [
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 7,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 8,
+        "file": "test_python_bad.py",
+        "language": "python"
+      }
+    ],
+    "high": [
+      {
+        "type": "unsafe_eval",
+        "severity": "error",
+        "message": "不安全的eval使用",
+        "line": 20,
+        "file": "test_python_bad.py",
+        "language": "python"
+      }
+    ],
+    "medium": [
+      {
+        "type": "unused_import",
+        "severity": "warning",
+        "message": "未使用的导入",
+        "line": 4,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "memory_leak",
+        "severity": "warning",
+        "message": "可能存在内存泄漏",
+        "line": 17,
+        "file": "test_java.java",
+        "language": "java"
+      },
+      {
+        "type": "memory_leak",
+        "severity": "warning",
+        "message": "可能存在内存泄漏",
+        "line": 25,
+        "file": "test_java.java",
+        "language": "java"
+      }
+    ],
+    "low": [
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 10,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 23,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 37,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 43,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 50,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 60,
+        "file": "test_python_bad.py",
+        "language": "python"
+      }
+    ]
+  },
+  "fix_recommendations": {
+    "immediate_actions": [
+      "修复 3 个错误级别的问题"
+    ],
+    "short_term_improvements": [],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "project",
+    "file_count": 2,
+    "languages": [
+      "python",
+      "java"
+    ],
+    "complexity_indicators": {
+      "high_issue_files": 1,
+      "average_issues_per_file": 6.0
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [
+      "custom_analyzer"
+    ],
+    "analysis_time": 0.8,
+    "project_path": "temp_extract\\project_20250927_220722"
+  }
+}

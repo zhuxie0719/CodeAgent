@@ -1,0 +1,132 @@
+{
+  "task_id": "task_011a4cfd42ca",
+  "file_path": "uploads\\test_project_with_issues.zip",
+  "analysis_type": "project",
+  "timestamp": "2025-09-27T22:12:35.078661",
+  "summary": {
+    "total_issues": 9,
+    "error_count": 7,
+    "warning_count": 1,
+    "info_count": 1,
+    "languages_detected": [
+      "c",
+      "python",
+      "java",
+      "javascript"
+    ],
+    "total_files": 4
+  },
+  "issues_by_priority": {
+    "critical": [
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 10,
+        "file": "test_python_with_issues.py",
+        "language": "python"
+      },
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 11,
+        "file": "test_python_with_issues.py",
+        "language": "python"
+      },
+      {
+        "type": "xss_vulnerability",
+        "severity": "error",
+        "message": "XSS漏洞风险",
+        "line": 5,
+        "file": "test_js_with_issues.js",
+        "language": "javascript"
+      },
+      {
+        "type": "xss_vulnerability",
+        "severity": "error",
+        "message": "XSS漏洞风险",
+        "line": 6,
+        "file": "test_js_with_issues.js",
+        "language": "javascript"
+      }
+    ],
+    "high": [
+      {
+        "type": "unsafe_eval",
+        "severity": "error",
+        "message": "不安全的eval使用",
+        "line": 17,
+        "file": "test_python_with_issues.py",
+        "language": "python"
+      },
+      {
+        "type": "null_pointer_dereference",
+        "severity": "error",
+        "message": "潜在的空指针解引用",
+        "line": 6,
+        "file": "test_java_with_issues.java",
+        "language": "java"
+      },
+      {
+        "type": "buffer_overflow",
+        "severity": "error",
+        "message": "缓冲区溢出风险",
+        "line": 8,
+        "file": "test_c_with_issues.c",
+        "language": "c"
+      }
+    ],
+    "medium": [
+      {
+        "type": "unused_import",
+        "severity": "warning",
+        "message": "未使用的导入",
+        "line": 26,
+        "file": "test_python_with_issues.py",
+        "language": "python"
+      }
+    ],
+    "low": [
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 24,
+        "file": "test_python_with_issues.py",
+        "language": "python"
+      }
+    ]
+  },
+  "fix_recommendations": {
+    "immediate_actions": [
+      "修复 7 个错误级别的问题"
+    ],
+    "short_term_improvements": [],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "project",
+    "file_count": 4,
+    "languages": [
+      "c",
+      "python",
+      "java",
+      "javascript"
+    ],
+    "complexity_indicators": {
+      "high_issue_files": 0,
+      "average_issues_per_file": 2.25
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [
+      "custom_analyzer"
+    ],
+    "analysis_time": 1.4000000000000001,
+    "project_path": "temp_extract\\project_20250927_221205"
+  }
+}

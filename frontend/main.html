@@ -468,6 +468,68 @@
       font-size: 14px;
       color: #15803d;
     }
+
+    /* Files Section Styles */
+    .files-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .file-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .file-item:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+
+    .file-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .file-name {
+      font-weight: 500;
+      color: #111827;
+      font-size: 14px;
+    }
+
+    .file-language {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .file-issues {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .file-issues.error {
+      color: #dc2626;
+    }
+
+    .file-issues.warning {
+      color: #d97706;
+    }
+
+    .file-issues.info {
+      color: #2563eb;
+    }
   </style>
 </head>
 <body>
@@ -611,10 +673,21 @@
       </div>
     </div>
 
+    <!-- Files Analyzed Section (for project analysis) -->
+    <div class="files-section" id="filesSection" style="display: none;">
+      <div class="issues-header">
+        <div class="issues-title">已分析的文件</div>
+        <div class="issues-count" id="filesCount">0 个文件</div>
+      </div>
+      <div id="filesList">
+        <!-- Files will be populated by JavaScript -->
+      </div>
+    </div>
+
     <!-- Issues Section -->
     <div class="issues-section">
       <div class="issues-header">
-        <div class="issues-title">安全热点</div>
+        <div class="issues-title">检测到的问题</div>
         <div class="issues-count">0 个问题</div>
       </div>
       <div id="issuesList">
@@ -628,22 +701,30 @@
     let analysisResult = null;
     let fileName = 'Monica';
     let taskId = null;
+    let analysisType = 'file';
+    let structuredData = null;
 
     // Check if we have analysis results from index.html
     function loadAnalysisData() {
       const storedResult = localStorage.getItem('analysisResult');
       const storedFileName = localStorage.getItem('fileName');
       const storedTaskId = localStorage.getItem('taskId');
+      const storedAnalysisType = localStorage.getItem('analysisType');
+      const storedStructuredData = localStorage.getItem('structuredData');
       
       if (storedResult) {
         analysisResult = JSON.parse(storedResult);
         fileName = storedFileName || 'Uploaded File';
         taskId = storedTaskId;
+        analysisType = storedAnalysisType || 'file';
+        structuredData = storedStructuredData ? JSON.parse(storedStructuredData) : null;
         
         // Clear the stored data
         localStorage.removeItem('analysisResult');
         localStorage.removeItem('fileName');
         localStorage.removeItem('taskId');
+        localStorage.removeItem('analysisType');
+        localStorage.removeItem('structuredData');
         
         // Update the page with real data
         updatePageWithAnalysisData();
@@ -695,8 +776,28 @@
       const detectionResults = analysisResult.detection_results;
       const summary = detectionResults.summary;
       
-      // Update project name
+      // Update project name and description
       document.querySelector('.project-info h1').textContent = fileName;
+      const description = analysisType === 'project' ? 
+        `项目分析结果 - ${detectionResults.total_files || 1} 个文件` : 
+        '单文件分析结果';
+      document.querySelector('.project-description').textContent = description;
+      
+      // Update project meta info
+      const metaInfo = document.querySelector('.project-meta');
+      if (analysisType === 'project') {
+        metaInfo.innerHTML = `
+          <span>${detectionResults.languages_detected ? detectionResults.languages_detected.join(', ') : '未知语言'}</span>
+          <span>上次分析 ${new Date().toLocaleDateString()}</span>
+          <span>${detectionResults.total_files || 1} 个文件</span>
+        `;
+      } else {
+        metaInfo.innerHTML = `
+          <span>${detectionResults.language || '未知语言'}</span>
+          <span>上次分析 ${new Date().toLocaleDateString()}</span>
+          <span>单文件分析</span>
+        `;
+      }
       
       // Update metrics
       updateMetrics(summary);
@@ -707,20 +808,34 @@
       // Update coverage and duplications
       updateCoverageAndDuplications(summary);
       
+      // Update files list (for project analysis)
+      if (analysisType === 'project' && detectionResults.files_analyzed) {
+        renderFiles(detectionResults.files_analyzed);
+        document.getElementById('filesSection').style.display = 'block';
+        document.getElementById('filesCount').textContent = `${detectionResults.files_analyzed.length} 个文件`;
+      } else {
+        document.getElementById('filesSection').style.display = 'none';
+      }
+
       // Update totals and issues
       if (detectionResults.issues && detectionResults.issues.length > 0) {
         renderIssues(detectionResults.issues);
-        document.querySelector('.issues-count').textContent = `${detectionResults.issues.length} issues`;
+        document.querySelector('.issues-count').textContent = `${detectionResults.issues.length} 个问题`;
         const total = detectionResults.total_issues ?? (summary.error_count + summary.warning_count + summary.info_count);
         document.getElementById('totalIssuesValue').textContent = total;
       } else {
-        document.querySelector('.issues-count').textContent = '0 issues';
+        document.querySelector('.issues-count').textContent = '0 个问题';
         document.getElementById('issuesList').innerHTML = '<div style="padding: 20px; text-align: center; color: #6c757d;">🎉 恭喜！未发现任何问题</div>';
         document.getElementById('totalIssuesValue').textContent = 0;
       }
 
       // Load AI report
       loadAIReport();
+      
+      // Add structured data download button if available
+      if (structuredData) {
+        addStructuredDataButton();
+      }
     }
 
     function updateMetrics(summary) {
@@ -779,6 +894,58 @@
       duplicationsValue.textContent = '2.1%';
     }
 
+    function renderFiles(files) {
+      const filesList = document.getElementById('filesList');
+      filesList.innerHTML = files.map((file, index) => {
+        const fileName = file.file_path.split('/').pop() || file.file_path.split('\\').pop() || 'Unknown';
+        const issueCount = file.total_issues || 0;
+        const errorCount = file.issues.filter(issue => issue.severity === 'error').length;
+        const warningCount = file.issues.filter(issue => issue.severity === 'warning').length;
+        const infoCount = file.issues.filter(issue => issue.severity === 'info').length;
+        
+        let issueText = '';
+        if (issueCount === 0) {
+          issueText = '<span style="color: #10b981;">✓ 无问题</span>';
+        } else {
+          const parts = [];
+          if (errorCount > 0) parts.push(`<span class="file-issues error">${errorCount} 错误</span>`);
+          if (warningCount > 0) parts.push(`<span class="file-issues warning">${warningCount} 警告</span>`);
+          if (infoCount > 0) parts.push(`<span class="file-issues info">${infoCount} 信息</span>`);
+          issueText = parts.join(', ');
+        }
+        
+        return `
+          <div class="file-item" onclick="toggleFileIssues(${index + 1})">
+            <div class="file-header">
+              <div class="file-name">${fileName}</div>
+              <div class="file-language">${file.language || 'unknown'}</div>
+            </div>
+            <div class="file-issues">
+              ${issueText}
+            </div>
+            <div class="file-expanded" id="file-${index + 1}" style="display: none;">
+              ${file.issues.length > 0 ? `
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                  <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #374151;">问题详情:</h4>
+                  ${file.issues.map(issue => `
+                    <div style="margin: 8px 0; padding: 8px; background: #f9fafb; border-radius: 4px;">
+                      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span class="issue-severity severity-${issue.severity}" style="font-size: 11px; padding: 2px 6px;">
+                          ${issue.severity.toUpperCase()}
+                        </span>
+                        <span style="font-size: 12px; color: #6b7280;">第 ${issue.line} 行</span>
+                      </div>
+                      <div style="font-size: 13px; color: #374151;">${issue.message}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function renderIssues(issues) {
       const issuesList = document.getElementById('issuesList');
       issuesList.innerHTML = issues.map((issue, index) => `
@@ -807,6 +974,11 @@
     function toggleIssue(issueId) {
       const expanded = document.getElementById(`issue-${issueId}`);
       expanded.classList.toggle('show');
+    }
+
+    function toggleFileIssues(fileId) {
+      const expanded = document.getElementById(`file-${fileId}`);
+      expanded.style.display = expanded.style.display === 'none' ? 'block' : 'none';
     }
 
     function loadAIReport() {
@@ -865,6 +1037,38 @@
         }).catch(() => setReport('', null));
       } else {
         setReport('', null);
+      }
+    }
+
+    function addStructuredDataButton() {
+      // Add structured data download button to AI report section
+      const aiReportCard = document.querySelector('.ai-report-card');
+      const existingActions = aiReportCard.querySelector('.ai-report-actions');
+      
+      if (existingActions && !existingActions.querySelector('.btn-structured')) {
+        const structuredBtn = document.createElement('button');
+        structuredBtn.className = 'btn btn-secondary btn-structured';
+        structuredBtn.textContent = '📊 下载结构化数据';
+        structuredBtn.onclick = downloadStructuredData;
+        existingActions.appendChild(structuredBtn);
+      }
+    }
+
+    function downloadStructuredData() {
+      const downloadUrl = localStorage.getItem('structuredDataDownloadUrl');
+      if (downloadUrl) {
+        window.open(downloadUrl, '_blank');
+      } else if (structuredData) {
+        // Fallback: create download from stored data
+        const blob = new Blob([JSON.stringify(structuredData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `structured_data_${taskId || 'analysis'}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        alert('结构化数据不可用');
       }
     }
 

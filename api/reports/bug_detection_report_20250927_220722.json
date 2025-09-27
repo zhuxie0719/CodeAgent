@@ -1,0 +1,128 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-27T22:07:22.296014",
+    "file_path": "uploads\\test_zip.zip",
+    "task_id": "task_4a9fad8e7964",
+    "total_issues": 12,
+    "summary": {
+      "error_count": 3,
+      "warning_count": 3,
+      "info_count": 6
+    },
+    "detection_tools": [
+      "custom_analyzer"
+    ]
+  },
+  "issues": [
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 7,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 8,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "unsafe_eval",
+      "severity": "error",
+      "message": "不安全的eval使用",
+      "line": 20,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "未使用的导入",
+      "line": 4,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "memory_leak",
+      "severity": "warning",
+      "message": "可能存在内存泄漏",
+      "line": 17,
+      "file": "test_java.java",
+      "language": "java"
+    },
+    {
+      "type": "memory_leak",
+      "severity": "warning",
+      "message": "可能存在内存泄漏",
+      "line": 25,
+      "file": "test_java.java",
+      "language": "java"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 10,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 23,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 37,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 43,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 50,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 60,
+      "file": "test_python_bad.py",
+      "language": "python"
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 3,
+      "warning": 3,
+      "info": 6
+    },
+    "by_type": {
+      "hardcoded_secrets": 2,
+      "unsafe_eval": 1,
+      "unused_import": 1,
+      "memory_leak": 2,
+      "missing_docstring": 6
+    }
+  }
+}

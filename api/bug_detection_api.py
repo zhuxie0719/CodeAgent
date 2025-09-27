@@ -5,6 +5,7 @@
 import asyncio
 import uuid
 import os
+import json
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from pathlib import Path
@@ -17,6 +18,9 @@ from pydantic import BaseModel, Field
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 
+# 导入文件分析器
+from file_analyzer import FileAnalyzer
+
 try:
     from agents.bug_detection_agent.agent import BugDetectionAgent
     from config.settings import settings
@@ -28,6 +32,7 @@ except ImportError as e:
             self.config = config
             self.status = "running"
             self.tasks = {}
+            self.file_analyzer = FileAnalyzer()
         
         async def start(self):
             print("简化BugDetectionAgent启动")
@@ -39,11 +44,48 @@ except ImportError as e:
             return {"status": "running"}
         
         async def submit_task(self, task_id, task_data):
-            # 模拟真实的文件检测
+            # 处理文件或项目检测
             file_path = task_data.get("file_path", "")
             analysis_type = task_data.get("analysis_type", "file")
             options = task_data.get("options", {})
             
+            # 如果是项目分析，先解压项目
+            if analysis_type == "project":
+                try:
+                    # 解压项目文件
+                    project_path = await self.extract_project(file_path)
+                    # 分析整个项目
+                    result = await self.analyze_project(project_path, options)
+                except Exception as e:
+                    result = {
+                        "success": False,
+                        "error": f"项目分析失败: {str(e)}",
+                        "detection_results": {
+                            "project_path": file_path,
+                            "total_issues": 0,
+                            "issues": [],
+                            "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                        }
+                    }
+            else:
+                # 单文件分析
+                result = await self.file_analyzer.analyze_file(file_path, options)
+            
+            # 存储任务结果
+            self.tasks[task_id] = {
+                "task_id": task_id,
+                "status": "completed",
+                "created_at": datetime.now().isoformat(),
+                "started_at": datetime.now().isoformat(),
+                "completed_at": datetime.now().isoformat(),
+                "result": result,
+                "error": None
+            }
+            
+            return task_id
+        
+        async def _analyze_single_file(self, file_path, options):
+            """分析单个文件"""
             # 根据文件类型生成不同的结果
             if file_path.endswith('.java'):
                 result = {
@@ -241,6 +283,200 @@ except ImportError as e:
             
             return task_id
         
+        async def extract_project(self, file_path):
+            """解压项目文件"""
+            import zipfile
+            import tarfile
+            import shutil
+            import tempfile
+            
+            file_path = Path(file_path)
+            extract_dir = Path("temp_extract") / f"project_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            extract_dir.mkdir(parents=True, exist_ok=True)
+            
+            try:
+                if file_path.suffix.lower() == '.zip':
+                    with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                        zip_ref.extractall(extract_dir)
+                elif file_path.suffix.lower() in ['.tar', '.tar.gz']:
+                    with tarfile.open(file_path, 'r:*') as tar_ref:
+                        tar_ref.extractall(extract_dir)
+                else:
+                    raise ValueError(f"不支持的文件格式: {file_path.suffix}")
+                
+                print(f"项目解压到: {extract_dir}")
+                return str(extract_dir)
+                
+            except Exception as e:
+                print(f"项目解压失败: {e}")
+                raise
+        
+        async def analyze_project(self, project_path, options):
+            """分析整个项目"""
+            try:
+                print(f"开始分析项目: {project_path}")
+                
+                # 扫描项目文件
+                files_by_language = self.scan_project_files(project_path)
+                
+                if not files_by_language:
+                    return {
+                        "success": False,
+                        "error": "未找到支持的代码文件",
+                        "detection_results": {
+                            "project_path": project_path,
+                            "total_issues": 0,
+                            "issues": [],
+                            "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                        }
+                    }
+                
+                # 分析所有文件
+                all_results = []
+                total_files = sum(len(files) for files in files_by_language.values())
+                
+                # 限制分析的文件数量
+                max_files = 50
+                files_analyzed = 0
+                
+                for language, files in files_by_language.items():
+                    print(f"分析 {language} 文件: {len(files)} 个")
+                    
+                    for file_path in files:
+                        if files_analyzed >= max_files:
+                            break
+                        try:
+                            # 分析单个文件
+                            file_result = await self.file_analyzer.analyze_file(file_path, options)
+                            if file_result and file_result.get("success"):
+                                all_results.append(file_result["detection_results"])
+                                files_analyzed += 1
+                        except Exception as e:
+                            print(f"分析文件失败 {file_path}: {e}")
+                
+                # 合并所有结果
+                combined_result = self._combine_project_results(all_results, project_path)
+                
+                print(f"项目分析完成，共分析 {files_analyzed} 个文件")
+                return {
+                    "success": True,
+                    "detection_results": combined_result
+                }
+                
+            except Exception as e:
+                print(f"项目分析失败: {e}")
+                return {
+                    "success": False,
+                    "error": str(e),
+                    "detection_results": {
+                        "project_path": project_path,
+                        "total_issues": 0,
+                        "issues": [],
+                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                    }
+                }
+        
+        def scan_project_files(self, project_path):
+            """扫描项目中的代码文件"""
+            try:
+                project_path = Path(project_path)
+                files_by_language = {
+                    "python": [],
+                    "java": [],
+                    "c": [],
+                    "cpp": [],
+                    "javascript": [],
+                    "go": []
+                }
+                
+                # 支持的文件扩展名
+                extensions = {
+                    "python": [".py", ".pyw", ".pyi"],
+                    "java": [".java"],
+                    "c": [".c", ".h"],
+                    "cpp": [".cpp", ".cc", ".cxx", ".hpp", ".hxx"],
+                    "javascript": [".js", ".jsx", ".ts", ".tsx"],
+                    "go": [".go"]
+                }
+                
+                for language, ext_list in extensions.items():
+                    for extension in ext_list:
+                        # 递归查找所有匹配的文件
+                        for file_path in project_path.rglob(f"*{extension}"):
+                            # 检查文件大小（限制10MB）
+                            if file_path.stat().st_size <= 10 * 1024 * 1024:
+                                files_by_language[language].append(str(file_path))
+                
+                # 过滤掉空的语言
+                files_by_language = {k: v for k, v in files_by_language.items() if v}
+                
+                print(f"扫描到文件: {sum(len(files) for files in files_by_language.values())} 个")
+                for language, files in files_by_language.items():
+                    print(f"  {language}: {len(files)} 个文件")
+                
+                return files_by_language
+                
+            except Exception as e:
+                print(f"项目文件扫描失败: {e}")
+                return {}
+        
+        def _combine_project_results(self, results, project_path):
+            """合并项目分析结果"""
+            try:
+                all_issues = []
+                total_files = len(results)
+                analysis_time = 0
+                detection_tools = set()
+                files_analyzed = []
+                
+                for result in results:
+                    if result and "issues" in result:
+                        all_issues.extend(result["issues"])
+                        analysis_time += result.get("analysis_time", 0)
+                        detection_tools.update(result.get("detection_tools", []))
+                        
+                        # 记录分析的文件信息
+                        file_info = {
+                            "file_path": result.get("file_path", ""),
+                            "language": result.get("language", "unknown"),
+                            "total_issues": result.get("total_issues", 0),
+                            "issues": result.get("issues", [])
+                        }
+                        files_analyzed.append(file_info)
+                
+                # 按严重性排序
+                severity_levels = {"error": 1, "warning": 2, "info": 3}
+                all_issues.sort(key=lambda x: severity_levels.get(x.get("severity", "info"), 3))
+                
+                combined_result = {
+                    "project_path": project_path,
+                    "total_files": total_files,
+                    "total_issues": len(all_issues),
+                    "issues": all_issues,
+                    "files_analyzed": files_analyzed,  # 添加文件列表
+                    "detection_tools": list(detection_tools),
+                    "analysis_time": analysis_time,
+                    "summary": {
+                        "error_count": sum(1 for issue in all_issues if issue.get("severity") == "error"),
+                        "warning_count": sum(1 for issue in all_issues if issue.get("severity") == "warning"),
+                        "info_count": sum(1 for issue in all_issues if issue.get("severity") == "info")
+                    },
+                    "languages_detected": list(set(issue.get("language", "unknown") for issue in all_issues))
+                }
+                
+                return combined_result
+                
+            except Exception as e:
+                print(f"合并项目结果失败: {e}")
+                return {
+                    "project_path": project_path,
+                    "total_files": 0,
+                    "total_issues": 0,
+                    "issues": [],
+                    "files_analyzed": [],
+                    "error": str(e)
+                }
+        
         async def get_task_status(self, task_id):
             task = self.tasks.get(task_id)
             if task:
@@ -349,7 +585,7 @@ async def upload_file_for_detection(
     enable_ai_analysis: bool = Query(True, description="启用AI分析"),
     analysis_type: str = Query("file", description="分析类型: file(单文件) 或 project(项目)")
 ):
-    """上传文件进行缺陷检测"""
+    """上传文件进行缺陷检测 - 支持复杂项目压缩包"""
     global bug_detection_agent
     
     if not bug_detection_agent:
@@ -401,8 +637,9 @@ async def upload_file_for_detection(
     try:
         task_id = await bug_detection_agent.submit_task(f"task_{uuid.uuid4().hex[:12]}", task_data)
         
-        # 在后台生成可下载报告
+        # 在后台生成可下载报告和结构化信息存储
         background_tasks.add_task(generate_report_task, task_id, str(file_path))
+        background_tasks.add_task(store_structured_data, task_id, str(file_path), analysis_type)
         
         return BaseResponse(
             message="文件上传成功，开始检测",
@@ -410,7 +647,8 @@ async def upload_file_for_detection(
                 "task_id": task_id,
                 "filename": file.filename,
                 "file_size": file_size,
-                "agent_id": "bug_detection_agent"
+                "agent_id": "bug_detection_agent",
+                "analysis_type": analysis_type
             }
         )
         
@@ -598,6 +836,49 @@ async def download_ai_report(task_id: str):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"下载AI报告失败: {str(e)}")
+
+@app.get("/api/v1/structured-data/{task_id}", response_model=BaseResponse)
+async def get_structured_data(task_id: str):
+    """获取结构化数据给修复agent"""
+    try:
+        # 检查结构化数据文件是否存在
+        structured_file = Path("structured_data") / f"structured_data_{task_id}.json"
+        
+        if not structured_file.exists():
+            raise HTTPException(status_code=404, detail="结构化数据不存在")
+        
+        # 读取结构化数据
+        with open(structured_file, 'r', encoding='utf-8') as f:
+            structured_data = json.load(f)
+        
+        return BaseResponse(
+            message="获取结构化数据成功",
+            data=structured_data
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取结构化数据失败: {str(e)}")
+
+@app.get("/api/v1/structured-data/{task_id}/download")
+async def download_structured_data(task_id: str):
+    """下载结构化数据文件"""
+    try:
+        # 检查结构化数据文件是否存在
+        structured_file = Path("structured_data") / f"structured_data_{task_id}.json"
+        
+        if not structured_file.exists():
+            raise HTTPException(status_code=404, detail="结构化数据不存在")
+        
+        # 返回文件
+        from fastapi.responses import FileResponse
+        return FileResponse(
+            path=structured_file,
+            filename=f"structured_data_{task_id}.json",
+            media_type="application/json"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"下载结构化数据失败: {str(e)}")
 
 async def create_simple_report(detection_results: Dict[str, Any], file_path: str, task_id: str) -> str:
     """创建简化的检测报告"""
@@ -842,6 +1123,158 @@ async def generate_report_task(task_id: str, file_path: str):
         
     except Exception as e:
         print(f"生成报告任务失败: {e}")
+
+async def store_structured_data(task_id: str, file_path: str, analysis_type: str):
+    """后台任务：存储结构化信息给修复agent"""
+    global bug_detection_agent
+    
+    try:
+        # 等待任务完成
+        max_wait_time = 300  # 5分钟
+        wait_interval = 2    # 2秒
+        waited_time = 0
+        
+        while waited_time < max_wait_time:
+            task_status = await bug_detection_agent.get_task_status(task_id)
+            if task_status and task_status.get("status") == "completed":
+                break
+            await asyncio.sleep(wait_interval)
+            waited_time += wait_interval
+        
+        if waited_time >= max_wait_time:
+            print(f"任务 {task_id} 超时，无法存储结构化数据")
+            return
+        
+        # 获取检测结果
+        detection_results = task_status.get("result", {}).get("detection_results", {})
+        if not detection_results:
+            print(f"任务 {task_id} 没有检测结果")
+            return
+        
+        # 创建结构化数据存储目录
+        structured_dir = Path("structured_data")
+        structured_dir.mkdir(exist_ok=True)
+        
+        # 生成结构化数据
+        structured_data = {
+            "task_id": task_id,
+            "file_path": file_path,
+            "analysis_type": analysis_type,
+            "timestamp": datetime.now().isoformat(),
+            "summary": {
+                "total_issues": detection_results.get("total_issues", 0),
+                "error_count": detection_results.get("summary", {}).get("error_count", 0),
+                "warning_count": detection_results.get("summary", {}).get("warning_count", 0),
+                "info_count": detection_results.get("summary", {}).get("info_count", 0),
+                "languages_detected": detection_results.get("languages_detected", []),
+                "total_files": detection_results.get("total_files", 1)
+            },
+            "issues_by_priority": categorize_issues_by_priority(detection_results.get("issues", [])),
+            "fix_recommendations": generate_fix_recommendations(detection_results.get("issues", [])),
+            "project_structure": analyze_project_structure(detection_results, analysis_type),
+            "detection_metadata": {
+                "detection_tools": detection_results.get("detection_tools", []),
+                "analysis_time": detection_results.get("analysis_time", 0),
+                "project_path": detection_results.get("project_path", file_path)
+            }
+        }
+        
+        # 保存结构化数据
+        structured_file = structured_dir / f"structured_data_{task_id}.json"
+        with open(structured_file, 'w', encoding='utf-8') as f:
+            json.dump(structured_data, f, ensure_ascii=False, indent=2)
+        
+        print(f"结构化数据已存储: {structured_file}")
+        
+    except Exception as e:
+        print(f"存储结构化数据失败: {e}")
+
+def categorize_issues_by_priority(issues):
+    """按优先级分类问题"""
+    priority_categories = {
+        "critical": [],  # 错误级别，安全相关
+        "high": [],      # 错误级别，非安全相关
+        "medium": [],    # 警告级别
+        "low": []        # 信息级别
+    }
+    
+    for issue in issues:
+        severity = issue.get("severity", "info")
+        issue_type = issue.get("type", "")
+        
+        # 安全相关问题优先级最高
+        if severity == "error" and any(keyword in issue_type.lower() for keyword in 
+                                      ["security", "vulnerability", "injection", "xss", "csrf", "secret", "password"]):
+            priority_categories["critical"].append(issue)
+        elif severity == "error":
+            priority_categories["high"].append(issue)
+        elif severity == "warning":
+            priority_categories["medium"].append(issue)
+        else:
+            priority_categories["low"].append(issue)
+    
+    return priority_categories
+
+def generate_fix_recommendations(issues):
+    """生成修复建议"""
+    recommendations = {
+        "immediate_actions": [],
+        "short_term_improvements": [],
+        "long_term_optimizations": []
+    }
+    
+    error_count = sum(1 for issue in issues if issue.get("severity") == "error")
+    warning_count = sum(1 for issue in issues if issue.get("severity") == "warning")
+    
+    # 立即行动
+    if error_count > 0:
+        recommendations["immediate_actions"].append(f"修复 {error_count} 个错误级别的问题")
+    
+    # 安全相关问题
+    security_issues = [issue for issue in issues if "security" in issue.get("type", "").lower()]
+    if security_issues:
+        recommendations["immediate_actions"].append(f"优先处理 {len(security_issues)} 个安全问题")
+    
+    # 短期改进
+    if warning_count > 10:
+        recommendations["short_term_improvements"].append("进行代码审查，处理大量警告")
+    
+    # 长期优化
+    recommendations["long_term_optimizations"].append("建立持续集成流程，定期进行代码质量检查")
+    recommendations["long_term_optimizations"].append("制定代码规范和最佳实践指南")
+    
+    return recommendations
+
+def analyze_project_structure(detection_results, analysis_type):
+    """分析项目结构"""
+    structure_info = {
+        "analysis_type": analysis_type,
+        "file_count": detection_results.get("total_files", 1),
+        "languages": detection_results.get("languages_detected", []),
+        "complexity_indicators": {
+            "high_issue_files": 0,
+            "average_issues_per_file": 0
+        }
+    }
+    
+    issues = detection_results.get("issues", [])
+    if issues:
+        # 统计每个文件的问题数量
+        file_issue_count = {}
+        for issue in issues:
+            file_name = issue.get("file", "unknown")
+            file_issue_count[file_name] = file_issue_count.get(file_name, 0) + 1
+        
+        # 计算高问题文件数量
+        structure_info["complexity_indicators"]["high_issue_files"] = sum(
+            1 for count in file_issue_count.values() if count > 5
+        )
+        
+        # 计算平均问题数
+        total_files = len(file_issue_count) or 1
+        structure_info["complexity_indicators"]["average_issues_per_file"] = len(issues) / total_files
+    
+    return structure_info
 
 if __name__ == "__main__":
     import uvicorn

@@ -645,6 +645,11 @@
                 const enableAI = document.getElementById('enableAI').checked;
                 const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
 
+                // 更新状态显示
+                statusBadge.textContent = '上传中...';
+                statusBadge.className = 'status-badge status-processing';
+                statusMessage.textContent = `正在上传${analysisType === 'project' ? '项目' : '文件'}: ${file.name}`;
+
                 const response = await fetch(`${API_BASE_URL}/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=${enableAI}&analysis_type=${analysisType}`, {
                     method: 'POST',
                     body: formData
@@ -654,6 +659,9 @@
 
                 if (result.success) {
                     currentTaskId = result.data.task_id;
+                    statusBadge.textContent = '分析中...';
+                    statusBadge.className = 'status-badge status-processing';
+                    statusMessage.textContent = `正在分析${analysisType === 'project' ? '项目' : '文件'}，请稍候...`;
                     startPolling();
                 } else {
                     throw new Error(result.error || '上传失败');
@@ -717,6 +725,7 @@
                     localStorage.setItem('taskId', currentTaskId);
                     localStorage.setItem('fileName', fileInput.files[0]?.name || 'Unknown File');
                     localStorage.setItem('apiBase', API_BASE_URL.replace('/api/v1', ''));
+                    localStorage.setItem('analysisType', document.querySelector('input[name="analysisType"]:checked').value);
 
                     // 预取AI报告（若可用），存储后再跳转
                     try {
@@ -728,6 +737,18 @@
                         }
                     } catch (e) {
                         // 忽略AI报告失败，仍然跳转
+                    }
+
+                    // 预取结构化数据（若可用）
+                    try {
+                        const structuredResp = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/structured-data/${currentTaskId}`);
+                        const structuredData = await structuredResp.json();
+                        if (structuredData && structuredData.success && structuredData.data) {
+                            localStorage.setItem('structuredData', JSON.stringify(structuredData.data));
+                            localStorage.setItem('structuredDataDownloadUrl', `${API_BASE_URL.replace('/api/v1', '')}/api/v1/structured-data/${currentTaskId}/download`);
+                        }
+                    } catch (e) {
+                        // 忽略结构化数据失败，仍然跳转
                     }
 
                     // 跳转到main.html
