@@ -1,115 +1,312 @@
 """
 任务管理器
+负责任务创建、分配、执行和状态管理
 """
 
 import asyncio
 import uuid
+import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from enum import Enum
+
+from .message_types import TaskStatus, TaskMessage, ResultMessage, MessageFactory
+
+
+class TaskPriority(Enum):
+    """任务优先级"""
+    LOW = 1
+    NORMAL = 2
+    HIGH = 3
+    URGENT = 4
 
 
 class TaskManager:
-    """任务管理器"""
+    """任务管理器 - 负责任务调度和状态管理"""
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.tasks = {}
-        self.task_queue = asyncio.Queue()
+        self.task_queue = asyncio.PriorityQueue()
+        self.agent_loads = {}  # agent_id -> current_load
         self.is_running = False
+        self.logger = logging.getLogger(__name__)
+        
+        # 任务处理配置
+        self.max_concurrent_tasks = config.get("max_concurrent_tasks", 10)
+        self.task_timeout = config.get("task_timeout", 300)
+        self.retry_attempts = config.get("retry_attempts", 3)
+        
+        # 统计信息
+        self.stats = {
+            "tasks_created": 0,
+            "tasks_completed": 0,
+            "tasks_failed": 0,
+            "tasks_retried": 0,
+            "average_completion_time": 0.0
+        }
     
     async def start(self):
         """启动任务管理器"""
         self.is_running = True
+        self.logger.info("任务管理器启动中...")
+        
+        # 启动任务处理循环
         asyncio.create_task(self._process_tasks())
-        print("任务管理器已启动")
+        
+        # 启动负载监控
+        asyncio.create_task(self._monitor_agent_loads())
+        
+        self.logger.info("任务管理器已启动")
     
     async def stop(self):
         """停止任务管理器"""
         self.is_running = False
-        print("任务管理器已停止")
+        self.logger.info("任务管理器已停止")
     
-    async def create_task(self, task_type: str, task_data: Dict[str, Any]) -> str:
+    async def create_task(self, task_type: str, task_data: Dict[str, Any], 
+                         priority: TaskPriority = TaskPriority.NORMAL) -> str:
         """创建任务"""
         task_id = str(uuid.uuid4())
         task = {
             'id': task_id,
             'type': task_type,
             'data': task_data,
-            'status': 'pending',
+            'status': TaskStatus.PENDING,
             'assigned_agent': None,
+            'priority': priority,
             'created_at': datetime.now(),
             'started_at': None,
             'completed_at': None,
             'result': None,
-            'error': None
+            'error': None,
+            'retry_count': 0,
+            'timeout_at': None
         }
         
         self.tasks[task_id] = task
-        await self.task_queue.put(task_id)
         
-        print(f"任务 {task_id} 已创建")
+        # 设置超时时间
+        task['timeout_at'] = datetime.now().timestamp() + self.task_timeout
+        
+        # 添加到优先级队列
+        await self.task_queue.put((priority.value, task_id))
+        
+        self.stats["tasks_created"] += 1
+        self.logger.info(f"任务已创建: {task_id} (类型: {task_type}, 优先级: {priority.name})")
+        
         return task_id
     
     async def assign_task(self, task_id: str, agent_id: str):
-        """分配任务"""
-        if task_id in self.tasks:
-            self.tasks[task_id]['assigned_agent'] = agent_id
-            self.tasks[task_id]['status'] = 'assigned'
-            print(f"任务 {task_id} 已分配给 {agent_id}")
+        """分配任务给Agent"""
+        if task_id not in self.tasks:
+            self.logger.error(f"任务不存在: {task_id}")
+            return False
+        
+        task = self.tasks[task_id]
+        task['assigned_agent'] = agent_id
+        task['status'] = TaskStatus.ASSIGNED
+        
+        # 更新Agent负载
+        self.agent_loads[agent_id] = self.agent_loads.get(agent_id, 0) + 1
+        
+        self.logger.info(f"任务 {task_id} 已分配给 {agent_id}")
+        return True
     
-    async def get_task_result(self, task_id: str) -> Optional[Dict[str, Any]]:
+    async def get_task_result(self, task_id: str, timeout: Optional[float] = None) -> Optional[Dict[str, Any]]:
         """获取任务结果"""
-        if task_id in self.tasks:
-            task = self.tasks[task_id]
-            if task['status'] == 'completed':
-                return task['result']
-            elif task['status'] == 'failed':
-                return {'error': task['error']}
-            else:
-                # 等待任务完成
-                while task['status'] in ['pending', 'assigned', 'running']:
-                    await asyncio.sleep(0.1)
-                
-                if task['status'] == 'completed':
-                    return task['result']
-                else:
-                    return {'error': task['error']}
-        return None
+        if task_id not in self.tasks:
+            return None
+        
+        task = self.tasks[task_id]
+        
+        # 如果任务已完成，直接返回结果
+        if task['status'] == TaskStatus.COMPLETED:
+            return task['result']
+        elif task['status'] == TaskStatus.FAILED:
+            return {'error': task['error'], 'success': False}
+        
+        # 等待任务完成
+        start_time = datetime.now()
+        timeout_seconds = timeout or self.task_timeout
+        
+        while task['status'] in [TaskStatus.PENDING, TaskStatus.ASSIGNED, TaskStatus.RUNNING]:
+            await asyncio.sleep(0.1)
+            
+            # 检查超时
+            if (datetime.now() - start_time).total_seconds() > timeout_seconds:
+                self.logger.warning(f"获取任务结果超时: {task_id}")
+                return {'error': 'Timeout waiting for task result', 'success': False}
+        
+        # 返回最终结果
+        if task['status'] == TaskStatus.COMPLETED:
+            return task['result']
+        else:
+            return {'error': task.get('error', 'Unknown error'), 'success': False}
+    
+    async def update_task_result(self, task_id: str, result: Dict[str, Any], success: bool = True):
+        """更新任务结果"""
+        if task_id not in self.tasks:
+            self.logger.error(f"任务不存在: {task_id}")
+            return
+        
+        task = self.tasks[task_id]
+        task['completed_at'] = datetime.now()
+        task['result'] = result
+        
+        if success:
+            task['status'] = TaskStatus.COMPLETED
+            self.stats["tasks_completed"] += 1
+            
+            # 计算完成时间
+            if task['started_at']:
+                completion_time = (task['completed_at'] - task['started_at']).total_seconds()
+                self._update_average_completion_time(completion_time)
+        else:
+            task['status'] = TaskStatus.FAILED
+            task['error'] = result.get('error', 'Unknown error')
+            self.stats["tasks_failed"] += 1
+        
+        # 更新Agent负载
+        if task['assigned_agent']:
+            agent_id = task['assigned_agent']
+            if agent_id in self.agent_loads:
+                self.agent_loads[agent_id] = max(0, self.agent_loads[agent_id] - 1)
+        
+        self.logger.info(f"任务结果已更新: {task_id} (成功: {success})")
+    
+    async def retry_task(self, task_id: str) -> bool:
+        """重试失败的任务"""
+        if task_id not in self.tasks:
+            return False
+        
+        task = self.tasks[task_id]
+        
+        if task['retry_count'] >= self.retry_attempts:
+            self.logger.warning(f"任务重试次数已达上限: {task_id}")
+            return False
+        
+        task['retry_count'] += 1
+        task['status'] = TaskStatus.PENDING
+        task['assigned_agent'] = None
+        task['error'] = None
+        
+        # 重新加入队列
+        await self.task_queue.put((task['priority'].value, task_id))
+        
+        self.stats["tasks_retried"] += 1
+        self.logger.info(f"任务已重试: {task_id} (第 {task['retry_count']} 次)")
+        
+        return True
     
     async def _process_tasks(self):
         """处理任务队列"""
+        self.logger.info("任务处理循环已启动")
+        
         while self.is_running:
             try:
-                task_id = await asyncio.wait_for(self.task_queue.get(), timeout=1.0)
+                # 从优先级队列获取任务
+                priority, task_id = await asyncio.wait_for(
+                    self.task_queue.get(), 
+                    timeout=1.0
+                )
+                
                 task = self.tasks[task_id]
                 
-                if task['status'] == 'assigned':
-                    # 这里应该调用相应的AGENT执行任务
-                    # 暂时模拟任务执行
-                    await self._simulate_task_execution(task_id)
+                # 检查任务是否已超时
+                if task.get('timeout_at') and datetime.now().timestamp() > task['timeout_at']:
+                    self.logger.warning(f"任务已超时: {task_id}")
+                    await self.update_task_result(task_id, {'error': 'Task timeout'}, False)
+                    continue
+                
+                # 如果任务已分配但未执行，开始执行
+                if task['status'] == TaskStatus.ASSIGNED:
+                    await self._execute_task(task_id)
                 
             except asyncio.TimeoutError:
+                # 超时是正常的，继续循环
                 continue
             except Exception as e:
-                print(f"任务处理错误: {e}")
+                self.logger.error(f"任务处理错误: {e}")
+    
+    async def _execute_task(self, task_id: str):
+        """执行任务"""
+        task = self.tasks[task_id]
+        task['status'] = TaskStatus.RUNNING
+        task['started_at'] = datetime.now()
+        
+        agent_id = task['assigned_agent']
+        task_type = task['type']
+        task_data = task['data']
+        
+        self.logger.info(f"开始执行任务: {task_id} (Agent: {agent_id}, 类型: {task_type})")
+        
+        try:
+            # 这里应该调用相应的Agent执行任务
+            # 暂时模拟任务执行
+            await self._simulate_task_execution(task_id)
+            
+        except Exception as e:
+            self.logger.error(f"任务执行失败: {task_id} - {e}")
+            await self.update_task_result(task_id, {'error': str(e)}, False)
     
     async def _simulate_task_execution(self, task_id: str):
-        """模拟任务执行"""
+        """模拟任务执行（实际实现中应该调用真实的Agent）"""
         task = self.tasks[task_id]
-        task['status'] = 'running'
-        task['started_at'] = datetime.now()
         
         # 模拟任务执行时间
         await asyncio.sleep(1)
         
         # 模拟任务结果
-        task['status'] = 'completed'
-        task['completed_at'] = datetime.now()
-        task['result'] = {
+        result = {
             'task_id': task_id,
             'type': task['type'],
             'success': True,
-            'message': f"任务 {task['type']} 执行完成"
+            'message': f"任务 {task['type']} 执行完成",
+            'timestamp': datetime.now().isoformat()
         }
         
-        print(f"任务 {task_id} 执行完成")
+        await self.update_task_result(task_id, result, True)
+    
+    async def _monitor_agent_loads(self):
+        """监控Agent负载"""
+        while self.is_running:
+            try:
+                # 清理空闲Agent的负载计数
+                for agent_id in list(self.agent_loads.keys()):
+                    if self.agent_loads[agent_id] <= 0:
+                        del self.agent_loads[agent_id]
+                
+                await asyncio.sleep(10)  # 每10秒监控一次
+                
+            except Exception as e:
+                self.logger.error(f"Agent负载监控错误: {e}")
+    
+    def _update_average_completion_time(self, completion_time: float):
+        """更新平均完成时间"""
+        current_avg = self.stats["average_completion_time"]
+        completed_count = self.stats["tasks_completed"]
+        
+        # 计算新的平均值
+        new_avg = (current_avg * (completed_count - 1) + completion_time) / completed_count
+        self.stats["average_completion_time"] = new_avg
+    
+    async def get_stats(self) -> Dict[str, Any]:
+        """获取统计信息"""
+        return {
+            **self.stats,
+            "active_tasks": len([t for t in self.tasks.values() 
+                               if t['status'] in [TaskStatus.PENDING, TaskStatus.ASSIGNED, TaskStatus.RUNNING]]),
+            "queue_size": self.task_queue.qsize(),
+            "agent_loads": self.agent_loads.copy()
+        }
+    
+    async def health_check(self) -> Dict[str, Any]:
+        """健康检查"""
+        return {
+            "is_running": self.is_running,
+            "queue_size": self.task_queue.qsize(),
+            "active_tasks": len([t for t in self.tasks.values() 
+                               if t['status'] in [TaskStatus.PENDING, TaskStatus.ASSIGNED, TaskStatus.RUNNING]]),
+            "stats": self.stats
+        }
