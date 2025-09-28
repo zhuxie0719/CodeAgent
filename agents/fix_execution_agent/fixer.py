@@ -69,69 +69,55 @@ class CodeFixer:
             }
     
     def _apply_style_fixes(self, content: str, issue: Dict[str, Any]) -> str:
-        """应用代码风格修复"""
+        """应用代码风格修复（仅根据新type字段和message内容，不再判断工具名）"""
         lines = content.split('\n')
         line_num = issue.get('line', 1) - 1
         message = issue.get('message', '').lower()
+        issue_type = issue.get('type', '').lower()
         
         if line_num < 0 or line_num >= len(lines):
             return content
         
-        # 修复行长度问题
-        if 'line too long' in message:
+        # 按type和message内容修复
+        if issue_type == 'line_too_long' or 'line too long' in message:
             lines[line_num] = self._fix_line_length(lines[line_num])
-        
-        # 修复缩进问题
-        elif 'indentation' in message or 'unexpected indentation' in message:
+        elif issue_type == 'indentation' or 'indentation' in message or 'unexpected indentation' in message:
             lines[line_num] = self._fix_indentation(lines[line_num])
-        
-        # 修复空行问题
-        elif 'blank line' in message:
+        elif issue_type == 'blank_line' or 'blank line' in message:
             if 'missing' in message:
                 lines = self._add_blank_line(lines, line_num)
             elif 'too many' in message:
                 lines = self._remove_extra_blank_lines(lines, line_num)
-        
-        # 修复尾随空白
-        elif 'trailing whitespace' in message:
+        elif issue_type == 'trailing_whitespace' or 'trailing whitespace' in message:
             lines[line_num] = lines[line_num].rstrip()
-        
-        # 修复缺少换行符
-        elif 'missing final newline' in message:
+        elif issue_type == 'missing_final_newline' or 'missing final newline' in message:
             if lines and not lines[-1].endswith('\n'):
                 lines[-1] += '\n'
-        
-        # 修复未使用的导入
-        elif 'unused import' in message:
+        elif issue_type == 'unused_import' or 'unused import' in message:
             lines = self._remove_unused_import(lines, line_num)
-        
+        # 其它风格问题可继续扩展
         return '\n'.join(lines)
     
     def _apply_security_fixes(self, content: str, issue: Dict[str, Any]) -> str:
-        """应用安全修复"""
+        """应用安全修复（仅根据新type字段和message内容，不再判断工具名）"""
         lines = content.split('\n')
         line_num = issue.get('line', 1) - 1
         message = issue.get('message', '').lower()
+        issue_type = issue.get('type', '').lower()
         
         if line_num < 0 or line_num >= len(lines):
             return content
         
-        # 修复硬编码密码
-        if 'hardcoded password' in message:
+        # 按type和message内容修复
+        if issue_type == 'hardcoded_secrets' or 'hardcoded password' in message:
             lines[line_num] = self._fix_hardcoded_password(lines[line_num])
-        
-        # 修复SQL注入
-        elif 'sql injection' in message:
+        elif issue_type == 'sql_injection' or 'sql injection' in message:
             lines[line_num] = self._fix_sql_injection(lines[line_num])
-        
-        # 修复不安全的随机数
-        elif 'insecure random' in message:
+        elif issue_type == 'insecure_random' or 'insecure random' in message:
             lines[line_num] = self._fix_insecure_random(lines[line_num])
-        
-        # 修复不安全的哈希
-        elif 'insecure hash' in message:
+        elif issue_type == 'insecure_hash' or 'insecure hash' in message:
             lines[line_num] = self._fix_insecure_hash(lines[line_num])
-        
+        # 其它安全问题可继续扩展
         return '\n'.join(lines)
     
     def _fix_line_length(self, line: str, max_length: int = 79) -> str:

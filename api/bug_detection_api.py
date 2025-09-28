@@ -209,7 +209,7 @@ except ImportError as e:
                                     "file": filename,
                                     "language": "python"
                                 })
-                    
+                   
                     # 检测缺少文档字符串的函数
                     in_function = False
                     for i, line in enumerate(lines, 1):

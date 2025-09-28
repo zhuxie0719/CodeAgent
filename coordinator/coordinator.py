@@ -77,13 +77,11 @@ class Coordinator:
                 'project_path': project_path,
                 'analysis_result': analysis_result
             })
-            
             # 5. 分配给缺陷检测AGENT
             await self.assign_task(detection_task_id, 'bug_detection_agent')
             
             # 6. 等待检测完成
             detection_result = await self.task_manager.get_task_result(detection_task_id)
-            
             # 7. 根据检测结果决定是否需要修复
             if detection_result.get('total_issues', 0) > 0:
                 # 创建修复任务
@@ -91,7 +89,6 @@ class Coordinator:
                     'project_path': project_path,
                     'issues': detection_result.get('issues', [])
                 })
-                
                 # 分配给修复执行AGENT
                 await self.assign_task(fix_task_id, 'fix_execution_agent')
                 
