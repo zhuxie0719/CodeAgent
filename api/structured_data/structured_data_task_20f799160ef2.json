@@ -1,0 +1,1598 @@
+{
+  "task_id": "task_20f799160ef2",
+  "file_path": "uploads\\test_project_with_issues.zip",
+  "analysis_type": "project",
+  "timestamp": "2025-09-28T16:09:49.274136",
+  "summary": {
+    "total_issues": 27,
+    "error_count": 12,
+    "warning_count": 8,
+    "info_count": 5,
+    "languages_detected": [
+      "javascript",
+      "java",
+      "c",
+      "python"
+    ],
+    "total_files": 4
+  },
+  "issues_by_priority": {
+    "critical": [
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 10,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 7,
+            "content": "import sys",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 11,
+            "content": "SECRET_PASSWORD = \"admin123\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 12,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+        "fix_suggestions": [
+          "使用环境变量存储敏感信息",
+          "使用配置文件（不提交到版本控制）",
+          "使用密钥管理服务"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 11,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 11,
+            "content": "SECRET_PASSWORD = \"admin123\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 12,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+        "fix_suggestions": [
+          "使用环境变量存储敏感信息",
+          "使用配置文件（不提交到版本控制）",
+          "使用密钥管理服务"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的API_KEY",
+        "line": 10,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 7,
+            "content": "import sys",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 11,
+            "content": "SECRET_PASSWORD = \"admin123\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 12,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+        "fix_suggestions": [
+          "使用环境变量存储敏感信息",
+          "使用配置文件（不提交到版本控制）",
+          "使用密钥管理服务"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的SECRET",
+        "line": 11,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 11,
+            "content": "SECRET_PASSWORD = \"admin123\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 12,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+        "fix_suggestions": [
+          "使用环境变量存储敏感信息",
+          "使用配置文件（不提交到版本控制）",
+          "使用密钥管理服务"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的PASSWORD",
+        "line": 11,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 11,
+            "content": "SECRET_PASSWORD = \"admin123\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 12,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+        "fix_suggestions": [
+          "使用环境变量存储敏感信息",
+          "使用配置文件（不提交到版本控制）",
+          "使用密钥管理服务"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "xss_vulnerability",
+        "severity": "error",
+        "message": "XSS漏洞风险",
+        "line": 5,
+        "file": "test_js_with_issues.js",
+        "language": "javascript",
+        "code_snippet": [
+          {
+            "line_number": 2,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 3,
+            "content": "// XSS漏洞风险",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "function displayUserInput(userInput) {",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "    document.getElementById('output').innerHTML = userInput;",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 6,
+            "content": "    document.write(userInput);",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 7,
+            "content": "}",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_js_with_issues.js",
+        "enhanced": true
+      },
+      {
+        "type": "xss_vulnerability",
+        "severity": "error",
+        "message": "XSS漏洞风险",
+        "line": 6,
+        "file": "test_js_with_issues.js",
+        "language": "javascript",
+        "code_snippet": [
+          {
+            "line_number": 3,
+            "content": "// XSS漏洞风险",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "function displayUserInput(userInput) {",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "    document.getElementById('output').innerHTML = userInput;",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "    document.write(userInput);",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 7,
+            "content": "}",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "// 未使用的变量",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_js_with_issues.js",
+        "enhanced": true
+      }
+    ],
+    "high": [
+      {
+        "type": "unsafe_eval",
+        "severity": "error",
+        "message": "不安全的eval使用",
+        "line": 17,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 15,
+            "content": "    # 不安全的eval使用",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "    user_input = \"print('Hello World')\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 17,
+            "content": "    result = eval(user_input)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 18,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 19,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 20,
+            "content": "def missing_docstring_function():",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "使用eval()函数执行用户输入存在代码注入风险，可能导致系统被攻击。建议使用更安全的方法。",
+        "fix_suggestions": [
+          "使用ast.literal_eval()替代eval()",
+          "使用json.loads()解析JSON数据",
+          "使用专门的解析库"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "unsafe_eval",
+        "severity": "error",
+        "message": "不安全的eval使用",
+        "line": 17,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 15,
+            "content": "    # 不安全的eval使用",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "    user_input = \"print('Hello World')\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 17,
+            "content": "    result = eval(user_input)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 18,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 19,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 20,
+            "content": "def missing_docstring_function():",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "使用eval()函数执行用户输入存在代码注入风险，可能导致系统被攻击。建议使用更安全的方法。",
+        "fix_suggestions": [
+          "使用ast.literal_eval()替代eval()",
+          "使用json.loads()解析JSON数据",
+          "使用专门的解析库"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "mypy",
+        "severity": "error",
+        "message": "Cannot find implementation or library stub for module named \"unused_module\"  [import-not-found]",
+        "file": "test_python_with_issues.py",
+        "line": 26,
+        "column": 0,
+        "rule": "mypy",
+        "language": "python",
+        "code_snippet": [
+          {
+            "line_number": 23,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 24,
+            "content": "def unused_import_test():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 25,
+            "content": "    # 未使用的导入",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 26,
+            "content": "    import unused_module",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 27,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 29,
+            "content": "def main():",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "null_pointer_dereference",
+        "severity": "error",
+        "message": "潜在的空指针解引用",
+        "line": 6,
+        "file": "test_java_with_issues.java",
+        "language": "java",
+        "code_snippet": [
+          {
+            "line_number": 3,
+            "content": "    public static void main(String[] args) {",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "        // 空指针解引用风险",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "        String str = null;",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "        if (str == null) {",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 7,
+            "content": "            System.out.println(\"String is null\");",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "        }",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "        ",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_java_with_issues.java",
+        "enhanced": true
+      },
+      {
+        "type": "buffer_overflow",
+        "severity": "error",
+        "message": "缓冲区溢出风险",
+        "line": 8,
+        "file": "test_c_with_issues.c",
+        "language": "c",
+        "code_snippet": [
+          {
+            "line_number": 5,
+            "content": "int main() {",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "    // 缓冲区溢出风险",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 7,
+            "content": "    char buffer[10];",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "    strcpy(buffer, \"This is a very long string that will cause buffer overflow\");",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 9,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "    // 内存泄漏",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 11,
+            "content": "    char* ptr = malloc(100);",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 1,
+          "name": "错误",
+          "color": "#ff4444"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_c_with_issues.c",
+        "enhanced": true
+      }
+    ],
+    "medium": [
+      {
+        "type": "unused_import",
+        "severity": "warning",
+        "message": "可能未使用的导入: os",
+        "line": 6,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 3,
+            "content": "测试文件 - 包含各种缺陷",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "import os",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 7,
+            "content": "import sys",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+        "fix_suggestions": [
+          "删除未使用的导入语句",
+          "检查是否有其他文件需要这个导入",
+          "使用IDE的自动清理功能"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "unused_import",
+        "severity": "warning",
+        "message": "可能未使用的导入: sys",
+        "line": 7,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 4,
+            "content": "\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "import os",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 7,
+            "content": "import sys",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+        "fix_suggestions": [
+          "删除未使用的导入语句",
+          "检查是否有其他文件需要这个导入",
+          "使用IDE的自动清理功能"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "unused_import",
+        "severity": "warning",
+        "message": "可能未使用的导入: unused_module",
+        "line": 26,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 23,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 24,
+            "content": "def unused_import_test():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 25,
+            "content": "    # 未使用的导入",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 26,
+            "content": "    import unused_module",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 27,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 29,
+            "content": "def main():",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+        "fix_suggestions": [
+          "删除未使用的导入语句",
+          "检查是否有其他文件需要这个导入",
+          "使用IDE的自动清理功能"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "division_by_zero_risk",
+        "severity": "warning",
+        "message": "可能存在除零风险",
+        "line": 1,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 1,
+            "content": "#!/usr/bin/env python3",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 2,
+            "content": "\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 3,
+            "content": "测试文件 - 包含各种缺陷",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "\"\"\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 16,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 15,
+            "content": "    # 不安全的eval使用",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "    user_input = \"print('Hello World')\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 17,
+            "content": "    result = eval(user_input)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 18,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 19,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 30,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 27,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 29,
+            "content": "def main():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 30,
+            "content": "    print(\"测试文件运行中...\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 31,
+            "content": "    unsafe_function()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 32,
+            "content": "    missing_docstring_function()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 33,
+            "content": "    unused_import_test()",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_type_conversion",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 16,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 15,
+            "content": "    # 不安全的eval使用",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "    user_input = \"print('Hello World')\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 17,
+            "content": "    result = eval(user_input)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 18,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 19,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_type_conversion",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 30,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 27,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 29,
+            "content": "def main():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 30,
+            "content": "    print(\"测试文件运行中...\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 31,
+            "content": "    unsafe_function()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 32,
+            "content": "    missing_docstring_function()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 33,
+            "content": "    unused_import_test()",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      }
+    ],
+    "low": [
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 unsafe_function 缺少参数验证",
+        "line": 13,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 11,
+            "content": "SECRET_PASSWORD = \"admin123\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 12,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 15,
+            "content": "    # 不安全的eval使用",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "    user_input = \"print('Hello World')\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 missing_docstring_function 缺少参数验证",
+        "line": 20,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 17,
+            "content": "    result = eval(user_input)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 18,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 19,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 20,
+            "content": "def missing_docstring_function():",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 21,
+            "content": "    # 缺少文档字符串",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 22,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 23,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 unused_import_test 缺少参数验证",
+        "line": 24,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 21,
+            "content": "    # 缺少文档字符串",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 22,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 23,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 24,
+            "content": "def unused_import_test():",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 25,
+            "content": "    # 未使用的导入",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 26,
+            "content": "    import unused_module",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 27,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 main 缺少参数验证",
+        "line": 29,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 26,
+            "content": "    import unused_module",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 27,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 29,
+            "content": "def main():",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 30,
+            "content": "    print(\"测试文件运行中...\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 31,
+            "content": "    unsafe_function()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 32,
+            "content": "    missing_docstring_function()",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 24,
+        "file": "test_python_with_issues.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 21,
+            "content": "    # 缺少文档字符串",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 22,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 23,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 24,
+            "content": "def unused_import_test():",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 25,
+            "content": "    # 未使用的导入",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 26,
+            "content": "    import unused_module",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 27,
+            "content": "    return \"test\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "bandit",
+        "severity": "LOW",
+        "message": "Possible hardcoded password: 'admin123'",
+        "file": "test_python_with_issues.py",
+        "line": 11,
+        "column": 0,
+        "rule": "B105",
+        "language": "python",
+        "code_snippet": [
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "# 硬编码密钥",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 10,
+            "content": "API_KEY = \"sk-1234567890abcdef\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 11,
+            "content": "SECRET_PASSWORD = \"admin123\"",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 12,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "def unsafe_function():",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {},
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      },
+      {
+        "type": "bandit",
+        "severity": "MEDIUM",
+        "message": "Use of possibly insecure function - consider using safer ast.literal_eval.",
+        "file": "test_python_with_issues.py",
+        "line": 17,
+        "column": 0,
+        "rule": "B307",
+        "language": "python",
+        "code_snippet": [
+          {
+            "line_number": 14,
+            "content": "    \"\"\"不安全的函数\"\"\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 15,
+            "content": "    # 不安全的eval使用",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "    user_input = \"print('Hello World')\"",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 17,
+            "content": "    result = eval(user_input)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 18,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 19,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 20,
+            "content": "def missing_docstring_function():",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {},
+        "file_path": "temp_extract\\project_20250928_160838\\test_python_with_issues.py",
+        "enhanced": true
+      }
+    ]
+  },
+  "fix_recommendations": {
+    "immediate_actions": [
+      "修复 12 个错误级别的问题"
+    ],
+    "short_term_improvements": [],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "project",
+    "file_count": 4,
+    "languages": [
+      "javascript",
+      "java",
+      "c",
+      "python"
+    ],
+    "complexity_indicators": {
+      "high_issue_files": 1,
+      "average_issues_per_file": 6.75
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [
+      "mypy",
+      "custom_analyzer",
+      "ai_analyzer",
+      "bandit"
+    ],
+    "analysis_time": 69.52983499999999,
+    "project_path": "temp_extract\\project_20250928_160838"
+  }
+}

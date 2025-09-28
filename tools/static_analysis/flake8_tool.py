@@ -13,15 +13,15 @@ class Flake8Tool:
         self.config = config
         self.flake8_args = config.get('flake8_args', [])
     
-    async def analyze(self, project_path: str) -> Dict[str, Any]:
+    async def analyze(self, file_path: str) -> Dict[str, Any]:
         """执行Flake8分析"""
         try:
-            cmd = ['flake8', project_path] + self.flake8_args
+            cmd = ['flake8', file_path] + self.flake8_args
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
-                cwd=project_path
+                timeout=30
             )
             
             issues = []
