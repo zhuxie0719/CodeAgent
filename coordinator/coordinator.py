@@ -385,8 +385,8 @@ class Coordinator:
                 self.logger.info("修复任务已分配给Fix Execution Agent")
             else:
                 raise Exception("Fix Execution Agent未注册")
-            
-            # 等待修复完成
+                
+                # 等待修复完成
             self.logger.info("等待修复完成...")
             fix_result = await self.task_manager.get_task_result(fix_task_id, timeout=900)
             
@@ -509,4 +509,4 @@ class Coordinator:
             "task_manager": await self.task_manager.health_check(),
             "decision_engine": await self.decision_engine.health_check(),
             "event_bus": await self.event_bus.health_check()
-        }
+            }
