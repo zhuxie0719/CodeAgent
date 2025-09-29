@@ -21,6 +21,13 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 # 导入真正的BugDetectionAgent
 from agents.bug_detection_agent.agent import BugDetectionAgent
+# 预留其它Agent导入（录屏展示用途，暂不启用）
+# from agents.fix_execution_agent.agent import FixExecutionAgent
+# from agents.test_validation_agent.agent import TestValidationAgent
+# from agents.code_analysis_agent.agent import CodeAnalysisAgent
+# from agents.code_quality_agent.agent import CodeQualityAgent
+# from agents.performance_optimization_agent.agent import PerformanceOptimizationAgent
+from coordinator.coordinator import Coordinator
 
 # 简化的设置
 class Settings:
@@ -60,13 +67,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 全局BugDetectionAgent实例
+# 全局实例
 bug_detection_agent = None
+# fix_execution_agent = None
+# test_validation_agent = None
+# code_analysis_agent = None
+# code_quality_agent = None
+# performance_optimization_agent = None
+coordinator = None
 
 @app.on_event("startup")
 async def startup_event():
     """应用启动事件"""
-    global bug_detection_agent
+    global bug_detection_agent, coordinator
     try:
         config = settings.AGENTS.get("bug_detection_agent", {})
         bug_detection_agent = BugDetectionAgent(config)
@@ -76,30 +89,109 @@ async def startup_event():
         print(f"BugDetectionAgent 启动失败: {e}")
         bug_detection_agent = None
 
+    try:
+        coordinator = Coordinator(config={})
+        await coordinator.start()
+        print("Coordinator 启动成功")
+    except Exception as e:
+        print(f"Coordinator 启动失败: {e}")
+        coordinator = None
+
+    # 注册检测Agent到协调中心（关键：否则无法分配任务给真实Agent）
+    try:
+        if coordinator and bug_detection_agent:
+            await coordinator.register_agent('bug_detection_agent', bug_detection_agent)
+            print("BugDetectionAgent 已注册到 Coordinator")
+    except Exception as e:
+        print(f"注册 BugDetectionAgent 失败: {e}")
+
+    # 预留：其它Agent启动与注册（录屏注释占位，需要时取消注释即可）
+    # global fix_execution_agent, test_validation_agent, code_analysis_agent, code_quality_agent, performance_optimization_agent
+    # try:
+    #     fix_execution_agent = FixExecutionAgent(config={})
+    #     await fix_execution_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('fix_execution_agent', fix_execution_agent)
+    #     print("FixExecutionAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"FixExecutionAgent 启动/注册失败: {e}")
+    # try:
+    #     test_validation_agent = TestValidationAgent(config={})
+    #     await test_validation_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('test_validation_agent', test_validation_agent)
+    #     print("TestValidationAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"TestValidationAgent 启动/注册失败: {e}")
+    # try:
+    #     code_analysis_agent = CodeAnalysisAgent(config={})
+    #     await code_analysis_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('code_analysis_agent', code_analysis_agent)
+    #     print("CodeAnalysisAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"CodeAnalysisAgent 启动/注册失败: {e}")
+    # try:
+    #     code_quality_agent = CodeQualityAgent(config={})
+    #     await code_quality_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('code_quality_agent', code_quality_agent)
+    #     print("CodeQualityAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"CodeQualityAgent 启动/注册失败: {e}")
+    # try:
+    #     performance_optimization_agent = PerformanceOptimizationAgent(config={})
+    #     await performance_optimization_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('performance_optimization_agent', performance_optimization_agent)
+    #     print("PerformanceOptimizationAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"PerformanceOptimizationAgent 启动/注册失败: {e}")
+
 @app.on_event("shutdown")
 async def shutdown_event():
     """应用关闭事件"""
-    global bug_detection_agent
+    global bug_detection_agent, coordinator
     if bug_detection_agent:
         await bug_detection_agent.stop()
         print("BugDetectionAgent 已停止")
+    # 预留：其它Agent停止（需要时取消注释）
+    # if fix_execution_agent:
+    #     await fix_execution_agent.stop()
+    #     print("FixExecutionAgent 已停止")
+    # if test_validation_agent:
+    #     await test_validation_agent.stop()
+    #     print("TestValidationAgent 已停止")
+    # if code_analysis_agent:
+    #     await code_analysis_agent.stop()
+    #     print("CodeAnalysisAgent 已停止")
+    # if code_quality_agent:
+    #     await code_quality_agent.stop()
+    #     print("CodeQualityAgent 已停止")
+    # if performance_optimization_agent:
+    #     await performance_optimization_agent.stop()
+    #     print("PerformanceOptimizationAgent 已停止")
+    if coordinator:
+        await coordinator.stop()
+        print("Coordinator 已停止")
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """健康检查接口"""
-    global bug_detection_agent
+    global bug_detection_agent, coordinator
     
-    if bug_detection_agent:
+    if bug_detection_agent and coordinator:
         agent_status = bug_detection_agent.get_status()
+        coord_status = await coordinator.health_check()
         return HealthResponse(
             status="healthy",
-            message=f"API服务运行正常，Agent状态: {agent_status['status']}",
+            message=f"API服务运行正常，Agent状态: {agent_status['status']}，Coordinator: running={coord_status['is_running']}",
             timestamp=datetime.now().isoformat()
         )
     else:
         return HealthResponse(
             status="error",
-            message="BugDetectionAgent 未启动",
+            message="BugDetectionAgent 或 Coordinator 未启动",
             timestamp=datetime.now().isoformat()
         )
 
@@ -116,10 +208,10 @@ async def upload_file_for_detection(
     analysis_type: str = Query("file", description="分析类型: file(单文件) 或 project(项目)")
 ):
     """上传文件进行缺陷检测 - 支持复杂项目压缩包"""
-    global bug_detection_agent
+    global coordinator
     
-    if not bug_detection_agent:
-        raise HTTPException(status_code=500, detail="BugDetectionAgent 未启动")
+    if not coordinator:
+        raise HTTPException(status_code=500, detail="Coordinator 未启动")
     
     # 验证文件大小
     content = await file.read()
@@ -157,6 +249,7 @@ async def upload_file_for_detection(
         # 单文件检测
         task_data = {
             "file_path": str(file_path),
+            "analysis_type": "file",
             "options": {
                 "enable_static": enable_static,
                 "enable_pylint": enable_pylint,
@@ -169,7 +262,9 @@ async def upload_file_for_detection(
     elif analysis_type == "project":
         # 项目检测
         task_data = {
-            "project_path": str(file_path),  # 项目文件夹或压缩包路径
+            # 提示：这里传入上传的压缩包路径，由Agent负责解压
+            "file_path": str(file_path),
+            "analysis_type": "project",
             "options": {
                 "enable_static": enable_static,
                 "enable_pylint": enable_pylint,
@@ -183,12 +278,14 @@ async def upload_file_for_detection(
         raise HTTPException(status_code=400, detail=f"无效的分析类型: {analysis_type}")
     
     try:
-        task_id = await bug_detection_agent.submit_task(f"task_{uuid.uuid4().hex[:12]}", task_data)
-        
-        # 在后台生成可下载报告和结构化信息存储
+        # 通过协调中心创建 detect_bugs 任务并分配给 bug_detection_agent
+        task_id = await coordinator.create_task('detect_bugs', task_data)
+        await coordinator.assign_task(task_id, 'bug_detection_agent')
+
+        # 后台任务：基于协调中心的任务结果生成报告与结构化数据
         background_tasks.add_task(generate_report_task, task_id, str(file_path))
         background_tasks.add_task(store_structured_data, task_id, str(file_path), analysis_type)
-        
+
         return BaseResponse(
             message="文件上传成功，开始检测",
             data={
@@ -199,28 +296,33 @@ async def upload_file_for_detection(
                 "analysis_type": analysis_type
             }
         )
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"提交检测任务失败: {str(e)}")
 
 @app.get("/api/v1/tasks/{task_id}", response_model=BaseResponse)
 async def get_task_status(task_id: str):
     """获取任务状态"""
-    global bug_detection_agent
+    global coordinator
     
-    if not bug_detection_agent:
-        raise HTTPException(status_code=500, detail="BugDetectionAgent 未启动")
+    if not coordinator:
+        raise HTTPException(status_code=500, detail="Coordinator 未启动")
     
     try:
-        task_status = await bug_detection_agent.get_task_status(task_id)
-        if not task_status:
+        task = coordinator.task_manager.tasks.get(task_id)
+        if not task:
             raise HTTPException(status_code=404, detail="任务不存在")
         
-        return BaseResponse(
-            message="获取任务状态成功",
-            data=task_status
-        )
-        
+        data = {
+            "task_id": task_id,
+            "status": task['status'].value,
+            "created_at": task['created_at'].isoformat(),
+            "started_at": task['started_at'].isoformat() if task['started_at'] else None,
+            "completed_at": task['completed_at'].isoformat() if task['completed_at'] else None,
+            "result": task['result'],
+            "error": task['error']
+        }
+        return BaseResponse(message="获取任务状态成功", data=data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取任务状态失败: {str(e)}")
 
@@ -228,36 +330,26 @@ async def get_task_status(task_id: str):
 async def get_detection_rules():
     """获取检测规则"""
     global bug_detection_agent
-    
     if not bug_detection_agent:
         raise HTTPException(status_code=500, detail="BugDetectionAgent 未启动")
-    
     try:
         rules = await bug_detection_agent.get_detection_rules()
-        
-        return BaseResponse(
-            message="获取检测规则成功",
-            data=rules
-        )
-        
+        return BaseResponse(message="获取检测规则成功", data=rules)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取检测规则失败: {str(e)}")
 
 @app.get("/api/v1/ai-reports/{task_id}")
 async def get_ai_report(task_id: str):
     """获取AI生成的自然语言报告"""
-    global bug_detection_agent
-    
-    if not bug_detection_agent:
-        raise HTTPException(status_code=500, detail="BugDetectionAgent 未启动")
-    
+    global coordinator
+    if not coordinator:
+        raise HTTPException(status_code=500, detail="Coordinator 未启动")
     try:
         # 获取任务状态
-        task_status = await bug_detection_agent.get_task_status(task_id)
-        if not task_status:
+        task = coordinator.task_manager.tasks.get(task_id)
+        if not task:
             raise HTTPException(status_code=404, detail="任务不存在")
-        
-        if task_status.get("status") != "completed":
+        if task['status'].value != "completed":
             raise HTTPException(status_code=400, detail="任务尚未完成")
         
         # 检查AI报告文件是否存在
@@ -278,8 +370,8 @@ async def get_ai_report(task_id: str):
             )
         else:
             # 如果没有AI报告文件，实时生成一个
-            detection_results = task_status.get("result", {}).get("detection_results", {})
-            file_path = task_status.get("result", {}).get("file_path", "")
+            detection_results = (task.get('result') or {}).get("detection_results", {})
+            file_path = (task.get('result') or {}).get("file_path", "")
             
             if detection_results:
                 ai_report = await generate_ai_report(detection_results, file_path)
@@ -351,23 +443,21 @@ async def get_structured_data(task_id: str):
 @app.get("/api/v1/reports/{task_id}")
 async def download_report(task_id: str):
     """下载检测报告"""
-    global bug_detection_agent
-    
-    if not bug_detection_agent:
-        raise HTTPException(status_code=500, detail="BugDetectionAgent 未启动")
+    global coordinator
+    if not coordinator:
+        raise HTTPException(status_code=500, detail="Coordinator 未启动")
     
     try:
         # 获取任务状态
-        task_status = await bug_detection_agent.get_task_status(task_id)
-        if not task_status:
+        task = coordinator.task_manager.tasks.get(task_id)
+        if not task:
             raise HTTPException(status_code=404, detail="任务不存在")
-        
-        if task_status.get("status") != "completed":
+        if task['status'].value != "completed":
             raise HTTPException(status_code=400, detail="任务尚未完成")
         
         # 生成报告
-        detection_results = task_status.get("result", {}).get("detection_results", {})
-        file_path = task_status.get("result", {}).get("file_path", "")
+        detection_results = (task.get('result') or {}).get("detection_results", {})
+        file_path = (task.get('result') or {}).get("file_path", "")
         
         if not detection_results:
             raise HTTPException(status_code=404, detail="检测结果不存在")
@@ -451,7 +541,7 @@ def _get_issues_by_type(issues: List[Dict[str, Any]]) -> Dict[str, int]:
 
 async def generate_report_task(task_id: str, file_path: str):
     """后台任务：生成检测报告"""
-    global bug_detection_agent
+    global coordinator
     
     try:
         # 等待任务完成
@@ -460,8 +550,8 @@ async def generate_report_task(task_id: str, file_path: str):
         waited_time = 0
         
         while waited_time < max_wait_time:
-            task_status = await bug_detection_agent.get_task_status(task_id)
-            if task_status and task_status.get("status") == "completed":
+            task = coordinator.task_manager.tasks.get(task_id)
+            if task and task['status'].value == "completed":
                 break
             await asyncio.sleep(wait_interval)
             waited_time += wait_interval
@@ -471,13 +561,10 @@ async def generate_report_task(task_id: str, file_path: str):
             return
         
         # 生成报告
-        detection_results = task_status.get("result", {}).get("detection_results", {})
+        detection_results = (task.get('result') or {}).get("detection_results", {})
         if detection_results:
             # 生成JSON报告
-            if hasattr(bug_detection_agent, 'generate_downloadable_report'):
-                report_path = await bug_detection_agent.generate_downloadable_report(detection_results, file_path)
-            else:
-                report_path = await create_simple_report(detection_results, file_path, task_id)
+            report_path = await create_simple_report(detection_results, file_path, task_id)
             
             if report_path:
                 print(f"JSON报告已生成: {report_path}")
@@ -487,7 +574,7 @@ async def generate_report_task(task_id: str, file_path: str):
 
 async def store_structured_data(task_id: str, file_path: str, analysis_type: str):
     """后台任务：存储结构化信息给修复agent"""
-    global bug_detection_agent
+    global coordinator
     
     try:
         # 等待任务完成
@@ -496,8 +583,8 @@ async def store_structured_data(task_id: str, file_path: str, analysis_type: str
         waited_time = 0
         
         while waited_time < max_wait_time:
-            task_status = await bug_detection_agent.get_task_status(task_id)
-            if task_status and task_status.get("status") == "completed":
+            task = coordinator.task_manager.tasks.get(task_id)
+            if task and task['status'].value == "completed":
                 break
             await asyncio.sleep(wait_interval)
             waited_time += wait_interval
@@ -507,7 +594,7 @@ async def store_structured_data(task_id: str, file_path: str, analysis_type: str
             return
         
         # 获取检测结果
-        detection_results = task_status.get("result", {}).get("detection_results", {})
+        detection_results = (task.get('result') or {}).get("detection_results", {})
         if not detection_results:
             print(f"任务 {task_id} 没有检测结果")
             return

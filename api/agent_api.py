@@ -228,7 +228,7 @@ async def health_check():
         data={
             "total_agents": len(agents_status),
             "active_agents": active_agents,
-            "agents_status": [a.dict() for a in agents_status]
+            "agents_status": [a.model_dump() for a in agents_status]
         }
     )
 
@@ -241,7 +241,7 @@ async def get_all_agents():
     return BaseResponse(
         message="获取Agent状态成功",
         data={
-            "agents": [a.dict() for a in agents_status],
+            "agents": [a.model_dump() for a in agents_status],
             "total_agents": len(agents_status)
         }
     )
@@ -256,7 +256,7 @@ async def get_agent_status(agent_id: str):
     
     return BaseResponse(
         message="获取Agent状态成功",
-        data=agent_info.dict()
+        data=agent_info.model_dump()
     )
 
 
@@ -357,7 +357,7 @@ async def get_task_status(task_id: str):
     
     return BaseResponse(
         message="获取任务状态成功",
-        data=task_info.dict()
+        data=task_info.model_dump()
     )
 
 

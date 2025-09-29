@@ -50,6 +50,22 @@ class Coordinator:
         
         # 设置事件总线消息处理
         await self._setup_event_handlers()
+        # 注册协调中心自身以接收 Result/Status/Error 消息
+        async def _coordinator_bus_handler(message):
+            try:
+                from .message_types import TaskMessage, ResultMessage, StatusMessage, ErrorMessage
+                if isinstance(message, ResultMessage):
+                    await self._handle_agent_result(message.source_agent, message)
+                elif isinstance(message, StatusMessage):
+                    await self._handle_agent_status(message.source_agent, message)
+                elif isinstance(message, ErrorMessage):
+                    await self._handle_agent_error(message.source_agent, message)
+                elif isinstance(message, TaskMessage):
+                    # 协调中心不直接处理 TaskMessage
+                    self.logger.debug("Coordinator 收到 TaskMessage，忽略")
+            except Exception as e:
+                self.logger.error(f"协调中心消息处理失败: {e}")
+        await self.event_bus.subscribe("agent_message", "coordinator", _coordinator_bus_handler)
         
         self.logger.info("协调中心已启动")
     
@@ -69,8 +85,32 @@ class Coordinator:
         """注册Agent"""
         self.agents[agent_id] = agent
         
-        # 为Agent设置消息处理函数
-        agent_handler = lambda message: self._handle_agent_message(agent_id, message)
+        # 为Agent设置消息处理函数：接收 TaskMessage -> 交给该 Agent 执行 -> 回传 ResultMessage 给 Coordinator
+        async def agent_handler(message):
+            try:
+                from .message_types import TaskMessage
+                if hasattr(message, 'task_id') and hasattr(message, 'payload'):
+                    # 仅处理指向该Agent的任务
+                    if isinstance(message, TaskMessage):
+                        await agent.submit_task(message.task_id, message.payload)
+                        # 轮询等待Agent完成
+                        while True:
+                            status = await agent.get_task_status(message.task_id)
+                            if status and status.get('status') in ["completed", "failed"]:
+                                break
+                            await asyncio.sleep(0.2)
+                        success = status.get('status') == 'completed'
+                        result = status.get('result') if success else { 'error': status.get('error', 'Unknown error') }
+                        await self.event_bus.send_result_message(
+                            source_agent=agent_id,
+                            target_agent='coordinator',
+                            task_id=message.task_id,
+                            result=result,
+                            success=success,
+                            error=None if success else status.get('error')
+                        )
+            except Exception as e:
+                self.logger.error(f"Agent任务处理失败: {agent_id} - {e}")
         await self.event_bus.subscribe("agent_message", agent_id, agent_handler)
         
         # 发布Agent注册事件
@@ -232,32 +272,44 @@ class Coordinator:
             await self._process_validation_completion(task, result)
     
     async def _process_detection_completion(self, task, result):
-        """处理缺陷检测完成"""
+        """处理缺陷检测完成（透传 file_path / project_path）"""
         issues = result.get('detection_results', {}).get('issues', [])
-        
+
         if issues:
             # 使用决策引擎分析缺陷
             decisions = await self.decision_engine.analyze_complexity(issues)
-            
-            # 创建修复任务
-            fix_task_id = await self.create_task('fix_issues', {
+
+            # 原样携带 file_path 或 project_path（不做父目录推断）
+            payload = {
                 'issues': issues,
-                'decisions': decisions,
-                'project_path': task['data'].get('project_path')
-            }, TaskPriority.HIGH)
-            
+                'decisions': decisions
+            }
+            if 'project_path' in task['data'] and task['data']['project_path']:
+                payload['project_path'] = task['data']['project_path']
+            if 'file_path' in task['data'] and task['data']['file_path']:
+                payload['file_path'] = task['data']['file_path']
+
+            # 创建修复任务
+            fix_task_id = await self.create_task('fix_issues', payload, TaskPriority.HIGH)
+
             # 分配给修复执行Agent
             await self.assign_task(fix_task_id, 'fix_execution_agent')
         else:
             self.logger.info("未发现需要修复的缺陷")
     
     async def _process_fix_completion(self, task, result):
-        """处理修复完成"""
-        # 创建验证任务
-        validation_task_id = await self.create_task('validate_fix', {
-            'project_path': task['data'].get('project_path'),
+        """处理修复完成（透传 file_path / project_path）"""
+        # 原样携带 file_path 或 project_path
+        payload = {
             'fix_result': result
-        }, TaskPriority.HIGH)
+        }
+        if 'project_path' in task['data'] and task['data']['project_path']:
+            payload['project_path'] = task['data']['project_path']
+        if 'file_path' in task['data'] and task['data']['file_path']:
+            payload['file_path'] = task['data']['file_path']
+
+        # 创建验证任务
+        validation_task_id = await self.create_task('validate_fix', payload, TaskPriority.HIGH)
         
         # 分配给测试验证Agent
         await self.assign_task(validation_task_id, 'test_validation_agent')
@@ -267,7 +319,7 @@ class Coordinator:
         self.logger.info("工作流验证完成")
         # 这里可以添加最终报告生成等逻辑
     
-    async def process_workflow(self, project_path: str) -> Dict[str, Any]:
+    async def process_workflow(self, file_path: Optional[str] = None, project_path: Optional[str] = None) -> Dict[str, Any]:
         """
         处理完整的工作流 
         
@@ -281,24 +333,40 @@ class Coordinator:
         self.current_workflow = {
             'id': workflow_id,
             'project_path': project_path,
+            'file_path': file_path,
             'start_time': datetime.now(),
             'status': 'running',
             'tasks': []
         }
         
         try:
-            self.logger.info(f"开始处理工作流: {workflow_id} for {project_path}")
+            if not file_path and not project_path:
+                raise Exception("process_workflow 需要提供 file_path 或 project_path 之一")
+            self.logger.info(f"开始处理工作流: {workflow_id} (file_path={file_path}, project_path={project_path})")
             
             # ===== 阶段1: 缺陷检测 =====
             self.logger.info("=== 阶段1: Bug Detection Agent - 缺陷检测 ===")
-            detection_task_id = await self.create_task('detect_bugs', {
-                'project_path': project_path,
-                'options': {
-                    'enable_static': True,
-                    'enable_ai_analysis': True,
-                    'enable_dynamic': False  # 暂时禁用动态检测
+            # 同时支持单文件/项目两种入口
+            if file_path:
+                detection_task_payload = {
+                    'file_path': file_path,
+                    'options': {
+                        'enable_static': True,
+                        'enable_ai_analysis': True,
+                        'enable_dynamic': False  # 暂时禁用动态检测
+                    }
                 }
-            }, TaskPriority.HIGH)
+            else:
+                detection_task_payload = {
+                    'project_path': project_path,
+                    'options': {
+                        'enable_static': True,
+                        'enable_ai_analysis': True,
+                        'enable_dynamic': False  # 暂时禁用动态检测
+                    }
+                }
+            detection_task_id = await self.create_task('detect_bugs', detection_task_payload, TaskPriority.HIGH)
+
             
             self.current_workflow['tasks'].append({
                 'task_id': detection_task_id,
@@ -399,6 +467,7 @@ class Coordinator:
             self.logger.info("=== 阶段4: Test Validation Agent - 验证与反馈 ===")
             validation_task_id = await self.create_task('validate_fix', {
                 'project_path': project_path,
+                'file_path': file_path,
                 'fix_result': fix_result,
                 'original_issues': issues,
                 'test_options': {

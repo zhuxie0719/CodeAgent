@@ -23,7 +23,7 @@ class AIAgentSystem:
     """AI AGENT系统主类"""
     
     def __init__(self):
-        self.coordinator = Coordinator(settings.dict())
+        self.coordinator = Coordinator(settings.model_dump())
         self.agents = {}
         self.is_running = False
     

@@ -234,18 +234,20 @@ class TaskManager:
         task = self.tasks[task_id]
         task['status'] = TaskStatus.RUNNING
         task['started_at'] = datetime.now()
-        
+
         agent_id = task['assigned_agent']
         task_type = task['type']
         task_data = task['data']
-        
+
         self.logger.info(f"开始执行任务: {task_id} (Agent: {agent_id}, 类型: {task_type})")
-        
+
         try:
-            # 这里应该调用相应的Agent执行任务
-            # 暂时模拟任务执行
-            await self._simulate_task_execution(task_id)
-            
+            # 通过事件总线发送任务消息，实际执行由目标Agent完成
+            from .event_bus import EventBus
+            # 这里无法直接获取 EventBus 实例，实际发送由 Coordinator.assign_task 完成
+            # TaskManager 在此仅推进状态，等待 Coordinator 侧回写结果
+            pass
+
         except Exception as e:
             self.logger.error(f"任务执行失败: {task_id} - {e}")
             await self.update_task_result(task_id, {'error': str(e)}, False)
