@@ -1,0 +1,2155 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T16:37:33.012626",
+    "file_path": "uploads\\test_python_bad.py",
+    "total_issues": 37,
+    "summary": {
+      "error_count": 8,
+      "warning_count": 11,
+      "info_count": 15
+    },
+    "detection_tools": [
+      "custom_analyzer",
+      "bandit",
+      "mypy"
+    ]
+  },
+  "issues": [
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 7,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 4,
+          "content": "import unused_module  # 未使用的导入",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+      "fix_suggestions": [
+        "使用环境变量存储敏感信息",
+        "使用配置文件（不提交到版本控制）",
+        "使用密钥管理服务"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 8,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 11,
+          "content": "    # 缺少文档字符串",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+      "fix_suggestions": [
+        "使用环境变量存储敏感信息",
+        "使用配置文件（不提交到版本控制）",
+        "使用密钥管理服务"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unsafe_eval",
+      "severity": "error",
+      "message": "不安全的eval使用",
+      "line": 20,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 17,
+          "content": "def risky_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 18,
+          "content": "    # 不安全的eval使用",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 19,
+          "content": "    user_input = \"print('Hello')\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 21,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 22,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 23,
+          "content": "def process_user_data(data):",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "使用eval()函数执行用户输入存在代码注入风险，可能导致系统被攻击。建议使用更安全的方法。",
+      "fix_suggestions": [
+        "使用ast.literal_eval()替代eval()",
+        "使用json.loads()解析JSON数据",
+        "使用专门的解析库"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的API_KEY",
+      "line": 7,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 4,
+          "content": "import unused_module  # 未使用的导入",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+      "fix_suggestions": [
+        "使用环境变量存储敏感信息",
+        "使用配置文件（不提交到版本控制）",
+        "使用密钥管理服务"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的SECRET",
+      "line": 8,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 11,
+          "content": "    # 缺少文档字符串",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+      "fix_suggestions": [
+        "使用环境变量存储敏感信息",
+        "使用配置文件（不提交到版本控制）",
+        "使用密钥管理服务"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的PASSWORD",
+      "line": 8,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 11,
+          "content": "    # 缺少文档字符串",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+      "fix_suggestions": [
+        "使用环境变量存储敏感信息",
+        "使用配置文件（不提交到版本控制）",
+        "使用密钥管理服务"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unsafe_eval",
+      "severity": "error",
+      "message": "不安全的eval使用",
+      "line": 20,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 17,
+          "content": "def risky_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 18,
+          "content": "    # 不安全的eval使用",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 19,
+          "content": "    user_input = \"print('Hello')\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 21,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 22,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 23,
+          "content": "def process_user_data(data):",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "使用eval()函数执行用户输入存在代码注入风险，可能导致系统被攻击。建议使用更安全的方法。",
+      "fix_suggestions": [
+        "使用ast.literal_eval()替代eval()",
+        "使用json.loads()解析JSON数据",
+        "使用专门的解析库"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "mypy",
+      "severity": "error",
+      "message": "Cannot find implementation or library stub for module named \"unused_module\"  [import-not-found]",
+      "file": "test_python_bad.py",
+      "line": 4,
+      "column": 0,
+      "rule": "mypy",
+      "language": "python",
+      "code_snippet": [
+        {
+          "line_number": 1,
+          "content": "# test_python_bad.py - 有问题的Python代码示例",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "import unused_module  # 未使用的导入",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "可能未使用的导入: os",
+      "line": 2,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 1,
+          "content": "# test_python_bad.py - 有问题的Python代码示例",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "import unused_module  # 未使用的导入",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+      "fix_suggestions": [
+        "删除未使用的导入语句",
+        "检查是否有其他文件需要这个导入",
+        "使用IDE的自动清理功能"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "可能未使用的导入: sys",
+      "line": 3,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 1,
+          "content": "# test_python_bad.py - 有问题的Python代码示例",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 4,
+          "content": "import unused_module  # 未使用的导入",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+      "fix_suggestions": [
+        "删除未使用的导入语句",
+        "检查是否有其他文件需要这个导入",
+        "使用IDE的自动清理功能"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "可能未使用的导入: unused_module  # 未使用的导入",
+      "line": 4,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 1,
+          "content": "# test_python_bad.py - 有问题的Python代码示例",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "import unused_module  # 未使用的导入",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+      "fix_suggestions": [
+        "删除未使用的导入语句",
+        "检查是否有其他文件需要这个导入",
+        "使用IDE的自动清理功能"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unhandled_exception",
+      "severity": "warning",
+      "message": "类型转换未处理异常",
+      "line": 19,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 16,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 17,
+          "content": "def risky_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 18,
+          "content": "    # 不安全的eval使用",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 19,
+          "content": "    user_input = \"print('Hello')\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 21,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 22,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "division_by_zero_risk",
+      "severity": "warning",
+      "message": "可能存在除零风险",
+      "line": 31,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 28,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 29,
+          "content": "def divide_numbers(a, b):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 30,
+          "content": "    # 缺少异常处理",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 31,
+          "content": "    result = a / b  # 可能除零错误",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 32,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 33,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 34,
+          "content": "# 全局变量（不好的实践）",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "global_variables",
+      "severity": "warning",
+      "message": "使用全局变量",
+      "line": 38,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 35,
+          "content": "global_var = \"I'm global\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 36,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 37,
+          "content": "def use_global():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 38,
+          "content": "    global global_var",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 39,
+          "content": "    global_var = \"modified\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 40,
+          "content": "    return global_var",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 41,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "全局变量会增加代码的复杂性和测试难度。建议使用函数参数或类属性。",
+      "fix_suggestions": [
+        "使用函数参数传递数据",
+        "使用类属性",
+        "使用单例模式"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unhandled_exception",
+      "severity": "warning",
+      "message": "类型转换未处理异常",
+      "line": 57,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 54,
+          "content": "    return big_list",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 55,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 56,
+          "content": "# 缺少主函数保护",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 57,
+          "content": "print(\"This will always execute\")",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 58,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 59,
+          "content": "# 不安全的字符串格式化",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 60,
+          "content": "def format_string(user_input):",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "global_variables",
+      "severity": "warning",
+      "message": "使用全局变量",
+      "line": 38,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 35,
+          "content": "global_var = \"I'm global\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 36,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 37,
+          "content": "def use_global():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 38,
+          "content": "    global global_var",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 39,
+          "content": "    global_var = \"modified\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 40,
+          "content": "    return global_var",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 41,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "全局变量会增加代码的复杂性和测试难度。建议使用函数参数或类属性。",
+      "fix_suggestions": [
+        "使用函数参数传递数据",
+        "使用类属性",
+        "使用单例模式"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unhandled_exception",
+      "severity": "warning",
+      "message": "文件操作未处理异常",
+      "line": 45,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 42,
+          "content": "# 不安全的文件操作",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 43,
+          "content": "def read_file(filename):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 44,
+          "content": "    # 没有异常处理",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 45,
+          "content": "    with open(filename, 'r') as f:",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 46,
+          "content": "        content = f.read()",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 47,
+          "content": "    return content",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 48,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unhandled_type_conversion",
+      "severity": "warning",
+      "message": "类型转换未处理异常",
+      "line": 19,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 16,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 17,
+          "content": "def risky_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 18,
+          "content": "    # 不安全的eval使用",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 19,
+          "content": "    user_input = \"print('Hello')\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 21,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 22,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "unhandled_type_conversion",
+      "severity": "warning",
+      "message": "类型转换未处理异常",
+      "line": 57,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 54,
+          "content": "    return big_list",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 55,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 56,
+          "content": "# 缺少主函数保护",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 57,
+          "content": "print(\"This will always execute\")",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 58,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 59,
+          "content": "# 不安全的字符串格式化",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 60,
+          "content": "def format_string(user_input):",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 bad_function 缺少参数验证",
+      "line": 10,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 11,
+          "content": "    # 缺少文档字符串",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 12,
+          "content": "    x = 1",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 13,
+          "content": "    y = 2",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 risky_function 缺少参数验证",
+      "line": 17,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 14,
+          "content": "    z = x + y",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 15,
+          "content": "    return z",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 16,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 17,
+          "content": "def risky_function():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 18,
+          "content": "    # 不安全的eval使用",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 19,
+          "content": "    user_input = \"print('Hello')\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 process_user_data 缺少参数验证",
+      "line": 23,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 21,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 22,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 23,
+          "content": "def process_user_data(data):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 24,
+          "content": "    # 缺少类型提示和文档字符串",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 25,
+          "content": "    # 缺少输入验证",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 26,
+          "content": "    processed = data * 2",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 divide_numbers 缺少参数验证",
+      "line": 29,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 26,
+          "content": "    processed = data * 2",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 27,
+          "content": "    return processed",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 28,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 29,
+          "content": "def divide_numbers(a, b):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 30,
+          "content": "    # 缺少异常处理",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 31,
+          "content": "    result = a / b  # 可能除零错误",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 32,
+          "content": "    return result",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 use_global 缺少参数验证",
+      "line": 37,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 34,
+          "content": "# 全局变量（不好的实践）",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 35,
+          "content": "global_var = \"I'm global\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 36,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 37,
+          "content": "def use_global():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 38,
+          "content": "    global global_var",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 39,
+          "content": "    global_var = \"modified\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 40,
+          "content": "    return global_var",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 read_file 缺少参数验证",
+      "line": 43,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 40,
+          "content": "    return global_var",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 41,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 42,
+          "content": "# 不安全的文件操作",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 43,
+          "content": "def read_file(filename):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 44,
+          "content": "    # 没有异常处理",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 45,
+          "content": "    with open(filename, 'r') as f:",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 46,
+          "content": "        content = f.read()",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 create_large_list 缺少参数验证",
+      "line": 50,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 47,
+          "content": "    return content",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 48,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 49,
+          "content": "# 内存泄漏风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 50,
+          "content": "def create_large_list():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 51,
+          "content": "    big_list = []",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 52,
+          "content": "    for i in range(1000000):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 53,
+          "content": "        big_list.append(f\"item_{i}\")",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "函数 format_string 缺少参数验证",
+      "line": 60,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 57,
+          "content": "print(\"This will always execute\")",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 58,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 59,
+          "content": "# 不安全的字符串格式化",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 60,
+          "content": "def format_string(user_input):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 61,
+          "content": "    query = \"SELECT * FROM users WHERE name = '%s'\" % user_input  # SQL注入风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 62,
+          "content": "    return query",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 63,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 10,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 11,
+          "content": "    # 缺少文档字符串",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 12,
+          "content": "    x = 1",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 13,
+          "content": "    y = 2",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 23,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 21,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 22,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 23,
+          "content": "def process_user_data(data):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 24,
+          "content": "    # 缺少类型提示和文档字符串",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 25,
+          "content": "    # 缺少输入验证",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 26,
+          "content": "    processed = data * 2",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 37,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 34,
+          "content": "# 全局变量（不好的实践）",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 35,
+          "content": "global_var = \"I'm global\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 36,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 37,
+          "content": "def use_global():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 38,
+          "content": "    global global_var",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 39,
+          "content": "    global_var = \"modified\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 40,
+          "content": "    return global_var",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 43,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 40,
+          "content": "    return global_var",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 41,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 42,
+          "content": "# 不安全的文件操作",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 43,
+          "content": "def read_file(filename):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 44,
+          "content": "    # 没有异常处理",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 45,
+          "content": "    with open(filename, 'r') as f:",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 46,
+          "content": "        content = f.read()",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 50,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 47,
+          "content": "    return content",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 48,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 49,
+          "content": "# 内存泄漏风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 50,
+          "content": "def create_large_list():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 51,
+          "content": "    big_list = []",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 52,
+          "content": "    for i in range(1000000):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 53,
+          "content": "        big_list.append(f\"item_{i}\")",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 60,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 57,
+          "content": "print(\"This will always execute\")",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 58,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 59,
+          "content": "# 不安全的字符串格式化",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 60,
+          "content": "def format_string(user_input):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 61,
+          "content": "    query = \"SELECT * FROM users WHERE name = '%s'\" % user_input  # SQL注入风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 62,
+          "content": "    return query",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 63,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "magic_number",
+      "severity": "info",
+      "message": "魔法数字: 1000000",
+      "line": 52,
+      "file": "test_python_bad.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 49,
+          "content": "# 内存泄漏风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 50,
+          "content": "def create_large_list():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 51,
+          "content": "    big_list = []",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 52,
+          "content": "    for i in range(1000000):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 53,
+          "content": "        big_list.append(f\"item_{i}\")",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 54,
+          "content": "    return big_list",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 55,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "bandit",
+      "severity": "LOW",
+      "message": "Possible hardcoded password: 'admin123'",
+      "file": "test_python_bad.py",
+      "line": 8,
+      "column": 0,
+      "rule": "B105",
+      "language": "python",
+      "code_snippet": [
+        {
+          "line_number": 5,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "# 硬编码的API密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "API_KEY = \"sk-1234567890abcdef\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "SECRET_PASSWORD = \"admin123\"",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def bad_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 11,
+          "content": "    # 缺少文档字符串",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {},
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "bandit",
+      "severity": "MEDIUM",
+      "message": "Use of possibly insecure function - consider using safer ast.literal_eval.",
+      "file": "test_python_bad.py",
+      "line": 20,
+      "column": 0,
+      "rule": "B307",
+      "language": "python",
+      "code_snippet": [
+        {
+          "line_number": 17,
+          "content": "def risky_function():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 18,
+          "content": "    # 不安全的eval使用",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 19,
+          "content": "    user_input = \"print('Hello')\"",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 20,
+          "content": "    result = eval(user_input)  # 安全风险",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 21,
+          "content": "    return result",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 22,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 23,
+          "content": "def process_user_data(data):",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {},
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    },
+    {
+      "type": "bandit",
+      "severity": "MEDIUM",
+      "message": "Possible SQL injection vector through string-based query construction.",
+      "file": "test_python_bad.py",
+      "line": 61,
+      "column": 0,
+      "rule": "B608",
+      "language": "python",
+      "code_snippet": [
+        {
+          "line_number": 58,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 59,
+          "content": "# 不安全的字符串格式化",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 60,
+          "content": "def format_string(user_input):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 61,
+          "content": "    query = \"SELECT * FROM users WHERE name = '%s'\" % user_input  # SQL注入风险",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 62,
+          "content": "    return query",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 63,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 64,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {},
+      "file_path": "uploads\\test_python_bad.py",
+      "enhanced": true
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 8,
+      "warning": 11,
+      "info": 15,
+      "LOW": 1,
+      "MEDIUM": 2
+    },
+    "by_type": {
+      "hardcoded_secrets": 5,
+      "unsafe_eval": 2,
+      "mypy": 1,
+      "unused_import": 3,
+      "unhandled_exception": 3,
+      "division_by_zero_risk": 1,
+      "global_variables": 2,
+      "unhandled_type_conversion": 2,
+      "missing_parameter_validation": 8,
+      "missing_docstring": 6,
+      "magic_number": 1,
+      "bandit": 3
+    },
+    "by_category": {
+      "其他": 37
+    }
+  }
+}

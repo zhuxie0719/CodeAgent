@@ -3,8 +3,6 @@
 """
 
 import asyncio
-import os
-import subprocess
 import re
 from typing import Dict, List, Any, Optional
 from .fixer import CodeFixer, Refactorer, DependencyUpdater

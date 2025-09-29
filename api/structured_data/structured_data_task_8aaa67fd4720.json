@@ -1,0 +1,1321 @@
+{
+  "task_id": "task_8aaa67fd4720",
+  "file_path": "uploads\\test_python_with_defects.py",
+  "analysis_type": "file",
+  "timestamp": "2025-09-28T16:35:49.857396",
+  "summary": {
+    "total_issues": 23,
+    "error_count": 0,
+    "warning_count": 16,
+    "info_count": 7,
+    "languages_detected": [],
+    "total_files": 1
+  },
+  "issues_by_priority": {
+    "critical": [],
+    "high": [],
+    "medium": [
+      {
+        "type": "division_by_zero_risk",
+        "severity": "warning",
+        "message": "可能存在除零风险",
+        "line": 6,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 3,
+            "content": "    # 缺陷1：未处理空列表情况",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "    total = sum(numbers)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "    # 缺陷2：整除可能导致结果不准确",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "    return total / len(numbers)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 7,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "def process_data(data):",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 14,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 11,
+            "content": "    result = []",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 12,
+            "content": "    for item in data:",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "        # 缺陷4：未处理字符串转整数失败的情况",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "        result.append(int(item) * 2)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 15,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 17,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "JSON解析未处理异常",
+        "line": 25,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 22,
+            "content": "        config = f.read()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 23,
+            "content": "    # 缺陷7：假设配置一定是JSON格式但未验证",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 24,
+            "content": "    import json",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 25,
+            "content": "    return json.loads(config)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 26,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 27,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "class DataProcessor:",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 41,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 38,
+            "content": "if __name__ == \"__main__\":",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 39,
+            "content": "    # 缺陷10：测试用例不完整，未覆盖异常场景",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 40,
+            "content": "    avg = calculate_average([1, 2, 3])",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 41,
+            "content": "    print(f\"Average: {avg}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 42,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 43,
+            "content": "    processed = process_data([\"4\", \"5\", \"6\"])",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 44,
+            "content": "    print(f\"Processed: {processed}\")",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 44,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 41,
+            "content": "    print(f\"Average: {avg}\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 42,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 43,
+            "content": "    processed = process_data([\"4\", \"5\", \"6\"])",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 44,
+            "content": "    print(f\"Processed: {processed}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 45,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 46,
+            "content": "    config = read_config(\"config.json\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 47,
+            "content": "    print(f\"Config: {config}\")",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 47,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 44,
+            "content": "    print(f\"Processed: {processed}\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 45,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 46,
+            "content": "    config = read_config(\"config.json\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 47,
+            "content": "    print(f\"Config: {config}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 48,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 49,
+            "content": "    processor = DataProcessor(5)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 50,
+            "content": "    print(f\"Processed value: {processor.process(10)}\")",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 50,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 47,
+            "content": "    print(f\"Config: {config}\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 48,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 49,
+            "content": "    processor = DataProcessor(5)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 50,
+            "content": "    print(f\"Processed value: {processor.process(10)}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 51,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "potential_division_by_zero",
+        "severity": "warning",
+        "message": "可能存在除零错误",
+        "line": 6,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 3,
+            "content": "    # 缺陷1：未处理空列表情况",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "    total = sum(numbers)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "    # 缺陷2：整除可能导致结果不准确",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "    return total / len(numbers)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 7,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "def process_data(data):",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_exception",
+        "severity": "warning",
+        "message": "文件操作未处理异常",
+        "line": 20,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 17,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 18,
+            "content": "def read_config(config_path):",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 19,
+            "content": "    # 缺陷5：未处理文件不存在的异常",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 20,
+            "content": "    with open(config_path, 'r') as f:",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 21,
+            "content": "        # 缺陷6：未关闭文件（虽然with会自动关闭，但这里模拟逻辑缺陷）",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 22,
+            "content": "        config = f.read()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 23,
+            "content": "    # 缺陷7：假设配置一定是JSON格式但未验证",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_type_conversion",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 14,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 11,
+            "content": "    result = []",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 12,
+            "content": "    for item in data:",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 13,
+            "content": "        # 缺陷4：未处理字符串转整数失败的情况",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 14,
+            "content": "        result.append(int(item) * 2)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 15,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 17,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_type_conversion",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 41,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 38,
+            "content": "if __name__ == \"__main__\":",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 39,
+            "content": "    # 缺陷10：测试用例不完整，未覆盖异常场景",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 40,
+            "content": "    avg = calculate_average([1, 2, 3])",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 41,
+            "content": "    print(f\"Average: {avg}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 42,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 43,
+            "content": "    processed = process_data([\"4\", \"5\", \"6\"])",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 44,
+            "content": "    print(f\"Processed: {processed}\")",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_type_conversion",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 44,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 41,
+            "content": "    print(f\"Average: {avg}\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 42,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 43,
+            "content": "    processed = process_data([\"4\", \"5\", \"6\"])",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 44,
+            "content": "    print(f\"Processed: {processed}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 45,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 46,
+            "content": "    config = read_config(\"config.json\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 47,
+            "content": "    print(f\"Config: {config}\")",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_type_conversion",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 47,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 44,
+            "content": "    print(f\"Processed: {processed}\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 45,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 46,
+            "content": "    config = read_config(\"config.json\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 47,
+            "content": "    print(f\"Config: {config}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 48,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 49,
+            "content": "    processor = DataProcessor(5)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 50,
+            "content": "    print(f\"Processed value: {processor.process(10)}\")",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_type_conversion",
+        "severity": "warning",
+        "message": "类型转换未处理异常",
+        "line": 50,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 47,
+            "content": "    print(f\"Config: {config}\")",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 48,
+            "content": "    ",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 49,
+            "content": "    processor = DataProcessor(5)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 50,
+            "content": "    print(f\"Processed value: {processor.process(10)}\")",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 51,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "unhandled_json_parse",
+        "severity": "warning",
+        "message": "JSON解析未处理异常",
+        "line": 25,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 22,
+            "content": "        config = f.read()",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 23,
+            "content": "    # 缺陷7：假设配置一定是JSON格式但未验证",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 24,
+            "content": "    import json",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 25,
+            "content": "    return json.loads(config)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 26,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 27,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "class DataProcessor:",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "empty_list_handling",
+        "severity": "warning",
+        "message": "未处理空列表情况",
+        "line": 4,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 1,
+            "content": "# 存在多种缺陷的示例代码",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 2,
+            "content": "def calculate_average(numbers):",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 3,
+            "content": "    # 缺陷1：未处理空列表情况",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "    total = sum(numbers)",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 5,
+            "content": "    # 缺陷2：整除可能导致结果不准确",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 6,
+            "content": "    return total / len(numbers)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 7,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 2,
+          "name": "警告",
+          "color": "#ff8800"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      }
+    ],
+    "low": [
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 calculate_average 缺少参数验证",
+        "line": 2,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 1,
+            "content": "# 存在多种缺陷的示例代码",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 2,
+            "content": "def calculate_average(numbers):",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 3,
+            "content": "    # 缺陷1：未处理空列表情况",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "    total = sum(numbers)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "    # 缺陷2：整除可能导致结果不准确",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 process_data 缺少参数验证",
+        "line": 9,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 6,
+            "content": "    return total / len(numbers)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 7,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 8,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 9,
+            "content": "def process_data(data):",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 10,
+            "content": "    # 缺陷3：未判断数据类型，可能传入非列表参数",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 11,
+            "content": "    result = []",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 12,
+            "content": "    for item in data:",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 read_config 缺少参数验证",
+        "line": 18,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 15,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 17,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 18,
+            "content": "def read_config(config_path):",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 19,
+            "content": "    # 缺陷5：未处理文件不存在的异常",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 20,
+            "content": "    with open(config_path, 'r') as f:",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 21,
+            "content": "        # 缺陷6：未关闭文件（虽然with会自动关闭，但这里模拟逻辑缺陷）",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_parameter_validation",
+        "severity": "info",
+        "message": "函数 process 缺少参数验证",
+        "line": 33,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 30,
+            "content": "        # 缺陷8：未验证threshold的有效性",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 31,
+            "content": "        self.threshold = threshold",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 32,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 33,
+            "content": "    def process(self, value):",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 34,
+            "content": "        # 缺陷9：可能导致除零错误",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 35,
+            "content": "        return value / self.threshold if value else 0",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 36,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 2,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 1,
+            "content": "# 存在多种缺陷的示例代码",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 2,
+            "content": "def calculate_average(numbers):",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 3,
+            "content": "    # 缺陷1：未处理空列表情况",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 4,
+            "content": "    total = sum(numbers)",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 5,
+            "content": "    # 缺陷2：整除可能导致结果不准确",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 18,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 15,
+            "content": "    return result",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 16,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 17,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 18,
+            "content": "def read_config(config_path):",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 19,
+            "content": "    # 缺陷5：未处理文件不存在的异常",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 20,
+            "content": "    with open(config_path, 'r') as f:",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 21,
+            "content": "        # 缺陷6：未关闭文件（虽然with会自动关闭，但这里模拟逻辑缺陷）",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 29,
+        "file": "test_python_with_defects.py",
+        "language": "python",
+        "column": 0,
+        "code_snippet": [
+          {
+            "line_number": 26,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 27,
+            "content": "",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 28,
+            "content": "class DataProcessor:",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 29,
+            "content": "    def __init__(self, threshold):",
+            "is_issue_line": true
+          },
+          {
+            "line_number": 30,
+            "content": "        # 缺陷8：未验证threshold的有效性",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 31,
+            "content": "        self.threshold = threshold",
+            "is_issue_line": false
+          },
+          {
+            "line_number": 32,
+            "content": "",
+            "is_issue_line": false
+          }
+        ],
+        "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+        "fix_suggestions": [
+          "建议根据具体情况进行修复"
+        ],
+        "severity_info": {
+          "level": 3,
+          "name": "信息",
+          "color": "#4488ff"
+        },
+        "file_path": "uploads\\test_python_with_defects.py",
+        "enhanced": true
+      }
+    ]
+  },
+  "fix_recommendations": {
+    "immediate_actions": [],
+    "short_term_improvements": [
+      "进行代码审查，处理大量警告"
+    ],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "file",
+    "file_count": 1,
+    "languages": [],
+    "complexity_indicators": {
+      "high_issue_files": 1,
+      "average_issues_per_file": 23.0
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [
+      "custom_analyzer",
+      "bandit",
+      "mypy"
+    ],
+    "analysis_time": 0.8528469999999999,
+    "project_path": "uploads\\test_python_with_defects.py"
+  }
+}
