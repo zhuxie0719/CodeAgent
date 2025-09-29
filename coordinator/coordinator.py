@@ -279,7 +279,7 @@ class Coordinator:
         self.logger.info("工作流验证完成")
         # 这里可以添加最终报告生成等逻辑
     
-    async def process_workflow(self, project_path: str) -> Dict[str, Any]:
+    async def process_workflow(self, file_path: Optional[str] = None, project_path: Optional[str] = None) -> Dict[str, Any]:
         """
         处理完整的工作流 
         
@@ -293,24 +293,38 @@ class Coordinator:
         self.current_workflow = {
             'id': workflow_id,
             'project_path': project_path,
+            'file_path': file_path,
             'start_time': datetime.now(),
             'status': 'running',
             'tasks': []
         }
         
         try:
-            self.logger.info(f"开始处理工作流: {workflow_id} for {project_path}")
+            if not file_path and not project_path:
+                raise Exception("process_workflow 需要提供 file_path 或 project_path 之一")
+            self.logger.info(f"开始处理工作流: {workflow_id} (file_path={file_path}, project_path={project_path})")
             
             # ===== 阶段1: 缺陷检测 =====
             self.logger.info("=== 阶段1: Bug Detection Agent - 缺陷检测 ===")
-            detection_task_payload = {
-                'project_path': project_path,
-                'options': {
-                    'enable_static': True,
-                    'enable_ai_analysis': True,
-                    'enable_dynamic': False  # 暂时禁用动态检测
+            # 同时支持单文件/项目两种入口
+            if file_path:
+                detection_task_payload = {
+                    'file_path': file_path,
+                    'options': {
+                        'enable_static': True,
+                        'enable_ai_analysis': True,
+                        'enable_dynamic': False  # 暂时禁用动态检测
+                    }
                 }
-            }
+            else:
+                detection_task_payload = {
+                    'project_path': project_path,
+                    'options': {
+                        'enable_static': True,
+                        'enable_ai_analysis': True,
+                        'enable_dynamic': False  # 暂时禁用动态检测
+                    }
+                }
             detection_task_id = await self.create_task('detect_bugs', detection_task_payload, TaskPriority.HIGH)
 
             
@@ -413,6 +427,7 @@ class Coordinator:
             self.logger.info("=== 阶段4: Test Validation Agent - 验证与反馈 ===")
             validation_task_id = await self.create_task('validate_fix', {
                 'project_path': project_path,
+                'file_path': file_path,
                 'fix_result': fix_result,
                 'original_issues': issues,
                 'test_options': {
