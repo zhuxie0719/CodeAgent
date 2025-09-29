@@ -50,6 +50,22 @@ class Coordinator:
         
         # 设置事件总线消息处理
         await self._setup_event_handlers()
+        # 注册协调中心自身以接收 Result/Status/Error 消息
+        async def _coordinator_bus_handler(message):
+            try:
+                from .message_types import TaskMessage, ResultMessage, StatusMessage, ErrorMessage
+                if isinstance(message, ResultMessage):
+                    await self._handle_agent_result(message.source_agent, message)
+                elif isinstance(message, StatusMessage):
+                    await self._handle_agent_status(message.source_agent, message)
+                elif isinstance(message, ErrorMessage):
+                    await self._handle_agent_error(message.source_agent, message)
+                elif isinstance(message, TaskMessage):
+                    # 协调中心不直接处理 TaskMessage
+                    self.logger.debug("Coordinator 收到 TaskMessage，忽略")
+            except Exception as e:
+                self.logger.error(f"协调中心消息处理失败: {e}")
+        await self.event_bus.subscribe("agent_message", "coordinator", _coordinator_bus_handler)
         
         self.logger.info("协调中心已启动")
     
@@ -69,8 +85,32 @@ class Coordinator:
         """注册Agent"""
         self.agents[agent_id] = agent
         
-        # 为Agent设置消息处理函数
-        agent_handler = lambda message: self._handle_agent_message(agent_id, message)
+        # 为Agent设置消息处理函数：接收 TaskMessage -> 交给该 Agent 执行 -> 回传 ResultMessage 给 Coordinator
+        async def agent_handler(message):
+            try:
+                from .message_types import TaskMessage
+                if hasattr(message, 'task_id') and hasattr(message, 'payload'):
+                    # 仅处理指向该Agent的任务
+                    if isinstance(message, TaskMessage):
+                        await agent.submit_task(message.task_id, message.payload)
+                        # 轮询等待Agent完成
+                        while True:
+                            status = await agent.get_task_status(message.task_id)
+                            if status and status.get('status') in ["completed", "failed"]:
+                                break
+                            await asyncio.sleep(0.2)
+                        success = status.get('status') == 'completed'
+                        result = status.get('result') if success else { 'error': status.get('error', 'Unknown error') }
+                        await self.event_bus.send_result_message(
+                            source_agent=agent_id,
+                            target_agent='coordinator',
+                            task_id=message.task_id,
+                            result=result,
+                            success=success,
+                            error=None if success else status.get('error')
+                        )
+            except Exception as e:
+                self.logger.error(f"Agent任务处理失败: {agent_id} - {e}")
         await self.event_bus.subscribe("agent_message", agent_id, agent_handler)
         
         # 发布Agent注册事件
