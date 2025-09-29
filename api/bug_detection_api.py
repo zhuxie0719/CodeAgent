@@ -22,7 +22,6 @@ sys.path.append(str(Path(__file__).parent.parent))
 # 导入真正的BugDetectionAgent
 from agents.bug_detection_agent.agent import BugDetectionAgent
 from coordinator.coordinator import Coordinator
-from agents.fix_execution_agent.agent import FixExecutionAgent
 
 # 简化的设置
 class Settings:
@@ -64,13 +63,12 @@ app.add_middleware(
 
 # 全局实例
 bug_detection_agent = None
-fix_execution_agent = None
 coordinator = None
 
 @app.on_event("startup")
 async def startup_event():
     """应用启动事件"""
-    global bug_detection_agent, fix_execution_agent, coordinator
+    global bug_detection_agent, coordinator
     try:
         config = settings.AGENTS.get("bug_detection_agent", {})
         bug_detection_agent = BugDetectionAgent(config)
@@ -88,26 +86,13 @@ async def startup_event():
         print(f"Coordinator 启动失败: {e}")
         coordinator = None
 
-    # 启动并注册 FixExecutionAgent（用于检测后自动进入修复流程）
-    try:
-        fix_execution_agent = FixExecutionAgent(config={})
-        await fix_execution_agent.start()
-        if coordinator:
-            await coordinator.register_agent('fix_execution_agent', fix_execution_agent)
-            print("FixExecutionAgent 已注册到 Coordinator")
-    except Exception as e:
-        print(f"FixExecutionAgent 启动或注册失败: {e}")
-
 @app.on_event("shutdown")
 async def shutdown_event():
     """应用关闭事件"""
-    global bug_detection_agent, fix_execution_agent, coordinator
+    global bug_detection_agent, coordinator
     if bug_detection_agent:
         await bug_detection_agent.stop()
         print("BugDetectionAgent 已停止")
-    if fix_execution_agent:
-        await fix_execution_agent.stop()
-        print("FixExecutionAgent 已停止")
     if coordinator:
         await coordinator.stop()
         print("Coordinator 已停止")
@@ -142,8 +127,7 @@ async def upload_file_for_detection(
     enable_bandit: bool = Query(True, description="启用Bandit安全检测"),
     enable_mypy: bool = Query(True, description="启用Mypy类型检查"),
     enable_ai_analysis: bool = Query(True, description="启用AI分析"),
-    analysis_type: str = Query("file", description="分析类型: file(单文件) 或 project(项目)"),
-    pipeline_mode: str = Query("full", description="编排模式: full(检测→修复→验证) 或 detect_only(仅检测)")
+    analysis_type: str = Query("file", description="分析类型: file(单文件) 或 project(项目)")
 ):
     """上传文件进行缺陷检测 - 支持复杂项目压缩包"""
     global coordinator
@@ -194,8 +178,7 @@ async def upload_file_for_detection(
                 "enable_bandit": enable_bandit,
                 "enable_mypy": enable_mypy,
                 "enable_ai_analysis": enable_ai_analysis
-            },
-            "pipeline_mode": pipeline_mode
+            }
         }
     elif analysis_type == "project":
         # 项目检测
@@ -208,8 +191,7 @@ async def upload_file_for_detection(
                 "enable_bandit": enable_bandit,
                 "enable_mypy": enable_mypy,
                 "enable_ai_analysis": enable_ai_analysis
-            },
-            "pipeline_mode": pipeline_mode
+            }
         }
     else:
         raise HTTPException(status_code=400, detail=f"无效的分析类型: {analysis_type}")
