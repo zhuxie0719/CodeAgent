@@ -48,7 +48,11 @@ class FixExecutionAgent:
     async def process_issues(
         self, issues: List[Dict[str, Any]], project_path: str
     ) -> Dict[str, Any]:
+<<<<<<< HEAD
+        """处理缺陷，文件只修复一次，但按缺陷数量统计修复成功数"""
+=======
         """按语言和type分类，格式化问题用对应工具修复，非格式化问题跳过"""
+>>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
         results = {
             "total_issues": len(issues),
             "fixed_issues": 0,
@@ -61,6 +65,49 @@ class FixExecutionAgent:
 
         print(f"开始处理 {len(issues)} 个缺陷...")
 
+<<<<<<< HEAD
+        # 1. 收集每个文件
+        files_by_lang = {}
+        for issue in issues:
+            lang = issue.get("language", "").lower()
+            file = issue.get("file")
+            if not file:
+                continue
+            files_by_lang.setdefault(lang, set()).add(file)
+
+        # 2. 执行修复，每个文件只跑一次
+        fix_results_by_file = {}
+        for lang, files in files_by_lang.items():
+            for file in files:
+                try:
+                    if lang == "python":
+                        fix_results_by_file[file] = await self.fix_python(
+                            {"file": file}, project_path
+                        )
+                    else:
+                        fix_results_by_file[file] = await self.fix_with_llm(
+                            {"file": file, "language": lang}, project_path
+                        )
+                except Exception as e:
+                    fix_results_by_file[file] = {"success": False, "message": str(e)}
+
+        # 3. 按缺陷数量统计
+        for issue in issues:
+            file = issue.get("file")
+            result = fix_results_by_file.get(file, {"success": False, "message": "未修复"})
+            if result.get("success"):
+                results["fixed_issues"] += 1
+                if result.get("changes"):
+                    results["changes"].extend(result["changes"])
+            else:
+                results["failed_issues"] += 1
+                results["errors"].append(result.get("message", "未知错误"))
+
+        if results["total_issues"] > 0:
+            results["success_rate"] = (
+                results["fixed_issues"] / results["total_issues"]
+            )
+=======
         # 1. 按语言和type分类
         format_files = {  # lang -> set(files)
             "python": set(),
@@ -125,10 +172,17 @@ class FixExecutionAgent:
 
         if results["total_issues"] > 0:
             results["success_rate"] = results["fixed_issues"] / results["total_issues"]
+>>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
         else:
             results["success_rate"] = 0.0
 
         print(
+<<<<<<< HEAD
+            f"缺陷处理完成: 总计{results['total_issues']}, 修复{results['fixed_issues']}, 失败{results['failed_issues']}"
+        )
+        return results
+
+=======
             f"缺陷处理完成: 总计{results['total_issues']}, 修复{results['fixed_issues']}, 失败{results['failed_issues']}, 跳过{results['skipped_issues']}"
         )
         return results
@@ -188,6 +242,7 @@ class FixExecutionAgent:
         except Exception as e:
             return {"success": False, "changes": [], "message": f"Go格式化失败: {e}"}
 
+>>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
     async def fix_python(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
         """统一的Python自动修复流程：autoflake → isort → black"""
         try:
