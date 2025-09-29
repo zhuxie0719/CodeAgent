@@ -25,7 +25,7 @@ from ..base_agent import BaseAgent, TaskStatus
 # from demo.static_detector import StaticDetector  # 暂时注释，模块不存在
 from tools.static_analysis.pylint_tool import PylintTool
 from tools.static_analysis.flake8_tool import Flake8Tool
-# from config.settings import settings  # 暂时注释，避免导入错误
+from config.settings import settings
 
 
 class BugDetectionAgent(BaseAgent):

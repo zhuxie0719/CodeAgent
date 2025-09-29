@@ -232,32 +232,44 @@ class Coordinator:
             await self._process_validation_completion(task, result)
     
     async def _process_detection_completion(self, task, result):
-        """处理缺陷检测完成"""
+        """处理缺陷检测完成（透传 file_path / project_path）"""
         issues = result.get('detection_results', {}).get('issues', [])
-        
+
         if issues:
             # 使用决策引擎分析缺陷
             decisions = await self.decision_engine.analyze_complexity(issues)
-            
-            # 创建修复任务
-            fix_task_id = await self.create_task('fix_issues', {
+
+            # 原样携带 file_path 或 project_path（不做父目录推断）
+            payload = {
                 'issues': issues,
-                'decisions': decisions,
-                'project_path': task['data'].get('project_path')
-            }, TaskPriority.HIGH)
-            
+                'decisions': decisions
+            }
+            if 'project_path' in task['data'] and task['data']['project_path']:
+                payload['project_path'] = task['data']['project_path']
+            if 'file_path' in task['data'] and task['data']['file_path']:
+                payload['file_path'] = task['data']['file_path']
+
+            # 创建修复任务
+            fix_task_id = await self.create_task('fix_issues', payload, TaskPriority.HIGH)
+
             # 分配给修复执行Agent
             await self.assign_task(fix_task_id, 'fix_execution_agent')
         else:
             self.logger.info("未发现需要修复的缺陷")
     
     async def _process_fix_completion(self, task, result):
-        """处理修复完成"""
-        # 创建验证任务
-        validation_task_id = await self.create_task('validate_fix', {
-            'project_path': task['data'].get('project_path'),
+        """处理修复完成（透传 file_path / project_path）"""
+        # 原样携带 file_path 或 project_path
+        payload = {
             'fix_result': result
-        }, TaskPriority.HIGH)
+        }
+        if 'project_path' in task['data'] and task['data']['project_path']:
+            payload['project_path'] = task['data']['project_path']
+        if 'file_path' in task['data'] and task['data']['file_path']:
+            payload['file_path'] = task['data']['file_path']
+
+        # 创建验证任务
+        validation_task_id = await self.create_task('validate_fix', payload, TaskPriority.HIGH)
         
         # 分配给测试验证Agent
         await self.assign_task(validation_task_id, 'test_validation_agent')
@@ -291,14 +303,16 @@ class Coordinator:
             
             # ===== 阶段1: 缺陷检测 =====
             self.logger.info("=== 阶段1: Bug Detection Agent - 缺陷检测 ===")
-            detection_task_id = await self.create_task('detect_bugs', {
+            detection_task_payload = {
                 'project_path': project_path,
                 'options': {
                     'enable_static': True,
                     'enable_ai_analysis': True,
                     'enable_dynamic': False  # 暂时禁用动态检测
                 }
-            }, TaskPriority.HIGH)
+            }
+            detection_task_id = await self.create_task('detect_bugs', detection_task_payload, TaskPriority.HIGH)
+
             
             self.current_workflow['tasks'].append({
                 'task_id': detection_task_id,
