@@ -21,6 +21,12 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 # 导入真正的BugDetectionAgent
 from agents.bug_detection_agent.agent import BugDetectionAgent
+# 预留其它Agent导入（录屏展示用途，暂不启用）
+# from agents.fix_execution_agent.agent import FixExecutionAgent
+# from agents.test_validation_agent.agent import TestValidationAgent
+# from agents.code_analysis_agent.agent import CodeAnalysisAgent
+# from agents.code_quality_agent.agent import CodeQualityAgent
+# from agents.performance_optimization_agent.agent import PerformanceOptimizationAgent
 from coordinator.coordinator import Coordinator
 
 # 简化的设置
@@ -63,6 +69,11 @@ app.add_middleware(
 
 # 全局实例
 bug_detection_agent = None
+# fix_execution_agent = None
+# test_validation_agent = None
+# code_analysis_agent = None
+# code_quality_agent = None
+# performance_optimization_agent = None
 coordinator = None
 
 @app.on_event("startup")
