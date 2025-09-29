@@ -1,0 +1,141 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T16:26:21.933528",
+    "file_path": "uploads\\test_java.java",
+    "total_issues": 2,
+    "summary": {
+      "error_count": 0,
+      "warning_count": 2,
+      "info_count": 0
+    },
+    "detection_tools": [
+      "custom_analyzer",
+      "ai_analyzer"
+    ]
+  },
+  "issues": [
+    {
+      "type": "memory_leak",
+      "severity": "warning",
+      "message": "可能存在内存泄漏",
+      "line": 17,
+      "file": "test_java.java",
+      "language": "java",
+      "code_snippet": [
+        {
+          "line_number": 14,
+          "content": "        // 资源泄漏",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 15,
+          "content": "        FileInputStream fis = null;",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 16,
+          "content": "        try {",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 17,
+          "content": "            fis = new FileInputStream(\"test.txt\");",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 18,
+          "content": "            // 处理文件",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 19,
+          "content": "        } catch (IOException e) {",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 20,
+          "content": "            e.printStackTrace();",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_java.java",
+      "enhanced": true
+    },
+    {
+      "type": "memory_leak",
+      "severity": "warning",
+      "message": "可能存在内存泄漏",
+      "line": 25,
+      "file": "test_java.java",
+      "language": "java",
+      "code_snippet": [
+        {
+          "line_number": 22,
+          "content": "        // 忘记关闭文件流",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 23,
+          "content": "        ",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 24,
+          "content": "        // 内存泄漏风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 25,
+          "content": "        List<String> list = new ArrayList<>();",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 26,
+          "content": "        for (int i = 0; i < 1000000; i++) {",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 27,
+          "content": "            list.add(\"item\" + i);",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 28,
+          "content": "        }",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_java.java",
+      "enhanced": true
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "warning": 2
+    },
+    "by_type": {
+      "memory_leak": 2
+    },
+    "by_category": {
+      "其他": 2
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T12:12:54.528322",
+    "file_path": "uploads\\test_project_with_issues.zip",
+    "task_id": "task_62d93622e930",
+    "total_issues": 9,
+    "summary": {
+      "error_count": 7,
+      "warning_count": 1,
+      "info_count": 1
+    },
+    "detection_tools": [
+      "custom_analyzer"
+    ]
+  },
+  "issues": [
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 10,
+      "file": "test_python_with_issues.py",
+      "language": "python"
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 11,
+      "file": "test_python_with_issues.py",
+      "language": "python"
+    },
+    {
+      "type": "unsafe_eval",
+      "severity": "error",
+      "message": "不安全的eval使用",
+      "line": 17,
+      "file": "test_python_with_issues.py",
+      "language": "python"
+    },
+    {
+      "type": "null_pointer_dereference",
+      "severity": "error",
+      "message": "潜在的空指针解引用",
+      "line": 6,
+      "file": "test_java_with_issues.java",
+      "language": "java"
+    },
+    {
+      "type": "buffer_overflow",
+      "severity": "error",
+      "message": "缓冲区溢出风险",
+      "line": 8,
+      "file": "test_c_with_issues.c",
+      "language": "c"
+    },
+    {
+      "type": "xss_vulnerability",
+      "severity": "error",
+      "message": "XSS漏洞风险",
+      "line": 5,
+      "file": "test_js_with_issues.js",
+      "language": "javascript"
+    },
+    {
+      "type": "xss_vulnerability",
+      "severity": "error",
+      "message": "XSS漏洞风险",
+      "line": 6,
+      "file": "test_js_with_issues.js",
+      "language": "javascript"
+    },
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "未使用的导入",
+      "line": 26,
+      "file": "test_python_with_issues.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 24,
+      "file": "test_python_with_issues.py",
+      "language": "python"
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 7,
+      "warning": 1,
+      "info": 1
+    },
+    "by_type": {
+      "hardcoded_secrets": 2,
+      "unsafe_eval": 1,
+      "null_pointer_dereference": 1,
+      "buffer_overflow": 1,
+      "xss_vulnerability": 2,
+      "unused_import": 1,
+      "missing_docstring": 1
+    }
+  }
+}

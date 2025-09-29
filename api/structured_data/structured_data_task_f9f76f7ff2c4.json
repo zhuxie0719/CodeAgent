@@ -1,0 +1,64 @@
+{
+  "task_id": "task_f9f76f7ff2c4",
+  "file_path": "uploads\\app.py",
+  "analysis_type": "file",
+  "timestamp": "2025-09-28T10:09:03.451369",
+  "summary": {
+    "total_issues": 2,
+    "error_count": 1,
+    "warning_count": 0,
+    "info_count": 1,
+    "languages_detected": [],
+    "total_files": 1
+  },
+  "issues_by_priority": {
+    "critical": [
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 32,
+        "file": "app.py",
+        "language": "python"
+      }
+    ],
+    "high": [],
+    "medium": [],
+    "low": [
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 17,
+        "file": "app.py",
+        "language": "python"
+      }
+    ]
+  },
+  "fix_recommendations": {
+    "immediate_actions": [
+      "修复 1 个错误级别的问题"
+    ],
+    "short_term_improvements": [],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "file",
+    "file_count": 1,
+    "languages": [],
+    "complexity_indicators": {
+      "high_issue_files": 0,
+      "average_issues_per_file": 2.0
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [
+      "custom_analyzer"
+    ],
+    "analysis_time": 0.5,
+    "project_path": "uploads\\app.py"
+  }
+}

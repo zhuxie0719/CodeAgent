@@ -1,11 +1,12 @@
 import os
 import subprocess
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 class CodeFixer:
     """多语言代码格式化修复器"""
     def __init__(self, config: Dict[str, Any]):
         self.config = config
+<<<<<<< HEAD
     
     async def fix_code_style(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
         """修复代码风格问题"""
@@ -198,6 +199,8 @@ class CodeFixer:
         elif 'sha1' in line.lower():
             return re.sub(r'sha1\(', 'hashlib.sha256(', line, flags=re.IGNORECASE)
         return line
+=======
+>>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
 
     async def fix_python(self, file: str, project_path: str) -> Dict[str, Any]:
         try:
@@ -242,47 +245,3 @@ class CodeFixer:
             return {"success": True, "changes": [f"Go文件已格式化: {file_path}"], "message": "gofmt + goimports 格式化成功"}
         except Exception as e:
             return {"success": False, "changes": [], "message": f"Go格式化失败: {e}"}
-
-
-class Refactorer:
-    """代码重构器"""
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
-    
-    async def refactor_code(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """重构代码"""
-        try:
-            # 这里可以实现具体的重构逻辑
-            return {
-                'success': True,
-                'changes': [f"重构了 {issue.get('file', '')} 中的代码"],
-                'message': '代码重构成功'
-            }
-        except Exception as e:
-            return {
-                'success': False,
-                'changes': [],
-                'message': f'代码重构失败: {e}'
-            }
-
-
-class DependencyUpdater:
-    """依赖更新器"""
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
-    
-    async def update_dependency(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """更新依赖"""
-        try:
-            # 这里可以实现具体的依赖更新逻辑
-            return {
-                'success': True,
-                'changes': [f"更新了 {issue.get('file', '')} 中的依赖"],
-                'message': '依赖更新成功'
-            }
-        except Exception as e:
-            return {
-                'success': False,
-                'changes': [],
-                'message': f'依赖更新失败: {e}'
-            }

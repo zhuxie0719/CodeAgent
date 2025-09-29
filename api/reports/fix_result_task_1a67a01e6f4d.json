@@ -1,0 +1,17 @@
+{
+  "workflow_id": "workflow_20250929_132855",
+  "success": true,
+  "message": "未发现需要修复的缺陷",
+  "detection_result": {
+    "task_id": "318acd46-5115-482e-adda-2258210ce7e5",
+    "type": "detect_bugs",
+    "success": true,
+    "message": "任务 detect_bugs 执行完成",
+    "timestamp": "2025-09-29T13:28:56.275648"
+  },
+  "summary": {
+    "total_issues": 0,
+    "fixed_issues": 0,
+    "processing_time": 1.060768
+  }
+}
