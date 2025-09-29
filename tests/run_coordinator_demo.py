@@ -13,9 +13,20 @@ if str(PROJECT_ROOT) not in sys.path:
 from coordinator.coordinator import Coordinator  # noqa: E402
 from agents.bug_detection_agent.agent import BugDetectionAgent  # noqa: E402
 from agents.fix_execution_agent.agent import FixExecutionAgent  # noqa: E402
+from config.settings import settings  # noqa: E402
 
 
 async def main():
+    # 0) 启用所需检测工具（配置层）：开启 pylint/flake8，关闭 static_detector
+    try:
+        if not hasattr(settings, 'TOOLS'):
+            settings.TOOLS = {}
+        settings.TOOLS.setdefault('pylint', {})['enabled'] = True
+        settings.TOOLS.setdefault('flake8', {})['enabled'] = True
+        settings.TOOLS.setdefault('static_detector', {})['enabled'] = False
+    except Exception:
+        pass
+
     # 1) 启动协调中心
     coordinator = Coordinator(config={})
     await coordinator.start()
@@ -32,7 +43,7 @@ async def main():
     test_file = str(CURRENT_DIR / 'test_python_bad.py')
 
     # 4) 创建 detect_bugs 任务并分配给 bug_detection_agent
-    # 注意：如果 StaticDetector 未实现，请将 enable_static 置为 False
+    # 仅检测：启用 pylint/flake8，关闭 static/ai/bandit/mypy
     task_payload = {
         'file_path': test_file,
         'options': {
