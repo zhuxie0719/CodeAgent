@@ -48,11 +48,7 @@ class FixExecutionAgent:
     async def process_issues(
         self, issues: List[Dict[str, Any]], project_path: str
     ) -> Dict[str, Any]:
-<<<<<<< HEAD
-        """处理缺陷，文件只修复一次，但按缺陷数量统计修复成功数"""
-=======
-        """按语言和type分类，格式化问题用对应工具修复，非格式化问题跳过"""
->>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
+
         results = {
             "total_issues": len(issues),
             "fixed_issues": 0,
@@ -65,7 +61,6 @@ class FixExecutionAgent:
 
         print(f"开始处理 {len(issues)} 个缺陷...")
 
-<<<<<<< HEAD
         # 1. 收集每个文件
         files_by_lang = {}
         for issue in issues:
@@ -107,142 +102,14 @@ class FixExecutionAgent:
             results["success_rate"] = (
                 results["fixed_issues"] / results["total_issues"]
             )
-=======
-        # 1. 按语言和type分类
-        format_files = {  # lang -> set(files)
-            "python": set(),
-            "java": set(),
-            "javascript": set(),
-            "c": set(),
-            "cpp": set(),
-            "go": set(),
-        }
-        format_issue_count = {}  # (lang, file) -> int
-        non_format_issues = []
-
-        for issue in issues:
-            lang = issue.get("language", "").lower()
-            file = issue.get("file")
-            typ = issue.get("type", "other")
-            if not file or lang not in format_files:
-                non_format_issues.append(issue)
-                continue
-            if typ == "format":
-                format_files[lang].add(file)
-                format_issue_count[(lang, file)] = format_issue_count.get((lang, file), 0) + 1
-            else:
-                non_format_issues.append(issue)
-
-        # 2. 处理格式化问题（每个文件只修一次，fixed_issues统计所有格式化问题数）
-        fix_results_by_file = {}
-        for lang, files in format_files.items():
-            for file in files:
-                try:
-                    if lang == "python":
-                        fix_results_by_file[(lang, file)] = await self.fix_python({"file": file}, project_path)
-                    elif lang == "java":
-                        fix_results_by_file[(lang, file)] = await self.fix_java({"file": file}, project_path)
-                    elif lang == "javascript":
-                        fix_results_by_file[(lang, file)] = await self.fix_javascript({"file": file}, project_path)
-                    elif lang in ("c", "cpp"):
-                        fix_results_by_file[(lang, file)] = await self.fix_cpp({"file": file}, project_path)
-                    elif lang == "go":
-                        fix_results_by_file[(lang, file)] = await self.fix_go({"file": file}, project_path)
-                    else:
-                        fix_results_by_file[(lang, file)] = {"success": False, "message": f"暂不支持{lang}格式化"}
-                except Exception as e:
-                    fix_results_by_file[(lang, file)] = {"success": False, "message": str(e)}
-
-        # 3. 统计格式化问题
-        for (lang, file), count in format_issue_count.items():
-            result = fix_results_by_file.get((lang, file), {"success": False, "message": "未修复"})
-            if result.get("success"):
-                results["fixed_issues"] += count
-                if result.get("changes"):
-                    results["changes"].extend(result["changes"])
-            else:
-                results["failed_issues"] += count
-                results["errors"].append(result.get("message", "未知错误"))
-
-        # 4. 跳过非格式化问题
-        for issue in non_format_issues:
-            results["skipped_issues"] += 1
-            msg = issue.get("message", "")
-            results["changes"].append(f"跳过非格式化缺陷: {msg[:100]}")
-
-        if results["total_issues"] > 0:
-            results["success_rate"] = results["fixed_issues"] / results["total_issues"]
->>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
         else:
             results["success_rate"] = 0.0
 
         print(
-<<<<<<< HEAD
             f"缺陷处理完成: 总计{results['total_issues']}, 修复{results['fixed_issues']}, 失败{results['failed_issues']}"
         )
         return results
 
-=======
-            f"缺陷处理完成: 总计{results['total_issues']}, 修复{results['fixed_issues']}, 失败{results['failed_issues']}, 跳过{results['skipped_issues']}"
-        )
-        return results
-
-    async def fix_java(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """Java格式化: google-java-format + checkstyle (仅格式化)"""
-        try:
-            file_path = os.path.join(project_path, issue["file"])
-            subprocess.run(["google-java-format", "-i", file_path], check=True)
-            # checkstyle 可选，仅做格式检查
-            return {
-                "success": True,
-                "changes": [f"Java文件已格式化: {file_path}"],
-                "message": "google-java-format 格式化成功",
-            }
-        except Exception as e:
-            return {"success": False, "changes": [], "message": f"Java格式化失败: {e}"}
-
-    async def fix_javascript(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """JavaScript格式化: eslint --fix + prettier"""
-        try:
-            file_path = os.path.join(project_path, issue["file"])
-            subprocess.run(["eslint", "--fix", file_path], check=True)
-            subprocess.run(["prettier", "--write", file_path], check=True)
-            return {
-                "success": True,
-                "changes": [f"JavaScript文件已格式化: {file_path}"],
-                "message": "eslint + prettier 格式化成功",
-            }
-        except Exception as e:
-            return {"success": False, "changes": [], "message": f"JavaScript格式化失败: {e}"}
-
-    async def fix_cpp(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """C/C++格式化: clang-format (仅格式化)"""
-        try:
-            file_path = os.path.join(project_path, issue["file"])
-            subprocess.run(["clang-format", "-i", file_path], check=True)
-            return {
-                "success": True,
-                "changes": [f"C/C++文件已格式化: {file_path}"],
-                "message": "clang-format 格式化成功",
-            }
-        except Exception as e:
-            return {"success": False, "changes": [], "message": f"C/C++格式化失败: {e}"}
-
-    async def fix_go(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """Go格式化: gofmt + goimports"""
-        try:
-            file_path = os.path.join(project_path, issue["file"])
-            subprocess.run(["gofmt", "-w", file_path], check=True)
-            subprocess.run(["goimports", "-w", file_path], check=True)
-            return {
-                "success": True,
-                "changes": [f"Go文件已格式化: {file_path}"],
-                "message": "gofmt + goimports 格式化成功",
-            }
-        except Exception as e:
-            return {"success": False, "changes": [], "message": f"Go格式化失败: {e}"}
-
->>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
     async def fix_python(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
         """统一的Python自动修复流程：autoflake → isort → black"""
         try:
