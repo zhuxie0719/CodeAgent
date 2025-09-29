@@ -14,15 +14,15 @@ class PylintTool:
         self.config = config
         self.pylint_args = config.get('pylint_args', [])
     
-    async def analyze(self, project_path: str) -> Dict[str, Any]:
+    async def analyze(self, file_path: str) -> Dict[str, Any]:
         """执行Pylint分析"""
         try:
-            cmd = ['pylint', project_path, '--output-format=json'] + self.pylint_args
+            cmd = ['pylint', file_path, '--output-format=json'] + self.pylint_args
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
-                cwd=project_path
+                timeout=30
             )
             
             issues = []

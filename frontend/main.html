@@ -767,6 +767,34 @@
           fix: 'Use a descriptive name like $userData = getUserData();'
         }
       ];
+      
+      // 更新页面显示
+      document.querySelector('.issues-count').textContent = `${issues.length} 个问题`;
+      document.getElementById('totalIssuesValue').textContent = issues.length;
+      document.getElementById('filesCount').textContent = '1 个文件';
+      
+      // 更新质量指标
+      const errorCount = issues.filter(issue => issue.severity === 'error').length;
+      const warningCount = issues.filter(issue => issue.severity === 'warning').length;
+      const infoCount = issues.filter(issue => issue.severity === 'info').length;
+      
+      // 更新安全、可靠性、可维护性指标
+      document.querySelector('.metric-card:nth-child(1) .metric-value').textContent = errorCount;
+      document.querySelector('.metric-card:nth-child(2) .metric-value').textContent = warningCount;
+      document.querySelector('.metric-card:nth-child(3) .metric-value').textContent = infoCount;
+      
+      // 更新质量门
+      const totalIssues = errorCount + warningCount + infoCount;
+      if (totalIssues === 0) {
+        document.querySelector('.quality-gate-section .status').textContent = 'Passed';
+        document.querySelector('.quality-gate-section .status').className = 'status passed';
+        document.querySelector('.quality-gate-section p').textContent = 'All conditions have been met for the quality gate.';
+      } else {
+        document.querySelector('.quality-gate-section .status').textContent = 'Failed';
+        document.querySelector('.quality-gate-section .status').className = 'status failed';
+        document.querySelector('.quality-gate-section p').textContent = `${totalIssues} issues need to be resolved to pass the quality gate.`;
+      }
+      
       renderIssues(issues);
     }
 

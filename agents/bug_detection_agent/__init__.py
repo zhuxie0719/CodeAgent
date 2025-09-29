@@ -4,6 +4,5 @@
 """
 
 from .agent import BugDetectionAgent
-from .detector import StaticAnalyzer, RuntimeAnalyzer, SecurityAnalyzer
 
-__all__ = ['BugDetectionAgent', 'StaticAnalyzer', 'RuntimeAnalyzer', 'SecurityAnalyzer']
+__all__ = ['BugDetectionAgent']

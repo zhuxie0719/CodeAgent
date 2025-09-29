@@ -1,0 +1,15 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T16:03:49.480938",
+    "file_path": "uploads\\test_project.zip",
+    "total_issues": 0,
+    "summary": {},
+    "detection_tools": []
+  },
+  "issues": [],
+  "statistics": {
+    "by_severity": {},
+    "by_type": {},
+    "by_category": {}
+  }
+}

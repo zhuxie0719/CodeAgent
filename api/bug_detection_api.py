@@ -1,5 +1,6 @@
 """
-只包含BugDetectionAgent的API服务
+简化的BugDetectionAgent API服务
+只保留接口调用，具体逻辑在agents层
 """
 
 import asyncio
@@ -18,9 +19,10 @@ from pydantic import BaseModel, Field
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 
-# 导入文件分析器
-from file_analyzer import FileAnalyzer
+# 导入真正的BugDetectionAgent
+from agents.bug_detection_agent.agent import BugDetectionAgent
 
+<<<<<<< HEAD
 try:
     from agents.bug_detection_agent.agent import BugDetectionAgent
     from config.settings import settings
@@ -497,7 +499,13 @@ except ImportError as e:
         AGENTS = {"bug_detection_agent": {"enabled": True}}
     
     settings = Settings()
+=======
+# 简化的设置
+class Settings:
+    AGENTS = {"bug_detection_agent": {"enabled": True}}
+>>>>>>> f0fc86c4f526a87dd6c295fe052006374a54b6c9
 
+settings = Settings()
 
 # 数据模型
 class BaseResponse(BaseModel):
@@ -507,13 +515,11 @@ class BaseResponse(BaseModel):
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat(), description="时间戳")
     data: Optional[Dict[str, Any]] = Field(None, description="响应数据")
 
-
 class HealthResponse(BaseModel):
     """健康检查响应模型"""
     status: str = Field(..., description="服务状态")
     message: str = Field(..., description="状态消息")
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat(), description="时间戳")
-
 
 # 创建FastAPI应用
 app = FastAPI(
@@ -547,6 +553,7 @@ async def startup_event():
         print("BugDetectionAgent 启动成功")
     except Exception as e:
         print(f"BugDetectionAgent 启动失败: {e}")
+        bug_detection_agent = None
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -582,6 +589,8 @@ async def upload_file_for_detection(
     enable_static: bool = Query(True, description="启用自定义静态检测"),
     enable_pylint: bool = Query(True, description="启用Pylint检测"),
     enable_flake8: bool = Query(True, description="启用Flake8检测"),
+    enable_bandit: bool = Query(True, description="启用Bandit安全检测"),
+    enable_mypy: bool = Query(True, description="启用Mypy类型检查"),
     enable_ai_analysis: bool = Query(True, description="启用AI分析"),
     analysis_type: str = Query("file", description="分析类型: file(单文件) 或 project(项目)")
 ):
@@ -630,6 +639,8 @@ async def upload_file_for_detection(
             "enable_static": enable_static,
             "enable_pylint": enable_pylint,
             "enable_flake8": enable_flake8,
+            "enable_bandit": enable_bandit,
+            "enable_mypy": enable_mypy,
             "enable_ai_analysis": enable_ai_analysis
         }
     }
@@ -735,6 +746,12 @@ async def get_ai_report(task_id: str):
             
             if detection_results:
                 ai_report = await generate_ai_report(detection_results, file_path)
+                
+                # 保存AI报告
+                ai_report_path.parent.mkdir(exist_ok=True)
+                with open(ai_report_path, 'w', encoding='utf-8') as f:
+                    f.write(ai_report)
+                
                 return BaseResponse(
                     message="获取AI报告成功",
                     data={
@@ -748,6 +765,51 @@ async def get_ai_report(task_id: str):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取AI报告失败: {str(e)}")
+
+@app.get("/api/v1/ai-reports/{task_id}/download")
+async def download_ai_report(task_id: str):
+    """下载AI报告文件"""
+    try:
+        # 检查AI报告文件是否存在
+        ai_report_path = Path("reports") / f"ai_report_{task_id}.md"
+        
+        if not ai_report_path.exists():
+            raise HTTPException(status_code=404, detail="AI报告文件不存在")
+        
+        # 返回文件下载
+        from fastapi.responses import FileResponse
+        return FileResponse(
+            path=str(ai_report_path),
+            filename=f"ai_report_{task_id}.md",
+            media_type="text/markdown"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"下载AI报告失败: {str(e)}")
+
+@app.get("/api/v1/structured-data/{task_id}", response_model=BaseResponse)
+async def get_structured_data(task_id: str):
+    """获取结构化数据给修复agent"""
+    try:
+        # 检查结构化数据文件是否存在
+        structured_file = Path("structured_data") / f"structured_data_{task_id}.json"
+        
+        if not structured_file.exists():
+            raise HTTPException(status_code=404, detail="结构化数据不存在")
+        
+        # 读取结构化数据
+        with open(structured_file, 'r', encoding='utf-8') as f:
+            structured_data = json.load(f)
+        
+        return BaseResponse(
+            message="获取结构化数据成功",
+            data=structured_data
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取结构化数据失败: {str(e)}")
 
 @app.get("/api/v1/reports/{task_id}")
 async def download_report(task_id: str):
@@ -793,92 +855,6 @@ async def download_report(task_id: str):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"下载报告失败: {str(e)}")
-
-@app.get("/api/v1/ai-reports/{task_id}/download")
-async def download_ai_report(task_id: str):
-    """下载AI生成的自然语言报告"""
-    global bug_detection_agent
-    
-    if not bug_detection_agent:
-        raise HTTPException(status_code=500, detail="BugDetectionAgent 未启动")
-    
-    try:
-        # 检查AI报告文件是否存在
-        ai_report_path = Path("reports") / f"ai_report_{task_id}.md"
-        
-        if not ai_report_path.exists():
-            # 如果没有AI报告文件，生成一个
-            task_status = await bug_detection_agent.get_task_status(task_id)
-            if not task_status or task_status.get("status") != "completed":
-                raise HTTPException(status_code=404, detail="任务不存在或未完成")
-            
-            detection_results = task_status.get("result", {}).get("detection_results", {})
-            file_path = task_status.get("result", {}).get("file_path", "")
-            
-            if not detection_results:
-                raise HTTPException(status_code=404, detail="检测结果不存在")
-            
-            # 生成AI报告
-            ai_report = await generate_ai_report(detection_results, file_path)
-            
-            # 保存AI报告
-            ai_report_path.parent.mkdir(exist_ok=True)
-            with open(ai_report_path, 'w', encoding='utf-8') as f:
-                f.write(ai_report)
-        
-        # 返回文件
-        from fastapi.responses import FileResponse
-        return FileResponse(
-            path=ai_report_path,
-            filename=f"ai_report_{task_id}.md",
-            media_type="text/markdown"
-        )
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"下载AI报告失败: {str(e)}")
-
-@app.get("/api/v1/structured-data/{task_id}", response_model=BaseResponse)
-async def get_structured_data(task_id: str):
-    """获取结构化数据给修复agent"""
-    try:
-        # 检查结构化数据文件是否存在
-        structured_file = Path("structured_data") / f"structured_data_{task_id}.json"
-        
-        if not structured_file.exists():
-            raise HTTPException(status_code=404, detail="结构化数据不存在")
-        
-        # 读取结构化数据
-        with open(structured_file, 'r', encoding='utf-8') as f:
-            structured_data = json.load(f)
-        
-        return BaseResponse(
-            message="获取结构化数据成功",
-            data=structured_data
-        )
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取结构化数据失败: {str(e)}")
-
-@app.get("/api/v1/structured-data/{task_id}/download")
-async def download_structured_data(task_id: str):
-    """下载结构化数据文件"""
-    try:
-        # 检查结构化数据文件是否存在
-        structured_file = Path("structured_data") / f"structured_data_{task_id}.json"
-        
-        if not structured_file.exists():
-            raise HTTPException(status_code=404, detail="结构化数据不存在")
-        
-        # 返回文件
-        from fastapi.responses import FileResponse
-        return FileResponse(
-            path=structured_file,
-            filename=f"structured_data_{task_id}.json",
-            media_type="application/json"
-        )
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"下载结构化数据失败: {str(e)}")
 
 async def create_simple_report(detection_results: Dict[str, Any], file_path: str, task_id: str) -> str:
     """创建简化的检测报告"""
@@ -936,148 +912,6 @@ def _get_issues_by_type(issues: List[Dict[str, Any]]) -> Dict[str, int]:
         type_count[issue_type] = type_count.get(issue_type, 0) + 1
     return type_count
 
-async def generate_ai_report(detection_results: Dict[str, Any], file_path: str) -> str:
-    """使用AI生成自然语言报告"""
-    try:
-        import requests
-        
-        # 准备检测数据
-        issues = detection_results.get("issues", [])
-        summary = detection_results.get("summary", {})
-        
-        # 构建提示词
-        prompt = f"""
-请分析以下Python代码检测结果，生成一份专业的中文自然语言报告：
-
-文件路径: {file_path}
-检测摘要: 错误 {summary.get('error_count', 0)} 个，警告 {summary.get('warning_count', 0)} 个，信息 {summary.get('info_count', 0)} 个
-
-检测到的问题:
-"""
-        
-        for i, issue in enumerate(issues[:10], 1):  # 只取前10个问题
-            prompt += f"""
-{i}. 类型: {issue.get('type', 'unknown')}
-   严重性: {issue.get('severity', 'info')}
-   位置: 第 {issue.get('line', 0)} 行
-   描述: {issue.get('message', '')}
-"""
-        
-        prompt += """
-
-请生成一份包含以下内容的专业报告：
-1. 代码质量总体评估
-2. 主要问题分析和语法错误
-3. 改进建议
-4. 优先级排序
-
-报告要求：
-- 使用专业的技术语言
-- 提供具体的改进建议
-- 按重要性排序问题
-- 语言简洁明了
-"""
-        
-        # 调用DeepSeek API 
-        ai_report = await call_deepseek_api(prompt)
-        
-        return ai_report
-        
-    except Exception as e:
-        print(f"生成AI报告失败: {e}")
-        return "AI报告生成失败，请稍后重试。"
-
-async def call_deepseek_api(prompt: str) -> str:
-    """调用DeepSeek API生成报告"""
-    try:
-        from deepseek_config import deepseek_config
-        import aiohttp
-        
-        # 检查是否配置了API密钥
-        if not deepseek_config.is_configured():
-            print("⚠️ API密钥未配置，使用模拟报告")
-            return generate_mock_ai_report(prompt)
-        
-        print("🤖 调用DeepSeek API生成真实AI报告...")
-        print(f"API密钥: {deepseek_config.api_key[:10]}...{deepseek_config.api_key[-10:]}")
-        
-        # 构建请求数据
-        request_data = {
-            "model": deepseek_config.model,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "你是一个专业的代码质量分析专家，擅长分析Python代码问题并提供改进建议。请用专业、简洁的中文回答。"
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            "max_tokens": deepseek_config.max_tokens,
-            "temperature": deepseek_config.temperature
-        }
-        
-        # 调用DeepSeek API
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{deepseek_config.base_url}/chat/completions",
-                headers=deepseek_config.get_headers(),
-                json=request_data,
-                timeout=aiohttp.ClientTimeout(total=30)
-            ) as response:
-                print(f"📊 API响应状态: {response.status}")
-                
-                if response.status == 200:
-                    result = await response.json()
-                    ai_response = result["choices"][0]["message"]["content"]
-                    print("✅ 真实AI报告生成成功！")
-                    return ai_response
-                elif response.status == 402:
-                    print("⚠️ DeepSeek API余额不足，使用模拟报告")
-                    return generate_mock_ai_report(prompt)
-                else:
-                    error_text = await response.text()
-                    print(f"⚠️ DeepSeek API调用失败: {response.status} - {error_text}")
-                    return generate_mock_ai_report(prompt)
-    
-    except Exception as e:
-        print(f"⚠️ 调用DeepSeek API失败: {e}，使用模拟报告")
-        return generate_mock_ai_report(prompt)
-
-def generate_mock_ai_report(prompt: str) -> str:
-    """生成模拟的AI报告"""
-    # 从prompt中提取问题数量
-    issues_count = len(prompt.split('问题:')) - 1 if '问题:' in prompt else 0
-    
-    return f"""
-# 代码质量检测报告
-
-## 总体评估
-根据静态代码分析结果，您的代码整体质量{'良好' if issues_count < 3 else '需要改进'}。检测发现了{issues_count}个潜在问题，建议及时修复。
-
-## 主要问题分析
-1. **代码规范问题**: 发现了一些命名和格式问题，建议使用代码格式化工具
-2. **潜在安全风险**: 检测到可能存在安全漏洞的代码模式
-3. **性能优化**: 部分代码可能存在性能瓶颈
-
-## 改进建议
-1. 立即修复所有错误级别的问题
-2. 逐步改进警告级别的问题
-3. 考虑重构复杂度过高的函数
-4. 添加适当的错误处理机制
-
-## 优先级排序
-- 🔴 高优先级: 安全相关问题和错误
-- 🟡 中优先级: 代码质量和性能问题  
-- 🟢 低优先级: 代码风格和文档问题
-
-建议定期进行代码审查，保持代码质量。
-
----
-*注：这是模拟的AI报告。要使用真实的AI分析，请配置DeepSeek API密钥。*
-"""
-
 async def generate_report_task(task_id: str, file_path: str):
     """后台任务：生成检测报告"""
     global bug_detection_agent
@@ -1110,16 +944,6 @@ async def generate_report_task(task_id: str, file_path: str):
             
             if report_path:
                 print(f"JSON报告已生成: {report_path}")
-            
-            # 生成AI自然语言报告
-            ai_report = await generate_ai_report(detection_results, file_path)
-            
-            # 保存AI报告
-            ai_report_path = Path("reports") / f"ai_report_{task_id}.md"
-            ai_report_path.parent.mkdir(exist_ok=True)
-            with open(ai_report_path, 'w', encoding='utf-8') as f:
-                f.write(ai_report)
-            print(f"AI报告已生成: {ai_report_path}")
         
     except Exception as e:
         print(f"生成报告任务失败: {e}")
@@ -1188,6 +1012,84 @@ async def store_structured_data(task_id: str, file_path: str, analysis_type: str
         
     except Exception as e:
         print(f"存储结构化数据失败: {e}")
+
+async def generate_ai_report(detection_results: Dict[str, Any], file_path: str) -> str:
+    """生成AI分析报告"""
+    try:
+        issues = detection_results.get("issues", [])
+        total_issues = detection_results.get("total_issues", 0)
+        
+        if total_issues == 0:
+            return "# AI分析报告\n\n## 检测结果\n\n✅ 未发现明显的代码缺陷。\n\n## 建议\n\n- 代码质量良好，建议继续保持\n- 可以考虑添加更多的单元测试\n- 定期进行代码审查\n"
+        
+        # 按严重性分组问题
+        error_issues = [issue for issue in issues if issue.get("severity") == "error"]
+        warning_issues = [issue for issue in issues if issue.get("severity") == "warning"]
+        info_issues = [issue for issue in issues if issue.get("severity") == "info"]
+        
+        report = f"# AI分析报告\n\n"
+        report += f"## 文件信息\n\n- **文件路径**: {file_path}\n"
+        report += f"- **总问题数**: {total_issues}\n"
+        report += f"- **错误**: {len(error_issues)} 个\n"
+        report += f"- **警告**: {len(warning_issues)} 个\n"
+        report += f"- **信息**: {len(info_issues)} 个\n\n"
+        
+        # 严重问题分析
+        if error_issues:
+            report += "## 🚨 严重问题\n\n"
+            for issue in error_issues[:5]:  # 只显示前5个
+                report += f"### {issue.get('type', 'unknown')}\n"
+                report += f"- **位置**: 第{issue.get('line', 0)}行\n"
+                report += f"- **描述**: {issue.get('message', '')}\n"
+                report += f"- **建议**: 需要立即修复此问题\n\n"
+        
+        # 警告问题分析
+        if warning_issues:
+            report += "## ⚠️ 警告问题\n\n"
+            for issue in warning_issues[:5]:  # 只显示前5个
+                report += f"### {issue.get('type', 'unknown')}\n"
+                report += f"- **位置**: 第{issue.get('line', 0)}行\n"
+                report += f"- **描述**: {issue.get('message', '')}\n"
+                report += f"- **建议**: 建议修复以提高代码质量\n\n"
+        
+        # 代码质量建议
+        report += "## 💡 代码质量建议\n\n"
+        
+        # 根据问题类型给出建议
+        issue_types = set(issue.get('type', 'unknown') for issue in issues)
+        
+        if 'unhandled_exception' in issue_types:
+            report += "- **异常处理**: 建议添加try-catch块来处理可能的异常\n"
+        
+        if 'potential_division_by_zero' in issue_types:
+            report += "- **除零检查**: 建议在除法操作前检查除数是否为零\n"
+        
+        if 'unused_import' in issue_types:
+            report += "- **代码清理**: 建议移除未使用的导入语句\n"
+        
+        if 'missing_docstring' in issue_types:
+            report += "- **文档化**: 建议为函数和类添加文档字符串\n"
+        
+        if 'hardcoded_secrets' in issue_types:
+            report += "- **安全性**: 建议将硬编码的密钥移到环境变量或配置文件中\n"
+        
+        report += "\n## 📊 总结\n\n"
+        
+        if len(error_issues) > 0:
+            report += f"发现 {len(error_issues)} 个严重问题需要立即修复。\n"
+        
+        if len(warning_issues) > 0:
+            report += f"发现 {len(warning_issues)} 个警告问题建议修复。\n"
+        
+        if len(info_issues) > 0:
+            report += f"发现 {len(info_issues)} 个信息提示可以改进。\n"
+        
+        report += "\n建议按优先级逐步修复这些问题，以提高代码质量和可维护性。\n"
+        
+        return report
+        
+    except Exception as e:
+        return f"# AI分析报告\n\n## 错误\n\n生成AI报告时发生错误: {str(e)}\n"
 
 def categorize_issues_by_priority(issues):
     """按优先级分类问题"""

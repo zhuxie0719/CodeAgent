@@ -1,0 +1,42 @@
+{
+  "task_id": "task_8efd5eb9120a",
+  "file_path": "uploads\\test_project.zip",
+  "analysis_type": "project",
+  "timestamp": "2025-09-28T16:03:49.483936",
+  "summary": {
+    "total_issues": 0,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 0,
+    "languages_detected": [],
+    "total_files": 1
+  },
+  "issues_by_priority": {
+    "critical": [],
+    "high": [],
+    "medium": [],
+    "low": []
+  },
+  "fix_recommendations": {
+    "immediate_actions": [],
+    "short_term_improvements": [],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "project",
+    "file_count": 1,
+    "languages": [],
+    "complexity_indicators": {
+      "high_issue_files": 0,
+      "average_issues_per_file": 0
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [],
+    "analysis_time": 0,
+    "project_path": "uploads\\test_project.zip"
+  }
+}
