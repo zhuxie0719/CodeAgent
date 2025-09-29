@@ -1,11 +1,11 @@
-# 只测试一个格式不规范的 Python 文件 main.py
+# 测试 JavaScript 格式化
 
 test_task = {
-    "task_id": "test001",
-    "file_path": "agents/fix_execution_agent/main.py",  # 用于推断 project_path
+    "task_id": "test_js_001",
+    "file_path": "main.js",
     "issues_by_priority": {
         "high": [
-            {"language": "python", "file": "main.py", "type": "format", "message": "格式化问题"}
+            {"language": "javascript", "file": "main.js", "type": "format", "message": "格式化问题"}
         ]
     }
 }
