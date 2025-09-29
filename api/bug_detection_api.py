@@ -97,6 +97,57 @@ async def startup_event():
         print(f"Coordinator 启动失败: {e}")
         coordinator = None
 
+    # 注册检测Agent到协调中心（关键：否则无法分配任务给真实Agent）
+    try:
+        if coordinator and bug_detection_agent:
+            await coordinator.register_agent('bug_detection_agent', bug_detection_agent)
+            print("BugDetectionAgent 已注册到 Coordinator")
+    except Exception as e:
+        print(f"注册 BugDetectionAgent 失败: {e}")
+
+    # 预留：其它Agent启动与注册（录屏注释占位，需要时取消注释即可）
+    # global fix_execution_agent, test_validation_agent, code_analysis_agent, code_quality_agent, performance_optimization_agent
+    # try:
+    #     fix_execution_agent = FixExecutionAgent(config={})
+    #     await fix_execution_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('fix_execution_agent', fix_execution_agent)
+    #     print("FixExecutionAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"FixExecutionAgent 启动/注册失败: {e}")
+    # try:
+    #     test_validation_agent = TestValidationAgent(config={})
+    #     await test_validation_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('test_validation_agent', test_validation_agent)
+    #     print("TestValidationAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"TestValidationAgent 启动/注册失败: {e}")
+    # try:
+    #     code_analysis_agent = CodeAnalysisAgent(config={})
+    #     await code_analysis_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('code_analysis_agent', code_analysis_agent)
+    #     print("CodeAnalysisAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"CodeAnalysisAgent 启动/注册失败: {e}")
+    # try:
+    #     code_quality_agent = CodeQualityAgent(config={})
+    #     await code_quality_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('code_quality_agent', code_quality_agent)
+    #     print("CodeQualityAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"CodeQualityAgent 启动/注册失败: {e}")
+    # try:
+    #     performance_optimization_agent = PerformanceOptimizationAgent(config={})
+    #     await performance_optimization_agent.start()
+    #     if coordinator:
+    #         await coordinator.register_agent('performance_optimization_agent', performance_optimization_agent)
+    #     print("PerformanceOptimizationAgent 启动并注册成功")
+    # except Exception as e:
+    #     print(f"PerformanceOptimizationAgent 启动/注册失败: {e}")
+
 @app.on_event("shutdown")
 async def shutdown_event():
     """应用关闭事件"""
@@ -104,6 +155,22 @@ async def shutdown_event():
     if bug_detection_agent:
         await bug_detection_agent.stop()
         print("BugDetectionAgent 已停止")
+    # 预留：其它Agent停止（需要时取消注释）
+    # if fix_execution_agent:
+    #     await fix_execution_agent.stop()
+    #     print("FixExecutionAgent 已停止")
+    # if test_validation_agent:
+    #     await test_validation_agent.stop()
+    #     print("TestValidationAgent 已停止")
+    # if code_analysis_agent:
+    #     await code_analysis_agent.stop()
+    #     print("CodeAnalysisAgent 已停止")
+    # if code_quality_agent:
+    #     await code_quality_agent.stop()
+    #     print("CodeQualityAgent 已停止")
+    # if performance_optimization_agent:
+    #     await performance_optimization_agent.stop()
+    #     print("PerformanceOptimizationAgent 已停止")
     if coordinator:
         await coordinator.stop()
         print("Coordinator 已停止")
@@ -182,6 +249,7 @@ async def upload_file_for_detection(
         # 单文件检测
         task_data = {
             "file_path": str(file_path),
+            "analysis_type": "file",
             "options": {
                 "enable_static": enable_static,
                 "enable_pylint": enable_pylint,
@@ -194,7 +262,9 @@ async def upload_file_for_detection(
     elif analysis_type == "project":
         # 项目检测
         task_data = {
-            "project_path": str(file_path),  # 项目文件夹或压缩包路径
+            # 提示：这里传入上传的压缩包路径，由Agent负责解压
+            "file_path": str(file_path),
+            "analysis_type": "project",
             "options": {
                 "enable_static": enable_static,
                 "enable_pylint": enable_pylint,
