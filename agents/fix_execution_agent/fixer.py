@@ -1,18 +1,12 @@
-"""
-修复器模块
-"""
-
 import os
-import re
 import subprocess
-from typing import Dict, List, Any, Optional
-
+from typing import Dict, Any
 
 class CodeFixer:
-    """代码修复器"""
-    
+    """多语言代码格式化修复器"""
     def __init__(self, config: Dict[str, Any]):
         self.config = config
+<<<<<<< HEAD
     
     async def fix_code_style(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
         """修复代码风格问题"""
@@ -205,136 +199,49 @@ class CodeFixer:
         elif 'sha1' in line.lower():
             return re.sub(r'sha1\(', 'hashlib.sha256(', line, flags=re.IGNORECASE)
         return line
+=======
+>>>>>>> 40780cdd121706b542d7cf03cfd63d0cca69a111
 
+    async def fix_python(self, file: str, project_path: str) -> Dict[str, Any]:
+        try:
+            file_path = os.path.join(project_path, file)
+            subprocess.run(["autoflake", "--in-place", "--remove-unused-variables", file_path], check=True)
+            subprocess.run(["isort", file_path], check=True)
+            subprocess.run(["black", file_path], check=True)
+            return {"success": True, "changes": [f"Python文件已自动修复: {file_path}"], "message": "autoflake + isort + black 修复成功"}
+        except Exception as e:
+            return {"success": False, "changes": [], "message": f"Python修复失败: {e}"}
 
-class Refactorer:
-    """代码重构器"""
-    
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
-    
-    async def refactor_code(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """重构代码"""
+    async def fix_javascript(self, file: str, project_path: str) -> Dict[str, Any]:
         try:
-            file_path = os.path.join(project_path, issue['file'])
-            
-            # 读取文件内容
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # 应用重构
-            refactored_content = self._apply_refactoring(content, issue)
-            
-            # 写回文件
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(refactored_content)
-            
-            return {
-                'success': True,
-                'changes': [f"重构了 {issue['file']} 中的代码"],
-                'message': '代码重构成功'
-            }
+            file_path = os.path.join(project_path, file)
+            subprocess.run(["eslint", "--fix", file_path], check=True)
+            subprocess.run(["prettier", "--write", file_path], check=True)
+            return {"success": True, "changes": [f"JavaScript文件已格式化: {file_path}"], "message": "eslint + prettier 格式化成功"}
         except Exception as e:
-            return {
-                'success': False,
-                'message': f'代码重构失败: {e}'
-            }
-    
-    def _apply_refactoring(self, content: str, issue: Dict[str, Any]) -> str:
-        """应用重构"""
-        # 简单的重构逻辑
-        message = issue.get('message', '').lower()
-        
-        if 'duplicate code' in message:
-            # 提取重复代码为函数
-            return self._extract_duplicate_code(content)
-        elif 'long method' in message:
-            # 拆分长方法
-            return self._split_long_method(content)
-        elif 'large class' in message:
-            # 拆分大类
-            return self._split_large_class(content)
-        
-        return content
-    
-    def _extract_duplicate_code(self, content: str) -> str:
-        """提取重复代码"""
-        # 简单的重复代码检测和提取
-        lines = content.split('\n')
-        # 这里可以实现更复杂的重复代码检测逻辑
-        return content
-    
-    def _split_long_method(self, content: str) -> str:
-        """拆分长方法"""
-        # 简单的长方法拆分逻辑
-        return content
-    
-    def _split_large_class(self, content: str) -> str:
-        """拆分大类"""
-        # 简单的大类拆分逻辑
-        return content
+            return {"success": False, "changes": [], "message": f"JavaScript格式化失败: {e}"}
 
+    async def fix_java(self, file: str, project_path: str) -> Dict[str, Any]:
+        try:
+            file_path = os.path.join(project_path, file)
+            subprocess.run(["google-java-format", "-i", file_path], check=True)
+            return {"success": True, "changes": [f"Java文件已格式化: {file_path}"], "message": "google-java-format 格式化成功"}
+        except Exception as e:
+            return {"success": False, "changes": [], "message": f"Java格式化失败: {e}"}
 
-class DependencyUpdater:
-    """依赖更新器"""
-    
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
-    
-    async def update_dependency(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
-        """更新依赖"""
+    async def fix_cpp(self, file: str, project_path: str) -> Dict[str, Any]:
         try:
-            # 检查依赖文件
-            req_file = os.path.join(project_path, 'requirements.txt')
-            package_file = os.path.join(project_path, 'package.json')
-            
-            changes = []
-            
-            if os.path.exists(req_file):
-                changes.extend(await self._update_python_dependencies(req_file, issue))
-            
-            if os.path.exists(package_file):
-                changes.extend(await self._update_node_dependencies(package_file, issue))
-            
-            return {
-                'success': True,
-                'changes': changes,
-                'message': '依赖更新成功'
-            }
+            file_path = os.path.join(project_path, file)
+            subprocess.run(["clang-format", "-i", file_path], check=True)
+            return {"success": True, "changes": [f"C/C++文件已格式化: {file_path}"], "message": "clang-format 格式化成功"}
         except Exception as e:
-            return {
-                'success': False,
-                'message': f'依赖更新失败: {e}'
-            }
-    
-    async def _update_python_dependencies(self, req_file: str, issue: Dict[str, Any]) -> List[str]:
-        """更新Python依赖"""
-        changes = []
+            return {"success": False, "changes": [], "message": f"C/C++格式化失败: {e}"}
+
+    async def fix_go(self, file: str, project_path: str) -> Dict[str, Any]:
         try:
-            with open(req_file, 'r') as f:
-                lines = f.readlines()
-            
-            # 简单的依赖更新逻辑
-            # 这里可以实现具体的依赖更新策略
-            
-            changes.append(f"更新了 {req_file} 中的依赖")
+            file_path = os.path.join(project_path, file)
+            subprocess.run(["gofmt", "-w", file_path], check=True)
+            subprocess.run(["goimports", "-w", file_path], check=True)
+            return {"success": True, "changes": [f"Go文件已格式化: {file_path}"], "message": "gofmt + goimports 格式化成功"}
         except Exception as e:
-            changes.append(f"更新Python依赖失败: {e}")
-        
-        return changes
-    
-    async def _update_node_dependencies(self, package_file: str, issue: Dict[str, Any]) -> List[str]:
-        """更新Node.js依赖"""
-        changes = []
-        try:
-            with open(package_file, 'r') as f:
-                package_data = json.load(f)
-            
-            # 简单的依赖更新逻辑
-            # 这里可以实现具体的依赖更新策略
-            
-            changes.append(f"更新了 {package_file} 中的依赖")
-        except Exception as e:
-            changes.append(f"更新Node.js依赖失败: {e}")
-        
-        return changes
+            return {"success": False, "changes": [], "message": f"Go格式化失败: {e}"}
