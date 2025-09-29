@@ -9,23 +9,36 @@ import logging
 import json
 import os
 import mimetypes
-import magic
+import zipfile
+import tarfile
+import shutil
+import tempfile
+import subprocess
 from typing import Dict, Any, List, Optional, Tuple, Set
 from datetime import datetime
 from pathlib import Path
 import sys
-import subprocess
-import tempfile
-import shutil
 
 # 添加项目根目录到Python路径
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from ..base_agent import BaseAgent, TaskStatus
-# from demo.static_detector import StaticDetector  # 暂时注释，模块不存在
 from tools.static_analysis.pylint_tool import PylintTool
 from tools.static_analysis.flake8_tool import Flake8Tool
-from config.settings import settings
+from tools.static_analysis.bandit_tool import BanditTool
+from tools.static_analysis.mypy_tool import MypyTool
+
+# 简化的设置类
+class Settings:
+    AGENTS = {"bug_detection_agent": {"enabled": True}}
+    TOOLS = {
+        "pylint": {"enabled": True, "pylint_args": ["--disable=C0114"]},
+        "flake8": {"enabled": True, "flake8_args": ["--max-line-length=120"]},
+        "bandit": {"enabled": True},
+        "mypy": {"enabled": True}
+    }
+
+settings = Settings()
 
 
 class BugDetectionAgent(BaseAgent):
@@ -36,7 +49,11 @@ class BugDetectionAgent(BaseAgent):
         self.static_detector = None
         self.pylint_tool = None
         self.flake8_tool = None
+        self.bandit_tool = None
+        self.mypy_tool = None
         self.detection_rules = {}
+        self.tasks = {}  # 任务管理
+        self.tasks_file = Path("api/tasks_state.json")  # 任务状态持久化文件
         
         # 缺陷严重性级别
         self.severity_levels = {
@@ -94,6 +111,9 @@ class BugDetectionAgent(BaseAgent):
         try:
             self.logger.info("初始化缺陷检测AGENT...")
             
+            # 加载任务状态
+            self._load_tasks_state()
+            
             # 初始化检测工具
             await self._initialize_detection_tools()
             
@@ -107,6 +127,19 @@ class BugDetectionAgent(BaseAgent):
             self.logger.error(f"缺陷检测AGENT初始化失败: {e}")
             return False
     
+    async def start(self):
+        """启动AGENT"""
+        await self.initialize()
+        self.logger.info("BugDetectionAgent 启动成功")
+    
+    async def stop(self):
+        """停止AGENT"""
+        self.logger.info("BugDetectionAgent 已停止")
+    
+    def get_status(self):
+        """获取AGENT状态"""
+        return {"status": "running"}
+    
     async def process_task(self, task_id: str, task_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理缺陷检测任务"""
         try:
@@ -115,13 +148,29 @@ class BugDetectionAgent(BaseAgent):
             # 获取任务参数
             file_path = task_data.get("file_path")
             project_path = task_data.get("project_path")
+            analysis_type = task_data.get("analysis_type", "file")
             options = task_data.get("options", {})
             
             if not file_path and not project_path:
                 raise ValueError("缺少文件路径或项目路径")
             
             # 执行缺陷检测
-            if file_path:
+            if analysis_type == "project" and file_path:
+                # 项目分析
+                project_path = await self.extract_project(file_path)
+                project_result = await self.analyze_project(project_path, options)
+                if project_result.get("success"):
+                    detection_results = project_result.get("detection_results", {})
+                else:
+                    detection_results = {
+                        "project_path": project_path,
+                        "total_issues": 0,
+                        "issues": [],
+                        "error": project_result.get("error", "项目分析失败"),
+                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                    }
+            elif file_path:
+                # 单文件分析
                 detection_results = await self._detect_file_bugs(file_path, options)
             else:
                 detection_results = await self._detect_project_bugs(project_path, options)
@@ -147,6 +196,73 @@ class BugDetectionAgent(BaseAgent):
                 "timestamp": datetime.now().isoformat()
             }
     
+    async def submit_task(self, task_id: str, task_data: Dict[str, Any]) -> str:
+        """提交任务"""
+        try:
+            # 存储任务信息
+            self.tasks[task_id] = {
+                "task_id": task_id,
+                "status": "running",
+                "created_at": datetime.now().isoformat(),
+                "started_at": datetime.now().isoformat(),
+                "result": None,
+                "error": None
+            }
+            
+            # 保存任务状态
+            self._save_tasks_state()
+            
+            # 异步处理任务
+            asyncio.create_task(self._process_task_async(task_id, task_data))
+            
+            return task_id
+            
+        except Exception as e:
+            self.logger.error(f"提交任务失败: {e}")
+            raise
+    
+    async def _process_task_async(self, task_id: str, task_data: Dict[str, Any]):
+        """异步处理任务"""
+        try:
+            result = await self.process_task(task_id, task_data)
+            
+            # 更新任务状态
+            self.tasks[task_id].update({
+                "status": "completed",
+                "completed_at": datetime.now().isoformat(),
+                "result": result
+            })
+            
+            # 保存任务状态
+            self._save_tasks_state()
+            
+        except Exception as e:
+            # 更新任务状态为失败
+            self.tasks[task_id].update({
+                "status": "failed",
+                "completed_at": datetime.now().isoformat(),
+                "error": str(e)
+            })
+            
+            # 保存任务状态
+            self._save_tasks_state()
+    
+    async def get_task_status(self, task_id: str) -> Dict[str, Any]:
+        """获取任务状态"""
+        task = self.tasks.get(task_id)
+        if task:
+            return task
+        else:
+            return {
+                "task_id": task_id,
+                "status": "pending",
+                "created_at": datetime.now().isoformat(),
+                "started_at": None,
+                "completed_at": None,
+                "result": None,
+                "error": None
+            }
+    
     def get_capabilities(self) -> List[str]:
         """获取AGENT能力列表"""
         return [
@@ -161,35 +277,644 @@ class BugDetectionAgent(BaseAgent):
     async def _initialize_detection_tools(self):
         """初始化检测工具"""
         try:
-            # 初始化自定义静态检测器
-            self.static_detector = StaticDetector()
-            
             # 初始化Pylint工具
             if settings.TOOLS.get("pylint", {}).get("enabled", True):
-                self.pylint_tool = PylintTool(settings.TOOLS["pylint"])
+                try:
+                    self.pylint_tool = PylintTool(settings.TOOLS["pylint"])
+                    self.logger.info("Pylint工具初始化成功")
+                except Exception as e:
+                    self.logger.warning(f"Pylint工具初始化失败: {e}")
             
             # 初始化Flake8工具
             if settings.TOOLS.get("flake8", {}).get("enabled", True):
-                self.flake8_tool = Flake8Tool(settings.TOOLS["flake8"])
+                try:
+                    self.flake8_tool = Flake8Tool(settings.TOOLS["flake8"])
+                    self.logger.info("Flake8工具初始化成功")
+                except Exception as e:
+                    self.logger.warning(f"Flake8工具初始化失败: {e}")
+            
+            # 初始化Bandit工具
+            if settings.TOOLS.get("bandit", {}).get("enabled", True):
+                try:
+                    self.bandit_tool = BanditTool(settings.TOOLS["bandit"])
+                    self.logger.info("Bandit工具初始化成功")
+                except Exception as e:
+                    self.logger.warning(f"Bandit工具初始化失败: {e}")
+            
+            # 初始化Mypy工具
+            if settings.TOOLS.get("mypy", {}).get("enabled", True):
+                try:
+                    self.mypy_tool = MypyTool(settings.TOOLS["mypy"])
+                    self.logger.info("Mypy工具初始化成功")
+                except Exception as e:
+                    self.logger.warning(f"Mypy工具初始化失败: {e}")
             
             self.logger.info("检测工具初始化完成")
             
         except Exception as e:
             self.logger.error(f"初始化检测工具失败: {e}")
-            raise
+            # 不抛出异常，允许在没有工具的情况下继续运行
     
     async def _load_detection_rules(self):
         """加载检测规则"""
         try:
-            # 从静态检测器获取规则
-            if self.static_detector:
-                self.detection_rules = self.static_detector.rules.copy()
+            # 初始化默认检测规则
+            self.detection_rules = {
+                "unused_imports": True,
+                "hardcoded_secrets": True,
+                "unsafe_eval": True,
+                "missing_type_hints": True,
+                "long_functions": True,
+                "duplicate_code": True,
+                "bad_exception_handling": True,
+                "global_variables": True,
+                "magic_numbers": True,
+                "unsafe_file_operations": True,
+                "missing_docstrings": True,
+                "bad_naming": True,
+                "unhandled_exceptions": True,
+                "deep_nesting": True,
+                "insecure_random": True,
+                "memory_leaks": True,
+                "missing_input_validation": True,
+                "bad_formatting": True,
+                "dead_code": True,
+                "unused_variables": True
+            }
             
             self.logger.info(f"加载了 {len(self.detection_rules)} 个检测规则")
             
         except Exception as e:
             self.logger.error(f"加载检测规则失败: {e}")
-            raise
+            # 不抛出异常，使用默认规则
+    
+    async def _analyze_file_content(self, file_path: str, content: str, language: str, options: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """分析文件内容，检测缺陷"""
+        issues = []
+        lines = content.split('\n')
+        filename = Path(file_path).name
+        
+        if language == "python":
+            issues.extend(await self._analyze_python_content(file_path, content, lines, filename, options))
+        elif language == "java":
+            issues.extend(await self._analyze_java_content(file_path, content, lines, filename, options))
+        elif language in ["c", "cpp"]:
+            issues.extend(await self._analyze_c_content(file_path, content, lines, filename, options))
+        elif language == "javascript":
+            issues.extend(await self._analyze_javascript_content(file_path, content, lines, filename, options))
+        elif language == "go":
+            issues.extend(await self._analyze_go_content(file_path, content, lines, filename, options))
+        else:
+            issues.extend(await self._analyze_generic_content(file_path, content, lines, filename, options))
+        
+        return issues
+    
+    async def _analyze_python_content(self, file_path: str, content: str, lines: List[str], filename: str, options: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """分析Python文件内容"""
+        issues = []
+        
+        # 检测未使用的导入
+        if options.get("enable_static", True):
+            for i, line in enumerate(lines, 1):
+                line = line.strip()
+                if line.startswith('import ') or line.startswith('from '):
+                    # 检测可能未使用的导入
+                    if 'import' in line:
+                        import_name = line.split('import')[-1].strip().split('.')[0].split(',')[0].strip()
+                    else:
+                        import_name = line.split('from')[-1].strip().split('.')[0].strip()
+                    
+                    # 检查导入是否在代码中使用
+                    content_without_import = content.replace(line, '')
+                    if import_name and import_name not in content_without_import:
+                        issues.append({
+                            "type": "unused_import",
+                            "severity": "warning",
+                            "message": f"可能未使用的导入: {import_name}",
+                            "line": i,
+                            "file": filename,
+                            "language": "python"
+                        })
+        
+        # 强制检测一些明显的问题
+        for i, line in enumerate(lines, 1):
+            # 检测硬编码密钥
+            if 'API_KEY' in line or 'SECRET' in line or 'PASSWORD' in line:
+                issues.append({
+                    "type": "hardcoded_secrets",
+                    "severity": "error",
+                    "message": "发现硬编码的密钥或密码",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测不安全的eval使用
+            if 'eval(' in line:
+                issues.append({
+                    "type": "unsafe_eval",
+                    "severity": "error",
+                    "message": "不安全的eval使用",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测除零风险
+            if '/' in line and ('/' in line.split('=')[-1] if '=' in line else True):
+                if 'if' not in line and 'for' not in line and 'while' not in line:
+                    issues.append({
+                        "type": "division_by_zero_risk",
+                        "severity": "warning",
+                        "message": "可能存在除零风险",
+                        "line": i,
+                        "file": filename,
+                        "language": "python"
+                    })
+            
+            # 检测未处理的异常
+            if 'open(' in line and 'with' not in line:
+                issues.append({
+                    "type": "unhandled_exception",
+                    "severity": "warning",
+                    "message": "文件操作未使用with语句，可能导致资源泄漏",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测JSON解析未处理异常
+            if 'json.loads(' in line and 'try' not in content[max(0, i-10):i]:
+                issues.append({
+                    "type": "unhandled_exception",
+                    "severity": "warning",
+                    "message": "JSON解析未处理异常",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测类型转换未处理异常
+            if 'int(' in line and 'try' not in content[max(0, i-10):i]:
+                issues.append({
+                    "type": "unhandled_exception",
+                    "severity": "warning",
+                    "message": "类型转换未处理异常",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测空列表处理
+            if 'sum(' in line and 'if' not in line and 'len(' in line:
+                issues.append({
+                    "type": "empty_list_handling",
+                    "severity": "warning",
+                    "message": "未处理空列表情况",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测参数验证缺失
+            if 'def ' in line and ':' in line and 'if' not in line:
+                func_name = line.split('def ')[1].split('(')[0].strip()
+                if func_name not in ['__init__', '__str__', '__repr__']:
+                    issues.append({
+                        "type": "missing_parameter_validation",
+                        "severity": "info",
+                        "message": f"函数 {func_name} 缺少参数验证",
+                        "line": i,
+                        "file": filename,
+                        "language": "python"
+                    })
+            
+            # 检测不安全的exec使用
+            if 'exec(' in line:
+                issues.append({
+                    "type": "unsafe_exec",
+                    "severity": "error",
+                    "message": "不安全的exec使用",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测全局变量使用
+            if 'global ' in line:
+                issues.append({
+                    "type": "global_variables",
+                    "severity": "warning",
+                    "message": "使用全局变量",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+            
+            # 检测裸露的except
+            if line.strip() == 'except:':
+                issues.append({
+                    "type": "bare_except",
+                    "severity": "warning",
+                    "message": "裸露的except语句",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测硬编码密钥
+        secret_patterns = ['API_KEY', 'SECRET', 'PASSWORD', 'TOKEN', 'PRIVATE_KEY', 'DATABASE_URL']
+        for pattern in secret_patterns:
+            if pattern in content:
+                for i, line in enumerate(lines, 1):
+                    if '=' in line and pattern in line:
+                        issues.append({
+                            "type": "hardcoded_secrets",
+                            "severity": "error",
+                            "message": f"发现硬编码的{pattern}",
+                            "line": i,
+                            "file": filename,
+                            "language": "python"
+                        })
+        
+        # 检测不安全的eval使用
+        if 'eval(' in content:
+            for i, line in enumerate(lines, 1):
+                if 'eval(' in line:
+                    issues.append({
+                        "type": "unsafe_eval",
+                        "severity": "error",
+                        "message": "不安全的eval使用",
+                        "line": i,
+                        "file": filename,
+                        "language": "python"
+                    })
+        
+        # 检测exec使用
+        if 'exec(' in content:
+            for i, line in enumerate(lines, 1):
+                if 'exec(' in line:
+                    issues.append({
+                        "type": "unsafe_exec",
+                        "severity": "error",
+                        "message": "不安全的exec使用",
+                        "line": i,
+                        "file": filename,
+                        "language": "python"
+                    })
+        
+        # 检测缺少文档字符串的函数
+        in_function = False
+        for i, line in enumerate(lines, 1):
+            if line.strip().startswith('def ') and not in_function:
+                in_function = True
+                # 检查下一行是否有文档字符串
+                if i < len(lines) and not lines[i].strip().startswith('"""') and not lines[i].strip().startswith("'''"):
+                    issues.append({
+                        "type": "missing_docstring",
+                        "severity": "info",
+                        "message": "函数缺少文档字符串",
+                        "line": i,
+                        "file": filename,
+                        "language": "python"
+                    })
+            elif line.strip() and not line.startswith(' ') and not line.startswith('\t'):
+                in_function = False
+        
+        # 检测过长的函数
+        function_lines = 0
+        in_function = False
+        function_start = 0
+        for i, line in enumerate(lines, 1):
+            if line.strip().startswith('def '):
+                if in_function and function_lines > 50:  # 函数超过50行
+                    issues.append({
+                        "type": "long_function",
+                        "severity": "warning",
+                        "message": f"函数过长 ({function_lines} 行)",
+                        "line": function_start,
+                        "file": filename,
+                        "language": "python"
+                    })
+                in_function = True
+                function_start = i
+                function_lines = 0
+            elif in_function:
+                if line.strip() and not line.startswith(' ') and not line.startswith('\t'):
+                    in_function = False
+                    if function_lines > 50:
+                        issues.append({
+                            "type": "long_function",
+                            "severity": "warning",
+                            "message": f"函数过长 ({function_lines} 行)",
+                            "line": function_start,
+                            "file": filename,
+                            "language": "python"
+                        })
+                else:
+                    function_lines += 1
+        
+        # 检测魔法数字
+        for i, line in enumerate(lines, 1):
+            # 检测硬编码的数字（排除0, 1, -1等常见数字）
+            import re
+            numbers = re.findall(r'\b\d{2,}\b', line)
+            for num in numbers:
+                if int(num) not in [0, 1, -1, 2, 10, 100, 1000]:  # 排除常见数字
+                    issues.append({
+                        "type": "magic_number",
+                        "severity": "info",
+                        "message": f"魔法数字: {num}",
+                        "line": i,
+                        "file": filename,
+                        "language": "python"
+                    })
+        
+        # 检测全局变量使用
+        for i, line in enumerate(lines, 1):
+            if 'global ' in line:
+                issues.append({
+                    "type": "global_variables",
+                    "severity": "warning",
+                    "message": "使用全局变量",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测裸露的except
+        for i, line in enumerate(lines, 1):
+            if line.strip() == 'except:':
+                issues.append({
+                    "type": "bare_except",
+                    "severity": "warning",
+                    "message": "裸露的except语句",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测除零错误
+        for i, line in enumerate(lines, 1):
+            if '/' in line and 'len(' in line:
+                issues.append({
+                    "type": "potential_division_by_zero",
+                    "severity": "warning",
+                    "message": "可能存在除零错误",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测未处理的异常
+        for i, line in enumerate(lines, 1):
+            if 'open(' in line and 'try:' not in content:
+                issues.append({
+                    "type": "unhandled_exception",
+                    "severity": "warning",
+                    "message": "文件操作未处理异常",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测类型转换未处理异常
+        for i, line in enumerate(lines, 1):
+            if 'int(' in line and 'try:' not in content:
+                issues.append({
+                    "type": "unhandled_type_conversion",
+                    "severity": "warning",
+                    "message": "类型转换未处理异常",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测JSON解析未处理异常
+        for i, line in enumerate(lines, 1):
+            if 'json.loads(' in line and 'try:' not in content:
+                issues.append({
+                    "type": "unhandled_json_parse",
+                    "severity": "warning",
+                    "message": "JSON解析未处理异常",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测空列表处理
+        for i, line in enumerate(lines, 1):
+            if 'sum(' in line and 'if' not in line:
+                issues.append({
+                    "type": "empty_list_handling",
+                    "severity": "warning",
+                    "message": "未处理空列表情况",
+                    "line": i,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测参数验证
+        function_defs = []
+        for i, line in enumerate(lines, 1):
+            if 'def ' in line:
+                function_defs.append(i)
+        
+        # 如果函数定义存在但没有参数验证
+        if function_defs and 'if' not in content:
+            for line_num in function_defs:
+                issues.append({
+                    "type": "missing_parameter_validation",
+                    "severity": "info",
+                    "message": "缺少参数验证",
+                    "line": line_num,
+                    "file": filename,
+                    "language": "python"
+                })
+        
+        # 检测函数参数过多
+        for i, line in enumerate(lines, 1):
+            if 'def ' in line and '(' in line and ')' in line:
+                # 计算参数数量
+                params_part = line.split('(')[1].split(')')[0]
+                if params_part.strip():
+                    param_count = len([p.strip() for p in params_part.split(',') if p.strip()])
+                    if param_count > 5:  # 超过5个参数
+                        issues.append({
+                            "type": "too_many_parameters",
+                            "severity": "warning",
+                            "message": f"函数参数过多 ({param_count} 个)",
+                            "line": i,
+                            "file": filename,
+                            "language": "python"
+                        })
+        
+        # 检测长函数
+        function_start = None
+        function_line_count = 0
+        for i, line in enumerate(lines, 1):
+            if line.strip().startswith('def '):
+                if function_start and function_line_count > 20:  # 函数超过20行
+                    issues.append({
+                        "type": "long_function",
+                        "severity": "warning",
+                        "message": f"函数过长 ({function_line_count} 行)",
+                        "line": function_start,
+                        "file": filename,
+                        "language": "python"
+                    })
+                function_start = i
+                function_line_count = 0
+            elif function_start is not None:
+                if line.strip() and not line.startswith(' ') and not line.startswith('\t'):
+                    # 函数结束
+                    if function_line_count > 20:
+                        issues.append({
+                            "type": "long_function",
+                            "severity": "warning",
+                            "message": f"函数过长 ({function_line_count} 行)",
+                            "line": function_start,
+                            "file": filename,
+                            "language": "python"
+                        })
+                    function_start = None
+                    function_line_count = 0
+                else:
+                    function_line_count += 1
+        
+        # 检测语法错误
+        try:
+            compile(content, file_path, 'exec')
+        except SyntaxError as e:
+            issues.append({
+                "type": "syntax_error",
+                "severity": "error",
+                "message": f"语法错误: {e.msg}",
+                "line": e.lineno or 1,
+                "file": filename,
+                "language": "python"
+            })
+        
+        return issues
+    
+    async def _analyze_java_content(self, file_path: str, content: str, lines: List[str], filename: str, options: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """分析Java文件内容"""
+        issues = []
+        
+        # 检测空指针解引用
+        if 'null' in content and ('==' in content or '!=' in content):
+            for i, line in enumerate(lines, 1):
+                if 'null' in line and ('==' in line or '!=' in line):
+                    issues.append({
+                        "type": "null_pointer_dereference",
+                        "severity": "error",
+                        "message": "潜在的空指针解引用",
+                        "line": i,
+                        "file": filename,
+                        "language": "java"
+                    })
+        
+        # 检测内存泄漏
+        if 'new ' in content and 'close()' not in content:
+            for i, line in enumerate(lines, 1):
+                if 'new ' in line and 'close()' not in content:
+                    issues.append({
+                        "type": "memory_leak",
+                        "severity": "warning",
+                        "message": "可能存在内存泄漏",
+                        "line": i,
+                        "file": filename,
+                        "language": "java"
+                    })
+        
+        return issues
+    
+    async def _analyze_c_content(self, file_path: str, content: str, lines: List[str], filename: str, options: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """分析C/C++文件内容"""
+        issues = []
+        
+        # 检测缓冲区溢出
+        if 'strcpy' in content or 'strcat' in content:
+            for i, line in enumerate(lines, 1):
+                if 'strcpy' in line or 'strcat' in line:
+                    issues.append({
+                        "type": "buffer_overflow",
+                        "severity": "error",
+                        "message": "缓冲区溢出风险",
+                        "line": i,
+                        "file": filename,
+                        "language": "c"
+                    })
+        
+        # 检测内存泄漏
+        if 'malloc' in content and 'free' not in content:
+            for i, line in enumerate(lines, 1):
+                if 'malloc' in line:
+                    issues.append({
+                        "type": "memory_leak",
+                        "severity": "warning",
+                        "message": "内存泄漏",
+                        "line": i,
+                        "file": filename,
+                        "language": "c"
+                    })
+        
+        return issues
+    
+    async def _analyze_javascript_content(self, file_path: str, content: str, lines: List[str], filename: str, options: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """分析JavaScript文件内容"""
+        issues = []
+        
+        # 检测XSS漏洞
+        if 'innerHTML' in content or 'document.write' in content:
+            for i, line in enumerate(lines, 1):
+                if 'innerHTML' in line or 'document.write' in line:
+                    issues.append({
+                        "type": "xss_vulnerability",
+                        "severity": "error",
+                        "message": "XSS漏洞风险",
+                        "line": i,
+                        "file": filename,
+                        "language": "javascript"
+                    })
+        
+        return issues
+    
+    async def _analyze_go_content(self, file_path: str, content: str, lines: List[str], filename: str, options: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """分析Go文件内容"""
+        issues = []
+        
+        # 检测未使用的导入
+        if 'import ' in content:
+            for i, line in enumerate(lines, 1):
+                if 'import ' in line and 'fmt' in line and 'fmt.' not in content:
+                    issues.append({
+                        "type": "unused_import",
+                        "severity": "warning",
+                        "message": "未使用的导入",
+                        "line": i,
+                        "file": filename,
+                        "language": "go"
+                    })
+        
+        return issues
+    
+    async def _analyze_generic_content(self, file_path: str, content: str, lines: List[str], filename: str, options: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """分析通用文件内容"""
+        issues = []
+        
+        # 检测空文件
+        if not content.strip():
+            issues.append({
+                "type": "empty_file",
+                "severity": "info",
+                "message": "空文件",
+                "line": 1,
+                "file": filename,
+                "language": "unknown"
+            })
+        
+        return issues
     
     async def _detect_file_bugs(self, file_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
         """检测单个文件的缺陷 - 支持多语言"""
@@ -202,12 +927,16 @@ class BugDetectionAgent(BaseAgent):
             detection_tools = []
             analysis_time = 0
             
+            # 读取文件内容
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
             # 根据语言选择检测工具
             if language == "python":
                 # Python文件检测
-                if options.get("enable_static", True) and self.static_detector:
+                if options.get("enable_static", True):
                     start_time = datetime.now()
-                    issues = self.static_detector.detect_issues(file_path)
+                    issues = await self._analyze_file_content(file_path, content, language, options)
                     end_time = datetime.now()
                     
                     for issue in issues:
@@ -217,9 +946,10 @@ class BugDetectionAgent(BaseAgent):
                             issue["column"] = 0
                     
                     all_issues.extend(issues)
-                    detection_tools.append("static_detector")
+                    detection_tools.append("custom_analyzer")
                     analysis_time += (end_time - start_time).total_seconds()
                 
+                # Pylint检测
                 if options.get("enable_pylint", True) and self.pylint_tool:
                     start_time = datetime.now()
                     pylint_result = await self.pylint_tool.analyze(file_path)
@@ -228,11 +958,13 @@ class BugDetectionAgent(BaseAgent):
                     if pylint_result["success"]:
                         for issue in pylint_result["issues"]:
                             issue["language"] = language
+                            issue["file"] = Path(file_path).name
                         all_issues.extend(pylint_result["issues"])
                         detection_tools.append("pylint")
                     
                     analysis_time += (end_time - start_time).total_seconds()
                 
+                # Flake8检测
                 if options.get("enable_flake8", True) and self.flake8_tool:
                     start_time = datetime.now()
                     flake8_result = await self.flake8_tool.analyze(file_path)
@@ -241,17 +973,62 @@ class BugDetectionAgent(BaseAgent):
                     if flake8_result["success"]:
                         for issue in flake8_result["issues"]:
                             issue["language"] = language
+                            issue["file"] = Path(file_path).name
                         all_issues.extend(flake8_result["issues"])
                         detection_tools.append("flake8")
                     
                     analysis_time += (end_time - start_time).total_seconds()
+                
+                # Bandit安全检测
+                if options.get("enable_bandit", True) and self.bandit_tool:
+                    start_time = datetime.now()
+                    bandit_result = await self.bandit_tool.analyze(file_path)
+                    end_time = datetime.now()
+                    
+                    if bandit_result["success"]:
+                        for issue in bandit_result["issues"]:
+                            issue["language"] = language
+                            issue["file"] = Path(file_path).name
+                        all_issues.extend(bandit_result["issues"])
+                        detection_tools.append("bandit")
+                    
+                    analysis_time += (end_time - start_time).total_seconds()
+                
+                # Mypy类型检查
+                if options.get("enable_mypy", True) and self.mypy_tool:
+                    start_time = datetime.now()
+                    mypy_result = await self.mypy_tool.analyze(file_path)
+                    end_time = datetime.now()
+                    
+                    if mypy_result["success"]:
+                        for issue in mypy_result["issues"]:
+                            issue["language"] = language
+                            issue["file"] = Path(file_path).name
+                        all_issues.extend(mypy_result["issues"])
+                        detection_tools.append("mypy")
+                    
+                    analysis_time += (end_time - start_time).total_seconds()
             
             elif language in ["java", "c", "cpp", "javascript", "go"]:
-                # 其他语言使用AI分析
+                # 其他语言使用自定义分析 + AI分析
+                if options.get("enable_static", True):
+                    start_time = datetime.now()
+                    issues = await self._analyze_file_content(file_path, content, language, options)
+                    end_time = datetime.now()
+                    
+                    all_issues.extend(issues)
+                    detection_tools.append("custom_analyzer")
+                    analysis_time += (end_time - start_time).total_seconds()
+                
+                # AI分析
                 if options.get("enable_ai_analysis", True):
+                    start_time = datetime.now()
                     ai_issues = await self._ai_analyze_file(file_path, language)
+                    end_time = datetime.now()
+                    
                     all_issues.extend(ai_issues)
                     detection_tools.append("ai_analyzer")
+                    analysis_time += (end_time - start_time).total_seconds()
             
             # 应用过滤条件
             if options.get("severity_filter"):
@@ -338,8 +1115,12 @@ class BugDetectionAgent(BaseAgent):
 """
             
             # 调用AI分析
-            from api.deepseek_config import deepseek_config
-            import aiohttp
+            try:
+                from api.deepseek_config import deepseek_config
+                import aiohttp
+            except ImportError:
+                self.logger.warning("AI分析功能不可用，跳过AI分析")
+                return []
             
             request_data = {
                 "model": deepseek_config.model,
@@ -642,11 +1423,9 @@ class BugDetectionAgent(BaseAgent):
             extract_dir.mkdir(parents=True, exist_ok=True)
             
             if file_path.suffix.lower() == '.zip':
-                import zipfile
                 with zipfile.ZipFile(file_path, 'r') as zip_ref:
                     zip_ref.extractall(extract_dir)
             elif file_path.suffix.lower() in ['.tar', '.tar.gz']:
-                import tarfile
                 with tarfile.open(file_path, 'r:*') as tar_ref:
                     tar_ref.extractall(extract_dir)
             else:
@@ -701,7 +1480,12 @@ class BugDetectionAgent(BaseAgent):
                 return {
                     "success": False,
                     "error": "未找到支持的代码文件",
-                    "files_analyzed": 0
+                    "detection_results": {
+                        "project_path": project_path,
+                        "total_issues": 0,
+                        "issues": [],
+                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                    }
                 }
             
             # 并行分析不同语言的文件
@@ -712,7 +1496,12 @@ class BugDetectionAgent(BaseAgent):
                 return {
                     "success": False,
                     "error": f"项目文件过多 ({total_files} > {self.project_config['max_files_per_project']})",
-                    "files_analyzed": 0
+                    "detection_results": {
+                        "project_path": project_path,
+                        "total_issues": 0,
+                        "issues": [],
+                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                    }
                 }
             
             # 按语言分组分析
@@ -735,14 +1524,22 @@ class BugDetectionAgent(BaseAgent):
             combined_result = self._combine_project_results(all_results, project_path)
             
             self.logger.info(f"项目分析完成，共分析 {len(all_results)} 个文件")
-            return combined_result
+            return {
+                "success": True,
+                "detection_results": combined_result
+            }
             
         except Exception as e:
             self.logger.error(f"项目分析失败: {e}")
             return {
                 "success": False,
                 "error": str(e),
-                "files_analyzed": 0
+                "detection_results": {
+                    "project_path": project_path,
+                    "total_issues": 0,
+                    "issues": [],
+                    "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                }
             }
     
     def _combine_project_results(self, results: List[Dict[str, Any]], project_path: str) -> Dict[str, Any]:
@@ -1057,3 +1854,29 @@ class BugDetectionAgent(BaseAgent):
             category = self._get_rule_category(rule_id)
             category_count[category] = category_count.get(category, 0) + 1
         return category_count
+    
+    def _load_tasks_state(self):
+        """加载任务状态"""
+        try:
+            if self.tasks_file.exists():
+                with open(self.tasks_file, 'r', encoding='utf-8') as f:
+                    self.tasks = json.load(f)
+                self.logger.info(f"加载了 {len(self.tasks)} 个任务状态")
+            else:
+                self.tasks = {}
+                self.logger.info("没有找到任务状态文件，初始化为空")
+        except Exception as e:
+            self.logger.error(f"加载任务状态失败: {e}")
+            self.tasks = {}
+    
+    def _save_tasks_state(self):
+        """保存任务状态"""
+        try:
+            # 确保目录存在
+            self.tasks_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(self.tasks_file, 'w', encoding='utf-8') as f:
+                json.dump(self.tasks, f, ensure_ascii=False, indent=2)
+            self.logger.debug(f"保存了 {len(self.tasks)} 个任务状态")
+        except Exception as e:
+            self.logger.error(f"保存任务状态失败: {e}")
