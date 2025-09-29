@@ -22,10 +22,10 @@ sys.path.append(str(Path(__file__).parent.parent))
 # 导入真正的BugDetectionAgent
 from agents.bug_detection_agent.agent import BugDetectionAgent
 
-
 # 简化的设置
 class Settings:
     AGENTS = {"bug_detection_agent": {"enabled": True}}
+
 settings = Settings()
 
 # 数据模型
@@ -152,19 +152,35 @@ async def upload_file_for_detection(
     with open(file_path, "wb") as f:
         f.write(content)
     
-    # 创建检测任务
-    task_data = {
-        "file_path": str(file_path),
-        "analysis_type": analysis_type,
-        "options": {
-            "enable_static": enable_static,
-            "enable_pylint": enable_pylint,
-            "enable_flake8": enable_flake8,
-            "enable_bandit": enable_bandit,
-            "enable_mypy": enable_mypy,
-            "enable_ai_analysis": enable_ai_analysis
+    # 根据分析类型创建检测任务
+    if analysis_type == "file":
+        # 单文件检测
+        task_data = {
+            "file_path": str(file_path),
+            "options": {
+                "enable_static": enable_static,
+                "enable_pylint": enable_pylint,
+                "enable_flake8": enable_flake8,
+                "enable_bandit": enable_bandit,
+                "enable_mypy": enable_mypy,
+                "enable_ai_analysis": enable_ai_analysis
+            }
         }
-    }
+    elif analysis_type == "project":
+        # 项目检测
+        task_data = {
+            "project_path": str(file_path),  # 项目文件夹或压缩包路径
+            "options": {
+                "enable_static": enable_static,
+                "enable_pylint": enable_pylint,
+                "enable_flake8": enable_flake8,
+                "enable_bandit": enable_bandit,
+                "enable_mypy": enable_mypy,
+                "enable_ai_analysis": enable_ai_analysis
+            }
+        }
+    else:
+        raise HTTPException(status_code=400, detail=f"无效的分析类型: {analysis_type}")
     
     try:
         task_id = await bug_detection_agent.submit_task(f"task_{uuid.uuid4().hex[:12]}", task_data)
