@@ -1014,16 +1014,20 @@
       document.querySelector('.metric-card:nth-child(2) .metric-value').textContent = warningCount;
       document.querySelector('.metric-card:nth-child(3) .metric-value').textContent = infoCount;
       
-      // 更新质量门
+      // 更新质量阈（修正选择器与类名）
       const totalIssues = errorCount + warningCount + infoCount;
-      if (totalIssues === 0) {
-        document.querySelector('.quality-gate-section .status').textContent = 'Passed';
-        document.querySelector('.quality-gate-section .status').className = 'status passed';
-        document.querySelector('.quality-gate-section p').textContent = 'All conditions have been met for the quality gate.';
-      } else {
-        document.querySelector('.quality-gate-section .status').textContent = 'Failed';
-        document.querySelector('.quality-gate-section .status').className = 'status failed';
-        document.querySelector('.quality-gate-section p').textContent = `${totalIssues} issues need to be resolved to pass the quality gate.`;
+      const qualityGateStatus = document.querySelector('.quality-gate-status');
+      const qualityGateText = document.querySelector('.quality-gate-section p');
+      if (qualityGateStatus && qualityGateText) {
+        if (totalIssues === 0) {
+          qualityGateStatus.innerHTML = '<i class="fas fa-check-circle"></i> Passed';
+          qualityGateStatus.className = 'quality-gate-status status-passed';
+          qualityGateText.textContent = 'All conditions have been met for the quality gate.';
+        } else {
+          qualityGateStatus.innerHTML = '<i class="fas fa-times-circle"></i> Failed';
+          qualityGateStatus.className = 'quality-gate-status status-failed';
+          qualityGateText.textContent = `${totalIssues} issues need to be resolved to pass the quality gate.`;
+        }
       }
       
       renderIssues(issues);
@@ -1427,12 +1431,16 @@
       }
       
       try {
-        const data = JSON.parse(qualityReportData);
-        
-        if (data.success) {
+        let data = JSON.parse(qualityReportData);
+        // 兼容外层包裹结构 { success, data: {...} }
+        if (data && data.data && (data.data.ai_report || data.data.file_path)) {
+          data = data.data;
+        }
+        // 仅要有 ai_report 或关键字段即可展示
+        if (data && (data.ai_report || data.file_path)) {
           displayQualityReport(data);
         } else {
-          console.error('质量报告加载失败:', data.error);
+          console.error('质量报告内容缺失或格式不匹配:', data);
         }
       } catch (error) {
         console.error('解析质量报告失败:', error);
@@ -1473,6 +1481,8 @@
       // 设置总体评分
       const overallScore = aiReport.overall_score || 0;
       const grade = aiReport.grade || 'F';
+      const sanitizeGrade = (g) => String(g || 'f').toLowerCase().replace(/[^a-z]/g, '');
+      const gradeClass = `grade-${sanitizeGrade(grade)}`;
       
       document.getElementById('overallScore').textContent = overallScore;
       document.getElementById('scoreGrade').textContent = grade;
@@ -1482,12 +1492,13 @@
       const gradeBadge = document.getElementById('qualityGradeBadge');
       const scoreGradeElement = document.getElementById('scoreGrade');
       
-      gradeBadge.className = `quality-grade-badge grade-${grade.toLowerCase()}`;
-      scoreGradeElement.className = `score-grade grade-${grade.toLowerCase()}`;
+      gradeBadge.className = `quality-grade-badge ${gradeClass}`;
+      scoreGradeElement.className = `score-grade ${gradeClass}`;
       
-      // 添加成绩级别CSS类
-      if (!document.querySelector(`style .grade-${grade.toLowerCase()}`)) {
+      // 添加成绩级别CSS类（使用固定样式标签避免选择器错误）
+      if (!document.getElementById('quality-grade-styles')) {
         const style = document.createElement('style');
+        style.id = 'quality-grade-styles';
         style.textContent = `
           .grade-a { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
           .grade-b { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
