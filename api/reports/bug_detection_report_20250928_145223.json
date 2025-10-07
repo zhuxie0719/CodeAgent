@@ -1,0 +1,23 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T14:52:23.772761",
+    "file_path": "uploads\\test_python.py",
+    "total_issues": 0,
+    "summary": {
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0
+    },
+    "detection_tools": [
+      "custom_analyzer",
+      "bandit",
+      "mypy"
+    ]
+  },
+  "issues": [],
+  "statistics": {
+    "by_severity": {},
+    "by_type": {},
+    "by_category": {}
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T16:45:10.149232",
+    "file_path": "uploads\\test_js_with_issues.js",
+    "total_issues": 2,
+    "summary": {
+      "error_count": 2,
+      "warning_count": 0,
+      "info_count": 0
+    },
+    "detection_tools": [
+      "custom_analyzer",
+      "ai_analyzer"
+    ]
+  },
+  "issues": [
+    {
+      "type": "xss_vulnerability",
+      "severity": "error",
+      "message": "XSS漏洞风险",
+      "line": 5,
+      "file": "test_js_with_issues.js",
+      "language": "javascript",
+      "code_snippet": [
+        {
+          "line_number": 2,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 3,
+          "content": "// XSS漏洞风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "function displayUserInput(userInput) {",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "    document.getElementById('output').innerHTML = userInput;",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 6,
+          "content": "    document.write(userInput);",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "}",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_js_with_issues.js",
+      "enhanced": true
+    },
+    {
+      "type": "xss_vulnerability",
+      "severity": "error",
+      "message": "XSS漏洞风险",
+      "line": 6,
+      "file": "test_js_with_issues.js",
+      "language": "javascript",
+      "code_snippet": [
+        {
+          "line_number": 3,
+          "content": "// XSS漏洞风险",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "function displayUserInput(userInput) {",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "    document.getElementById('output').innerHTML = userInput;",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "    document.write(userInput);",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 7,
+          "content": "}",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "// 未使用的变量",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_js_with_issues.js",
+      "enhanced": true
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 2
+    },
+    "by_type": {
+      "xss_vulnerability": 2
+    },
+    "by_category": {
+      "其他": 2
+    }
+  }
+}

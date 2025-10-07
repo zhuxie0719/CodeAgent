@@ -1,0 +1,597 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T15:37:30.674013",
+    "file_path": "uploads\\test_api_upload.py",
+    "total_issues": 10,
+    "summary": {
+      "error_count": 4,
+      "warning_count": 2,
+      "info_count": 3
+    },
+    "detection_tools": [
+      "custom_analyzer",
+      "bandit",
+      "mypy"
+    ]
+  },
+  "issues": [
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 5,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+      "fix_suggestions": [
+        "使用环境变量存储敏感信息",
+        "使用配置文件（不提交到版本控制）",
+        "使用密钥管理服务"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "unsafe_eval",
+      "severity": "error",
+      "message": "不安全的eval使用",
+      "line": 8,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def function_without_docstring():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 11,
+          "content": "    pass",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "使用eval()函数执行用户输入存在代码注入风险，可能导致系统被攻击。建议使用更安全的方法。",
+      "fix_suggestions": [
+        "使用ast.literal_eval()替代eval()",
+        "使用json.loads()解析JSON数据",
+        "使用专门的解析库"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的API_KEY",
+      "line": 5,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "硬编码的密钥、密码或API密钥存在安全风险，可能被恶意用户获取。建议使用环境变量或配置文件。",
+      "fix_suggestions": [
+        "使用环境变量存储敏感信息",
+        "使用配置文件（不提交到版本控制）",
+        "使用密钥管理服务"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "unsafe_eval",
+      "severity": "error",
+      "message": "不安全的eval使用",
+      "line": 8,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def function_without_docstring():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 11,
+          "content": "    pass",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "使用eval()函数执行用户输入存在代码注入风险，可能导致系统被攻击。建议使用更安全的方法。",
+      "fix_suggestions": [
+        "使用ast.literal_eval()替代eval()",
+        "使用json.loads()解析JSON数据",
+        "使用专门的解析库"
+      ],
+      "severity_info": {
+        "level": 1,
+        "name": "错误",
+        "color": "#ff4444"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "可能未使用的导入: os",
+      "line": 2,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 1,
+          "content": "# 测试API上传的代码",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 4,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+      "fix_suggestions": [
+        "删除未使用的导入语句",
+        "检查是否有其他文件需要这个导入",
+        "使用IDE的自动清理功能"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "可能未使用的导入: sys",
+      "line": 3,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 1,
+          "content": "# 测试API上传的代码",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 2,
+          "content": "import os",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 3,
+          "content": "import sys",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 4,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "未使用的导入语句会占用内存空间并可能影响代码的可读性。建议删除未使用的导入。",
+      "fix_suggestions": [
+        "删除未使用的导入语句",
+        "检查是否有其他文件需要这个导入",
+        "使用IDE的自动清理功能"
+      ],
+      "severity_info": {
+        "level": 2,
+        "name": "警告",
+        "color": "#ff8800"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 7,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 4,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def function_without_docstring():",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "缺少参数验证",
+      "line": 7,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 4,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def function_without_docstring():",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "missing_parameter_validation",
+      "severity": "info",
+      "message": "缺少参数验证",
+      "line": 10,
+      "file": "test_api_upload.py",
+      "language": "python",
+      "column": 0,
+      "code_snippet": [
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def function_without_docstring():",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 11,
+          "content": "    pass",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 12,
+          "content": "",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {
+        "level": 3,
+        "name": "信息",
+        "color": "#4488ff"
+      },
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    },
+    {
+      "type": "bandit",
+      "severity": "MEDIUM",
+      "message": "Use of possibly insecure function - consider using safer ast.literal_eval.",
+      "file": "test_api_upload.py",
+      "line": 8,
+      "column": 0,
+      "rule": "B307",
+      "language": "python",
+      "code_snippet": [
+        {
+          "line_number": 5,
+          "content": "API_KEY = \"test_secret_123\"  # 硬编码密钥",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 6,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 7,
+          "content": "def unsafe_function(user_input):",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 8,
+          "content": "    return eval(user_input)  # 不安全的eval",
+          "is_issue_line": true
+        },
+        {
+          "line_number": 9,
+          "content": "",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 10,
+          "content": "def function_without_docstring():",
+          "is_issue_line": false
+        },
+        {
+          "line_number": 11,
+          "content": "    pass",
+          "is_issue_line": false
+        }
+      ],
+      "detailed_description": "这是一个代码质量问题，建议进行相应的修复。",
+      "fix_suggestions": [
+        "建议根据具体情况进行修复"
+      ],
+      "severity_info": {},
+      "file_path": "uploads\\test_api_upload.py",
+      "enhanced": true
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 4,
+      "warning": 2,
+      "info": 3,
+      "MEDIUM": 1
+    },
+    "by_type": {
+      "hardcoded_secrets": 2,
+      "unsafe_eval": 2,
+      "unused_import": 2,
+      "missing_docstring": 1,
+      "missing_parameter_validation": 2,
+      "bandit": 1
+    },
+    "by_category": {
+      "其他": 10
+    }
+  }
+}

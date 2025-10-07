@@ -3,6 +3,8 @@
 """
 
 import asyncio
+import os
+import subprocess
 import re
 from typing import Dict, List, Any, Optional
 from .fixer import CodeFixer, Refactorer, DependencyUpdater
@@ -56,79 +58,168 @@ class FixExecutionAgent:
             return error_result
     
     async def process_issues(self, issues: List[Dict[str, Any]], project_path: str) -> Dict[str, Any]:
-        """处理多个缺陷"""
-        try:
-            results = {
-                'total_issues': len(issues),
-                'fixed_issues': 0,
-                'failed_issues': 0,
-                'skipped_issues': 0,
-                'changes': [],
-                'errors': [],
-                'timestamp': asyncio.get_event_loop().time()
-            }
-            
-            print(f"开始处理 {len(issues)} 个缺陷...")
-            
-            for i, issue in enumerate(issues, 1):
-                try:
-                    # 判断缺陷复杂度
-                    complexity = self._classify_issue_complexity(issue)
-                    
-                    if complexity == 'simple':
-                        # 简单缺陷，直接修复
-                        print(f"处理简单缺陷 {i}/{len(issues)}: {issue.get('message', '')[:50]}...")
-                        result = await self.execute_fix(issue, project_path)
-                        
-                        if result['success']:
-                            results['fixed_issues'] += 1
-                            results['changes'].extend(result.get('changes', []))
-                            print(f"✓ 修复成功: {issue.get('file', '')}")
-                        else:
-                            results['failed_issues'] += 1
-                            results['errors'].append(f"修复失败: {result.get('message', '')}")
-                            print(f"✗ 修复失败: {result.get('message', '')}")
-                    
-                    elif complexity == 'complex':
-                        # 复杂缺陷，记录但不自动修复
-                        results['skipped_issues'] += 1
-                        results['changes'].append(f"跳过复杂缺陷: {issue.get('message', '')[:100]}")
-                        print(f"⚠ 跳过复杂缺陷 {i}/{len(issues)}: {issue.get('message', '')[:50]}...")
-                    
-                    else:
-                        # 未知类型缺陷
-                        results['skipped_issues'] += 1
-                        results['changes'].append(f"跳过未知类型缺陷: {issue.get('type', 'unknown')}")
-                        print(f"? 跳过未知类型缺陷 {i}/{len(issues)}: {issue.get('type', 'unknown')}")
-                
-                except Exception as e:
-                    results['failed_issues'] += 1
-                    results['errors'].append(f"处理缺陷时出错: {str(e)}")
-                    print(f"✗ 处理缺陷时出错: {e}")
-            
-            # 计算成功率
-            if results['total_issues'] > 0:
-                results['success_rate'] = results['fixed_issues'] / results['total_issues']
+        """按语言和type分类，格式化问题用对应工具修复，非格式化问题跳过"""
+        results = {
+            "total_issues": len(issues),
+            "fixed_issues": 0,
+            "failed_issues": 0,
+            "skipped_issues": 0,
+            "changes": [],
+            "errors": [],
+            "timestamp": asyncio.get_event_loop().time(),
+        }
+
+        print(f"开始处理 {len(issues)} 个缺陷...")
+
+        # 1. 按语言和type分类
+        format_files = {  # lang -> set(files)
+            "python": set(),
+            "java": set(),
+            "javascript": set(),
+            "go": set(),
+        }
+        non_format_issues = []
+
+        for issue in issues:
+            lang = issue.get("language", "").lower()
+            file = issue.get("file")
+            issue_type = issue.get("type", "").lower()
+            msg = issue.get("message", "").lower()
+
+            if not file:
+                continue
+
+            # 判断是否为格式化问题
+            is_format_issue = any(
+                keyword in msg
+                for keyword in [
+                    "indentation",
+                    "whitespace",
+                    "line too long",
+                    "missing blank line",
+                    "too many blank lines",
+                    "trailing whitespace",
+                    "unused import",
+                    "missing final newline",
+                ]
+            )
+
+            if is_format_issue and lang in format_files:
+                format_files[lang].add(file)
             else:
-                results['success_rate'] = 0.0
-            
-            print(f"缺陷处理完成: 总计{results['total_issues']}, 修复{results['fixed_issues']}, 失败{results['failed_issues']}, 跳过{results['skipped_issues']}")
-            
-            return results
-            
-        except Exception as e:
-            print(f"批量处理缺陷失败: {e}")
+                non_format_issues.append(issue)
+
+        # 2. 修复格式化问题
+        for lang, files in format_files.items():
+            if not files:
+                continue
+
+            print(f"修复 {lang} 格式化问题: {len(files)} 个文件")
+            for file in files:
+                try:
+                    if lang == "python":
+                        result = await self.fix_python(issue={"file": file}, project_path=project_path)
+                    elif lang == "java":
+                        result = await self.fix_java(issue={"file": file}, project_path=project_path)
+                    elif lang == "javascript":
+                        result = await self.fix_javascript(issue={"file": file}, project_path=project_path)
+                    elif lang == "go":
+                        result = await self.fix_go(issue={"file": file}, project_path=project_path)
+                    else:
+                        continue
+
+                    if result.get("success"):
+                        results["fixed_issues"] += 1
+                        results["changes"].extend(result.get("changes", []))
+                    else:
+                        results["failed_issues"] += 1
+                        results["errors"].append(result.get("message", "修复失败"))
+
+                except Exception as e:
+                    results["failed_issues"] += 1
+                    results["errors"].append(f"修复 {file} 失败: {e}")
+
+        # 3. 跳过非格式化问题
+        results["skipped_issues"] = len(non_format_issues)
+        for issue in non_format_issues:
+            msg = issue.get("message", "")
+            results["changes"].append(f"跳过非格式化缺陷: {msg[:100]}")
+
+        if results["total_issues"] > 0:
+            results["success_rate"] = results["fixed_issues"] / results["total_issues"]
+        else:
+            results["success_rate"] = 0.0
+
+        print(
+            f"缺陷处理完成: 总计{results['total_issues']}, 修复{results['fixed_issues']}, 失败{results['failed_issues']}, 跳过{results['skipped_issues']}"
+        )
+        return results
+
+    async def fix_java(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
+        """修复Java代码"""
+        try:
+            file_path = os.path.join(project_path, issue["file"])
+            subprocess.run(["google-java-format", "-i", file_path], check=True)
             return {
-                'success': False,
-                'error': str(e),
-                'total_issues': len(issues) if issues else 0,
-                'fixed_issues': 0,
-                'failed_issues': 0,
-                'skipped_issues': 0,
-                'changes': [],
-                'errors': [str(e)]
+                "success": True,
+                "changes": [f"Java文件已自动修复: {file_path}"],
+                "message": "google-java-format 修复成功",
             }
-    
+        except Exception as e:
+            return {"success": False, "changes": [], "message": f"Java修复失败: {e}"}
+
+    async def fix_javascript(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
+        """修复JavaScript代码"""
+        try:
+            file_path = os.path.join(project_path, issue["file"])
+            subprocess.run(["prettier", "--write", file_path], check=True)
+            return {
+                "success": True,
+                "changes": [f"JavaScript文件已自动修复: {file_path}"],
+                "message": "prettier 修复成功",
+            }
+        except Exception as e:
+            return {"success": False, "changes": [], "message": f"JavaScript修复失败: {e}"}
+
+    async def fix_go(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
+        """修复Go代码"""
+        try:
+            file_path = os.path.join(project_path, issue["file"])
+            subprocess.run(["gofmt", "-w", file_path], check=True)
+            subprocess.run(["goimports", "-w", file_path], check=True)
+            return {
+                "success": True,
+                "changes": [f"Go文件已自动修复: {file_path}"],
+                "message": "gofmt + goimports 修复成功",
+            }
+        except Exception as e:
+            return {"success": False, "changes": [], "message": f"Go修复失败: {e}"}
+
+    async def fix_python(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
+        """统一的Python自动修复流程：autoflake → isort → black"""
+        try:
+            file_path = os.path.join(project_path, issue["file"])
+
+            # 1. autoflake - 移除未使用的导入和变量
+            subprocess.run(
+                ["autoflake", "--in-place", "--remove-unused-variables", file_path],
+                check=True,
+            )
+
+            # 2. isort - 排序导入
+            subprocess.run(["isort", file_path], check=True)
+
+            # 3. black - 代码格式化
+            subprocess.run(["black", file_path], check=True)
+
+            return {
+                "success": True,
+                "changes": [f"Python文件已自动修复: {file_path}"],
+                "message": "autoflake + isort + black 修复成功",
+            }
+        except Exception as e:
+            return {"success": False, "changes": [], "message": f"Python修复失败: {e}"}
+
     async def execute_fix(self, issue: Dict[str, Any], project_path: str) -> Dict[str, Any]:
         """执行修复"""
         try:

@@ -1,0 +1,51 @@
+{
+  "task_id": "task_9293fc88232a",
+  "success": true,
+  "status": "completed",
+  "progress": 100,
+  "stages_completed": 4,
+  "timestamp": "2025-09-29T13:35:41.654317",
+  "fix_result": {
+    "total_issues": 23,
+    "fixed_issues": 0,
+    "failed_issues": 13,
+    "skipped_issues": 10,
+    "changes": [
+      "跳过复杂缺陷: 发现硬编码的密钥或密码",
+      "跳过复杂缺陷: 发现硬编码的密钥或密码",
+      "跳过复杂缺陷: 不安全的eval使用",
+      "跳过复杂缺陷: 发现硬编码的API_KEY",
+      "跳过复杂缺陷: 发现硬编码的SECRET",
+      "跳过复杂缺陷: 发现硬编码的PASSWORD",
+      "跳过复杂缺陷: 不安全的eval使用",
+      "跳过复杂缺陷: Cannot find implementation or library stub for module named \"unused_module\"  [import-not-found]",
+      "跳过复杂缺陷: Possible hardcoded password: 'admin123'",
+      "跳过复杂缺陷: Use of possibly insecure function - consider using safer ast.literal_eval."
+    ],
+    "errors": [
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: ",
+      "修复失败: "
+    ],
+    "timestamp": 1495.343,
+    "success_rate": 0.0
+  },
+  "workflow_summary": {
+    "total_issues_found": 23,
+    "fixed_issues": 0,
+    "failed_issues": 13,
+    "skipped_issues": 10,
+    "stages_completed": 4,
+    "workflow_duration_seconds": 30.0
+  }
+}

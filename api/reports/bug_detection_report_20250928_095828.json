@@ -1,0 +1,44 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T09:58:28.412343",
+    "file_path": "uploads\\app.py",
+    "task_id": "task_61e065fc644b",
+    "total_issues": 2,
+    "summary": {
+      "error_count": 1,
+      "warning_count": 0,
+      "info_count": 1
+    },
+    "detection_tools": [
+      "custom_analyzer"
+    ]
+  },
+  "issues": [
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 32,
+      "file": "app.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 17,
+      "file": "app.py",
+      "language": "python"
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 1,
+      "info": 1
+    },
+    "by_type": {
+      "hardcoded_secrets": 1,
+      "missing_docstring": 1
+    }
+  }
+}

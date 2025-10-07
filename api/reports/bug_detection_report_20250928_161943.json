@@ -1,0 +1,39 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T16:19:43.895959",
+    "file_path": "uploads\\test_python.py",
+    "total_issues": 1,
+    "summary": {
+      "error_count": 1,
+      "warning_count": 0,
+      "info_count": 0
+    },
+    "detection_tools": [
+      "custom_analyzer",
+      "bandit",
+      "mypy"
+    ]
+  },
+  "issues": [
+    {
+      "type": "syntax_error",
+      "severity": "error",
+      "message": "语法错误: source code string cannot contain null bytes",
+      "line": 1,
+      "file": "test_python.py",
+      "language": "python",
+      "column": 0
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 1
+    },
+    "by_type": {
+      "syntax_error": 1
+    },
+    "by_category": {
+      "其他": 1
+    }
+  }
+}
