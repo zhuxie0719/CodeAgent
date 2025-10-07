@@ -1,0 +1,48 @@
+@startuml Coordinator_End_to_End_Flow
+title AI Agent 协调中心端到端任务流程
+
+actor User as U
+participant Frontend as FE
+participant API as API
+participant Coordinator as CO
+participant TaskManager as TM
+participant EventBus as EB
+participant "BugDetectionAgent" as BDA
+
+U -> FE: 选择分析类型/上传文件
+FE -> API: POST /api/v1/detection/upload
+API -> CO: create_task('detect_bugs', task_data)
+CO -> TM: create_task(task_type, data)
+TM --> CO: task_id
+API <- CO: task_id（返回给前端）
+
+== 分配任务 ==
+CO -> TM: assign_task(task_id, 'bug_detection_agent')
+TM --> CO: assigned
+CO -> EB: send_task_message(task_id, payload -> BDA)
+EB -> BDA: TaskMessage(task_id, payload)
+
+== Agent 执行 ==
+BDA -> BDA: submit_task(task_id, payload)
+loop 轮询状态
+  BDA -> BDA: get_task_status(task_id)
+end
+
+== 回传结果 ==
+BDA -> EB: ResultMessage(task_id, result, success)
+EB -> CO: ResultMessage(task_id, result, success)
+CO -> TM: update_task_result(task_id, result, status)
+
+== 后处理（可选）==
+API -> API: generate_report_task/store_structured_data (后台)
+FE -> API: GET /api/v1/tasks/{task_id}
+API -> CO: task_manager.tasks[task_id]
+API --> FE: 状态/结果/报告链接
+
+note right of CO
+- 记录统计信息
+- 可接入 DecisionEngine 继续编排
+end note
+
+@enduml
+

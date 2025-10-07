@@ -955,7 +955,8 @@ class BugDetectionAgent(BaseAgent):
                     pylint_result = await self.pylint_tool.analyze(file_path)
                     end_time = datetime.now()
                     
-                    if pylint_result["success"]:
+                    # 注意：pylint 发现问题时通常返回非零退出码，这里以 issues 是否非空为准
+                    if pylint_result.get("issues"):
                         for issue in pylint_result["issues"]:
                             issue["language"] = language
                             issue["file"] = Path(file_path).name
@@ -970,7 +971,8 @@ class BugDetectionAgent(BaseAgent):
                     flake8_result = await self.flake8_tool.analyze(file_path)
                     end_time = datetime.now()
                     
-                    if flake8_result["success"]:
+                    # flake8 发现问题时通常返回非零退出码，这里以 issues 是否非空为准
+                    if flake8_result.get("issues"):
                         for issue in flake8_result["issues"]:
                             issue["language"] = language
                             issue["file"] = Path(file_path).name
