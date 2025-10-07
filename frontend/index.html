@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -445,6 +446,11 @@
         <div class="header">
             <h1>🤖 AI Agent 代码检测系统</h1>
             <p>智能静态代码分析，发现潜在问题，提升代码质量</p>
+            <div style="margin-top: 20px;">
+                <a href="projects.html" style="color: white; text-decoration: none;">
+                    <i class="fas fa-folder"></i> 项目管理
+                </a>
+            </div>
         </div>
 
         <div class="main-content">
@@ -488,8 +494,16 @@
                             <label for="enableFlake8" class="option-label">Flake8检测</label>
                         </div>
                         <div class="option-item">
-                            <input type="checkbox" id="enableAI" class="option-checkbox" checked>
+                            <input type="checkbox" id="enableAI" class="option-checkbox">
                             <label for="enableAI" class="option-label">AI智能分析</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="enableDeepAnalysis" class="option-checkbox" disabled>
+                            <label for="enableDeepAnalysis" class="option-label">深度代码分析</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="enableQualityAnalysis" class="option-checkbox">
+                            <label for="enableQualityAnalysis" class="option-label">🤖 AI质量分析</label>
                         </div>
                     </div>
                 </div>
@@ -542,6 +556,7 @@
 
     <script>
         const API_BASE_URL = 'http://localhost:8001/api/v1';
+        const SIMPLE_API_BASE_URL = 'http://localhost:8001';
         let currentTaskId = null;
         let pollInterval = null;
 
@@ -643,6 +658,8 @@
                 const enablePylint = document.getElementById('enablePylint').checked;
                 const enableFlake8 = document.getElementById('enableFlake8').checked;
                 const enableAI = document.getElementById('enableAI').checked;
+                const enableDeepAnalysis = document.getElementById('enableDeepAnalysis').checked;
+                const enableQualityAnalysis = document.getElementById('enableQualityAnalysis').checked;
                 const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
 
                 // 更新状态显示
@@ -650,21 +667,103 @@
                 statusBadge.className = 'status-badge status-processing';
                 statusMessage.textContent = `正在上传${analysisType === 'project' ? '项目' : '文件'}: ${file.name}`;
 
-                const response = await fetch(`${API_BASE_URL}/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=${enableAI}&analysis_type=${analysisType}`, {
+                let response, result;
+
+        if (enableQualityAnalysis && !enableAI && !enableDeepAnalysis) {
+            // AI质量分析：跳转到main.html，底部显示质量报告
+            try {
+                console.log('开始AI质量分析...');
+                
+                response = await fetch(`${SIMPLE_API_BASE_URL}/api/code-quality/analyze-upload?include_ai_analysis=true`, {
                     method: 'POST',
                     body: formData
                 });
+                result = await response.json();
 
-                const result = await response.json();
+                if (result.success) {
+                    // 保存质量分析结果到localStorage
+                    localStorage.setItem('qualityAnalysisResult', JSON.stringify(result.data));
+                    localStorage.setItem('fileName', file.name);
+                    localStorage.setItem('showQualityReport', 'true');
+                    localStorage.setItem('apiBase', SIMPLE_API_BASE_URL);
+                    localStorage.setItem('analysisType', analysisType);
+
+                    // 跳转到main.html
+                    window.location.href = 'main.html';
+                } else {
+                    throw new Error(result.error || 'AI质量分析失败');
+                }
+            } catch (error) {
+                console.error('AI质量分析失败:', error);
+                throw new Error(`AI质量分析失败: ${error.message}`);
+            }
+        } else if (enableAI && enableDeepAnalysis) {
+            // 深度AI分析：需要进入deep_analysis.html页面
+            try {
+                console.log('开始深度AI分析...');
+                
+                response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=${enableAI}&enable_deep_analysis=true&analysis_type=${analysisType}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                result = await response.json();
 
                 if (result.success) {
                     currentTaskId = result.data.task_id;
-                    statusBadge.textContent = '分析中...';
+                    statusBadge.textContent = '深度AI分析中...';
                     statusBadge.className = 'status-badge status-processing';
-                    statusMessage.textContent = `正在分析${analysisType === 'project' ? '项目' : '文件'}，请稍候...`;
-                    startPolling();
+                    statusMessage.textContent = `正在进行深度AI分析，请稍候...`;
+                    startPollingForDeepAnalysis();
+                    return;
                 } else {
-                    throw new Error(result.error || '上传失败');
+                    throw new Error(result.error || '深度AI分析失败');
+                }
+            } catch (error) {
+                console.error('深度AI分析失败:', error);
+                throw new Error(`深度AI分析失败: ${error.message}`);
+            }
+        } else if (enableAI && !enableDeepAnalysis) {
+            // 简单AI分析：跳转到main.html，但有AI报告
+            try {
+                console.log('开始简单AI分析...');
+                
+                response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=true&enable_deep_analysis=false&analysis_type=${analysisType}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                result = await response.json();
+
+                if (result.success) {
+                    currentTaskId = result.data.task_id;
+                    statusBadge.textContent = '简单AI分析中...';
+                    statusBadge.className = 'status-badge status-processing';
+                    statusMessage.textContent = `正在进行简单AI分析，请稍候...`;
+                    startPolling();
+                    return;
+                } else {
+                    throw new Error(result.error || '简单AI分析失败');
+                }
+            } catch (error) {
+                console.error('简单AI分析失败:', error);
+                throw new Error(`简单AI分析失败: ${error.message}`);
+            }
+        } else {
+                    // 基础分析：没有AI功能，跳转到main.html
+                    response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=false&enable_deep_analysis=false&analysis_type=${analysisType}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    result = await response.json();
+
+                    if (result.success) {
+                        currentTaskId = result.data.task_id;
+                        statusBadge.textContent = '分析中...';
+                        statusBadge.className = 'status-badge status-processing';
+                        statusMessage.textContent = `正在分析${analysisType === 'project' ? '项目' : '文件'}，请稍候...`;
+                        startPolling();
+                    } else {
+                        throw new Error(result.error || '上传失败');
+                    }
                 }
             } catch (error) {
                 showError('上传失败: ' + error.message);
@@ -677,8 +776,28 @@
         function startPolling() {
             pollInterval = setInterval(async () => {
                 try {
-                    const response = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/tasks/${currentTaskId}`);
+                    const response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/tasks/${currentTaskId}`);
+                    
+                    if (response.status === 404) {
+                        console.warn('任务不存在，停止轮询:', currentTaskId);
+                        clearInterval(pollInterval);
+                        showError('任务不存在或已过期，请重新上传文件');
+                        loading.style.display = 'none';
+                        uploadButton.disabled = false;
+                        return;
+                    }
+                    
+                    if (!response.ok) {
+                        console.error('任务状态查询失败:', response.status, response.statusText);
+                        return;
+                    }
+                    
                     const status = await response.json();
+                    
+                    if (!status.success) {
+                        console.error('任务状态查询返回错误:', status.message);
+                        return;
+                    }
 
                     updateStatus(status.data);
 
@@ -686,20 +805,25 @@
                         clearInterval(pollInterval);
                         if (status.data.status === 'completed') {
                             await loadResults();
+                        } else {
+                            showError('任务执行失败: ' + (status.data.error || '未知错误'));
+                            loading.style.display = 'none';
+                            uploadButton.disabled = false;
                         }
                     }
                 } catch (error) {
                     console.error('轮询状态失败:', error);
+                    // 不要立即停止轮询，可能是网络问题
                 }
-            }, 1000);
+            }, 2000); // 增加轮询间隔到2秒，减少服务器压力
         }
 
         // 更新状态显示
         function updateStatus(status) {
             statusBadge.textContent = getStatusText(status.status);
             statusBadge.className = `status-badge status-${status.status}`;
-            statusMessage.textContent = status.message;
-            progressFill.style.width = `${status.progress}%`;
+            statusMessage.textContent = getStatusMessage(status.status);
+            progressFill.style.width = getProgress(status.status);
         }
 
         // 获取状态文本
@@ -713,10 +837,32 @@
             return statusMap[status] || status;
         }
 
+        // 获取状态消息
+        function getStatusMessage(status) {
+            const messageMap = {
+                'pending': '任务已创建，等待处理...',
+                'processing': '正在分析代码，请稍候...',
+                'completed': '代码分析完成！',
+                'failed': '代码分析失败，请重试'
+            };
+            return messageMap[status] || '未知状态';
+        }
+
+        // 获取进度百分比
+        function getProgress(status) {
+            const progressMap = {
+                'pending': 10,
+                'processing': 50,
+                'completed': 100,
+                'failed': 0
+            };
+            return progressMap[status] || 0;
+        }
+
         // 加载检测结果
         async function loadResults() {
             try {
-                const response = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/tasks/${currentTaskId}`);
+                const response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/tasks/${currentTaskId}`);
                 const taskInfo = await response.json();
                 
                 if (taskInfo.data.result) {
@@ -724,16 +870,16 @@
                     localStorage.setItem('analysisResult', JSON.stringify(taskInfo.data.result));
                     localStorage.setItem('taskId', currentTaskId);
                     localStorage.setItem('fileName', fileInput.files[0]?.name || 'Unknown File');
-                    localStorage.setItem('apiBase', API_BASE_URL.replace('/api/v1', ''));
+                    localStorage.setItem('apiBase', SIMPLE_API_BASE_URL);
                     localStorage.setItem('analysisType', document.querySelector('input[name="analysisType"]:checked').value);
 
                     // 预取AI报告（若可用），存储后再跳转
                     try {
-                        const aiResp = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}`);
+                        const aiResp = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/ai-reports/${currentTaskId}`);
                         const aiData = await aiResp.json();
-                        if (aiData && aiData.success && aiData.data && aiData.data.ai_report) {
-                            localStorage.setItem('aiReport', aiData.data.ai_report);
-                            localStorage.setItem('aiReportDownloadUrl', `${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}/download`);
+                        if (aiData && aiData.success && aiData.data && aiData.data.report) {
+                            localStorage.setItem('aiReport', aiData.data.report);
+                            localStorage.setItem('aiReportDownloadUrl', `${SIMPLE_API_BASE_URL}/api/v1/ai-reports/${currentTaskId}/download`);
                         }
                     } catch (e) {
                         // 忽略AI报告失败，仍然跳转
@@ -741,11 +887,11 @@
 
                     // 预取结构化数据（若可用）
                     try {
-                        const structuredResp = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/structured-data/${currentTaskId}`);
+                        const structuredResp = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/structured-data/${currentTaskId}`);
                         const structuredData = await structuredResp.json();
                         if (structuredData && structuredData.success && structuredData.data) {
                             localStorage.setItem('structuredData', JSON.stringify(structuredData.data));
-                            localStorage.setItem('structuredDataDownloadUrl', `${API_BASE_URL.replace('/api/v1', '')}/api/v1/structured-data/${currentTaskId}/download`);
+                            localStorage.setItem('structuredDataDownloadUrl', `${SIMPLE_API_BASE_URL}/api/v1/structured-data/${currentTaskId}/download`);
                         }
                     } catch (e) {
                         // 忽略结构化数据失败，仍然跳转
@@ -889,7 +1035,7 @@
         
         function downloadReport() {
             if (currentTaskId) {
-                const downloadUrl = `${API_BASE_URL.replace('/api/v1', '')}/api/v1/reports/${currentTaskId}`;
+                const downloadUrl = `${SIMPLE_API_BASE_URL}/api/v1/reports/${currentTaskId}`;
                 window.open(downloadUrl, '_blank');
             } else {
                 alert('没有可下载的报告');
@@ -898,7 +1044,7 @@
         
         function downloadAIReport() {
             if (currentTaskId) {
-                const downloadUrl = `${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}/download`;
+                const downloadUrl = `${SIMPLE_API_BASE_URL}/api/v1/ai-reports/${currentTaskId}/download`;
                 window.open(downloadUrl, '_blank');
             } else {
                 alert('没有可下载的AI报告');
@@ -967,7 +1113,7 @@
                 document.body.appendChild(modal);
                 
                 // 获取AI报告
-                const response = await fetch(`${API_BASE_URL.replace('/api/v1', '')}/api/v1/ai-reports/${currentTaskId}`);
+                const response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/ai-reports/${currentTaskId}`);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -1024,7 +1170,131 @@
             }, 5000);
         }
 
+        // 深度分析的轮询函数
+        function startPollingForDeepAnalysis() {
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/tasks/${currentTaskId}`);
+                    
+                    if (response.status === 404) {
+                        console.warn('任务不存在，停止轮询:', currentTaskId);
+                        clearInterval(pollInterval);
+                        showError('任务不存在或已过期，请重新上传文件');
+                        loading.style.display = 'none';
+                        uploadButton.disabled = false;
+                        return;
+                    }
+                    
+                    if (!response.ok) {
+                        console.error('任务状态查询失败:', response.status, response.statusText);
+                        return;
+                    }
+                    
+                    const status = await response.json();
+                    
+                    if (!status.success) {
+                        console.error('任务状态查询返回错误:', status.message);
+                        return;
+                    }
+
+                    updateStatus(status.data);
+
+                    if (status.data.status === 'completed' || status.data.status === 'failed') {
+                        clearInterval(pollInterval);
+                        if (status.data.status === 'completed') {
+                            await loadDeepAnalysisResults(status.data);
+                        } else {
+                            showError('深度AI分析失败: ' + (status.data.error || '未知错误'));
+                            loading.style.display = 'none';
+                            uploadButton.disabled = false;
+                        }
+                    }
+                } catch (error) {
+                    console.error('轮询状态失败:', error);
+                    // 不要立即停止轮询，可能是网络问题
+                }
+            }, 2000); // 增加轮询间隔到2秒，减少服务器压力
+        }
+
+        // 加载深度分析结果并跳转到深度分析页面
+        async function loadDeepAnalysisResults(taskInfo) {
+            try {
+                // 保存深度分析结果
+                localStorage.setItem('deepAnalysisResult', JSON.stringify(taskInfo.result));
+                localStorage.setItem('isDeepAnalysis', 'true');
+                localStorage.setItem('fileName', fileInput.files[0]?.name || 'Unknown File');
+                localStorage.setItem('taskId', currentTaskId);
+                localStorage.setItem('apiBase', SIMPLE_API_BASE_URL);
+                localStorage.setItem('analysisType', document.querySelector('input[name="analysisType"]:checked').value);
+
+                // 预取AI报告
+                try {
+                    const aiResp = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/ai-reports/${currentTaskId}`);
+                    const aiData = await aiResp.json();
+                    if (aiData && aiData.success && aiData.data) {
+                        localStorage.setItem('deepAiReport', aiData.data.report);
+                    }
+                } catch (e) {
+                    console.warn('AI报告获取失败:', e);
+                }
+
+                // 跳转到深度分析页面
+                window.location.href = 'deep_analysis.html';
+                
+                loading.style.display = 'none';
+                uploadButton.disabled = false;
+            } catch (error) {
+                showError('加载深度分析结果失败: ' + error.message);
+                loading.style.display = 'none';
+                uploadButton.disabled = false;
+            }
+        }
+
+        // 清理旧的localStorage数据
+        function clearOldData() {
+            const keysToRemove = [
+                'analysisResult', 'fileName', 'taskId', 'analysisType', 
+                'structuredData', 'apiBase', 'aiReport', 'aiReportDownloadUrl', 
+                'isDeepAnalysis', 'deepAnalysisResult', 'structuredDataDownloadUrl', 'deepAiReport'
+            ];
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            // 注意：不要清理 qualityAnalysisResult 和 showQualityReport，这些是质量分析专用的
+        }
+
+        // 检查是否有旧的任务ID正在轮询
+        function stopOldPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+            // 清除可能存在的旧任务ID
+            const oldTaskId = localStorage.getItem('taskId');
+            if (oldTaskId) {
+                console.log('发现旧任务ID，正在清理:', oldTaskId);
+                clearOldData();
+            }
+        }
+
+        // 处理AI智能分析和深度分析的依赖关系
+        function setupCheckboxDependency() {
+            const enableAI = document.getElementById('enableAI');
+            const enableDeepAnalysis = document.getElementById('enableDeepAnalysis');
+            
+            enableAI.addEventListener('change', function() {
+                if (this.checked) {
+                    enableDeepAnalysis.disabled = false;
+                } else {
+                    enableDeepAnalysis.disabled = true;
+                    enableDeepAnalysis.checked = false;
+                }
+            });
+        }
+
         // 初始化
+        stopOldPolling(); // 停止旧的轮询
+        // 注意：不要自动清理localStorage数据，这可能删除刚刚保存的质量分析结果
+        // clearOldData(); // 延迟清理，只在必要时执行
+        setupCheckboxDependency(); // 设置复选框依赖关系
         uploadButton.disabled = true;
     </script>
 </body>

@@ -4,7 +4,10 @@ AI AGENT系统配置文件
 
 import os
 from typing import Dict, Any, List
-from pydantic import BaseSettings
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -110,7 +113,7 @@ class Settings(BaseSettings):
     SECURITY: Dict[str, Any] = {
         "secret_key": os.getenv("SECRET_KEY", "your-secret-key-here"),
         "allowed_hosts": ["localhost", "127.0.0.1"],
-        "cors_origins": ["http://localhost:3000"]
+        "cors_origins": ["*"]
     }
     
     class Config:

@@ -1,0 +1,130 @@
+{
+  "task_id": "task_ae0a50eafd35",
+  "file_path": "uploads\\test_python_bad.py",
+  "analysis_type": "file",
+  "timestamp": "2025-09-28T15:57:24.956876",
+  "summary": {
+    "total_issues": 10,
+    "error_count": 3,
+    "warning_count": 1,
+    "info_count": 6,
+    "languages_detected": [],
+    "total_files": 1
+  },
+  "issues_by_priority": {
+    "critical": [
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 7,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "hardcoded_secrets",
+        "severity": "error",
+        "message": "发现硬编码的密钥或密码",
+        "line": 8,
+        "file": "test_python_bad.py",
+        "language": "python"
+      }
+    ],
+    "high": [
+      {
+        "type": "unsafe_eval",
+        "severity": "error",
+        "message": "不安全的eval使用",
+        "line": 20,
+        "file": "test_python_bad.py",
+        "language": "python"
+      }
+    ],
+    "medium": [
+      {
+        "type": "unused_import",
+        "severity": "warning",
+        "message": "未使用的导入",
+        "line": 4,
+        "file": "test_python_bad.py",
+        "language": "python"
+      }
+    ],
+    "low": [
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 10,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 23,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 37,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 43,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 50,
+        "file": "test_python_bad.py",
+        "language": "python"
+      },
+      {
+        "type": "missing_docstring",
+        "severity": "info",
+        "message": "函数缺少文档字符串",
+        "line": 60,
+        "file": "test_python_bad.py",
+        "language": "python"
+      }
+    ]
+  },
+  "fix_recommendations": {
+    "immediate_actions": [
+      "修复 3 个错误级别的问题"
+    ],
+    "short_term_improvements": [],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "file",
+    "file_count": 1,
+    "languages": [],
+    "complexity_indicators": {
+      "high_issue_files": 1,
+      "average_issues_per_file": 10.0
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [
+      "custom_analyzer"
+    ],
+    "analysis_time": 0.5,
+    "project_path": "uploads\\test_python_bad.py"
+  }
+}

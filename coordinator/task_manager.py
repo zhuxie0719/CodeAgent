@@ -301,6 +301,23 @@ class TaskManager:
             "agent_loads": self.agent_loads.copy()
         }
     
+    async def get_task_status(self, task_id: str) -> Optional[Dict[str, Any]]:
+        """获取任务状态"""
+        if task_id not in self.tasks:
+            return None
+        
+        task = self.tasks[task_id]
+        return {
+            'task_id': task_id,
+            'agent_id': task.get('assigned_agent'),
+            'status': task['status'].value,
+            'created_at': task['created_at'].isoformat(),
+            'started_at': task.get('started_at').isoformat() if task.get('started_at') else None,
+            'completed_at': task.get('completed_at').isoformat() if task.get('completed_at') else None,
+            'result': task.get('result'),
+            'error': task.get('error')
+        }
+
     async def health_check(self) -> Dict[str, Any]:
         """健康检查"""
         return {

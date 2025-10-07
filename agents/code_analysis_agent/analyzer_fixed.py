@@ -218,20 +218,13 @@ class ProjectAnalyzer:
             'primary_language': 'unknown',
             'has_tests': False,
             'has_docs': False,
-            'has_config': False,
-            'total_functions': 0,
-            'total_classes': 0
+            'has_config': False
         }
         
-        # 检查是否为单个文件
-        if os.path.isfile(project_path):
-            # 分析单个文件
-            structure = await self._analyze_single_file(project_path, structure)
-        else:
-            # 遍历项目目录
-            for root, dirs, files in os.walk(project_path):
-                # 过滤忽略的目录
-                dirs[:] = [d for d in dirs if d not in self.ignored_dirs]
+        # 遍历项目目录
+        for root, dirs, files in os.walk(project_path):
+            # 过滤忽略的目录
+            dirs[:] = [d for d in dirs if d not in self.ignored_dirs]
             
             # 分析目录
             rel_root = os.path.relpath(root, project_path)
@@ -276,7 +269,7 @@ class ProjectAnalyzer:
         structure['has_config'] = self._has_config(structure)
         
         return structure
-
+    
     def _infer_project_type(self, structure: Dict[str, Any]) -> str:
         """推断项目类型"""
         files = [f['path'] for f in structure['files']]
@@ -773,7 +766,7 @@ class DependencyAnalyzer:
                         if ' ' in line:
                             dep_name = line.split()[0]
                             dependencies.append(dep_name)
-            return dependencies
+                return dependencies
         except Exception:
             return []
     
@@ -850,79 +843,3 @@ class DependencyAnalyzer:
             metrics['coupling_score'] = self.dependency_graph.number_of_edges() / self.dependency_graph.number_of_nodes()
         
         return metrics
-
-
-# 添加单个文件分析方法到ProjectAnalyzer类
-async def _analyze_single_file(self, file_path: str, structure: Dict[str, Any]) -> Dict[str, Any]:
-    """分析单个文件的详细结构"""
-    try:
-        # 读取文件内容
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-            content = f.read()
-            lines = len(content.splitlines())
-    except Exception as e:
-        print(f"无法读取文件 {file_path}: {e}")
-        return structure
-    
-    # 获取文件信息
-    filename = os.path.basename(file_path)
-    ext = os.path.splitext(filename)[1].lower()
-    file_size = os.path.getsize(file_path)
-    
-    # 统计文件信息
-    structure['total_files'] = 1
-    structure['total_lines'] = lines
-    structure['file_types'][ext] = 1
-    structure['files'].append({
-        'path': filename,
-        'lines': lines,
-        'size': file_size
-    })
-    
-    # 分析代码结构（针对Python文件）
-    if ext == '.py':
-        try:
-            import ast
-            tree = ast.parse(content)
-            
-            # 统计函数和类
-            function_count = 0
-            class_count = 0
-            
-            for line in tree.body:
-                if isinstance(line, ast.FunctionDef):
-                    function_count += 1
-                elif isinstance(line, ast.AsyncFunctionDef):
-                    function_count += 1
-                elif isinstance(line, ast.ClassDef):
-                    class_count += 1
-            
-            structure['total_functions'] = function_count
-            structure['total_classes'] = class_count
-            
-            # 推断项目信息
-            structure['primary_language'] = 'python'
-            structure['project_type'] = 'single_python_file'
-            
-            # 检查是否为脚本
-            if '__main__' in content:
-                structure['framework'] = 'python_script'
-            else:
-                structure['framework'] = 'python_module'
-                
-        except Exception as e:
-            print(f"AST解析失败: {e}")
-            structure['total_functions'] = 0
-            structure['total_classes'] = 0
-    
-    # 推断项目特征
-    if 'test' in filename.lower():
-        structure['has_tests'] = True
-    if 'readme' in filename.lower() or 'docs' in filename.lower():
-        structure['has_docs'] = True
-        
-    return structure
-
-
-# 将方法添加到ProjectAnalyzer类
-ProjectAnalyzer._analyze_single_file = _analyze_single_file

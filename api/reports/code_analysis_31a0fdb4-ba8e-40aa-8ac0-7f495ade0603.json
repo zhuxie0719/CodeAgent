@@ -1,0 +1,43 @@
+{
+  "project_structure": {
+    "files": [],
+    "directories": [],
+    "file_types": {},
+    "total_lines": 0,
+    "python_modules": [],
+    "python_packages": [],
+    "avg_file_lines": 0
+  },
+  "code_quality": {
+    "complexity": {},
+    "maintainability": {},
+    "duplication": {},
+    "issues": [],
+    "entities": {
+      "files": {}
+    }
+  },
+  "dependencies": {
+    "python_packages": [],
+    "node_modules": [],
+    "imports": {},
+    "circular_dependencies": [],
+    "external_imports": [],
+    "internal_graph": {}
+  },
+  "timestamp": 6414.125,
+  "project_intent": {
+    "project_purpose": "\"project_purpose\": \"基于提供的项目概览和代码质量指标，该项目目前为空项目或初始化阶段，没有实际代码文件、模块或功能实现。项目目的暂不明确，可能处于规划或开发初期。\",",
+    "primary_language": "Unknown",
+    "key_components": [],
+    "external_dependencies": [],
+    "risks": [],
+    "recommended_refactors": [
+      null,
+      null
+    ],
+    "data_flow": "基于模块依赖关系分析",
+    "analysis_confidence": "low",
+    "ai_summary": "```json\n{\n    \"project_purpose\": \"基于提供的项目概览和代码质量指标，该项目目前为空项目或初始化阶段，没有实际代码文件、模块或功能实现。项目目的暂不明确，可能处于规划或开发初期。\",\n    \"key_components\": [],\n    \"data_flow\": \"无数据流，项目为空结构。\",\n    \"risks\": [\"项目缺乏明确目标和功能定义，可能导致开发方向不清晰\", \"无代码实现，无法评估技术债务或架构合理性\", \"缺少依赖管理和模块划分，可能影响后续扩展性\", \"空项目状态容易引入随意性开发，增加后期重构成本\"],\n    \"recommended_refactors\": [\"明确项目需求和核心功能，制定详细开发计划\", \"建立基础项目结构，包括模块划分和依赖管理\", \"引入代码规范和架构设计文档，确保可维护性\", \"逐步实现核心组件，避免一次性过度设计\"]\n}\n```"
+  }
+}

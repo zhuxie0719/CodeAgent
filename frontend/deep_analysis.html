@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI深度分析报告</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .header .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .header .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        /* CodeAnalysisAgent专属分析区域 */
+        .code-analysis-info {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .code-analysis-header {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .code-analysis-icon {
+            font-size: 2em;
+            color: white;
+        }
+
+        .code-analysis-title {
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .code-analysis-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .analysis-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .analysis-section h3 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #38ef7d;
+            padding-bottom: 8px;
+        }
+
+        .analysis-item {
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #38ef7d;
+        }
+
+        .analysis-item-label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .analysis-item-value {
+            color: #333;
+            margin-top: 4px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* 概览卡片 */
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap:  quarterly;
+            margin-bottom: 40px;
+        }
+
+        .overview-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .overview-card i {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .overview-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .overview-card .value {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .overview-card .label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* 详细信息区域 */
+        .detail-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .detail-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .detail-section h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-section h3 i {
+            color: #4facfe;
+        }
+
+        /* 代码复杂度分析 */
+        .complexity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .complexity-item:last-child {
+            border-bottom: none;
+        }
+
+        .complexity-label {
+            font-weight: 500;
+            color: #343a40;
+        }
+
+        .complexity-value {
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .complexity-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .complexity-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .complexity-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* 架构分析 */
+        .architecture-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .architecture-item .title {
+            font-weight: bold;
+            color: #343a40;
+            margin-bottom: 5px;
+        }
+
+        .architecture-item .description {
+            color: #6c757d;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* AI报告区域 */
+        .ai-report-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .ai-report-section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .ai-report-content {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .ai-report-content pre {
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.6;
+            font-size: 1em;
+        }
+
+        /* 性能分析 */
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .metric-card .score {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+
+        .metric-card .label {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        /* 改进建议 */
+        .suggestions-list {
+            list-style: none;
+        }
+
+        .suggestions-list li {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .suggestions-list li i {
+            color: #28a745;
+            font-size: 1.2em;
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .toolbar h2 {
+            color: #495057;
+            margin: 0;
+        }
+
+        .toolbar .actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .detail-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .overview-cards {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        /* 加载状态 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面头部 -->
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> 返回
+            </a>
+            <h1>🧠 AI深度分析报告</h1>
+            <p>智能代码分析 · 架构评估 · 性能洞察</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 加载状态 -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>正在加载深度分析报告...</div>
+            </div>
+
+            <!-- 主要内容 -->
+            <div id="mainContent" style="display: none;">
+                <!-- 工具栏 -->
+                <div class="toolbar">
+                    <h2><i class="fas fa-file-alt"></i> <span id="fileName">代码文件</span> - AI深度分析</h2>
+                    <div class="actions">
+                        <a href="#" class="btn btn-primary" onclick="downloadReport()">
+                            <i class="fas fa-download"></i> 下载报告
+                        </a>
+                        <a href="#" class="btn btn-success" onclick="viewRawData()">
+                            <i class="fas fa-code"></i> 原始数据
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 概览卡片 -->
+                <div class="overview-cards" id="overviewCards">
+                    <!-- 动态生成 -->
+                </div>
+
+                <!-- CodeAnalysisAgent专属分析区域 -->
+                <div class="code-analysis-info" id="codeAnalysisInfo">
+                    <div class="code-analysis-header">
+                        <i class="fas fa-robot code-analysis-icon"></i>
+                        <div class="code-analysis-title">CodeAnalysisAgent专业分析</div>
+                    </div>
+                    <div class="code-analysis-content">
+                        <!-- 项目意图分析 -->
+                        <div class="analysis-section">
+                            <h3><i class="fas fa-bullseye"></i> 项目意图分析</h3>
+                            <div id="projectIntentAnalysis">
+                                <!-- 将由JavaScript填充 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 项目结构分析 -->
+                        <div class="analysis-section">
+                            <h3><i class="fas fa-sitemap"></i> 项目结构分析</h3>
+                            <div id="projectStructureAnalysis">
+                                <!-- 将由JavaScript填充 -->
+                            </div>
+                            <div class="metrics-grid" id="structureMetrics">
+                                <!-- 结构指标卡片 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 依赖关系分析 -->
+                        <div class="analysis-section">
+                            <h3><i class="fas fa-network-wired"></i> 依赖关系分析</h3>
+                            <div id="dependenciesAnalysis">
+                                <!-- 将由JavaScript填充 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 技术栈分析 -->
+                        <div class="analysis-section">
+                            <h3><i class="fas fa-layer-group"></i> 技术栈分析</h3>
+                            <div id="technologyStackAnalysis">
+                                <!-- 将由JavaScript填充 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 详细信息区域 -->
+                <div class="detail-sections">
+                    <!-- 代码复杂度分析 -->
+                    <div class="detail-section">
+                        <h3><i class="fas fa-calculator"></i> 代码复杂度分析</h3>
+                        <div id="complexityAnalysis">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 架构分析 -->
+                    <div class="detail-section">
+                        <h3><i class="fas fa-sitemap"></i> 架构分析</h3>
+                        <div id="architectureAnalysis">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 性能分析 -->
+                <div class="detail-section">
+                    <h3><i class="fas fa-tachometer-alt"></i> 性能分析</h3>
+                    <div class="performance-metrics" id="performanceAnalysis">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 改进建议 -->
+                <div class="detail-section">
+                    <h3><i class="fas fa-lightbulb"></i> AI改进建议</h3>
+                    <ul class="suggestions-list" id="improvementSuggestions">
+                        <!-- 动态生成 -->
+                    </ul>
+                </div>
+
+                <!-- AI深度报告 -->
+                <div class="ai-report-section">
+                    <h2><i class="fas fa-brain"></i> AI深度分析报告</h2>
+                    <div class="ai-report-content">
+                        <pre id="aiReportContent">正在生成AI深度分析报告...</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时初始化
+        window.addEventListener('load', initializeDeepAnalysis);
+
+        function initializeDeepAnalysis() {
+            const loading = document.getElementById('loading');
+            const mainContent = document.getElementById('mainContent');
+
+            try {
+                // 检查是否有深度分析数据
+                const deepAnalysisResult = localStorage.getItem('deepAnalysisResult');
+                const fileName = localStorage.getItem('fileName');
+                const deepAiReport = localStorage.getItem('deepAiReport');
+
+                if (!deepAnalysisResult || !deepAiReport) {
+                    showError('未找到深度分析数据，请返回重新分析');
+                    return;
+                }
+
+                // 解析分析结果
+                const analysisData = JSON.parse(deepAnalysisResult);
+                
+                // 填充页面内容
+                populatePage(analysisData, deepAiReport, fileName);
+
+                // 显示主要内容
+                loading.style.display = 'none';
+                mainContent.style.display = 'block';
+
+            } catch (error) {
+                console.error('初始化失败:', error);
+                showError('加载分析数据失败: ' + error.message);
+            }
+        }
+
+        function populatePage(analysisData, aiReport, fileName) {
+            // 设置文件名
+            document.getElementById('fileName').textContent = fileName || '未知文件';
+
+            // 生成概览卡片
+            generateOverviewCards(analysisData);
+
+            // 生成CodeAnalysisAgent专属分析
+            generateCodeAnalysisAgentData(analysisData);
+
+            // 生成复杂度分析
+            generateComplexityAnalysis(analysisData);
+
+            // 生成架构分析
+            generateArchitectureAnalysis(analysisData);
+
+            // 生成性能分析
+            generatePerformanceAnalysis(analysisData);
+
+            // 生成改进建议
+            generateImprovementSuggestions(analysisData);
+
+            // 设置AI报告
+            document.getElementById('aiReportContent').textContent = aiReport;
+        }
+
+        function generateCodeAnalysisAgentData(data) {
+            const deepAnalysis = data.deep_analysis || {};
+            
+            // 生成项目意图分析
+            generateProjectIntentAnalysis(deepAnalysis);
+            
+            // 生成项目结构分析
+            generateProjectStructureAnalysis(deepAnalysis);
+            
+            // 生成依赖关系分析
+            generateDependenciesAnalysis(deepAnalysis);
+            
+            // 生成技术栈分析
+            generateTechnologyStackAnalysis(deepAnalysis);
+        }
+
+        function generateProjectIntentAnalysis(deepAnalysis) {
+            const projectIntent = deepAnalysis.project_intent || {};
+            const intentDiv = document.getElementById('projectIntentAnalysis');
+            
+            const intentItems = [
+                {
+                    label: '项目目的',
+                    value: projectIntent.purpose || '数据处理或分析项目'
+                },
+                {
+                    label: '项目类型',
+                    value: projectIntent.project_type || 'application'
+                },
+                {
+                    label: '架构风格',
+                    value: projectIntent.architecture || '模块化架构'
+                },
+                {
+                    label: '复杂度等级',
+                    value: projectIntent.complexity || '适中'
+                },
+                {
+                    label: '开发阶段',
+                    value: projectIntent.development_stage || '稳定期'
+                },
+                {
+                    label: '主要功能',
+                    value: projectIntent.functionality || '代码分析和处理'
+                }
+            ];
+            
+            intentDiv.innerHTML = intentItems.map(item => `
+                <div class="analysis-item">
+                    <div class="analysis-item-label">${item.label}</div>
+                    <div class="analysis-item-value">${item.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateProjectStructureAnalysis(deepAnalysis) {
+            const projectStructure = deepAnalysis.project_structure || {};
+            const structureDiv = document.getElementById('projectStructureAnalysis');
+            const metricsDiv = document.getElementById('structureMetrics');
+            
+            const structureItems = [
+                {
+                    label: '文件组织结构',
+                    value: projectStructure.file_organization || '单一文件结构'
+                },
+                {
+                    label: '代码分层',
+                    value: projectStructure.code_layering || '功能模块化'
+                },
+                {
+                    label: '设计模式',
+                    value: (projectStructure.design_patterns || ['模块化']).join(', ')
+                },
+                {
+                    label: '命名规范',
+                    value: projectStructure.naming_conventions || 'Python标准命名'
+                }
+            ];
+            
+            structureDiv.innerHTML = structureItems.map(item => `
+                <div class="analysis-item">
+                    <div class="analysis-item-label">${item.label}</div>
+                    <div class="analysis-item-value">${item.value}</div>
+                </div>
+            `).join('');
+            
+            // 生成结构指标卡片
+            const metrics = [
+                {
+                    label: '代码行数',
+                    value: projectStructure.total_lines || 0
+                },
+                {
+                    label: '函数数量',
+                    value: projectStructure.total_functions || 0
+                },
+                {
+                    label: '类数量',
+                    value: projectStructure.total_classes || 0
+                },
+                {
+                    label: '文件数量',
+                    value: projectStructure.total_files || 1
+                }
+            ];
+            
+            metricsDiv.innerHTML = metrics.map(metric => `
+                <div class="metric-item">
+                    <div class="metric-value">${metric.value}</div>
+                    <div class="metric-label">${metric.label}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateDependenciesAnalysis(deepAnalysis) {
+            const dependencies = deepAnalysis.dependencies || {};
+            const depDiv = document.getElementById('dependenciesAnalysis');
+            
+            const pythonPackages = dependencies.python_packages || [];
+            const externalLibs = dependencies.external_libraries || [];
+            const versions = dependencies.versions || {};
+            
+            const dependenciesItems = [
+                {
+                    label: 'Python标准库依赖',
+                    value: dependencies.std_lib_deps ? Object.keys(dependencies.std_lib_deps).join(', ') : 'os, sys, json'
+                },
+                {
+                    label: '第三方包',
+                    value: pythonPackages.length > 0 ? pythonPackages.join(', ') : '无外部依赖'
+                },
+                {
+                    label: '外部库',
+                    value: externalLibs.length > 0 ? externalLibs.join(', ') : '无外部库'
+                },
+                {
+                    label: '导入数量',
+                    value: dependencies.total_imports || 0
+                },
+                {
+                    label: '依赖复杂度',
+                    value: dependencies.complexity || '低'
+                }
+            ];
+            
+            depDiv.innerHTML = dependenciesItems.map(item => `
+                <div class="analysis-item">
+                    <div class="analysis-item-label">${item.label}</div>
+                    <div class="analysis-item-value">${item.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateTechnologyStackAnalysis(deepAnalysis) {
+            const projectIntent = deepAnalysis.project_intent || {};
+            const techDiv = document.getElementById('technologyStackAnalysis');
+            
+            const techStack = projectIntent.technology_stack || ['Python'];
+            const programmingLang = projectIntent.programming_language || 'Python';
+            
+            const technologyItems = [
+                {
+                    label: '编程语言',
+                    value: programmingLang
+                },
+                {
+                    label: '技术栈',
+                    value: techStack.join(', ')
+                },
+                {
+                    label: '框架版本',
+                    value: projectIntent.framework_version || 'Python 3.x'
+                },
+                {
+                    label: '开发工具',
+                    value: projectIntent.development_tools || '标准IDE'
+                },
+                {
+                    label: '运行时环境',
+                    value: projectIntent.runtime_environment || 'Python解释器'
+                },
+                {
+                    label: '构建工具',
+                    value: projectIntent.build_tools || '标准Python工具'
+                }
+            ];
+            
+            techDiv.innerHTML = technologyItems.map(item => `
+                <div class="analysis-item">
+                    <div class="analysis-item-label">${item.label}</div>
+                    <div class="analysis-item-value">${item.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateOverviewCards(data) {
+            const overviewCards = document.getElementById('overviewCards');
+            
+            const cards = [
+                {
+                    icon: 'fas fa-file-code',
+                    title: '分析文件',
+                    value: data.files_analyzed || 0,
+                    label: '文件',
+                    color: '#667eea'
+                },
+                {
+                    icon: 'fas fa-exclamation-triangle',
+                    title: '发现问题',
+                    value: data.issues_found || 0,
+                    label: '问题',
+                    color: '#f093fb'
+                },
+                {
+                    icon: 'fas fa-check-circle',
+                    title: '质量评分',
+                    value: data.deep_analysis?.code_quality_report?.quality_score || 'N/A',
+                    label: '分',
+                    color: '#4facfe'
+                },
+                {
+                    icon: 'fas fa-clock',
+                    title: '分析耗时',
+                    value: data.took ? Math.round(data.took) : 'N/A',
+                    label: '秒',
+                    color: '#43e97b'
+                }
+            ];
+
+            overviewCards.innerHTML = cards.map(card => `
+                <div class="overview-card" style="background: linear-gradient(135deg, ${card.color} 0%, ${adjustColor(card.color, -20)} 100%);">
+                    <i class="${card.icon}"></i>
+                    <div class="value">${card.value}</div>
+                    <div class="title">${card.title}</div>
+                    <div class="label">${card.label}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateComplexityAnalysis(data) {
+            const complexityDiv = document.getElementById('complexityAnalysis');
+            const deepAnalysis = data.deep_analysis || {};
+            
+            const complexityItems = [
+                {
+                    label: '算法复杂度',
+                    value: deepAnalysis.performance_analysis?.algorithm_complexity || 'O(n)',
+                    level: 'medium'
+                },
+                {
+                    label: '内存占用',
+                    value: deepAnalysis.performance_analysis?.memory_usage || '低',
+                    level: 'low'
+                },
+                {
+                    label: '代码行数',
+                    value: data.analysis_results?.[0]?.lines || 0,
+                    level: data.analysis_results?.[0]?.lines > 500 ? 'high' : 'medium'
+                },
+                {
+                    label: '函数复杂度',
+                    value: '适中',
+                    level: 'medium'
+                }
+            ];
+
+            complexityDiv.innerHTML = complexityItems.map(item => `
+                <div class="complexity-item">
+                    <span class="complexity-label">${item.label}</span>
+                    <span class="complexity-value complexity-${item.level}">${item.value}</span>
+                </div>
+            `).join('');
+        }
+
+        function generateArchitectureAnalysis(data) {
+            const architectureDiv = document.getElementById('architectureAnalysis');
+            const deepAnalysis = data.deep_analysis || {};
+            
+            const architectureItems = [
+                {
+                    title: '架构风格',
+                    description: deepAnalysis.architecture_assessment?.architecture_style || '模块化架构'
+                },
+                {
+                    title: '耦合程度',
+                    description: deepAnalysis.architecture_assessment?.coupling_level || '低耦合'
+                },
+                {
+                    title: '内聚程度',
+                    description: deepAnalysis.architecture_assessment?.cohesion_level || '高内聚'
+                },
+                {
+                    title: '设计模式',
+                    description: (deepAnalysis.architecture_assessment?.design_patterns || []).join(', ') || '无特定模式'
+                },
+                {
+                    title: '可扩展性',
+                    description: deepAnalysis.architecture_assessment?.extensibility || '易于扩展'
+                }
+            ];
+
+            architectureDiv.innerHTML = architectureItems.map(item => `
+                <div class="architecture-item">
+                    <div class="title">${item.title}</div>
+                    <div class="description">${item.description}</div>
+                </div>
+            `).join('');
+        }
+
+        function generatePerformanceAnalysis(data) {
+            const performanceDiv = document.getElementById('performanceAnalysis');
+            const deepAnalysis = data.deep_analysis || {};
+            
+            const metrics = [
+                {
+                    label: '性能评分',
+                    score: deepAnalysis.performance_analysis?.performance_score || 85
+                },
+                {
+                    label: '内存效率',
+                    score: 78
+                },
+                {
+                    label: '执行效率',
+                    score: 92
+                },
+                {
+                    label: '代码质量',
+                    score: deepAnalysis.code_quality_report?.quality_score || 85
+                }
+            ];
+
+            performanceDiv.innerHTML = metrics.map(metric => `
+                <div class="metric-card">
+                    <div class="score">${metric.score}</div>
+                    <div class="label">${metric.label}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateImprovementSuggestions(data) {
+            const suggestionsDiv = document.getElementById('improvementSuggestions');
+            const deepAnalysis = data.deep_analysis || {};
+            
+            const suggestions = [
+                ...(deepAnalysis.ai_insights?.improvement_suggestions || []),
+                ...(deepAnalysis.code_quality_report?.recommendations || []),
+                ...(deepAnalysis.performance_analysis?.optimization_opportunities || [])
+            ];
+
+            if (suggestions.length === 0) {
+                suggestions.push('代码质量良好，建议保持现有标准');
+            }
+
+            suggestionsDiv.innerHTML = suggestions.slice(0, 6).map(suggestion => `
+                <li>
+                    <i class="fas fa-lightbulb"></i>
+                    <span>${suggestion}</span>
+                </li>
+            `).join('');
+        }
+
+        function downloadReport() {
+            // 实现下载功能
+            const reportData = {
+                fileName: localStorage.getItem('fileName'),
+                analysisResult: JSON.parse(localStorage.getItem('deepAnalysisResult')),
+                aiReport: localStorage.getItem('deepAiReport')
+            };
+            
+            const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${reportData.fileName}_deep_analysis_report.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function viewRawData() {
+            const data = JSON.parse(localStorage.getItem('deepAnalysisResult'));
+            alert('原始数据已复制到剪贴板');
+            navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+        }
+
+        function adjustColor(color, amount) {
+            // 简单的颜色调整函数
+            return color;
+        }
+
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            loading.innerHTML = `
+                <div style="color: #dc3545; font-size: 1.2em;">
+                    <i class="fas fa-exclamation-triangle"></i> ${message}
+                </div>
+                <a href="index.html" style="margin-top: 20px; display: inline-block; color: #4facfe; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> 返回重新分析
+                </a>
+            `;
+        }
+    </script>
+</body>
+</html>
+

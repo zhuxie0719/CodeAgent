@@ -1,0 +1,64 @@
+{
+  "task_id": "task_06731942969d",
+  "file_path": "uploads\\test_c.c",
+  "analysis_type": "file",
+  "timestamp": "2025-09-28T09:57:26.699071",
+  "summary": {
+    "total_issues": 2,
+    "error_count": 1,
+    "warning_count": 1,
+    "info_count": 0,
+    "languages_detected": [],
+    "total_files": 1
+  },
+  "issues_by_priority": {
+    "critical": [],
+    "high": [
+      {
+        "type": "buffer_overflow",
+        "severity": "error",
+        "message": "缓冲区溢出风险",
+        "line": 15,
+        "file": "test_c.c",
+        "language": "c"
+      }
+    ],
+    "medium": [
+      {
+        "type": "memory_leak",
+        "severity": "warning",
+        "message": "内存泄漏",
+        "line": 18,
+        "file": "test_c.c",
+        "language": "c"
+      }
+    ],
+    "low": []
+  },
+  "fix_recommendations": {
+    "immediate_actions": [
+      "修复 1 个错误级别的问题"
+    ],
+    "short_term_improvements": [],
+    "long_term_optimizations": [
+      "建立持续集成流程，定期进行代码质量检查",
+      "制定代码规范和最佳实践指南"
+    ]
+  },
+  "project_structure": {
+    "analysis_type": "file",
+    "file_count": 1,
+    "languages": [],
+    "complexity_indicators": {
+      "high_issue_files": 0,
+      "average_issues_per_file": 2.0
+    }
+  },
+  "detection_metadata": {
+    "detection_tools": [
+      "custom_analyzer"
+    ],
+    "analysis_time": 0.3,
+    "project_path": "uploads\\test_c.c"
+  }
+}

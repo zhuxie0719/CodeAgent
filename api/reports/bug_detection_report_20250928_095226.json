@@ -1,0 +1,21 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T09:52:26.396025",
+    "file_path": "uploads\\Value.java",
+    "task_id": "task_977cc114ef17",
+    "total_issues": 0,
+    "summary": {
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0
+    },
+    "detection_tools": [
+      "custom_analyzer"
+    ]
+  },
+  "issues": [],
+  "statistics": {
+    "by_severity": {},
+    "by_type": {}
+  }
+}
