@@ -40,11 +40,13 @@ def start_api_server():
             print("❌ bug_detection_api.py 文件不存在")
             return
         
-        # 启动服务器
+        # 启动服务器 - 使用增强版简单API支持深度分析
         print("正在启动uvicorn服务器...")
+        print("注意: 使用增强版简单API（simple_agent_api）支持AI分析功能")
+        print("包含功能: 简单分析 + 深度分析 + AI报告生成")
         subprocess.run([
             sys.executable, "-m", "uvicorn", 
-            "bug_detection_api:app", 
+            "simple_agent_api:app", 
             "--host", "0.0.0.0", 
             "--port", "8001", 
             "--reload"

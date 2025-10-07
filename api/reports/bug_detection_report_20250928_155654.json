@@ -1,0 +1,111 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T15:56:54.405622",
+    "file_path": "uploads\\test_python_bad.py",
+    "task_id": "task_ae0a50eafd35",
+    "total_issues": 10,
+    "summary": {
+      "error_count": 3,
+      "warning_count": 1,
+      "info_count": 6
+    },
+    "detection_tools": [
+      "custom_analyzer"
+    ]
+  },
+  "issues": [
+    {
+      "type": "unused_import",
+      "severity": "warning",
+      "message": "未使用的导入",
+      "line": 4,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 7,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "hardcoded_secrets",
+      "severity": "error",
+      "message": "发现硬编码的密钥或密码",
+      "line": 8,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "unsafe_eval",
+      "severity": "error",
+      "message": "不安全的eval使用",
+      "line": 20,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 10,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 23,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 37,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 43,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 50,
+      "file": "test_python_bad.py",
+      "language": "python"
+    },
+    {
+      "type": "missing_docstring",
+      "severity": "info",
+      "message": "函数缺少文档字符串",
+      "line": 60,
+      "file": "test_python_bad.py",
+      "language": "python"
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "warning": 1,
+      "error": 3,
+      "info": 6
+    },
+    "by_type": {
+      "unused_import": 1,
+      "hardcoded_secrets": 2,
+      "unsafe_eval": 1,
+      "missing_docstring": 6
+    }
+  }
+}

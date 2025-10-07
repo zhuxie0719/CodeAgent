@@ -98,7 +98,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: url("https://via.placeholder.com/32") center/cover no-repeat;
+      background: #ccc center/cover no-repeat;
       border: 1px solid #ccc;
     }
 
@@ -530,6 +530,205 @@
     .file-issues.info {
       color: #2563eb;
     }
+
+    /* AI质量报告样式 */
+    .quality-report-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-left: 4px solid #3b82f6;
+    }
+
+    .quality-report-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .quality-report-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .quality-grade-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .quality-summary {
+      margin-bottom: 20px;
+    }
+
+    .quality-overview {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .overall-score {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .score-label {
+      font-size: 16px;
+      color: #6b7280;
+    }
+
+    .score-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .score-grade {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      background: #3b82f6;
+    }
+
+    .quality-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .quality-detail-item {
+      background: #f9fafb;
+      border-radius: 6px;
+      padding: 12px;
+      border-left: 3px solid #d1d5db;
+    }
+
+    .quality-detail-item.excellent {
+      border-left-color: #10b981;
+    }
+
+    .quality-detail-item.good {
+      border-left-color: #3b82f6;
+    }
+
+    .quality-detail-item.warning {
+      border-left-color: #f59e0b;
+    }
+
+    .quality-detail-item.poor {
+      border-left-color: #ef4444;
+    }
+
+    .quality-detail-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .quality-detail-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .quality-insights {
+      background: #fefce8;
+      border-radius: 8px;
+      padding: 16px;
+      border-left: 4px solid #eab308;
+    }
+
+    .quality-insights-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #451a03;
+      margin-bottom: 8px;
+    }
+
+    .quality-insights-content {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .quality-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-quality-download, .btn-quality-view {
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-quality-download {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-quality-download:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .btn-quality-view {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-quality-view:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+      .quality-report-section {
+        padding: 16px;
+      }
+      
+      .quality-details {
+        grid-template-columns: 1fr;
+      }
+      
+      .quality-actions {
+        flex-direction: column;
+      }
+      
+      .btn-quality-download, .btn-quality-view {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -661,6 +860,7 @@
         <div class="ai-report-actions">
           <button class="btn btn-primary" id="viewAIReportBtn">查看全文</button>
           <button class="btn btn-secondary" id="downloadAIReportBtn">下载</button>
+          <button class="btn btn-success" id="generateDetailedReportBtn" style="display: none;">生成详细报告</button>
         </div>
       </div>
       <div class="metric-card">
@@ -692,6 +892,37 @@
       </div>
       <div id="issuesList">
         <!-- Issues will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- AI质量报告区域 -->
+    <div class="quality-report-section" id="qualityReportSection" style="display: none;">
+      <div class="quality-report-header">
+        <div class="quality-report-title">🤖 AI质量分析报告</div>
+        <div class="quality-grade-badge" id="qualityGradeBadge">A</div>
+      </div>
+      
+      <div class="quality-summary" id="qualitySummary">
+        <div class="quality-overview">
+          <div class="overall-score">
+            <span class="score-label">总体评分:</span>
+            <span class="score-value" id="overallScore">85</span>
+            <span class="score-grade" id="scoreGrade">B</span>
+          </div>
+        </div>
+        
+        <div class="quality-details" id="qualityDetails">
+          <!-- 详细分数将在这里动态生成 -->
+        </div>
+        
+        <div class="quality-insights" id="qualityInsights">
+          <!-- AI洞察将在这里显示 -->
+        </div>
+      </div>
+      
+      <div class="quality-actions">
+        <button class="btn-quality-download" id="downloadQualityReportBtn">📄 下载质量报告</button>
+        <button class="btn-quality-view" id="viewQualityReportBtn">🔍 查看详细报告</button>
       </div>
     </div>
   </main>
@@ -753,7 +984,7 @@
           file: 'models/User.php',
           line: 45,
           type: 'Bug',
-          code: 'SELECT * FROM users WHERE id = ' + userId,
+          code: 'SELECT * FROM users WHERE id = ' + 'user_id',
           fix: 'Use prepared statements: SELECT * FROM users WHERE id = ?'
         },
         {
@@ -1013,8 +1244,34 @@
       const apiBase = localStorage.getItem('apiBase');
       const cachedReport = localStorage.getItem('aiReport');
       const cachedDownload = localStorage.getItem('aiReportDownloadUrl');
+      const isDeepAnalysis = localStorage.getItem('isDeepAnalysis') === 'true';
+      const deepAnalysisResult = localStorage.getItem('deepAnalysisResult');
       const aiReportPreview = document.getElementById('aiReportPreview');
       const aiReportStatus = document.getElementById('aiReportStatus');
+
+      // 处理深度分析结果
+      if (isDeepAnalysis && deepAnalysisResult) {
+        try {
+          const result = JSON.parse(deepAnalysisResult);
+          const aiSummary = result.ai_summary;
+          
+          if (aiSummary && aiSummary.success && aiSummary.summary) {
+            setReport(aiSummary.summary, null);
+            // 显示生成详细报告按钮
+            document.getElementById('generateDetailedReportBtn').style.display = 'inline-block';
+            // 设置按钮点击事件
+            document.getElementById('generateDetailedReportBtn').onclick = () => {
+              generateDetailedReport(result);
+            };
+            // 清理localStorage
+            localStorage.removeItem('isDeepAnalysis');
+            localStorage.removeItem('deepAnalysisResult');
+            return;
+          }
+        } catch (e) {
+          console.error('解析深度分析结果失败:', e);
+        }
+      }
 
       const setReport = (text, downloadUrl) => {
         aiReportPreview.textContent = text ? (text.length > 600 ? text.slice(0, 600) + '…' : text) : 'No AI report available.';
@@ -1055,10 +1312,22 @@
         return;
       }
 
-      if (apiBase && taskId) {
+      // 检查是否是深度分析
+      if (isDeepAnalysis && deepAnalysisResult) {
+        try {
+          const deepResult = JSON.parse(deepAnalysisResult);
+          if (deepResult.ai_summary) {
+            setReport(deepResult.ai_summary, null);
+          } else {
+            setReport('深度分析完成，但未生成AI报告', null);
+          }
+        } catch (e) {
+          setReport('深度分析结果解析失败', null);
+        }
+      } else if (apiBase && taskId) {
         fetch(`${apiBase}/api/v1/ai-reports/${taskId}`).then(r => r.json()).then(data => {
-          if (data && data.success && data.data && data.data.ai_report) {
-            setReport(data.data.ai_report, `${apiBase}/api/v1/ai-reports/${taskId}/download`);
+          if (data && data.success && data.data && data.data.report) {
+            setReport(data.data.report, `${apiBase}/api/v1/ai-reports/${taskId}/download`);
           } else {
             setReport('', null);
           }
@@ -1100,8 +1369,276 @@
       }
     }
 
+    // 生成详细报告
+    function generateDetailedReport(analysisResult) {
+      const aiSummary = analysisResult.ai_summary;
+      if (aiSummary && aiSummary.success && aiSummary.summary) {
+        // 创建模态框显示详细报告
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;';
+        
+        const box = document.createElement('div');
+        box.style.cssText = 'background:white;border-radius:12px;padding:24px;max-width:90vw;max-height:90vh;overflow:auto;position:relative;';
+        
+        box.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="margin:0;color:#111827;">详细AI分析报告</h3>
+            <button onclick="this.closest('.modal').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#6b7280;">&times;</button>
+          </div>
+          <div style="white-space:pre-wrap;font-family:monospace;font-size:14px;line-height:1.6;color:#111827;max-height:70vh;overflow:auto;background:#f8f9fa;padding:16px;border-radius:8px;">
+            ${aiSummary.summary}
+          </div>
+          <div style="margin-top:20px;text-align:right;">
+            <button onclick="downloadDetailedReport('${aiSummary.summary.replace(/'/g, "\\'")}')" style="background:#10b981;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-right:8px;">下载报告</button>
+            <button onclick="this.closest('.modal').remove()" style="background:#6b7280;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">关闭</button>
+          </div>
+        `;
+        
+        modal.appendChild(box);
+        document.body.appendChild(modal);
+        
+        // 点击背景关闭模态框
+        modal.onclick = (e) => {
+          if (e.target === modal) modal.remove();
+        };
+      }
+    }
+
+    // 下载详细报告
+    function downloadDetailedReport(reportContent) {
+      const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `detailed_analysis_report_${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // 加载AI质量报告
+    function loadQualityReport() {
+      const qualityReportData = localStorage.getItem('qualityAnalysisResult');
+      const showQualityReport = localStorage.getItem('showQualityReport');
+      
+      if (!qualityReportData || showQualityReport !== 'true') {
+        return;
+      }
+      
+      try {
+        const data = JSON.parse(qualityReportData);
+        
+        if (data.success) {
+          displayQualityReport(data);
+        } else {
+          console.error('质量报告加载失败:', data.error);
+        }
+      } catch (error) {
+        console.error('解析质量报告失败:', error);
+      }
+    }
+    
+    // 显示质量报告
+    function displayQualityReport(data) {
+      const reportSection = document.getElementById('qualityReportSection');
+      let aiReport = data.ai_report;
+      
+      if (!aiReport || !reportSection) {
+        return;
+      }
+      
+      // 如果AI报告有错误但有原始响应，尝试解析原始响应
+      if (aiReport.error && aiReport.raw_response) {
+        try {
+          // 尝试从原始响应中提取JSON
+          const match = aiReport.raw_response.match(/```json\s*(\{.*?\})\s*```/s);
+          if (match) {
+            const extractedJson = JSON.parse(match[1]);
+            console.log('成功从原始响应中提取AI报告:', extractedJson);
+            aiReport = extractedJson; // 使用提取的报告
+          }
+        } catch (e) {
+          console.warn('无法从原始响应中提取JSON:', e);
+          // 如果提取失败，使用备用报告
+          if (aiReport.fallback_report) {
+            aiReport = aiReport.fallback_report;
+          }
+        }
+      }
+      
+      // 显示质量报告区域
+      reportSection.style.display = 'block';
+      
+      // 设置总体评分
+      const overallScore = aiReport.overall_score || 0;
+      const grade = aiReport.grade || 'F';
+      
+      document.getElementById('overallScore').textContent = overallScore;
+      document.getElementById('scoreGrade').textContent = grade;
+      document.getElementById('qualityGradeBadge').textContent = grade;
+      
+      // 设置成绩级别颜色
+      const gradeBadge = document.getElementById('qualityGradeBadge');
+      const scoreGradeElement = document.getElementById('scoreGrade');
+      
+      gradeBadge.className = `quality-grade-badge grade-${grade.toLowerCase()}`;
+      scoreGradeElement.className = `score-grade grade-${grade.toLowerCase()}`;
+      
+      // 添加成绩级别CSS类
+      if (!document.querySelector(`style .grade-${grade.toLowerCase()}`)) {
+        const style = document.createElement('style');
+        style.textContent = `
+          .grade-a { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+          .grade-b { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+          .grade-c { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+          .grade-d { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+          .grade-f { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      // 显示详细分数
+      const detailsContainer = document.getElementById('qualityDetails');
+      if (aiReport.detailed_scores) {
+        const scoreNames = {
+          style: '代码风格',
+          structure: '代码结构',
+          performance: '性能效率',
+          security: '安全性',
+          maintainability: '可维护性',
+          testability: '可测试性',
+          documentation: '文档质量'
+        };
+        
+        detailsContainer.innerHTML = Object.entries(aiReport.detailed_scores)
+          .map(([key, score]) => {
+            const level = score >= 15 ? 'excellent' : score >= 12 ? 'good' : score >= 8 ? 'warning' : 'poor';
+            return `
+              <div class="quality-detail-item ${level}">
+                <div class="quality-detail-label">${scoreNames[key] || key}</div>
+                <div class="quality-detail-value">${score}/15</div>
+              </div>
+            `;
+          }).join('');
+      }
+      
+      // 显示AI洞察
+      const insightsContainer = document.getElementById('qualityInsights');
+      let insightsHTML = '';
+      
+      if (aiReport.strengths && aiReport.strengths.length > 0) {
+        insightsHTML += `
+          <div style="margin-bottom: 12px;">
+            <div class="quality-insights-title">💪 代码优势</div>
+            <div class="quality-insights-content">
+              ${aiReport.strengths.map(strength => `• ${strength}`).join('<br>')}
+            </div>
+          </div>
+        `;
+      }
+      
+      if (aiReport.suggestions && aiReport.suggestions.length > 0) {
+        insightsHTML += `
+          <div style="margin-bottom: 12px;">
+            <div class="quality-insights-title">💡 改进建议</div>
+            <div class="quality-insights-content">
+              ${aiReport.suggestions.map(suggestion => `• ${suggestion}`).join('<br>')}
+            </div>
+          </div>
+        `;
+      }
+      
+      if (aiReport.summary) {
+        insightsHTML += `
+          <div style="margin-bottom: 12px;">
+            <div class="quality-insights-title">📊 总体评价</div>
+            <div class="quality-insights-content">
+              ${aiReport.summary}
+            </div>
+          </div>
+        `;
+      }
+      
+      insightsContainer.innerHTML = insightsHTML || '<div class="quality-insights-content">暂无AI分析洞察</div>';
+      
+      // 绑定按钮事件
+      document.getElementById('downloadQualityReportBtn').onclick = () => downloadQualityReport(data);
+      document.getElementById('viewQualityReportBtn').onclick = () => viewQualityReport(data);
+      
+      // 清理localStorage
+      localStorage.removeItem('qualityAnalysisResult');
+      localStorage.removeItem('showQualityReport');
+    }
+    
+    // 下载质量报告
+    function downloadQualityReport(data) {
+      try {
+        const report = data.ai_report;
+        const reportContent = `
+AI质量分析报告
+====================
+
+文件路径: ${data.file_path}
+分析时间: ${data.analysis_time}
+
+总体评分: ${report.overall_score}/100 (等级: ${report.grade})
+
+详细评分:
+${report.detailed_scores ? Object.entries(report.detailed_scores)
+  .map(([key, value]) => `• ${key}: ${value}`)
+  .join('\n') : '无详细评分'}
+
+${report.strengths ? `代码优势:\n${report.strengths.map(s => `• ${s}`).join('\n')}\n` : ''}
+${report.suggestions ? `改进建议:\n${report.suggestions.map(s => `• ${s}`).join('\n')}\n` : ''}
+${report.summary ? `总体评价:\n${report.summary}` : ''}
+        `;
+        
+        const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `quality_report_${data.file_path.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        alert('下载质量报告失败: ' + error.message);
+      }
+    }
+    
+    // 查看详细质量报告
+    function viewQualityReport(data) {
+      const report = data.ai_report;
+      
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;';
+      
+      const box = document.createElement('div');
+      box.style.cssText = 'background:white;border-radius:12px;padding:24px;max-width:90vw;max-height:90vh;overflow:auto;position:relative;';
+      
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h3 style="margin:0;color:#111827;">🤖 AI质量分析详细报告</h3>
+          <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#6b7280;">&times;</button>
+        </div>
+        <div style="white-space:pre-wrap;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.6;color:#111827;background:#f8f9fa;padding:16px;border-radius:8px;">
+          ${JSON.stringify(report, null, 2)}
+        </div>
+      `;
+      
+      modal.appendChild(box);
+      document.body.appendChild(modal);
+      
+      modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+      };
+    }
+
     // Initialize
     loadAnalysisData();
+    loadQualityReport();
   </script>
 </body>
 </html>

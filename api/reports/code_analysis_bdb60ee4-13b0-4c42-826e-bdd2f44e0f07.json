@@ -1,0 +1,43 @@
+{
+  "project_structure": {
+    "files": [],
+    "directories": [],
+    "file_types": {},
+    "total_lines": 0,
+    "python_modules": [],
+    "python_packages": [],
+    "avg_file_lines": 0
+  },
+  "code_quality": {
+    "complexity": {},
+    "maintainability": {},
+    "duplication": {},
+    "issues": [],
+    "entities": {
+      "files": {}
+    }
+  },
+  "dependencies": {
+    "python_packages": [],
+    "node_modules": [],
+    "imports": {},
+    "circular_dependencies": [],
+    "external_imports": [],
+    "internal_graph": {}
+  },
+  "timestamp": 6435.921,
+  "project_intent": {
+    "project_purpose": "\"project_purpose\": \"基于提供的项目概览和质量指标，该项目目前为空项目，没有代码文件、模块或功能实现。可能处于初始阶段、模板项目或分析工具未正确扫描到代码。\",",
+    "primary_language": "Unknown",
+    "key_components": [],
+    "external_dependencies": [],
+    "risks": [],
+    "recommended_refactors": [
+      null,
+      null
+    ],
+    "data_flow": "基于模块依赖关系分析",
+    "analysis_confidence": "low",
+    "ai_summary": "```json\n{\n    \"project_purpose\": \"基于提供的项目概览和质量指标，该项目目前为空项目，没有代码文件、模块或功能实现。可能处于初始阶段、模板项目或分析工具未正确扫描到代码。\",\n    \"key_components\": [],\n    \"data_flow\": \"无数据流，因为项目中没有代码文件或功能模块。\",\n    \"risks\": [\"项目为空，无法评估功能风险\", \"缺乏代码实现，无法进行测试或部署\", \"可能存在配置错误导致分析工具未识别代码\", \"项目结构不明确，影响后续开发\"],\n    \"recommended_refactors\": [\"验证项目路径和配置，确保代码文件被正确识别\", \"添加初始代码结构或示例模块以建立基础\", \"检查分析工具设置，确保能扫描到项目文件\", \"定义项目需求和架构设计文档\"]\n}\n```"
+  }
+}

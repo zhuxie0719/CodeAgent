@@ -4,6 +4,6 @@
 """
 
 from .agent import CodeQualityAgent
-from .quality_checker import StyleChecker, DocumentationGenerator, CodeReviewer
+from .quality_checker import StyleChecker, QualityMetricsCalculator, AICodeQualityAnalyzer, analyze_file_quality
 
-__all__ = ['CodeQualityAgent', 'StyleChecker', 'DocumentationGenerator', 'CodeReviewer']
+__all__ = ['CodeQualityAgent', 'StyleChecker', 'QualityMetricsCalculator', 'AICodeQualityAnalyzer', 'analyze_file_quality']

@@ -1,0 +1,44 @@
+{
+  "report_info": {
+    "generated_at": "2025-09-28T09:57:26.684878",
+    "file_path": "uploads\\test_c.c",
+    "task_id": "task_06731942969d",
+    "total_issues": 2,
+    "summary": {
+      "error_count": 1,
+      "warning_count": 1,
+      "info_count": 0
+    },
+    "detection_tools": [
+      "custom_analyzer"
+    ]
+  },
+  "issues": [
+    {
+      "type": "buffer_overflow",
+      "severity": "error",
+      "message": "缓冲区溢出风险",
+      "line": 15,
+      "file": "test_c.c",
+      "language": "c"
+    },
+    {
+      "type": "memory_leak",
+      "severity": "warning",
+      "message": "内存泄漏",
+      "line": 18,
+      "file": "test_c.c",
+      "language": "c"
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "error": 1,
+      "warning": 1
+    },
+    "by_type": {
+      "buffer_overflow": 1,
+      "memory_leak": 1
+    }
+  }
+}
