@@ -1,0 +1,96 @@
+You are an expert Python code refactoring assistant.
+Your task is to fix all issues listed below without changing functionality.
+请基于以下py完整文件内容，修复下述所有问题：
+
+===== 源代码 BEGIN =====
+# test_python_bad.py - 有问题的Python代码示例
+import os
+import sys
+import unused_module  # 未使用的导入
+
+# 硬编码的API密钥
+API_KEY = "sk-1234567890abcdef"
+SECRET_PASSWORD = "admin123"
+
+def bad_function():
+    # 缺少文档字符串
+    x = 1
+    y = 2
+    z = x + y
+    return z
+
+def risky_function():
+    # 不安全的eval使用
+    user_input = "print('Hello')"
+    result = eval(user_input)  # 安全风险
+    return result
+
+def process_user_data(data):
+    # 缺少类型提示和文档字符串
+    # 缺少输入验证
+    processed = data * 2
+    return processed
+
+def divide_numbers(a, b):
+    # 缺少异常处理
+    result = a / b  # 可能除零错误
+    return result
+
+# 全局变量（不好的实践）
+global_var = "I'm global"
+
+def use_global():
+    global global_var
+    global_var = "modified"
+    return global_var
+
+# 不安全的文件操作
+def read_file(filename):
+    # 没有异常处理
+    with open(filename, 'r') as f:
+        content = f.read()
+    return content
+
+# 内存泄漏风险
+def create_large_list():
+    big_list = []
+    for i in range(1000000):
+        big_list.append(f"item_{i}")
+    return big_list
+
+# 缺少主函数保护
+print("This will always execute")
+
+# 不安全的字符串格式化
+def format_string(user_input):
+    query = "SELECT * FROM users WHERE name = '%s'" % user_input  # SQL注入风险
+    return query
+
+
+===== 源代码 END =====
+
+===== 问题列表 BEGIN =====
+1. line=4, type=import-error, message=Unable to import 'unused_module'
+2. line=20, type=eval-used, message=Use of eval
+3. line=38, type=global-statement, message=Using the global statement
+4. line=45, type=unspecified-encoding, message=Using open without explicitly specifying an encoding
+5. line=2, type=unused-import, message=Unused import os
+6. line=3, type=unused-import, message=Unused import sys
+7. line=4, type=unused-import, message=Unused import unused_module
+8. line=63, type=trailing-newlines, message=Trailing newlines
+9. line=10, type=missing-function-docstring, message=Missing function or method docstring
+10. line=17, type=missing-function-docstring, message=Missing function or method docstring
+11. line=23, type=missing-function-docstring, message=Missing function or method docstring
+12. line=29, type=missing-function-docstring, message=Missing function or method docstring
+13. line=35, type=invalid-name, message=Constant name "global_var" doesn't conform to UPPER_CASE naming style
+14. line=37, type=missing-function-docstring, message=Missing function or method docstring
+15. line=43, type=missing-function-docstring, message=Missing function or method docstring
+16. line=50, type=missing-function-docstring, message=Missing function or method docstring
+17. line=60, type=missing-function-docstring, message=Missing function or method docstring
+18. line=61, type=consider-using-f-string, message=Formatting a regular string which could be an f-string
+===== 问题列表 END =====
+
+要求：
+1) 保持原有功能不变；
+2) 一次性修复所有问题；
+3) 只输出修复后的完整代码，不要任何解释、注释或 markdown。

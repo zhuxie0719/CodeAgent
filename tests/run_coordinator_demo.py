@@ -40,15 +40,36 @@ async def main():
     await coordinator.register_agent('bug_detection_agent', bug_agent)
     print("✅ BugDetectionAgent 已启动并注册")
 
-    # 预留：修复执行Agent（同学功能，暂不参与流程，可随时开启）
-    # fix_agent = FixExecutionAgent(config={})
-    # await fix_agent.start()
-    # await coordinator.register_agent('fix_execution_agent', fix_agent)
-    # print("✅ FixExecutionAgent 已启动并注册")
+    # 启动：修复执行Agent（最小no-op实现，防止任务卡住）
+    fix_agent = FixExecutionAgent(agent_id='fix_execution_agent', config={})
+    await fix_agent.start()
+    await coordinator.register_agent('fix_execution_agent', fix_agent)
+    print("✅ FixExecutionAgent 已启动并注册")
 
     # 3) 选择待测文件路径（服务器本地路径）
     print("\n================= TEST TARGET =======================")
-    test_file = str(CURRENT_DIR / 'test_python_bad.py')
+    # 支持命令行参数或交互式输入；若无输入，使用默认示例文件
+    custom_path = None
+    if len(sys.argv) > 1:
+        custom_path = sys.argv[1]
+    if not custom_path:
+        try:
+            user_input = input("请输入待检测文件路径（回车使用默认 tests/test_python_bad.py）: ").strip()
+            custom_path = user_input or None
+        except Exception:
+            custom_path = None
+
+    if custom_path:
+        p = Path(custom_path)
+        test_file = str(p if p.is_absolute() else (PROJECT_ROOT / p))
+    else:
+        test_file = str(CURRENT_DIR / 'test_python_bad.py')
+
+    if not Path(test_file).exists():
+        fallback = str(CURRENT_DIR / 'test_python_bad.py')
+        print(f"⚠️ 指定的文件不存在，使用默认: {fallback}")
+        test_file = fallback
+
     print(f"📄 测试文件: {test_file}")
 
     # 4) 创建 detect_bugs 任务并分配给 bug_detection_agent
@@ -92,29 +113,29 @@ async def main():
         print("（未发现问题，若为意外，请确认已安装并启用 pylint/flake8）")
 
     # 预留：修复与验证编排（同学功能，录屏时可展示注释说明）
-    # print("\n================= FIX & VALIDATION (预留) ===========")
-    # fix_task_payload = {
-    #     'file_path': test_file,
-    #     'issues': issues,
-    #     'decisions': {'auto_fixable': issues, 'ai_assisted': [], 'manual_review': []}
-    # }
-    # fix_task_id = await coordinator.create_task('fix_issues', fix_task_payload)
-    # await coordinator.assign_task(fix_task_id, 'fix_execution_agent')
-    # print(f"🆔 修复任务创建并分配: {fix_task_id} -> fix_execution_agent")
-    # fix_result = await coordinator.task_manager.get_task_result(fix_task_id, timeout=900)
-    # print("🧩 修复结果摘要:")
-    # print({
-    #     'success': fix_result.get('success'),
-    #     'fixed_issues': len(fix_result.get('fix_results', [])),
-    #     'errors': fix_result.get('errors', [])[:3]
-    # })
+    print("\n================= FIX & VALIDATION (预留) ===========")
+    fix_task_payload = {
+         'file_path': test_file,
+         'issues': issues,
+         'decisions': {'auto_fixable': issues, 'ai_assisted': [], 'manual_review': []}
+     }
+    fix_task_id = await coordinator.create_task('fix_issues', fix_task_payload)
+    await coordinator.assign_task(fix_task_id, 'fix_execution_agent')
+    print(f"🆔 修复任务创建并分配: {fix_task_id} -> fix_execution_agent")
+    fix_result = await coordinator.task_manager.get_task_result(fix_task_id, timeout=900)
+    print("🧩 修复结果摘要:")
+    print(fix_result)
+    print({
+        'success': fix_result.get('success'),
+        'fixed_issues': len(fix_result.get('fix_results', [])),
+        'errors': fix_result.get('errors', [])[:3]
+    })
 
     # 6) 收尾
     print("\n================= SHUTDOWN ===========================")
     await coordinator.stop()
     await bug_agent.stop()
-    # if 'fix_agent' in locals():
-    #     await fix_agent.stop()
+    await fix_agent.stop()
     print("✅ 已退出")
 
 
