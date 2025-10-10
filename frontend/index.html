@@ -5,122 +5,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Agent 代码检测系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * {
+        body {
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #111827;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+        /* Sidebar */
+        .sidebar {
+            width: 70px;
+            height: 100vh;
+            background: #1c2330;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            justify-content: flex-start;
+        }
+
+        .sidebar .logo {
+            width: 40px;
+            height: 40px;
+            background: #f7d78c;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+            color: #bbb;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .sidebar .nav-item i {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar .nav-item:hover {
+            color: #fff;
+        }
+
+        /* Header */
+        .header {
+            margin-left: 70px;
+            height: 60px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .header .actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 18px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .header .actions i:hover {
+            color: #111;
+        }
+
+        .header .profile {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ccc center/cover no-repeat;
+            border: 1px solid #ccc;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 70px;
             padding: 20px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 30px;
+        .hero-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             text-align: center;
         }
 
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 300;
+        .hero-section h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: #111827;
         }
 
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+        .hero-section p {
+            font-size: 16px;
+            color: #6b7280;
+            margin: 0;
         }
 
-        .main-content {
-            padding: 40px;
-        }
-
-        .upload-section {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 2px dashed #dee2e6;
-            transition: all 0.3s ease;
-        }
-
-        .upload-section:hover {
-            border-color: #4facfe;
-            background: #f0f8ff;
-        }
-
-        .upload-section.dragover {
-            border-color: #4facfe;
-            background: #e3f2fd;
-        }
-
-        .analysis-type-selector {
-            margin-bottom: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .analysis-type-selector h3 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 1.1em;
-        }
-
-        .radio-group {
-            display: flex;
+        /* 分析类型选择区域 */
+        .analysis-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
+            margin-bottom: 20px;
         }
 
-        .radio-label {
-            display: flex;
-            align-items: center;
+        .analysis-type-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
             cursor: pointer;
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .radio-label:hover {
-            border-color: #4facfe;
-            background: #f0f8ff;
+        .analysis-type-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
 
-        .radio-label input[type="radio"] {
-            margin-right: 8px;
-            transform: scale(1.2);
+        .analysis-type-card.selected {
+            border-color: #3b82f6;
+            background: #f0f9ff;
         }
 
-        .radio-label input[type="radio"]:checked + .radio-text {
-            color: #4facfe;
+        .analysis-type-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #3b82f6;
+        }
+
+        .analysis-type-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #111827;
             font-weight: 600;
         }
 
-        .radio-label:has(input[type="radio"]:checked) {
-            border-color: #4facfe;
-            background: #e3f2fd;
+        .analysis-type-card p {
+            color: #6b7280;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .analysis-type-card .features {
+            font-size: 0.8em;
+            color: #9ca3af;
+        }
+
+        /* 文件上传区域 */
+        .upload-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .upload-section:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        .upload-section.dragover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .upload-section h3 {
+            margin-bottom: 20px;
+            color: #111827;
+            font-size: 1.2em;
+            font-weight: 600;
         }
 
         .file-input-wrapper {
@@ -141,104 +231,115 @@
             display: block;
             padding: 20px;
             text-align: center;
-            background: white;
+            background: #f9fafb;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid #e9ecef;
+            border: 1px solid #d1d5db;
         }
 
         .file-input-label:hover {
-            background: #f8f9fa;
-            border-color: #4facfe;
+            background: #f3f4f6;
+            border-color: #3b82f6;
         }
 
         .upload-icon {
             font-size: 3em;
-            color: #6c757d;
+            color: #6b7280;
             margin-bottom: 15px;
         }
 
         .upload-text {
-            font-size: 1.2em;
-            color: #495057;
+            font-size: 1.1em;
+            color: #111827;
             margin-bottom: 10px;
+            font-weight: 500;
         }
 
         .upload-hint {
-            color: #6c757d;
+            color: #6b7280;
             font-size: 0.9em;
         }
 
         .options-section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .options-title {
-            font-size: 1.3em;
+            font-size: 1.1em;
             margin-bottom: 15px;
-            color: #495057;
+            color: #111827;
+            font-weight: 600;
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            gap: 12px;
         }
 
         .option-item {
             display: flex;
             align-items: center;
-            padding: 15px;
-            background: white;
+            padding: 12px;
+            background: #f9fafb;
             border-radius: 8px;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
         }
 
         .option-item:hover {
-            border-color: #4facfe;
-            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.1);
+            border-color: #3b82f6;
+            background: #f0f9ff;
         }
 
         .option-checkbox {
             margin-right: 10px;
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
 
         .option-label {
             font-weight: 500;
-            color: #495057;
+            color: #111827;
+            font-size: 0.9em;
         }
 
         .upload-button {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
+            background: #111827;
+            color: #fff;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 25px;
+            padding: 12px 24px;
+            font-size: 1em;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             margin-top: 20px;
             width: 100%;
+            font-weight: 600;
         }
 
-        .upload-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        .upload-button:hover:not(:disabled) {
+            background: #374151;
+            transform: translateY(-1px);
         }
 
         .upload-button:disabled {
-            background: #6c757d;
+            background: #9ca3af;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
         .results-section {
-            margin-top: 30px;
+            margin-top: 20px;
             display: none;
+        }
+
+        .results-section.show {
+            display: block;
         }
 
         .results-header {
@@ -247,40 +348,42 @@
             align-items: center;
             margin-bottom: 20px;
             padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .results-title {
-            font-size: 1.5em;
-            color: #495057;
+            font-size: 1.3em;
+            color: #111827;
+            font-weight: 600;
         }
 
         .status-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-weight: 500;
-            font-size: 0.9em;
+            font-size: 0.8em;
         }
 
         .status-pending {
-            background: #fff3cd;
-            color: #856404;
+            background: #fef3c7;
+            color: #92400e;
         }
 
         .status-processing {
-            background: #cce5ff;
-            color: #004085;
+            background: #dbeafe;
+            color: #1e40af;
         }
 
         .status-completed {
-            background: #d4edda;
-            color: #155724;
+            background: #d1fae5;
+            color: #065f46;
         }
 
         .status-failed {
-            background: #f8d7da;
-            color: #721c24;
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         .progress-bar {
@@ -364,38 +467,74 @@
         }
 
         .stat-card {
-            background: white;
+            background: #fff;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             text-align: center;
-            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .stat-number {
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 5px;
+            color: #111827;
         }
 
         .stat-label {
-            color: #6c757d;
+            color: #6b7280;
             font-size: 0.9em;
         }
 
         .loading {
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 40px;
+            background: #fff;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .loading.show {
+            display: block;
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4facfe;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
+        }
+
+        .loading h3 {
+            color: #111827;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .loading p {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+            width: 0%;
         }
 
         @keyframes spin {
@@ -421,42 +560,162 @@
             border: 1px solid #c3e6cb;
         }
 
+        /* 响应式设计 */
         @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                border-radius: 10px;
+            .sidebar {
+                width: 60px;
             }
             
-            .main-content {
-                padding: 20px;
+            .main {
+                margin-left: 60px;
+                padding: 15px;
             }
             
-            .header h1 {
-                font-size: 2em;
+            .header {
+                margin-left: 60px;
+                padding: 0 15px;
+            }
+            
+            .header nav a {
+                margin: 0 10px;
+                font-size: 0.9em;
+            }
+            
+            .analysis-types {
+                grid-template-columns: 1fr;
             }
             
             .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main {
+                margin-left: 0;
+            }
+            
+            .header {
+                margin-left: 0;
+            }
+            
+            .summary-stats {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🤖 AI Agent 代码检测系统</h1>
-            <p>智能静态代码分析，发现潜在问题，提升代码质量</p>
-            <div style="margin-top: 20px;">
-                <a href="projects.html" style="color: white; text-decoration: none;">
-                    <i class="fas fa-folder"></i> 项目管理
-                </a>
-            </div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">AI</div>
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
         </div>
+        <div class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>项目</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-globe"></i>
+            <span>探索</span>
+        </div>
+    </aside>
 
-        <div class="main-content">
+    <!-- Header -->
+    <header class="header">
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="projects.html">我的项目</a>
+            <a href="explore.html">探索</a>
+        </nav>
+        <div class="actions">
+            <i class="fas fa-search" title="搜索"></i>
+            <i class="fas fa-bell" title="通知"></i>
+            <i class="fas fa-question-circle" title="帮助"></i>
+            <i class="fas fa-plus" title="添加"></i>
+            <div class="profile"></div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="hero-section">
+            <h1>🤖 AI Agent 代码检测系统</h1>
+            <p>智能代码分析，发现潜在问题，提升代码质量</p>
+        </div>
+            <!-- 分析类型选择 -->
+            <div class="analysis-types">
+                <div class="analysis-type-card" data-type="static">
+                    <div class="icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>静态分析</h3>
+                    <p>基础代码质量检测，包括语法检查、代码规范、潜在问题识别</p>
+                    <div class="features">
+                        <i class="fas fa-check"></i> Pylint检测 <i class="fas fa-check"></i> Flake8检测 <i class="fas fa-check"></i> 自定义规则
+                    </div>
+                </div>
+                
+                <div class="analysis-type-card" data-type="dynamic">
+                    <div class="icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <h3>动态检测</h3>
+                    <p>运行时分析，监控系统资源使用，检测运行时错误和性能问题</p>
+                    <div class="features">
+                        <i class="fas fa-check"></i> 运行时监控 <i class="fas fa-check"></i> 性能分析 <i class="fas fa-check"></i> 资源使用
+                    </div>
+                </div>
+                
+                <div class="analysis-type-card" data-type="deep">
+                    <div class="icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>深度代码意图分析</h3>
+                    <p>AI驱动的深度分析，理解代码意图、架构设计、技术栈评估</p>
+                    <div class="features">
+                        <i class="fas fa-check"></i> 代码意图理解 <i class="fas fa-check"></i> 架构分析 <i class="fas fa-check"></i> 技术栈评估
+                    </div>
+                </div>
+                
+                <div class="analysis-type-card" data-type="quality">
+                    <div class="icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3>代码质量分析</h3>
+                    <p>全面的代码质量评估，包括可维护性、安全性、性能等多维度分析</p>
+                    <div class="features">
+                        <i class="fas fa-check"></i> 质量评分 <i class="fas fa-check"></i> 改进建议 <i class="fas fa-check"></i> 详细报告
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文件上传区域 -->
             <div class="upload-section" id="uploadSection">
-                <div class="analysis-type-selector">
-                    <h3>🔍 分析类型</h3>
+                <h3>📁 选择要分析的文件或项目</h3>
+                
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" class="file-input" accept=".py,.java,.c,.cpp,.h,.hpp,.js,.ts,.go,.zip,.tar,.tar.gz" multiple>
+                    <label for="fileInput" class="file-input-label">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text" id="uploadText">点击选择代码文件或拖拽文件到此处</div>
+                        <div class="upload-hint" id="uploadHint">支持多种编程语言文件，最大100MB</div>
+                    </label>
+                </div>
+
+                <!-- 分析类型选择 -->
+                <div class="analysis-type-selector" id="analysisTypeSelector" style="display: none;">
+                    <h4>选择分析类型</h4>
                     <div class="radio-group">
                         <label class="radio-label">
                             <input type="radio" name="analysisType" value="file" checked>
@@ -468,18 +727,10 @@
                         </label>
                     </div>
                 </div>
-                
-                <div class="file-input-wrapper">
-                    <input type="file" id="fileInput" class="file-input" accept=".py,.java,.c,.cpp,.h,.hpp,.js,.ts,.go,.zip,.tar,.tar.gz" multiple>
-                    <label for="fileInput" class="file-input-label">
-                        <div class="upload-icon">📁</div>
-                        <div class="upload-text" id="uploadText">点击选择代码文件或拖拽文件到此处</div>
-                        <div class="upload-hint" id="uploadHint">支持Python文件(.py)，最大10MB</div>
-                    </label>
-                </div>
 
-                <div class="options-section">
-                    <div class="options-title">检测选项</div>
+                <!-- 静态分析选项 -->
+                <div class="options-section" id="staticOptions" style="display: none;">
+                    <div class="options-title">静态分析选项</div>
                     <div class="options-grid">
                         <div class="option-item">
                             <input type="checkbox" id="enableStatic" class="option-checkbox" checked>
@@ -497,23 +748,19 @@
                             <input type="checkbox" id="enableAI" class="option-checkbox">
                             <label for="enableAI" class="option-label">AI智能分析</label>
                         </div>
-                        <div class="option-item">
-                            <input type="checkbox" id="enableDeepAnalysis" class="option-checkbox" disabled>
-                            <label for="enableDeepAnalysis" class="option-label">深度代码分析</label>
-                        </div>
-                        <div class="option-item">
-                            <input type="checkbox" id="enableQualityAnalysis" class="option-checkbox">
-                            <label for="enableQualityAnalysis" class="option-label">🤖 AI质量分析</label>
-                        </div>
                     </div>
                 </div>
 
-                <button id="uploadButton" class="upload-button">开始检测</button>
+                <button id="uploadButton" class="upload-button" disabled>开始分析</button>
             </div>
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <div>正在分析代码，请稍候...</div>
+                <h3>正在分析代码，请稍候...</h3>
+                <p id="loadingMessage">准备中...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
             </div>
 
             <div class="results-section" id="resultsSection">
@@ -559,6 +806,7 @@
         const SIMPLE_API_BASE_URL = 'http://localhost:8001';
         let currentTaskId = null;
         let pollInterval = null;
+        let selectedAnalysisType = null;
 
         // DOM元素
         const fileInput = document.getElementById('fileInput');
@@ -571,6 +819,8 @@
         const progressFill = document.getElementById('progressFill');
         const summaryStats = document.getElementById('summaryStats');
         const issuesList = document.getElementById('issuesList');
+        const analysisTypeSelector = document.getElementById('analysisTypeSelector');
+        const staticOptions = document.getElementById('staticOptions');
 
         // 文件拖拽处理
         uploadSection.addEventListener('dragover', (e) => {
@@ -592,6 +842,21 @@
                 fileInput.files = files;
                 updateFileDisplay();
             }
+        });
+
+        // 分析类型卡片选择处理
+        const analysisTypeCards = document.querySelectorAll('.analysis-type-card');
+        analysisTypeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // 移除其他卡片的选中状态
+                analysisTypeCards.forEach(c => c.classList.remove('selected'));
+                // 添加当前卡片的选中状态
+                card.classList.add('selected');
+                // 设置选中的分析类型
+                selectedAnalysisType = card.dataset.type;
+                // 显示相应的选项
+                showAnalysisOptions(selectedAnalysisType);
+            });
         });
 
         // 文件选择处理
@@ -622,16 +887,66 @@
             }
         }
 
+        // 显示分析选项
+        function showAnalysisOptions(analysisType) {
+            // 隐藏所有选项
+            analysisTypeSelector.style.display = 'none';
+            staticOptions.style.display = 'none';
+            
+            // 根据分析类型显示相应选项
+            switch(analysisType) {
+                case 'static':
+                    analysisTypeSelector.style.display = 'block';
+                    staticOptions.style.display = 'block';
+                    break;
+                case 'dynamic':
+                    analysisTypeSelector.style.display = 'block';
+                    break;
+                case 'deep':
+                    analysisTypeSelector.style.display = 'block';
+                    break;
+                case 'quality':
+                    analysisTypeSelector.style.display = 'block';
+                    break;
+            }
+            
+            // 更新上传按钮状态
+            updateUploadButtonState();
+        }
+
         function updateFileDisplay() {
             const files = fileInput.files;
             if (files.length > 0) {
                 const fileNames = Array.from(files).map(f => f.name).join(', ');
                 document.querySelector('.upload-text').textContent = `已选择: ${fileNames}`;
-                uploadButton.disabled = false;
             } else {
-                document.querySelector('.upload-text').textContent = '点击选择Python文件或拖拽文件到此处';
-                uploadButton.disabled = true;
+                document.querySelector('.upload-text').textContent = '点击选择代码文件或拖拽文件到此处';
             }
+            updateUploadButtonState();
+        }
+
+        function updateUploadButtonState() {
+            const files = fileInput.files;
+            const hasFiles = files.length > 0;
+            const hasSelectedType = selectedAnalysisType !== null;
+            
+            uploadButton.disabled = !(hasFiles && hasSelectedType);
+            
+            if (hasFiles && hasSelectedType) {
+                uploadButton.textContent = `开始${getAnalysisTypeName(selectedAnalysisType)}`;
+            } else {
+                uploadButton.textContent = '开始分析';
+            }
+        }
+
+        function getAnalysisTypeName(type) {
+            const names = {
+                'static': '静态分析',
+                'dynamic': '动态检测',
+                'deep': '深度分析',
+                'quality': '质量分析'
+            };
+            return names[type] || '分析';
         }
 
         // 上传按钮点击处理
@@ -642,135 +957,150 @@
                 return;
             }
 
+            if (!selectedAnalysisType) {
+                alert('请先选择分析类型');
+                return;
+            }
+
             // 显示加载状态
-            loading.style.display = 'block';
-            resultsSection.style.display = 'block';
+            loading.classList.add('show');
             uploadButton.disabled = true;
+            
+            // 更新加载消息
+            const loadingMessage = document.getElementById('loadingMessage');
+            const progressFill = document.getElementById('progressFill');
+            loadingMessage.textContent = `正在准备${getAnalysisTypeName(selectedAnalysisType)}...`;
+            progressFill.style.width = '10%';
 
             try {
-                // 上传第一个文件（简化版本，只支持单个文件）
                 const file = files[0];
                 const formData = new FormData();
                 formData.append('file', file);
                 
-                // 添加检测选项
-                const enableStatic = document.getElementById('enableStatic').checked;
-                const enablePylint = document.getElementById('enablePylint').checked;
-                const enableFlake8 = document.getElementById('enableFlake8').checked;
-                const enableAI = document.getElementById('enableAI').checked;
-                const enableDeepAnalysis = document.getElementById('enableDeepAnalysis').checked;
-                const enableQualityAnalysis = document.getElementById('enableQualityAnalysis').checked;
-                const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
+                const analysisType = document.querySelector('input[name="analysisType"]:checked')?.value || 'file';
 
-                // 更新状态显示
-                statusBadge.textContent = '上传中...';
-                statusBadge.className = 'status-badge status-processing';
-                statusMessage.textContent = `正在上传${analysisType === 'project' ? '项目' : '文件'}: ${file.name}`;
-
-                let response, result;
-
-        if (enableQualityAnalysis) {
-            // AI质量分析：跳转到main.html，底部显示质量报告
-            try {
-                console.log('开始AI质量分析...');
-                
-                response = await fetch(`${SIMPLE_API_BASE_URL}/api/code-quality/analyze-upload?include_ai_analysis=true`, {
-                    method: 'POST',
-                    body: formData
-                });
-                result = await response.json();
-
-                if (result.success) {
-                    // 保存质量分析结果到localStorage
-                    localStorage.setItem('qualityAnalysisResult', JSON.stringify(result.data));
-                    localStorage.setItem('fileName', file.name);
-                    localStorage.setItem('showQualityReport', 'true');
-                    localStorage.setItem('apiBase', SIMPLE_API_BASE_URL);
-                    localStorage.setItem('analysisType', analysisType);
-
-                    // 跳转到main.html
-                    window.location.href = 'main.html';
-                } else {
-                    throw new Error(result.error || 'AI质量分析失败');
+                // 根据选中的分析类型进行处理
+                switch(selectedAnalysisType) {
+                    case 'static':
+                        await handleStaticAnalysis(formData, file, analysisType);
+                        break;
+                    case 'dynamic':
+                        await handleDynamicAnalysis(formData, file);
+                        break;
+                    case 'deep':
+                        await handleDeepAnalysis(formData, file, analysisType);
+                        break;
+                    case 'quality':
+                        await handleQualityAnalysis(formData, file, analysisType);
+                        break;
+                    default:
+                        throw new Error('未知的分析类型');
                 }
             } catch (error) {
-                console.error('AI质量分析失败:', error);
-                throw new Error(`AI质量分析失败: ${error.message}`);
-            }
-        } else if (enableAI && enableDeepAnalysis) {
-            // 深度AI分析：需要进入deep_analysis.html页面
-            try {
-                console.log('开始深度AI分析...');
-                
-                response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=${enableAI}&enable_deep_analysis=true&analysis_type=${analysisType}`, {
-                    method: 'POST',
-                    body: formData
-                });
-                result = await response.json();
-
-                if (result.success) {
-                    currentTaskId = result.data.task_id;
-                    statusBadge.textContent = '深度AI分析中...';
-                    statusBadge.className = 'status-badge status-processing';
-                    statusMessage.textContent = `正在进行深度AI分析，请稍候...`;
-                    startPollingForDeepAnalysis();
-                    return;
-                } else {
-                    throw new Error(result.error || '深度AI分析失败');
-                }
-            } catch (error) {
-                console.error('深度AI分析失败:', error);
-                throw new Error(`深度AI分析失败: ${error.message}`);
-            }
-        } else if (enableAI && !enableDeepAnalysis) {
-            // 简单AI分析：跳转到main.html，但有AI报告
-            try {
-                console.log('开始简单AI分析...');
-                
-                response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=true&enable_deep_analysis=false&analysis_type=${analysisType}`, {
-                    method: 'POST',
-                    body: formData
-                });
-                result = await response.json();
-
-                if (result.success) {
-                    currentTaskId = result.data.task_id;
-                    statusBadge.textContent = '简单AI分析中...';
-                    statusBadge.className = 'status-badge status-processing';
-                    statusMessage.textContent = `正在进行简单AI分析，请稍候...`;
-                    startPolling();
-                    return;
-                } else {
-                    throw new Error(result.error || '简单AI分析失败');
-                }
-            } catch (error) {
-                console.error('简单AI分析失败:', error);
-                throw new Error(`简单AI分析失败: ${error.message}`);
-            }
-        } else {
-                    // 基础分析：没有AI功能，跳转到main.html
-                    response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=false&enable_deep_analysis=false&analysis_type=${analysisType}`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    result = await response.json();
-
-                    if (result.success) {
-                        currentTaskId = result.data.task_id;
-                        statusBadge.textContent = '分析中...';
-                        statusBadge.className = 'status-badge status-processing';
-                        statusMessage.textContent = `正在分析${analysisType === 'project' ? '项目' : '文件'}，请稍候...`;
-                        startPolling();
-                    } else {
-                        throw new Error(result.error || '上传失败');
-                    }
-                }
-            } catch (error) {
-                showError('上传失败: ' + error.message);
-                loading.style.display = 'none';
+                console.error('分析失败:', error);
+                alert('分析失败: ' + error.message);
+                loading.classList.remove('show');
                 uploadButton.disabled = false;
             }
         });
+
+        // 处理静态分析
+        async function handleStaticAnalysis(formData, file, analysisType) {
+            const enableStatic = document.getElementById('enableStatic')?.checked || true;
+            const enablePylint = document.getElementById('enablePylint')?.checked || true;
+            const enableFlake8 = document.getElementById('enableFlake8')?.checked || true;
+            const enableAI = document.getElementById('enableAI')?.checked || false;
+
+            // 更新进度
+            const loadingMessage = document.getElementById('loadingMessage');
+            const progressFill = document.getElementById('progressFill');
+            loadingMessage.textContent = '正在上传文件...';
+            progressFill.style.width = '30%';
+
+            const response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=${enableAI}&enable_deep_analysis=false&analysis_type=${analysisType}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                currentTaskId = result.data.task_id;
+                
+                // 更新进度
+                loadingMessage.textContent = '文件上传成功，开始分析...';
+                progressFill.style.width = '60%';
+                
+                // 隐藏加载状态，显示结果区域
+                loading.classList.remove('show');
+                resultsSection.style.display = 'block';
+                statusBadge.textContent = '分析中...';
+                statusBadge.className = 'status-badge status-processing';
+                statusMessage.textContent = `正在分析${analysisType === 'project' ? '项目' : '文件'}，请稍候...`;
+                startPolling();
+            } else {
+                throw new Error(result.error || '静态分析失败');
+            }
+        }
+
+        // 处理动态分析
+        async function handleDynamicAnalysis(formData, file) {
+            // 跳转到动态检测页面
+            localStorage.setItem('dynamicAnalysisFile', file.name);
+            localStorage.setItem('dynamicAnalysisData', JSON.stringify({
+                fileName: file.name,
+                fileSize: file.size,
+                timestamp: new Date().toISOString()
+            }));
+            window.location.href = 'dynamic_detection.html';
+        }
+
+        // 处理深度分析
+        async function handleDeepAnalysis(formData, file, analysisType) {
+            const enableStatic = document.getElementById('enableStatic')?.checked || true;
+            const enablePylint = document.getElementById('enablePylint')?.checked || true;
+            const enableFlake8 = document.getElementById('enableFlake8')?.checked || true;
+
+            const response = await fetch(`${SIMPLE_API_BASE_URL}/api/v1/detection/upload?enable_static=${enableStatic}&enable_pylint=${enablePylint}&enable_flake8=${enableFlake8}&enable_ai_analysis=true&enable_deep_analysis=true&analysis_type=${analysisType}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                currentTaskId = result.data.task_id;
+                // 显示结果区域并开始轮询
+                resultsSection.style.display = 'block';
+                statusBadge.textContent = '深度AI分析中...';
+                statusBadge.className = 'status-badge status-processing';
+                statusMessage.textContent = `正在进行深度AI分析，请稍候...`;
+                startPollingForDeepAnalysis();
+            } else {
+                throw new Error(result.error || '深度分析失败');
+            }
+        }
+
+        // 处理质量分析
+        async function handleQualityAnalysis(formData, file, analysisType) {
+            const response = await fetch(`${SIMPLE_API_BASE_URL}/api/code-quality/analyze-upload?include_ai_analysis=true`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                // 保存质量分析结果到localStorage
+                localStorage.setItem('qualityAnalysisResult', JSON.stringify(result.data));
+                localStorage.setItem('fileName', file.name);
+                localStorage.setItem('showQualityReport', 'true');
+                localStorage.setItem('apiBase', SIMPLE_API_BASE_URL);
+                localStorage.setItem('analysisType', analysisType);
+
+                // 跳转到main.html
+                window.location.href = 'main.html';
+            } else {
+                throw new Error(result.error || '质量分析失败');
+            }
+        }
 
         // 开始轮询任务状态
         function startPolling() {
@@ -1295,7 +1625,7 @@
         // 注意：不要自动清理localStorage数据，这可能删除刚刚保存的质量分析结果
         // clearOldData(); // 延迟清理，只在必要时执行
         setupCheckboxDependency(); // 设置复选框依赖关系
-        uploadButton.disabled = true;
+        updateUploadButtonState(); // 初始化按钮状态
     </script>
 </body>
 </html>
