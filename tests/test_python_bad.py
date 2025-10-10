@@ -1,63 +1,61 @@
-# test_python_bad.py - 有问题的Python代码示例
+"""
+包含各种代码质量问题的Python文件
+用于测试代码质量检测和修复功能
+"""
+
 import os
-import sys
-import unused_module  # 未使用的导入
 
-# 硬编码的API密钥
-API_KEY = "sk-1234567890abcdef"
-SECRET_PASSWORD = "admin123"
+# 硬编码的敏感信息
+API_KEY = os.getenv("API_KEY", "")
+SECRET = "my_secret_password"
+PASSWORD = "admin123"
 
-def bad_function():
-    # 缺少文档字符串
-    x = 1
-    y = 2
-    z = x + y
-    return z
+def bad_function(x):
+    """缺少参数验证的函数"""
+    return x * 2
 
-def risky_function():
-    # 不安全的eval使用
-    user_input = "print('Hello')"
-    result = eval(user_input)  # 安全风险
+def risky_function(data):
+    """使用不安全的eval函数"""
+    return eval(data)
+
+def process_user_data(user_input):
+    """处理用户输入但缺少验证"""
+    result = risky_function(user_input)
     return result
-
-def process_user_data(data):
-    # 缺少类型提示和文档字符串
-    # 缺少输入验证
-    processed = data * 2
-    return processed
 
 def divide_numbers(a, b):
-    # 缺少异常处理
-    result = a / b  # 可能除零错误
-    return result
+    """除法函数但缺少异常处理"""
+    return a / b if b != 0 else 0
 
-# 全局变量（不好的实践）
+# 全局变量使用
 global_var = "I'm global"
 
 def use_global():
-    global global_var
-    global_var = "modified"
+    """使用全局变量"""
     return global_var
 
-# 不安全的文件操作
 def read_file(filename):
-    # 没有异常处理
+    """文件读取但缺少异常处理"""
     with open(filename, 'r') as f:
-        content = f.read()
-    return content
+        return f.read()
 
-# 内存泄漏风险
-def create_large_list():
-    big_list = []
-    for i in range(1000000):
-        big_list.append(f"item_{i}")
-    return big_list
+def create_large_list(size):
+    """创建大列表但缺少参数验证"""
+    return [i for i in range(size)]
 
-# 缺少主函数保护
-print("This will always execute")
+def format_string(template, *args):
+    """字符串格式化但缺少异常处理"""
+    return template.format(*args)
 
-# 不安全的字符串格式化
-def format_string(user_input):
-    query = "SELECT * FROM users WHERE name = '%s'" % user_input  # SQL注入风险
-    return query
+def convert_to_int(value):
+    """类型转换但缺少异常处理"""
+    return int(value)
 
+if __name__ == "__main__":
+    # 测试各种函数
+    print(bad_function(5))
+    print(risky_function("2 + 2"))
+    print(divide_numbers(10, 2))
+    print(use_global())
+    print(format_string("Hello {}", "World"))
+    print(convert_to_int("123"))

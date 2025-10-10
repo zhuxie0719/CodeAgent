@@ -1,7 +1,7 @@
 # test_run.py（在 project/CodeAgent 目录下运行） - 支持智能文件/目录检测
 import asyncio
 from pathlib import Path
-from config.settings import values
+from config.settings import settings
 from coordinator.coordinator import Coordinator
 from agents.code_analysis_agent.agent import CodeAnalysisAgent
 from agents.bug_detection_agent.agent import BugDetectionAgent
@@ -73,7 +73,7 @@ async def test_single_file():
 async def test_directory():
     """测试目录检测"""
     print("\n=== 🧪 测试目录检测 ===")
-    return await run_work Mlow("tests")
+    return await run_workflow("tests")
 
 
 async def main():
