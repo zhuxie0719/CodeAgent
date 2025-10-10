@@ -90,7 +90,7 @@ async def startup_event():
     # 3. 挂载各个子模块的路由
     try:
         # 导入并设置 coordinator_api 的全局管理器
-        from . import coordinator_api
+        import coordinator_api
         coordinator_api.set_managers(coordinator_manager, agent_manager)
         app.include_router(coordinator_api.router)
         print("✅ Coordinator API 路由已挂载")
@@ -101,7 +101,7 @@ async def startup_event():
     
     # 挂载代码质量分析 API
     try:
-        from . import code_quality_api
+        import code_quality_api
         code_quality_api.set_agent_manager(agent_manager)
         app.include_router(code_quality_api.router)
         print("✅ Code Quality API 路由已挂载")
@@ -112,7 +112,7 @@ async def startup_event():
     
     # 挂载代码分析 API
     try:
-        from . import code_analysis_api
+        import code_analysis_api
         code_analysis_api.set_agent_manager(agent_manager)
         app.include_router(code_analysis_api.router)
         print("✅ Code Analysis API 路由已挂载")
@@ -123,7 +123,7 @@ async def startup_event():
     
     # 挂载缺陷检测 API
     try:
-        from . import bug_detection_api
+        import bug_detection_api
         bug_detection_api.set_managers(coordinator_manager, agent_manager)
         app.include_router(bug_detection_api.router)
         print("✅ Bug Detection API 路由已挂载")
