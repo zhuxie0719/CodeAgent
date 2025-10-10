@@ -177,32 +177,8 @@ async def upload_file_for_detection(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"提交检测任务失败: {str(e)}")
 
-@router.get("/api/v1/tasks/{task_id}", response_model=BaseResponse)
-async def get_task_status(task_id: str):
-    """获取任务状态"""
-    # 从管理器获取 coordinator
-    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
-    
-    if not coordinator:
-        raise HTTPException(status_code=500, detail="Coordinator 未启动")
-    
-    try:
-        task = coordinator.task_manager.tasks.get(task_id)
-        if not task:
-            raise HTTPException(status_code=404, detail="任务不存在")
-        
-        data = {
-            "task_id": task_id,
-            "status": task['status'].value,
-            "created_at": task['created_at'].isoformat(),
-            "started_at": task['started_at'].isoformat() if task['started_at'] else None,
-            "completed_at": task['completed_at'].isoformat() if task['completed_at'] else None,
-            "result": task['result'],
-            "error": task['error']
-        }
-        return BaseResponse(message="获取任务状态成功", data=data)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取任务状态失败: {str(e)}")
+# 注意：任务状态查询路由已移至 coordinator_api.py
+# 使用 GET /api/v1/tasks/{task_id} 查询任务状态（由 coordinator_api 提供）
 
 @router.get("/api/v1/detection/rules", response_model=BaseResponse)
 async def get_detection_rules():

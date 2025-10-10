@@ -99,10 +99,9 @@ async def startup_event():
         import traceback
         traceback.print_exc()
     
-    # 挂载代码质量分析 API
+    # 挂载代码质量分析 API（动态创建 Agent，无需 set_agent_manager）
     try:
         import code_quality_api
-        code_quality_api.set_agent_manager(agent_manager)
         app.include_router(code_quality_api.router)
         print("✅ Code Quality API 路由已挂载")
     except Exception as e:
@@ -110,10 +109,9 @@ async def startup_event():
         import traceback
         traceback.print_exc()
     
-    # 挂载代码分析 API
+    # 挂载代码分析 API（动态创建 Agent，无需 set_agent_manager）
     try:
         import code_analysis_api
-        code_analysis_api.set_agent_manager(agent_manager)
         app.include_router(code_analysis_api.router)
         print("✅ Code Analysis API 路由已挂载")
     except Exception as e:
