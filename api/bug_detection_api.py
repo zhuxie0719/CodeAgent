@@ -1,6 +1,10 @@
 """
-简化的BugDetectionAgent API服务
-只保留接口调用，具体逻辑在agents层
+BugDetectionAgent API 服务
+专注于代码缺陷检测，包括：
+- 文件/项目上传检测
+- 检测任务状态查询  
+- AI 分析报告生成
+- 结构化数据导出
 """
 
 import asyncio
@@ -11,29 +15,12 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 from pathlib import Path
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Query
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter, File, UploadFile, HTTPException, BackgroundTasks, Query
 from pydantic import BaseModel, Field
 
 # 添加项目根目录到Python路径
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
-
-# 导入真正的BugDetectionAgent
-from agents.bug_detection_agent.agent import BugDetectionAgent
-# 预留其它Agent导入（录屏展示用途，暂不启用）
-# from agents.fix_execution_agent.agent import FixExecutionAgent
-# from agents.test_validation_agent.agent import TestValidationAgent
-# from agents.code_analysis_agent.agent import CodeAnalysisAgent
-# from agents.code_quality_agent.agent import CodeQualityAgent
-# from agents.performance_optimization_agent.agent import PerformanceOptimizationAgent
-from coordinator.coordinator import Coordinator
-
-# 简化的设置
-class Settings:
-    AGENTS = {"bug_detection_agent": {"enabled": True}}
-
-settings = Settings()
 
 # 数据模型
 class BaseResponse(BaseModel):
@@ -49,136 +36,25 @@ class HealthResponse(BaseModel):
     message: str = Field(..., description="状态消息")
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat(), description="时间戳")
 
-# 创建FastAPI应用
-app = FastAPI(
-    title="AI Agent 缺陷检测 API",
-    description="专注于缺陷检测的API服务",
-    version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc"
-)
+# 创建 APIRouter（模块化路由）
+router = APIRouter(tags=["缺陷检测"])
 
-# 配置CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# 全局引用（由 main_api.py 设置）
+_coordinator_manager = None
+_agent_manager = None
 
-# 全局实例
-bug_detection_agent = None
-# fix_execution_agent = None
-# test_validation_agent = None
-# code_analysis_agent = None
-# code_quality_agent = None
-# performance_optimization_agent = None
-coordinator = None
+def set_managers(coord_mgr, agent_mgr):
+    """设置全局管理器引用"""
+    global _coordinator_manager, _agent_manager
+    _coordinator_manager = coord_mgr
+    _agent_manager = agent_mgr
 
-@app.on_event("startup")
-async def startup_event():
-    """应用启动事件"""
-    global bug_detection_agent, coordinator
-    try:
-        config = settings.AGENTS.get("bug_detection_agent", {})
-        bug_detection_agent = BugDetectionAgent(config)
-        await bug_detection_agent.start()
-        print("BugDetectionAgent 启动成功")
-    except Exception as e:
-        print(f"BugDetectionAgent 启动失败: {e}")
-        bug_detection_agent = None
-
-    try:
-        coordinator = Coordinator(config={})
-        await coordinator.start()
-        print("Coordinator 启动成功")
-    except Exception as e:
-        print(f"Coordinator 启动失败: {e}")
-        coordinator = None
-
-    # 注册检测Agent到协调中心（关键：否则无法分配任务给真实Agent）
-    try:
-        if coordinator and bug_detection_agent:
-            await coordinator.register_agent('bug_detection_agent', bug_detection_agent)
-            print("BugDetectionAgent 已注册到 Coordinator")
-    except Exception as e:
-        print(f"注册 BugDetectionAgent 失败: {e}")
-
-    # 预留：其它Agent启动与注册（录屏注释占位，需要时取消注释即可）
-    # global fix_execution_agent, test_validation_agent, code_analysis_agent, code_quality_agent, performance_optimization_agent
-    # try:
-    #     fix_execution_agent = FixExecutionAgent(config={})
-    #     await fix_execution_agent.start()
-    #     if coordinator:
-    #         await coordinator.register_agent('fix_execution_agent', fix_execution_agent)
-    #     print("FixExecutionAgent 启动并注册成功")
-    # except Exception as e:
-    #     print(f"FixExecutionAgent 启动/注册失败: {e}")
-    # try:
-    #     test_validation_agent = TestValidationAgent(config={})
-    #     await test_validation_agent.start()
-    #     if coordinator:
-    #         await coordinator.register_agent('test_validation_agent', test_validation_agent)
-    #     print("TestValidationAgent 启动并注册成功")
-    # except Exception as e:
-    #     print(f"TestValidationAgent 启动/注册失败: {e}")
-    # try:
-    #     code_analysis_agent = CodeAnalysisAgent(config={})
-    #     await code_analysis_agent.start()
-    #     if coordinator:
-    #         await coordinator.register_agent('code_analysis_agent', code_analysis_agent)
-    #     print("CodeAnalysisAgent 启动并注册成功")
-    # except Exception as e:
-    #     print(f"CodeAnalysisAgent 启动/注册失败: {e}")
-    # try:
-    #     code_quality_agent = CodeQualityAgent(config={})
-    #     await code_quality_agent.start()
-    #     if coordinator:
-    #         await coordinator.register_agent('code_quality_agent', code_quality_agent)
-    #     print("CodeQualityAgent 启动并注册成功")
-    # except Exception as e:
-    #     print(f"CodeQualityAgent 启动/注册失败: {e}")
-    # try:
-    #     performance_optimization_agent = PerformanceOptimizationAgent(config={})
-    #     await performance_optimization_agent.start()
-    #     if coordinator:
-    #         await coordinator.register_agent('performance_optimization_agent', performance_optimization_agent)
-    #     print("PerformanceOptimizationAgent 启动并注册成功")
-    # except Exception as e:
-    #     print(f"PerformanceOptimizationAgent 启动/注册失败: {e}")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """应用关闭事件"""
-    global bug_detection_agent, coordinator
-    if bug_detection_agent:
-        await bug_detection_agent.stop()
-        print("BugDetectionAgent 已停止")
-    # 预留：其它Agent停止（需要时取消注释）
-    # if fix_execution_agent:
-    #     await fix_execution_agent.stop()
-    #     print("FixExecutionAgent 已停止")
-    # if test_validation_agent:
-    #     await test_validation_agent.stop()
-    #     print("TestValidationAgent 已停止")
-    # if code_analysis_agent:
-    #     await code_analysis_agent.stop()
-    #     print("CodeAnalysisAgent 已停止")
-    # if code_quality_agent:
-    #     await code_quality_agent.stop()
-    #     print("CodeQualityAgent 已停止")
-    # if performance_optimization_agent:
-    #     await performance_optimization_agent.stop()
-    #     print("PerformanceOptimizationAgent 已停止")
-    if coordinator:
-        await coordinator.stop()
-        print("Coordinator 已停止")
-
-@app.get("/health", response_model=HealthResponse)
+@router.get("/health", response_model=HealthResponse)
 async def health_check():
     """健康检查接口"""
-    global bug_detection_agent, coordinator
+    # 从管理器获取实例
+    bug_detection_agent = _agent_manager.get_agent("bug_detection_agent") if _agent_manager else None
+    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
     
     if bug_detection_agent and coordinator:
         agent_status = bug_detection_agent.get_status()
@@ -195,7 +71,7 @@ async def health_check():
             timestamp=datetime.now().isoformat()
         )
 
-@app.post("/api/v1/detection/upload", response_model=BaseResponse)
+@router.post("/api/v1/detection/upload", response_model=BaseResponse)
 async def upload_file_for_detection(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
@@ -208,7 +84,8 @@ async def upload_file_for_detection(
     analysis_type: str = Query("file", description="分析类型: file(单文件) 或 project(项目)")
 ):
     """上传文件进行缺陷检测 - 支持复杂项目压缩包"""
-    global coordinator
+    # 从管理器获取 coordinator
+    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
     
     if not coordinator:
         raise HTTPException(status_code=500, detail="Coordinator 未启动")
@@ -300,10 +177,11 @@ async def upload_file_for_detection(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"提交检测任务失败: {str(e)}")
 
-@app.get("/api/v1/tasks/{task_id}", response_model=BaseResponse)
+@router.get("/api/v1/tasks/{task_id}", response_model=BaseResponse)
 async def get_task_status(task_id: str):
     """获取任务状态"""
-    global coordinator
+    # 从管理器获取 coordinator
+    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
     
     if not coordinator:
         raise HTTPException(status_code=500, detail="Coordinator 未启动")
@@ -326,10 +204,11 @@ async def get_task_status(task_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取任务状态失败: {str(e)}")
 
-@app.get("/api/v1/detection/rules", response_model=BaseResponse)
+@router.get("/api/v1/detection/rules", response_model=BaseResponse)
 async def get_detection_rules():
     """获取检测规则"""
-    global bug_detection_agent
+    # 从管理器获取 bug_detection_agent
+    bug_detection_agent = _agent_manager.get_agent("bug_detection_agent") if _agent_manager else None
     if not bug_detection_agent:
         raise HTTPException(status_code=500, detail="BugDetectionAgent 未启动")
     try:
@@ -338,10 +217,11 @@ async def get_detection_rules():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取检测规则失败: {str(e)}")
 
-@app.get("/api/v1/ai-reports/{task_id}")
+@router.get("/api/v1/ai-reports/{task_id}")
 async def get_ai_report(task_id: str):
     """获取AI生成的自然语言报告"""
-    global coordinator
+    # 从管理器获取 coordinator
+    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
     if not coordinator:
         raise HTTPException(status_code=500, detail="Coordinator 未启动")
     try:
@@ -395,7 +275,7 @@ async def get_ai_report(task_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取AI报告失败: {str(e)}")
 
-@app.get("/api/v1/ai-reports/{task_id}/download")
+@router.get("/api/v1/ai-reports/{task_id}/download")
 async def download_ai_report(task_id: str):
     """下载AI报告文件"""
     try:
@@ -418,7 +298,7 @@ async def download_ai_report(task_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"下载AI报告失败: {str(e)}")
 
-@app.get("/api/v1/structured-data/{task_id}", response_model=BaseResponse)
+@router.get("/api/v1/structured-data/{task_id}", response_model=BaseResponse)
 async def get_structured_data(task_id: str):
     """获取结构化数据给修复agent"""
     try:
@@ -440,10 +320,13 @@ async def get_structured_data(task_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取结构化数据失败: {str(e)}")
 
-@app.get("/api/v1/reports/{task_id}")
+@router.get("/api/v1/reports/{task_id}")
 async def download_report(task_id: str):
     """下载检测报告"""
-    global coordinator
+    # 从管理器获取实例
+    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
+    bug_detection_agent = _agent_manager.get_agent("bug_detection_agent") if _agent_manager else None
+    
     if not coordinator:
         raise HTTPException(status_code=500, detail="Coordinator 未启动")
     
@@ -541,7 +424,11 @@ def _get_issues_by_type(issues: List[Dict[str, Any]]) -> Dict[str, int]:
 
 async def generate_report_task(task_id: str, file_path: str):
     """后台任务：生成检测报告"""
-    global coordinator
+    # 从管理器获取 coordinator
+    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
+    if not coordinator:
+        print(f"Coordinator 未启动，无法生成报告")
+        return
     
     try:
         # 等待任务完成
@@ -574,7 +461,11 @@ async def generate_report_task(task_id: str, file_path: str):
 
 async def store_structured_data(task_id: str, file_path: str, analysis_type: str):
     """后台任务：存储结构化信息给修复agent"""
-    global coordinator
+    # 从管理器获取 coordinator
+    coordinator = _coordinator_manager.coordinator if _coordinator_manager else None
+    if not coordinator:
+        print(f"Coordinator 未启动，无法存储结构化数据")
+        return
     
     try:
         # 等待任务完成
@@ -801,7 +692,3 @@ def analyze_project_structure(detection_results, analysis_type):
         structure_info["complexity_indicators"]["average_issues_per_file"] = len(issues) / total_files
     
     return structure_info
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
