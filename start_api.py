@@ -40,13 +40,14 @@ def start_api_server():
             print("❌ bug_detection_api.py 文件不存在")
             return
         
-        # 启动服务器 - 使用增强版简单API支持深度分析
+        # 启动服务器 - 使用真正的BugDetectionAgent API
         print("正在启动uvicorn服务器...")
-        print("注意: 使用增强版简单API（simple_agent_api）支持AI分析功能")
-        print("包含功能: 简单分析 + 深度分析 + AI报告生成")
+        print("注意: 使用真正的BugDetectionAgent API（bug_detection_api）")
+        print("包含功能: 真实静态分析 + Pylint/Flake8/Bandit + AI分析 + Coordinator协调")
+        print("支持: 单文件检测 + 项目压缩包检测")
         subprocess.run([
             sys.executable, "-m", "uvicorn", 
-            "simple_agent_api:app", 
+            "bug_detection_api:app", 
             "--host", "0.0.0.0", 
             "--port", "8001", 
             "--reload"
