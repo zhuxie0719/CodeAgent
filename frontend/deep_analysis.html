@@ -18,27 +18,99 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #111827;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+        /* Sidebar */
+        .sidebar {
+            width: 70px;
+            height: 100vh;
+            background: #1c2330;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            justify-content: flex-start;
         }
 
-        .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 30px;
+        .sidebar .logo {
+            width: 40px;
+            height: 40px;
+            background: #f7d78c;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+            color: #bbb;
+            font-size: 12px;
             text-align: center;
-            position: relative;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .sidebar .nav-item i {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar .nav-item:hover {
+            color: #fff;
+        }
+
+        /* Header */
+        .header {
+            margin-left: 70px;
+            height: 60px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .header .actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 18px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .header .actions i:hover {
+            color: #111;
+        }
+
+        .header .profile {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ccc center/cover no-repeat;
+            border: 1px solid #ccc;
         }
 
         .header h1 {
@@ -473,17 +545,45 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- 页面头部 -->
-        <div class="header">
-            <a href="index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i> 返回
-            </a>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">AI</div>
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>项目</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-globe"></i>
+            <span>探索</span>
+        </div>
+    </aside>
+
+    <!-- Header -->
+    <header class="header">
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="projects.html">我的项目</a>
+            <a href="explore.html">探索</a>
+        </nav>
+        <div class="actions">
+            <i class="fas fa-search" title="搜索"></i>
+            <i class="fas fa-bell" title="通知"></i>
+            <i class="fas fa-question-circle" title="帮助"></i>
+            <i class="fas fa-plus" title="添加"></i>
+            <div class="profile"></div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="hero-section">
             <h1>🧠 AI深度分析报告</h1>
             <p>智能代码分析 · 架构评估 · 性能洞察</p>
         </div>
-
-        <div class="main-content">
             <!-- 加载状态 -->
             <div class="loading" id="loading">
                 <div class="spinner"></div>
