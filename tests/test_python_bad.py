@@ -14,7 +14,7 @@ def bad_function():
     z = x + y
     return z
 
-def risky_function():
+def unsafe_eval():
     # 不安全的eval使用
     user_input = "print('Hello')"
     result = eval(user_input)  # 安全风险
@@ -23,7 +23,7 @@ def risky_function():
 def process_user_data(data):
     # 缺少类型提示和文档字符串
     # 缺少输入验证
-    processed = data * 2
+    processed = data.upper()
     return processed
 
 def divide_numbers(a, b):
@@ -31,8 +31,8 @@ def divide_numbers(a, b):
     result = a / b  # 可能除零错误
     return result
 
-# 全局变量（不好的实践）
-global_var = "I'm global"
+# 全局变量
+global_var = "global"
 
 def use_global():
     global global_var
@@ -53,11 +53,31 @@ def create_large_list():
         big_list.append(f"item_{i}")
     return big_list
 
-# 缺少主函数保护
-print("This will always execute")
-
 # 不安全的字符串格式化
 def format_string(user_input):
     query = "SELECT * FROM users WHERE name = '%s'" % user_input  # SQL注入风险
     return query
 
+# 未处理的异常
+def risky_operation():
+    data = {"key": "value"}
+    return data["nonexistent_key"]  # KeyError
+
+# 死代码
+def unreachable_code():
+    return "reached"
+    print("This will never execute")  # 死代码
+
+# 类定义问题
+class BadClass:
+    def __init__(self):
+        self.value = None
+    
+    def method_without_docstring(self):
+        return self.value
+
+# 主程序
+if __name__ == "__main__":
+    # 直接执行可能有问题的代码
+    result = divide_numbers(10, 0)  # 除零错误
+    print(result)

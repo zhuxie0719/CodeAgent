@@ -92,8 +92,8 @@ class AgentManager:
             "code_quality_agent": CodeQualityAgent
         }
         
-        # 只启动核心agents，避免启动问题
-        core_agents = ["bug_detection_agent", "code_analysis_agent"]
+        # 启动核心与测试验证 agent（用于修复后自动化回归）
+        core_agents = ["bug_detection_agent", "code_analysis_agent", "test_validation_agent"]
         
         for agent_id in core_agents:
             if agent_id not in agent_configs:
@@ -226,6 +226,14 @@ app.include_router(simple_code_analysis_router)
 # 简化版检测API路由将在下面直接定义
 
 
+class TestValidateRequest(BaseModel):
+    project_path: str
+    action: str | None = None  # validate | unit | integration | performance
+    generate_with_ai: bool = False
+    min_coverage: int | None = None
+    fix_result: Dict[str, Any] | None = None
+
+
 @app.on_event("startup")
 async def startup_event():
     """应用启动事件"""
@@ -253,6 +261,36 @@ async def health_check():
         }
     )
 
+
+@app.post("/api/v1/test/validate", response_model=BaseResponse)
+async def validate_project_tests(request: TestValidateRequest):
+    """提交测试验证任务（支持AI生成用例 + 单元/集成/性能/完整验证）"""
+    if not request.project_path:
+        raise HTTPException(status_code=400, detail="缺少 project_path")
+
+    task_data = {
+        "action": request.action or "validate",
+        "project_path": request.project_path,
+        "options": {
+            "generate_with_ai": request.generate_with_ai,
+            "min_coverage": request.min_coverage,
+        },
+        "fix_result": request.fix_result,
+    }
+
+    try:
+        task_id = await agent_manager.submit_task("test_validation_agent", task_data)
+        return BaseResponse(
+            message="测试验证任务已提交",
+            data={
+                "task_id": task_id,
+                "agent_id": "test_validation_agent",
+                "project_path": request.project_path,
+                "action": task_data["action"],
+            },
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"提交测试验证任务失败: {str(e)}")
 
 @app.get("/api/v1/agents", response_model=BaseResponse)
 async def get_all_agents():

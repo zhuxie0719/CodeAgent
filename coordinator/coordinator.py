@@ -352,6 +352,10 @@ class Coordinator:
                     'file_path': file_path,
                     'options': {
                         'enable_static': True,
+                        'enable_pylint': True,
+                        'enable_flake8': True,
+                        'enable_bandit': True,
+                        'enable_mypy': True,
                         'enable_ai_analysis': True,
                         'enable_dynamic': False  # 暂时禁用动态检测
                     }
@@ -361,6 +365,10 @@ class Coordinator:
                     'project_path': project_path,
                     'options': {
                         'enable_static': True,
+                        'enable_pylint': True,
+                        'enable_flake8': True,
+                        'enable_bandit': True,
+                        'enable_mypy': True,
                         'enable_ai_analysis': True,
                         'enable_dynamic': False  # 暂时禁用动态检测
                     }
