@@ -94,15 +94,47 @@ ai_agent_system/
 ├── api/                           # API接口层
 │   ├── bug_detection_api.py       # 缺陷检测API
 │   ├── deepseek_config.py         # DeepSeek配置
+│   ├── reports/                   # 检测报告目录
 │   └── requirements.txt           # API依赖
 ├── frontend/                      # 前端界面
 │   └── index.html                 # Web界面
 ├── demo/                          # 演示文件
-├── tests/                         # 测试文件
+├── tests/                         # 测试文件和测试数据
+│   └── pandas-1.0.0/              # Pandas测试数据（需自行下载）
 ├── docs/                          # 文档
+│   ├── Pandas测试指南.md           # Pandas测试详细指南
+│   └── 扩展Bug列表说明.md          # 扩展Bug列表文档
+├── extended_bugs.py               # 扩展Bug列表（25个已知Bug）
+├── compare_pandas_bugs.py         # Bug对比分析脚本
 ├── main.py                        # 主程序入口
 ├── start_api.py                   # API启动脚本
 └── README.md                      # 项目说明
+```
+
+### 🆕 新增测试文件说明
+
+**测试评估文件**：
+- **`extended_bugs.py`** - 扩展Bug列表定义文件
+  - 包含25个Pandas 1.0.0的已知Bug详细信息
+  - 运行 `python extended_bugs.py` 可查看Bug统计
+  - 可选文件：如果不存在，对比脚本会使用内置的8个核心Bug
+  
+- **`compare_pandas_bugs.py`** - Bug对比分析脚本
+  - 读取系统检测报告（`api/reports/`目录）
+  - 与已知Bug列表对比分析
+  - 生成详细的评估报告和统计信息
+  - 自动适配：有`extended_bugs.py`用25个Bug，否则用8个Bug
+
+**使用方法**：
+```bash
+# 1. 查看Bug统计（可选）
+python extended_bugs.py
+
+# 2. 运行检测（Web界面上传Pandas代码）
+python start_api.py
+
+# 3. 对比分析（检测完成后）
+python compare_pandas_bugs.py
 ```
 
 ## 🚀 快速开始
@@ -277,6 +309,37 @@ python start_api.py
 
 ## 📚 文档
 
+### 🧪 测试指南
+
+**推荐：Pandas 1.0.0测试** - 大型项目，Bug类型丰富
+
+- **[Pandas测试指南](docs/Pandas测试指南.md)** 📖 **完整指南** ⭐ **推荐阅读**
+  - 详细的测试流程说明
+  - 核心版（8个Bug）vs 扩展版（25个Bug）对比
+  - 文件位置和使用方法说明
+  - 预期结果分析和解读
+
+- **[扩展Bug列表说明](docs/扩展Bug列表说明.md)** 📊 **详细文档**
+  - 25个已知Bug的详细列表
+  - 按类型、严重性、检测方法分类
+  - 完整的统计信息
+
+**测试文件**：
+- `extended_bugs.py` - 25个Bug定义（可选，推荐使用）
+- `compare_pandas_bugs.py` - 对比分析脚本（必备）
+
+**快速开始**：
+```bash
+# 查看Bug统计
+python extended_bugs.py
+
+# 运行检测后对比
+python compare_pandas_bugs.py
+```
+
+---
+
+### 📖 系统文档
 - [API接口文档](API_DOCUMENTATION.md) - 详细的API使用说明
 - [DeepSeek API指南](DEEPSEEK_API_GUIDE.md) - AI分析功能配置指南
 - [Agent架构文档](AGENT_DOCUMENTATION.md) - 系统架构和Agent设计
