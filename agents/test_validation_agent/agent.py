@@ -120,7 +120,14 @@ class TestValidationAgent(BaseAgent):
             
             # 如果file_path不是绝对路径，则相对于project_path构建完整路径
             if file_path and not os.path.isabs(file_path) and project_path:
-                file_path = os.path.join(project_path, file_path)
+                # 避免重复路径：如果file_path已经包含project_path，则不重复添加
+                if not file_path.startswith(project_path):
+                    file_path = os.path.join(project_path, file_path)
+            
+            # 检查是否是修复后的文件（包含_after后缀）
+            is_fixed_file = file_path and '_after' in os.path.basename(file_path)
+            if is_fixed_file:
+                print(f"✅ 检测到修复后的文件: {file_path}")
             
             if not project_path:
                 raise ValueError("缺少 project_path 或 file_path")

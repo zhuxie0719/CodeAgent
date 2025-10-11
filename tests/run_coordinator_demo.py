@@ -2,7 +2,14 @@ import asyncio
 import sys
 import json
 import os
+import logging
 from pathlib import Path
+
+# 设置详细日志
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 
 # 将项目根路径加入 sys.path，便于模块导入
@@ -106,7 +113,7 @@ async def main():
     await coordinator.start()
     print("✅ Coordinator 已启动")
 
-    # 2) 启动并注册需要的 Agent（最小集：检测 + 修复）
+    # 2) 启动并注册需要的 Agent（完整集：检测 + 修复 + 验证）
     print("\n================= AGENTS BOOT & REGISTER ===========")
     bug_agent = BugDetectionAgent(config=config)
     await bug_agent.start()
@@ -125,13 +132,34 @@ async def main():
     await coordinator.register_agent('test_validation_agent', test_agent)
     print("✅ TestValidationAgent 已启动并注册")
 
-    # 3) 选择待测文件路径（服务器本地路径）
+    # 3) 选择待测文件路径（支持命令行参数和交互式输入）
     print("\n================= TEST TARGET =======================")
-    test_file = str(CURRENT_DIR / 'test_python_good.py')
+    # 支持命令行参数或交互式输入；若无输入，使用默认示例文件
+    custom_path = None
+    if len(sys.argv) > 1:
+        custom_path = sys.argv[1]
+    if not custom_path:
+        try:
+            user_input = input("请输入待检测文件路径（回车使用默认 tests/test_python_bad.py）: ").strip()
+            custom_path = user_input or None
+        except Exception:
+            custom_path = None
+
+    if custom_path:
+        p = Path(custom_path)
+        test_file = str(p if p.is_absolute() else (PROJECT_ROOT / p))
+    else:
+        test_file = str(CURRENT_DIR / 'test_python_bad.py')
+
+    if not Path(test_file).exists():
+        fallback = str(CURRENT_DIR / 'test_python_bad.py')
+        print(f"⚠️ 指定的文件不存在，使用默认: {fallback}")
+        test_file = fallback
+
     print(f"📄 测试文件: {test_file}")
 
     # 4) 创建 detect_bugs 任务并分配给 bug_detection_agent
-    # 仅检测：启用 pylint/flake8，关闭 static/ai/bandit/mypy
+    # 检测配置：启用所有检测工具（static/pylint/flake8/bandit/mypy/ai）
     print("\n================= DETECT TASK SUBMIT ================")
     task_payload = {
         'file_path': test_file,
@@ -140,8 +168,9 @@ async def main():
             'enable_pylint': True,
             'enable_flake8': True,
             'enable_bandit': True,
-            'enable_mypy': False,
-            'enable_ai_analysis': False
+            'enable_mypy': True,
+            'enable_ai_analysis': True,
+            'enable_dynamic': False
         }
     }
     task_id = await coordinator.create_task('detect_bugs', task_payload)
@@ -170,7 +199,7 @@ async def main():
     else:
         print("（未发现问题，若为意外，请确认已安装并启用 pylint/flake8）")
 
-    # 6) 修复与验证编排（完整流程）
+    # 6) 修复与验证编排（完整流程 - 合并两个版本的功能）
     print("\n================= FIX & VALIDATION ===================")
     
     # 6.1) 创建修复任务
@@ -192,9 +221,22 @@ async def main():
         'errors': fix_result.get('errors', [])[:3]
     })
     
-    # 6.3) 创建测试验证任务
+    # 6.3) 创建测试验证任务（完整验证流程）
+    # 使用修复后的文件路径，而不是原始文件
+    fixed_file_path = None
+    if fix_result.get('success') and fix_result.get('fix_results'):
+        # 从修复结果中获取修复后的文件路径
+        for fix_item in fix_result.get('fix_results', []):
+            if 'after' in fix_item:
+                fixed_file_path = fix_item['after']
+                break
+    
+    # 如果没有找到修复后的文件，使用原始文件
+    test_file_for_validation = fixed_file_path if fixed_file_path else test_file
+    print(f"🎯 测试验证将使用文件: {test_file_for_validation}")
+    
     validation_task_payload = {
-        'file_path': test_file,
+        'file_path': test_file_for_validation,
         'fix_result': fix_result,
         'test_types': ['unit', 'integration'],
         'options': {

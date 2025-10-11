@@ -277,42 +277,69 @@ class BugDetectionAgent(BaseAgent):
     async def _initialize_detection_tools(self):
         """初始化检测工具"""
         try:
+            self.logger.info(f"开始初始化检测工具，配置: {settings.TOOLS}")
+            
             # 初始化Pylint工具
             if settings.TOOLS.get("pylint", {}).get("enabled", True):
                 try:
+                    self.logger.info("正在初始化Pylint工具...")
                     self.pylint_tool = PylintTool(settings.TOOLS["pylint"])
-                    self.logger.info("Pylint工具初始化成功")
+                    self.logger.info("✅ Pylint工具初始化成功")
                 except Exception as e:
-                    self.logger.warning(f"Pylint工具初始化失败: {e}")
+                    self.logger.error(f"❌ Pylint工具初始化失败: {e}")
+                    import traceback
+                    self.logger.error(f"Pylint错误详情: {traceback.format_exc()}")
             
             # 初始化Flake8工具
             if settings.TOOLS.get("flake8", {}).get("enabled", True):
                 try:
+                    self.logger.info("正在初始化Flake8工具...")
                     self.flake8_tool = Flake8Tool(settings.TOOLS["flake8"])
-                    self.logger.info("Flake8工具初始化成功")
+                    self.logger.info("✅ Flake8工具初始化成功")
                 except Exception as e:
-                    self.logger.warning(f"Flake8工具初始化失败: {e}")
+                    self.logger.error(f"❌ Flake8工具初始化失败: {e}")
+                    import traceback
+                    self.logger.error(f"Flake8错误详情: {traceback.format_exc()}")
             
             # 初始化Bandit工具
             if settings.TOOLS.get("bandit", {}).get("enabled", True):
                 try:
+                    self.logger.info("正在初始化Bandit工具...")
                     self.bandit_tool = BanditTool(settings.TOOLS["bandit"])
-                    self.logger.info("Bandit工具初始化成功")
+                    self.logger.info("✅ Bandit工具初始化成功")
                 except Exception as e:
-                    self.logger.warning(f"Bandit工具初始化失败: {e}")
+                    self.logger.error(f"❌ Bandit工具初始化失败: {e}")
+                    import traceback
+                    self.logger.error(f"Bandit错误详情: {traceback.format_exc()}")
             
             # 初始化Mypy工具
             if settings.TOOLS.get("mypy", {}).get("enabled", True):
                 try:
+                    self.logger.info("正在初始化Mypy工具...")
                     self.mypy_tool = MypyTool(settings.TOOLS["mypy"])
-                    self.logger.info("Mypy工具初始化成功")
+                    self.logger.info("✅ Mypy工具初始化成功")
                 except Exception as e:
-                    self.logger.warning(f"Mypy工具初始化失败: {e}")
+                    self.logger.error(f"❌ Mypy工具初始化失败: {e}")
+                    import traceback
+                    self.logger.error(f"Mypy错误详情: {traceback.format_exc()}")
             
-            self.logger.info("检测工具初始化完成")
+            # 输出工具初始化状态
+            tools_status = []
+            if self.pylint_tool:
+                tools_status.append("pylint")
+            if self.flake8_tool:
+                tools_status.append("flake8")
+            if self.bandit_tool:
+                tools_status.append("bandit")
+            if self.mypy_tool:
+                tools_status.append("mypy")
+            
+            self.logger.info(f"检测工具初始化完成，可用工具: {', '.join(tools_status) if tools_status else '无'}")
             
         except Exception as e:
             self.logger.error(f"初始化检测工具失败: {e}")
+            import traceback
+            self.logger.error(f"工具初始化错误详情: {traceback.format_exc()}")
             # 不抛出异常，允许在没有工具的情况下继续运行
     
     async def _load_detection_rules(self):
@@ -951,35 +978,61 @@ class BugDetectionAgent(BaseAgent):
                 
                 # Pylint检测
                 if options.get("enable_pylint", True) and self.pylint_tool:
+                    self.logger.info("开始Pylint检测...")
                     start_time = datetime.now()
-                    pylint_result = await self.pylint_tool.analyze(file_path)
-                    end_time = datetime.now()
-                    
-                    # 注意：pylint 发现问题时通常返回非零退出码，这里以 issues 是否非空为准
-                    if pylint_result.get("issues"):
-                        for issue in pylint_result["issues"]:
-                            issue["language"] = language
-                            issue["file"] = Path(file_path).name
-                        all_issues.extend(pylint_result["issues"])
-                        detection_tools.append("pylint")
-                    
-                    analysis_time += (end_time - start_time).total_seconds()
+                    try:
+                        pylint_result = await self.pylint_tool.analyze(file_path)
+                        end_time = datetime.now()
+                        
+                        self.logger.info(f"Pylint检测完成，结果: {pylint_result}")
+                        
+                        # 注意：pylint 发现问题时通常返回非零退出码，这里以 issues 是否非空为准
+                        if pylint_result.get("issues"):
+                            for issue in pylint_result["issues"]:
+                                issue["language"] = language
+                                issue["file"] = Path(file_path).name
+                            all_issues.extend(pylint_result["issues"])
+                            detection_tools.append("pylint")
+                            self.logger.info(f"Pylint检测到 {len(pylint_result['issues'])} 个问题")
+                        else:
+                            self.logger.info("Pylint没有检测到问题")
+                        
+                        analysis_time += (end_time - start_time).total_seconds()
+                    except Exception as e:
+                        self.logger.error(f"Pylint检测失败: {e}")
+                        import traceback
+                        self.logger.error(f"Pylint错误详情: {traceback.format_exc()}")
+                elif options.get("enable_pylint", True):
+                    self.logger.warning("Pylint工具未初始化，跳过Pylint检测")
                 
                 # Flake8检测
                 if options.get("enable_flake8", True) and self.flake8_tool:
+                    self.logger.info("开始Flake8检测...")
                     start_time = datetime.now()
-                    flake8_result = await self.flake8_tool.analyze(file_path)
-                    end_time = datetime.now()
-                    
-                    # flake8 发现问题时通常返回非零退出码，这里以 issues 是否非空为准
-                    if flake8_result.get("issues"):
-                        for issue in flake8_result["issues"]:
-                            issue["language"] = language
-                            issue["file"] = Path(file_path).name
-                        all_issues.extend(flake8_result["issues"])
-                        detection_tools.append("flake8")
-                    
-                    analysis_time += (end_time - start_time).total_seconds()
+                    try:
+                        flake8_result = await self.flake8_tool.analyze(file_path)
+                        end_time = datetime.now()
+                        
+                        self.logger.info(f"Flake8检测完成，结果: {flake8_result}")
+                        
+                        # flake8 发现问题时通常返回非零退出码，这里以 issues 是否非空为准
+                        if flake8_result.get("issues"):
+                            for issue in flake8_result["issues"]:
+                                issue["language"] = language
+                                issue["file"] = Path(file_path).name
+                            all_issues.extend(flake8_result["issues"])
+                            detection_tools.append("flake8")
+                            self.logger.info(f"Flake8检测到 {len(flake8_result['issues'])} 个问题")
+                        else:
+                            self.logger.info("Flake8没有检测到问题")
+                        
+                        analysis_time += (end_time - start_time).total_seconds()
+                    except Exception as e:
+                        self.logger.error(f"Flake8检测失败: {e}")
+                        import traceback
+                        self.logger.error(f"Flake8错误详情: {traceback.format_exc()}")
+                elif options.get("enable_flake8", True):
+                    self.logger.warning("Flake8工具未初始化，跳过Flake8检测")
                 
                 # Bandit安全检测
                 if options.get("enable_bandit", True) and self.bandit_tool:

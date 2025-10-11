@@ -1,0 +1,24 @@
+[33mcommit a5efc0b98b3f55e134573f449c5555af15c624f7[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: AltheD <15640782833@163.com>
+Date:   Fri Oct 10 22:13:30 2025 +0800
+
+    合并upstream更新并解决冲突
+    
+    - 合并了upstream/main分支的最新更新
+    - 解决了agents/fix_execution_agent/agent.py的冲突，采用upstream版本
+    - 解决了agents/fix_execution_agent/llm_utils.py的冲突，采用upstream版本
+    - 解决了api/tasks_state.json的冲突，采用upstream版本
+    - 解决了tests/run_coordinator_demo.py的冲突，采用upstream版本
+    - 保留了本地的一些测试和开发文件
+
+ agents/fix_execution_agent/agent.py     |   638 [32m+[m[31m-[m
+ agents/fix_execution_agent/llm_utils.py |   Bin [31m3693[m -> [32m6710[m bytes
+ agents/test_validation_agent/agent.py   |   236 [32m+[m[31m-[m
+ api/agent_api.py                        |    42 [32m+[m[31m-[m
+ api/tasks_state.json                    | 78534 [32m++++++++++++++++++++++++++[m[31m----[m
+ test_run.py                             |     4 [32m+[m[31m-[m
+ tests/run_coordinator_demo.py           |   155 [32m+[m[31m-[m
+ tests/test_python.py                    |   Bin [31m98[m -> [32m0[m bytes
+ tests/test_python_bad.py                |   100 [32m+[m[31m-[m
+ tests/test_python_good.py               |     8 [32m+[m[31m-[m
+ 10 files changed, 71314 insertions(+), 8403 deletions(-)
