@@ -163,7 +163,12 @@ def load_latest_report():
         print("❌ 未找到报告目录: api/reports/")
         return None
     
-    json_files = list(reports_dir.glob("structured_*.json"))
+    # 尝试查找 bug_detection_report_*.json 文件
+    json_files = list(reports_dir.glob("bug_detection_report_*.json"))
+    
+    # 如果没找到，尝试查找 structured_*.json 文件（旧格式）
+    if not json_files:
+        json_files = list(reports_dir.glob("structured_*.json"))
     
     if not json_files:
         print("❌ 未找到检测结果文件")
