@@ -542,7 +542,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:8003';
+        const API_BASE_URL = 'http://localhost:8001/api/dynamic';
 
         // 页面加载时检查是否有从主页面传递的文件信息
         window.addEventListener('load', function() {
@@ -626,6 +626,13 @@
                 runtime_analysis: document.getElementById('runtimeAnalysis').checked
             };
 
+            // 先检查API状态
+            const apiStatus = await checkApiStatus();
+            if (!apiStatus) {
+                alert('无法连接到检测服务，请确保服务已启动\n\n启动命令: python start_api.py');
+                return;
+            }
+
             // 显示加载状态
             showLoading();
 
@@ -637,8 +644,10 @@
                 formData.append('dynamic_monitoring', options.dynamic_monitoring);
                 formData.append('runtime_analysis', options.runtime_analysis);
 
+                console.log('发送检测请求到:', `${API_BASE_URL}/detect`);
+
                 // 发送请求
-                const response = await fetch(`${API_BASE_URL}/api/dynamic-detect`, {
+                const response = await fetch(`${API_BASE_URL}/detect`, {
                     method: 'POST',
                     body: formData
                 });
@@ -869,15 +878,35 @@
 
         // 页面加载完成后检查API状态
         window.addEventListener('load', async function() {
+            await checkApiStatus();
+        });
+
+        // 检查API状态
+        async function checkApiStatus() {
             try {
-                const response = await fetch(`${API_BASE_URL}/health`);
-                const result = await response.json();
-                console.log('API状态:', result);
+                console.log('检查API状态:', `${API_BASE_URL}/health`);
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('API状态正常:', result);
+                    return true;
+                } else {
+                    console.error('API响应错误:', response.status, response.statusText);
+                    return false;
+                }
             } catch (error) {
                 console.error('API连接失败:', error);
-                alert('无法连接到检测服务，请确保服务已启动');
+                console.log('请确保API服务已启动: python start_api.py');
+                return false;
             }
-        });
+        }
     </script>
 </body>
 </html>

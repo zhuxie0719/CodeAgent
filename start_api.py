@@ -25,6 +25,7 @@ def start_api_server():
     print("🚀 启动AI Agent API服务器...")
     print("📍 API文档地址: http://localhost:8001/docs")
     print("📍 前端界面地址: file://" + str(Path("frontend/index.html").absolute()))
+    print("📍 动态检测界面: file://" + str(Path("frontend/dynamic_detection.html").absolute()))
     print("📍 健康检查: http://localhost:8001/health")
     print("按 Ctrl+C 停止服务器")
     print("-" * 50)
@@ -45,8 +46,8 @@ def start_api_server():
         print("正在启动uvicorn服务器...")
         print("注意: 使用新的模块化 API 架构（main_api）")
         print("架构: Coordinator + Agent Manager + 模块化路由")
-        print("包含功能: 真实静态分析 + Pylint/Flake8/Bandit + AI分析 + Coordinator协调")
-        print("支持: 单文件检测 + 项目压缩包检测 + 代码质量分析 + 深度代码分析")
+        print("包含功能: 真实静态分析 + Pylint/Flake8/Bandit + AI分析 + Coordinator协调 + 动态检测")
+        print("支持: 单文件检测 + 项目压缩包检测 + 代码质量分析 + 深度代码分析 + 动态缺陷检测")
         subprocess.run([
             sys.executable, "-m", "uvicorn", 
             "main_api:app", 

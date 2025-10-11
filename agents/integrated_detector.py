@@ -12,6 +12,12 @@ from typing import Dict, Any, List, Optional
 from pathlib import Path
 
 # 导入现有组件
+import sys
+from pathlib import Path
+
+# 添加项目根目录到Python路径
+sys.path.append(str(Path(__file__).parent.parent))
+
 from agents.simple_monitor_agent import SimpleMonitorAgent
 from utils.project_runner import ProjectRunner
 

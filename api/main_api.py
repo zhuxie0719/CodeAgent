@@ -130,6 +130,16 @@ async def startup_event():
         import traceback
         traceback.print_exc()
     
+    # 挂载动态检测 API
+    try:
+        import dynamic_api
+        app.include_router(dynamic_api.router, prefix="/api/dynamic")
+        print("✅ Dynamic Detection API 路由已挂载")
+    except Exception as e:
+        print(f"⚠️  挂载 Dynamic Detection API 失败: {e}")
+        import traceback
+        traceback.print_exc()
+    
     # 打印启动总结
     print("\n" + "="*60)
     print("🎉 系统启动完成！")
@@ -226,6 +236,13 @@ async def root():
             "代码分析": {
                 "项目分析": "POST /api/code-analysis/analyze",
                 "上传分析": "POST /api/code-analysis/analyze-upload"
+            },
+            "动态检测": {
+                "上传检测": "POST /api/dynamic/detect",
+                "检测状态": "GET /api/dynamic/status",
+                "结果列表": "GET /api/dynamic/results",
+                "获取结果": "GET /api/dynamic/results/{filename}",
+                "系统信息": "GET /api/dynamic/system-info"
             }
         },
         "status": {

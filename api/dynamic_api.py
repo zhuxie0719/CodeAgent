@@ -8,14 +8,19 @@ import tempfile
 import os
 import json
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from pathlib import Path
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter, File, UploadFile, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 
 # 导入检测组件
+import sys
+from pathlib import Path
+
+# 添加项目根目录到Python路径
+sys.path.append(str(Path(__file__).parent.parent))
+
 from agents.integrated_detector import IntegratedDetector
 
 # 数据模型
@@ -32,26 +37,13 @@ class DetectionRequest(BaseModel):
     dynamic_monitoring: bool = Field(True, description="是否进行动态监控")
     runtime_analysis: bool = Field(True, description="是否进行运行时分析")
 
-# 创建FastAPI应用
-app = FastAPI(
-    title="简化版动态检测API",
-    description="专注于核心功能的动态缺陷检测API",
-    version="1.0.0"
-)
-
-# 添加CORS中间件
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # 简化配置
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# 创建APIRouter
+router = APIRouter()
 
 # 全局检测器
 detector = IntegratedDetector()
 
-@app.get("/")
+@router.get("/")
 async def root():
     """根路径"""
     return {
@@ -60,7 +52,7 @@ async def root():
         "timestamp": datetime.now().isoformat()
     }
 
-@app.get("/health")
+@router.get("/health")
 async def health():
     """健康检查"""
     return {
@@ -69,7 +61,7 @@ async def health():
         "service": "simple_dynamic_detection"
     }
 
-@app.post("/api/dynamic-detect", response_model=BaseResponse)
+@router.post("/detect", response_model=BaseResponse)
 async def dynamic_detect(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
@@ -121,7 +113,10 @@ async def dynamic_detect(
         
         # 保存结果到文件
         results_file = f"detection_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        detector.save_results(results, results_file)
+        results_dir = Path("dynamic_detection_results")
+        results_dir.mkdir(exist_ok=True)
+        results_path = results_dir / results_file
+        detector.save_results(results, str(results_path))
         
         # 返回结果
         return BaseResponse(
@@ -153,14 +148,16 @@ async def dynamic_detect(
             except Exception as e:
                 print(f"清理临时文件失败: {e}")
 
-@app.get("/api/detection-results/{filename}")
+@router.get("/results/{filename}")
 async def get_detection_results(filename: str):
     """获取检测结果文件"""
     try:
         if not filename.endswith('.json'):
             raise HTTPException(status_code=400, detail="只支持JSON格式的结果文件")
         
-        file_path = Path(filename)
+        # 在dynamic_detection_results目录中查找文件
+        results_dir = Path("dynamic_detection_results")
+        file_path = results_dir / filename
         if not file_path.exists():
             raise HTTPException(status_code=404, detail="结果文件不存在")
         
@@ -178,7 +175,41 @@ async def get_detection_results(filename: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取检测结果失败: {str(e)}")
 
-@app.get("/api/detection-status")
+@router.get("/results")
+async def list_detection_results():
+    """列出所有检测结果文件"""
+    try:
+        results_dir = Path("dynamic_detection_results")
+        if not results_dir.exists():
+            return BaseResponse(
+                success=True,
+                message="检测结果目录不存在",
+                data={"results": []}
+            )
+        
+        results_files = []
+        for file_path in results_dir.glob("detection_results_*.json"):
+            file_info = {
+                "filename": file_path.name,
+                "size": file_path.stat().st_size,
+                "created_time": datetime.fromtimestamp(file_path.stat().st_ctime).isoformat(),
+                "modified_time": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat()
+            }
+            results_files.append(file_info)
+        
+        # 按修改时间倒序排列
+        results_files.sort(key=lambda x: x["modified_time"], reverse=True)
+        
+        return BaseResponse(
+            success=True,
+            message="获取检测结果列表成功",
+            data={"results": results_files}
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取检测结果列表失败: {str(e)}")
+
+@router.get("/status")
 async def get_detection_status():
     """获取检测状态"""
     return {
@@ -192,7 +223,7 @@ async def get_detection_status():
         }
     }
 
-@app.post("/api/test-monitor")
+@router.post("/test-monitor")
 async def test_monitor(duration: int = 30):
     """测试监控功能"""
     try:
@@ -214,7 +245,7 @@ async def test_monitor(duration: int = 30):
             message="监控测试失败"
         )
 
-@app.post("/api/test-project-runner")
+@router.post("/test-project-runner")
 async def test_project_runner():
     """测试项目运行器"""
     try:
@@ -240,18 +271,19 @@ async def test_project_runner():
             message="项目运行器测试失败"
         )
 
-@app.get("/api/system-info")
+@router.get("/system-info")
 async def get_system_info():
     """获取系统信息"""
     try:
         import psutil
+        import sys
         
         return {
             "cpu_count": psutil.cpu_count(),
             "memory_total": psutil.virtual_memory().total,
             "disk_total": psutil.disk_usage('/').total,
-            "python_version": f"{psutil.sys.version_info.major}.{psutil.sys.version_info.minor}.{psutil.sys.version_info.micro}",
-            "platform": psutil.sys.platform
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+            "platform": sys.platform
         }
         
     except Exception as e:
@@ -259,9 +291,4 @@ async def get_system_info():
             "error": str(e)
         }
 
-if __name__ == "__main__":
-    import uvicorn
-    print("启动简化版动态检测API...")
-    print("API文档地址: http://localhost:8003/docs")
-    print("健康检查: http://localhost:8003/health")
-    uvicorn.run(app, host="0.0.0.0", port=8003)
+# 路由已配置完成，可以通过main_api.py统一启动

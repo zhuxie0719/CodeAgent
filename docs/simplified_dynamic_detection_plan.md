@@ -438,7 +438,7 @@ class IntegratedDetector:
 ### 4. 简化API
 
 ```python
-# api/simple_dynamic_api.py
+# api/dynamic_api.py
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from agents.integrated_detector import IntegratedDetector
 import tempfile
@@ -561,7 +561,7 @@ pip install psutil
 
 ### 2. 启动服务
 ```bash
-python api/simple_dynamic_api.py
+python api/dynamic_api.py
 ```
 
 ### 3. 测试流程

@@ -22,7 +22,7 @@
   - 问题分析和建议
 
 ### 4. API接口
-- `api/simple_dynamic_api.py` - 简化版动态检测API
+- `api/dynamic_api.py` - 动态检测API
   - 文件上传接口
   - 检测任务管理
   - 结果查询接口
@@ -58,7 +58,7 @@ CodeAgent/
 ├── utils/
 │   └── project_runner.py            # 项目运行器
 ├── api/
-│   └── simple_dynamic_api.py        # 简化API
+│   └── dynamic_api.py               # 动态检测API
 ├── frontend/
 │   └── dynamic_detection.html       # 前端界面
 ├── docs/

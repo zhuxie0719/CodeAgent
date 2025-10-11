@@ -42,7 +42,7 @@ utils/
 └── project_runner.py            # 项目运行器
 
 api/
-└── simple_dynamic_api.py        # 简化API
+└── dynamic_api.py               # 动态检测API
 
 frontend/
 └── dynamic_detection.html       # 前端界面
