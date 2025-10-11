@@ -35,18 +35,21 @@ def start_api_server():
         os.chdir(api_dir)
         print(f"当前工作目录: {os.getcwd()}")
         
-        # 检查bug_detection_api.py文件是否存在
-        if not Path("bug_detection_api.py").exists():
-            print("❌ bug_detection_api.py 文件不存在")
+        # 检查main_api.py文件是否存在
+        if not Path("main_api.py").exists():
+            print("❌ main_api.py 文件不存在")
+            print("提示: 确保 main_api.py 在 api/ 目录下")
             return
         
-        # 启动服务器 - 使用增强版简单API支持深度分析
+        # 启动服务器 - 使用新的模块化架构
         print("正在启动uvicorn服务器...")
-        print("注意: 使用增强版简单API（simple_agent_api）支持AI分析功能")
-        print("包含功能: 简单分析 + 深度分析 + AI报告生成")
+        print("注意: 使用新的模块化 API 架构（main_api）")
+        print("架构: Coordinator + Agent Manager + 模块化路由")
+        print("包含功能: 真实静态分析 + Pylint/Flake8/Bandit + AI分析 + Coordinator协调")
+        print("支持: 单文件检测 + 项目压缩包检测 + 代码质量分析 + 深度代码分析")
         subprocess.run([
             sys.executable, "-m", "uvicorn", 
-            "simple_agent_api:app", 
+            "main_api:app", 
             "--host", "0.0.0.0", 
             "--port", "8001", 
             "--reload"
