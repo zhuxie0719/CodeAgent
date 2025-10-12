@@ -8,6 +8,7 @@ import tempfile
 import os
 import json
 import sys
+import httpx
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 from pathlib import Path
@@ -23,6 +24,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from agents.dynamic_detection_agent.agent import DynamicMonitorAgent
+from api.deepseek_config import deepseek_config
 
 # 数据模型
 class BaseResponse(BaseModel):
@@ -57,6 +59,7 @@ class SimpleDetector:
     
     def __init__(self, monitor_agent):
         self.monitor_agent = monitor_agent
+        self.enable_web_app_test = False
     
     async def detect_defects(self, zip_file_path: str, 
                            static_analysis: bool = True,
@@ -262,6 +265,29 @@ class SimpleDetector:
                 main_file = main_files[0]
                 print(f"找到主文件: {main_file}")
                 
+                # 检查是否是Web应用
+                is_web_app = await self._detect_web_app(main_file)
+                if is_web_app:
+                    # 检查是否启用了Web应用测试
+                    if hasattr(self, 'enable_web_app_test') and self.enable_web_app_test:
+                        print("检测到Web应用，尝试启动测试...")
+                        # 尝试启动Web应用进行测试
+                        web_test_result = await self._test_web_app(main_file, project_path)
+                        return {
+                            "main_file": os.path.relpath(main_file, project_path),
+                            "execution_successful": web_test_result.get("success", False),
+                            "project_type": "web_application",
+                            "web_test": web_test_result
+                        }
+                    else:
+                        return {
+                            "main_file": os.path.relpath(main_file, project_path),
+                            "execution_successful": False,
+                            "error": "检测到Web应用，跳过服务器启动测试",
+                            "project_type": "web_application",
+                            "suggestion": "Web应用需要数据库和依赖服务，建议使用静态分析验证代码质量"
+                        }
+                
                 # 尝试运行项目（添加超时）
                 import subprocess
                 try:
@@ -300,6 +326,159 @@ class SimpleDetector:
         except Exception as e:
             return {"error": f"运行时分析失败: {str(e)[:500]}"}
     
+    async def _detect_web_app(self, file_path: str) -> bool:
+        """检测是否是Web应用"""
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+                
+            # 检测Web框架关键字
+            web_frameworks = [
+                'Flask', 'Django', 'FastAPI', 'Tornado', 'Bottle',
+                'app.run', 'socketio.run', 'uvicorn.run',
+                'create_app', 'register_blueprint'
+            ]
+            
+            for framework in web_frameworks:
+                if framework in content:
+                    return True
+            
+            return False
+        except:
+            return False
+    
+    async def _test_web_app(self, main_file: str, project_path: str) -> Dict[str, Any]:
+        """测试Web应用启动"""
+        try:
+            import subprocess
+            import time
+            import os
+            
+            print(f"开始测试Web应用: {main_file}")
+            
+            # 创建环境变量
+            env = os.environ.copy()
+            
+            
+            # 尝试启动Web应用
+            process = None
+            try:
+                # 构建启动命令
+                cmd = [sys.executable, main_file]
+                
+                # 启动进程
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    cwd=project_path,
+                    env=env
+                )
+                
+                # 等待启动
+                startup_timeout = 30  # 30秒启动超时
+                start_time = time.time()
+                
+                while time.time() - start_time < startup_timeout:
+                    if process.poll() is not None:
+                        # 进程已结束
+                        stdout, stderr = process.communicate()
+                        return {
+                            "success": False,
+                            "error": "Web应用启动失败",
+                            "stdout": stdout[:500],
+                            "stderr": stderr[:500],
+                            "return_code": process.returncode
+                        }
+                    
+                    time.sleep(1)
+                
+                # 如果进程还在运行，认为启动成功
+                if process.poll() is None:
+                    # 尝试访问应用
+                    test_result = await self._test_web_endpoint()
+                    
+                    # 终止进程
+                    try:
+                        process.terminate()
+                        process.wait(timeout=5)
+                    except:
+                        try:
+                            process.kill()
+                        except:
+                            pass
+                    
+                    return {
+                        "success": True,
+                        "message": "Web应用启动成功",
+                        "startup_time": time.time() - start_time,
+                        "endpoint_test": test_result
+                    }
+                else:
+                    stdout, stderr = process.communicate()
+                    return {
+                        "success": False,
+                        "error": "Web应用启动超时",
+                        "stdout": stdout[:500],
+                        "stderr": stderr[:500]
+                    }
+                    
+            except Exception as e:
+                if process:
+                    try:
+                        process.terminate()
+                    except:
+                        pass
+                return {
+                    "success": False,
+                    "error": f"Web应用测试失败: {str(e)}"
+                }
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Web应用测试异常: {str(e)}"
+            }
+    
+    async def _test_web_endpoint(self) -> Dict[str, Any]:
+        """测试Web端点"""
+        try:
+            import httpx
+            
+            # 尝试访问常见的Flask端口
+            test_urls = [
+                "http://localhost:5000",
+                "http://127.0.0.1:5000",
+                "http://localhost:8000",
+                "http://127.0.0.1:8000"
+            ]
+            
+            for url in test_urls:
+                try:
+                    async with httpx.AsyncClient(timeout=5.0) as client:
+                        response = await client.get(url)
+                        if response.status_code in [200, 404]:  # 404也算成功，说明服务器在运行
+                            return {
+                                "success": True,
+                                "url": url,
+                                "status_code": response.status_code,
+                                "message": "Web端点响应正常"
+                            }
+                except:
+                    continue
+            
+            return {
+                "success": False,
+                "message": "无法访问Web端点"
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"端点测试失败: {str(e)}"
+            }
+    
     def _generate_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """生成综合摘要"""
         summary = {
@@ -308,21 +487,51 @@ class SimpleDetector:
             "issues_summary": {}
         }
         
+        # 统计问题数量
+        total_issues = 0
+        critical_issues = 0
+        warning_issues = 0
+        info_issues = 0
+        
         # 统计静态分析问题
         if "static_analysis" in results:
             static = results["static_analysis"]
+            issues = static.get("issues", [])
             summary["issues_summary"]["static"] = {
                 "files_analyzed": static.get("files_analyzed", 0),
-                "issues_found": static.get("issues_found", 0)
+                "issues_found": len(issues)
             }
+            
+            # 统计问题严重程度
+            for issue in issues:
+                total_issues += 1
+                severity = issue.get("severity", "info").lower()
+                if severity == "error" or severity == "critical":
+                    critical_issues += 1
+                elif severity == "warning":
+                    warning_issues += 1
+                else:
+                    info_issues += 1
         
         # 统计动态监控结果
         if "dynamic_monitoring" in results:
             dynamic = results["dynamic_monitoring"]
+            alerts = dynamic.get("alerts", [])
             summary["issues_summary"]["dynamic"] = {
                 "monitoring_duration": dynamic.get("duration", 0),
-                "alerts_generated": len(dynamic.get("alerts", []))
+                "alerts_generated": len(alerts)
             }
+            
+            # 统计告警数量
+            for alert in alerts:
+                total_issues += 1
+                severity = alert.get("severity", "info").lower()
+                if severity == "error" or severity == "critical":
+                    critical_issues += 1
+                elif severity == "warning":
+                    warning_issues += 1
+                else:
+                    info_issues += 1
         
         # 统计运行时分析结果
         if "runtime_analysis" in results:
@@ -331,6 +540,40 @@ class SimpleDetector:
                 "execution_successful": runtime.get("execution_successful", False),
                 "main_file": runtime.get("main_file", "unknown")
             }
+            
+            # 如果有运行时错误，计入问题
+            if runtime.get("error"):
+                total_issues += 1
+                critical_issues += 1
+        
+        # 设置整体状态
+        if critical_issues > 0:
+            overall_status = "error"
+        elif warning_issues > 0:
+            overall_status = "warning"
+        elif info_issues > 0:
+            overall_status = "info"
+        else:
+            overall_status = "good"
+        
+        # 生成建议
+        recommendations = []
+        if critical_issues > 0:
+            recommendations.append("发现严重问题，建议立即修复")
+        if warning_issues > 0:
+            recommendations.append("发现警告问题，建议及时处理")
+        if not results.get("runtime_analysis", {}).get("execution_successful", True):
+            recommendations.append("运行时分析失败，检查项目配置和依赖")
+        
+        # 添加摘要字段
+        summary.update({
+            "total_issues": total_issues,
+            "critical_issues": critical_issues,
+            "warning_issues": warning_issues,
+            "info_issues": info_issues,
+            "overall_status": overall_status,
+            "recommendations": recommendations
+        })
         
         return summary
     
@@ -372,6 +615,166 @@ class SimpleDetector:
         except Exception as e:
             print(f"保存结果失败: {e}")
 
+async def generate_ai_dynamic_report(results: Dict[str, Any], filename: str) -> str:
+    """生成AI动态检测报告"""
+    try:
+        if not deepseek_config.is_configured():
+            print("⚠️ DeepSeek API未配置，使用基础报告")
+            return generate_fallback_report(results, filename)
+        
+        prompt = build_dynamic_analysis_prompt(results, filename)
+        
+        print("🤖 正在生成AI报告...")
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            response = await client.post(
+                f"{deepseek_config.base_url}/chat/completions",
+                headers=deepseek_config.get_headers(),
+                json={
+                    "model": deepseek_config.model,
+                    "messages": [
+                        {"role": "user", "content": prompt}
+                    ],
+                    "max_tokens": deepseek_config.max_tokens,
+                    "temperature": deepseek_config.temperature
+                }
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                ai_content = result["choices"][0]["message"]["content"]
+                print("✅ AI报告生成成功")
+                return ai_content
+            else:
+                print(f"❌ AI API调用失败: {response.status_code}")
+                return generate_fallback_report(results, filename)
+                
+    except httpx.TimeoutException:
+        print("❌ AI API调用超时")
+        return generate_fallback_report(results, filename)
+    except httpx.RequestError as e:
+        print(f"❌ AI API请求失败: {e}")
+        return generate_fallback_report(results, filename)
+    except Exception as e:
+        print(f"❌ AI报告生成异常: {e}")
+        return generate_fallback_report(results, filename)
+
+def build_dynamic_analysis_prompt(results: Dict[str, Any], filename: str) -> str:
+    """构建动态分析提示词"""
+    summary = results.get("summary", {})
+    
+    prompt = f"""请分析以下动态检测结果，生成一份详细的自然语言报告：
+
+## 项目信息
+- 文件名: {filename}
+- 检测时间: {results.get('timestamp', 'unknown')}
+- 检测类型: {results.get('detection_type', 'unknown')}
+- 总文件数: {summary.get('total_files', 0)}
+
+## 检测统计
+- 总问题数: {summary.get('total_issues', 0)}
+- 严重问题: {summary.get('critical_issues', 0)}
+- 警告问题: {summary.get('warning_issues', 0)}
+- 信息问题: {summary.get('info_issues', 0)}
+- 整体状态: {summary.get('overall_status', 'unknown')}
+
+## 静态分析结果
+"""
+    
+    if "static_analysis" in results:
+        static = results["static_analysis"]
+        prompt += f"- 分析文件数: {static.get('files_analyzed', 0)}\n"
+        prompt += f"- 发现问题数: {len(static.get('issues', []))}\n"
+        
+        # 添加问题详情
+        issues = static.get("issues", [])
+        if issues:
+            prompt += "\n### 主要问题:\n"
+            for i, issue in enumerate(issues[:5]):  # 只显示前5个问题
+                prompt += f"{i+1}. {issue.get('file', 'N/A')}: {issue.get('message', 'N/A')} [{issue.get('severity', 'info')}]\n"
+    
+    prompt += "\n## 动态监控结果\n"
+    if "dynamic_monitoring" in results:
+        dynamic = results["dynamic_monitoring"]
+        prompt += f"- 监控时长: {dynamic.get('duration', 0)}秒\n"
+        prompt += f"- 告警数量: {len(dynamic.get('alerts', []))}\n"
+        
+        alerts = dynamic.get("alerts", [])
+        if alerts:
+            prompt += "\n### 系统告警:\n"
+            for i, alert in enumerate(alerts[:3]):  # 只显示前3个告警
+                prompt += f"{i+1}. {alert.get('message', 'N/A')} [{alert.get('severity', 'info')}]\n"
+    
+    prompt += "\n## 运行时分析结果\n"
+    if "runtime_analysis" in results:
+        runtime = results["runtime_analysis"]
+        prompt += f"- 主文件: {runtime.get('main_file', 'N/A')}\n"
+        prompt += f"- 执行状态: {'成功' if runtime.get('execution_successful', False) else '失败'}\n"
+        if runtime.get("error"):
+            prompt += f"- 错误信息: {runtime.get('error')}\n"
+    
+    prompt += """
+请生成一份详细的自然语言分析报告，包括：
+1. 项目概述
+2. 问题分析
+3. 风险评估
+4. 改进建议
+5. 总结
+
+报告应该专业、详细且易于理解。"""
+    
+    return prompt
+
+def generate_fallback_report(results: Dict[str, Any], filename: str) -> str:
+    """生成基础报告（当AI API不可用时）"""
+    summary = results.get("summary", {})
+    
+    report = f"""# 动态检测报告
+
+## 项目概述
+- **项目名称**: {filename}
+- **检测时间**: {results.get('timestamp', 'unknown')}
+- **检测类型**: {results.get('detection_type', 'unknown')}
+- **总文件数**: {summary.get('total_files', 0)}
+
+## 检测结果摘要
+- **总问题数**: {summary.get('total_issues', 0)}
+- **严重问题**: {summary.get('critical_issues', 0)}
+- **警告问题**: {summary.get('warning_issues', 0)}
+- **信息问题**: {summary.get('info_issues', 0)}
+- **整体状态**: {summary.get('overall_status', 'unknown')}
+
+## 问题分析
+"""
+    
+    if summary.get('critical_issues', 0) > 0:
+        report += "⚠️ **发现严重问题**，需要立即处理\n"
+    if summary.get('warning_issues', 0) > 0:
+        report += "⚠️ **发现警告问题**，建议及时处理\n"
+    if summary.get('info_issues', 0) > 0:
+        report += "ℹ️ **发现信息问题**，可选择性处理\n"
+    
+    if summary.get('total_issues', 0) == 0:
+        report += "✅ **未发现明显问题**\n"
+    
+    # 添加建议
+    recommendations = summary.get('recommendations', [])
+    if recommendations:
+        report += "\n## 改进建议\n"
+        for i, rec in enumerate(recommendations, 1):
+            report += f"{i}. {rec}\n"
+    
+    report += "\n## 总结\n"
+    if summary.get('overall_status') == 'good':
+        report += "项目整体质量良好，未发现严重问题。"
+    elif summary.get('overall_status') == 'warning':
+        report += "项目存在一些警告问题，建议及时处理。"
+    elif summary.get('overall_status') == 'error':
+        report += "项目存在严重问题，需要立即修复。"
+    else:
+        report += "请根据具体问题情况进行相应处理。"
+    
+    return report
+
 # 创建检测器实例
 detector = SimpleDetector(monitor_agent)
 
@@ -399,7 +802,8 @@ async def dynamic_detect(
     file: UploadFile = File(...),
     static_analysis: bool = True,
     dynamic_monitoring: bool = True,
-    runtime_analysis: bool = True
+    runtime_analysis: bool = True,
+    enable_web_app_test: bool = False
 ):
     """
     动态缺陷检测
@@ -409,6 +813,7 @@ async def dynamic_detect(
         static_analysis: 是否进行静态分析
         dynamic_monitoring: 是否进行动态监控
         runtime_analysis: 是否进行运行时分析
+        enable_web_app_test: 是否启用Web应用测试（默认False，避免超时）
     
     Returns:
         检测结果
@@ -429,8 +834,14 @@ async def dynamic_detect(
         
         print(f"文件已保存到临时位置: {temp_file_path}")
         
+        # 设置Web应用测试选项
+        detector.enable_web_app_test = enable_web_app_test
+        
         # 执行检测（添加超时处理）
         print("开始执行综合检测...")
+        if enable_web_app_test:
+            print("⚠️ 已启用Web应用测试，检测时间可能较长...")
+        
         try:
             results = await asyncio.wait_for(
                 detector.detect_defects(
@@ -453,6 +864,9 @@ async def dynamic_detect(
         # 生成文本报告
         report = detector.generate_report(results)
         
+        # 生成AI报告
+        ai_report = await generate_ai_dynamic_report(results, file.filename)
+        
         # 保存结果到文件
         results_file = f"detection_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         results_dir = Path("dynamic_detection_results")
@@ -467,6 +881,7 @@ async def dynamic_detect(
             data={
                 "results": results,
                 "report": report,
+                "ai_report": ai_report,
                 "results_file": results_file,
                 "filename": file.filename,
                 "detection_time": datetime.now().isoformat()
