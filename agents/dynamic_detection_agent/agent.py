@@ -43,6 +43,23 @@ class DynamicMonitorAgent(BaseAgent):
         
         # 初始化日志
         self.logger = logging.getLogger(__name__)
+    
+    async def initialize(self) -> bool:
+        """初始化动态监控Agent"""
+        try:
+            self.logger.info("初始化动态监控Agent...")
+            
+            # 初始化监控状态
+            self.monitoring = False
+            self.metrics_buffer = []
+            self.alert_history = []
+            
+            self.logger.info("动态监控Agent初始化完成")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"动态监控Agent初始化失败: {e}")
+            return False
         
     def get_capabilities(self) -> List[str]:
         """获取Agent能力列表"""
@@ -479,6 +496,34 @@ class DynamicMonitorAgent(BaseAgent):
         self.alert_thresholds.update(new_thresholds)
         self.logger.info(f"告警阈值已更新: {new_thresholds}")
     
-    async def get_alert_history(self, limit: int = 100) -> List[Dict[str, Any]]:
-        """获取告警历史"""
-        return self.alert_history[-limit:] if self.alert_history else []
+    async def start_monitoring(self, duration: int = 60) -> Dict[str, Any]:
+        """启动监控（兼容API调用）"""
+        try:
+            self.logger.info(f"启动动态监控，持续时间: {duration}秒")
+            
+            # 创建监控任务数据
+            task_data = {
+                "monitor_type": "comprehensive",
+                "duration": duration,
+                "target_systems": ["system", "performance"]
+            }
+            
+            # 执行监控任务
+            result = await self.process_task("monitor_task", task_data)
+            
+            return {
+                "success": True,
+                "duration": duration,
+                "metrics_count": result.get("metrics_count", 0),
+                "alerts_count": result.get("alerts_count", 0),
+                "report": result.get("report", {}),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"启动监控失败: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }

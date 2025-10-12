@@ -99,11 +99,15 @@ class BugDetectionAgent(BaseAgent):
         
         # 项目分析配置
         self.project_config = {
-            "max_file_size": 10 * 1024 * 1024,  # 10MB
-            "max_files_per_project": 1000,
-            "max_project_size": 100 * 1024 * 1024,  # 100MB
+            "max_file_size": 2 * 1024 * 1024,  # 2MB - 减少单个文件大小限制
+            "max_files_per_project": 200,  # 减少最大文件数
+            "max_project_size": 50 * 1024 * 1024,  # 50MB - 减少项目大小限制
             "parallel_analysis": True,
-            "max_workers": 4
+            "max_workers": 2,  # 减少并发数
+            "skip_dirs": [".git", "__pycache__", "node_modules", ".venv", "venv", "doc", "docs", "test", "tests", ".github", "ci", "asv_bench", "conda.recipe", "web", "LICENSES"],
+            "skip_files": ["*.pyc", "*.pyo", "*.pyd", "*.so", "*.dll", "*.rst", "*.md", "*.txt", "*.yml", "*.yaml", "*.json", "*.xml", "*.bat", "*.sh"],
+            "timeout": 120,  # 2分钟超时
+            "sample_ratio": 0.2  # 只分析20%的文件
         }
     
     async def initialize(self) -> bool:
@@ -1523,12 +1527,69 @@ class BugDetectionAgent(BaseAgent):
             self.logger.error(f"项目文件扫描失败: {e}")
             return {}
     
+    def _filter_and_sample_files(self, files_by_language: Dict[str, List[str]]) -> Dict[str, List[str]]:
+        """过滤和采样文件，提高分析效率"""
+        try:
+            filtered_files = {}
+            
+            for language, files in files_by_language.items():
+                filtered_language_files = []
+                
+                for file_path in files:
+                    file_path_obj = Path(file_path)
+                    
+                    # 跳过指定目录
+                    skip_file = False
+                    for skip_dir in self.project_config["skip_dirs"]:
+                        if skip_dir in str(file_path_obj):
+                            skip_file = True
+                            break
+                    
+                    if skip_file:
+                        continue
+                    
+                    # 跳过指定文件类型
+                    skip_file = False
+                    for skip_pattern in self.project_config["skip_files"]:
+                        if file_path_obj.match(skip_pattern):
+                            skip_file = True
+                            break
+                    
+                    if skip_file:
+                        continue
+                    
+                    # 检查文件大小
+                    try:
+                        file_size = file_path_obj.stat().st_size
+                        if file_size > self.project_config["max_file_size"]:
+                            continue
+                    except:
+                        continue
+                    
+                    filtered_language_files.append(file_path)
+                
+                # 应用采样比例
+                if filtered_language_files:
+                    sample_size = max(1, int(len(filtered_language_files) * self.project_config["sample_ratio"]))
+                    filtered_language_files = filtered_language_files[:sample_size]
+                    filtered_files[language] = filtered_language_files
+            
+            self.logger.info(f"过滤后文件: {sum(len(files) for files in filtered_files.values())} 个")
+            for language, files in filtered_files.items():
+                self.logger.info(f"  {language}: {len(files)} 个文件")
+            
+            return filtered_files
+            
+        except Exception as e:
+            self.logger.error(f"文件过滤失败: {e}")
+            return files_by_language
+    
     async def analyze_project(self, project_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
         """分析整个项目"""
         try:
             self.logger.info(f"开始分析项目: {project_path}")
             
-            # 扫描项目文件
+            # 扫描项目文件（应用过滤规则）
             files_by_language = self.scan_project_files(project_path)
             
             if not files_by_language:
@@ -1543,9 +1604,12 @@ class BugDetectionAgent(BaseAgent):
                     }
                 }
             
+            # 应用文件过滤和采样
+            filtered_files = self._filter_and_sample_files(files_by_language)
+            
             # 并行分析不同语言的文件
             all_results = []
-            total_files = sum(len(files) for files in files_by_language.values())
+            total_files = sum(len(files) for files in filtered_files.values())
             
             if total_files > self.project_config["max_files_per_project"]:
                 return {
@@ -1560,11 +1624,11 @@ class BugDetectionAgent(BaseAgent):
                 }
             
             # 按语言分组分析
-            for language, files in files_by_language.items():
+            for language, files in filtered_files.items():
                 self.logger.info(f"分析 {language} 文件: {len(files)} 个")
                 
                 # 限制每个语言的文件数量
-                files_to_analyze = files[:50]  # 每个语言最多分析50个文件
+                files_to_analyze = files[:30]  # 每个语言最多分析30个文件
                 
                 for file_path in files_to_analyze:
                     try:

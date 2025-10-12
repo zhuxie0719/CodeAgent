@@ -1246,6 +1246,10 @@
     }
 
     function loadAIReport() {
+      // 设置默认API地址（如果localStorage中没有）
+      if (!localStorage.getItem('apiBase')) {
+        localStorage.setItem('apiBase', 'http://localhost:8001');
+      }
       const apiBase = localStorage.getItem('apiBase');
       const cachedReport = localStorage.getItem('aiReport');
       const cachedDownload = localStorage.getItem('aiReportDownloadUrl');
