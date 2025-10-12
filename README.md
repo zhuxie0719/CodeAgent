@@ -72,43 +72,74 @@
 ## 📁 项目结构
 
 ```
-ai_agent_system/
+CodeAgent/
 ├── agents/                          # Agent模块
 │   ├── bug_detection_agent/         # 缺陷检测Agent
 │   ├── code_analysis_agent/         # 代码分析Agent
+│   ├── code_quality_agent/          # 代码质量Agent
 │   ├── fix_execution_agent/         # 修复执行Agent
 │   ├── test_validation_agent/       # 测试验证Agent
 │   ├── performance_optimization_agent/ # 性能优化Agent
-│   └── code_quality_agent/          # 代码质量Agent
+│   ├── dynamic_detection_agent/     # 动态检测Agent（新增）
+│   ├── base_agent.py               # Agent基类
+│   └── integrated_detector.py      # 集成检测器
 ├── coordinator/                     # 协调中心
 │   ├── coordinator.py              # 主协调器
-│   └── task_manager.py             # 任务管理器
+│   ├── task_manager.py             # 任务管理器
+│   ├── decision_engine.py          # 决策引擎
+│   ├── event_bus.py                # 事件总线
+│   └── message_types.py            # 消息类型定义
+├── api/                            # API接口层（统一入口）
+│   ├── main_api.py                 # 主API入口（统一启动点）
+│   ├── coordinator_api.py          # Coordinator管理API
+│   ├── bug_detection_api.py        # 缺陷检测API
+│   ├── code_analysis_api.py        # 代码分析API
+│   ├── code_quality_api.py         # 代码质量API
+│   ├── dynamic_api.py              # 动态检测API
+│   ├── core/                       # 核心管理模块
+│   │   ├── agent_manager.py        #   - Agent生命周期管理
+│   │   └── coordinator_manager.py  #   - Coordinator管理
+│   ├── deepseek_config.py          # DeepSeek配置
+│   ├── reports/                    # 检测报告目录
+│   ├── structured_data/            # 结构化数据导出
+│   ├── uploads/                    # 文件上传目录
+│   └── requirements.txt            # API依赖
+├── frontend/                       # 前端界面（多页面）
+│   ├── index.html                  # 登录页面
+│   ├── main.html                   # 主界面
+│   ├── analyse.html                # 静态分析页面
+│   ├── deep_analysis.html          # 深度分析页面
+│   ├── dynamic_detection.html      # 动态检测页面
+│   ├── explore.html                # 探索页面
+│   ├── login.html                  # 登录表单
+│   └── projects.html               # 项目管理页面
 ├── tools/                          # 工具集成层
-│   ├── static_analysis/            # 静态分析工具
-│   ├── dynamic_testing/            # 动态测试工具
-│   ├── code_generation/            # 代码生成工具
-│   └── monitoring/                 # 监控工具
+│   └── static_analysis/            # 静态分析工具
+│       ├── custom_checker.py       #   - 自定义检查器
+│       ├── pylint_runner.py        #   - Pylint运行器
+│       └── flake8_runner.py        #   - Flake8运行器
 ├── config/                         # 配置文件
 │   ├── settings.py                 # 系统设置
 │   └── agent_config.py             # Agent配置
-├── api/                           # API接口层
-│   ├── bug_detection_api.py       # 缺陷检测API
-│   ├── deepseek_config.py         # DeepSeek配置
-│   ├── reports/                   # 检测报告目录
-│   └── requirements.txt           # API依赖
-├── frontend/                      # 前端界面
-│   └── index.html                 # Web界面
-├── demo/                          # 演示文件
-├── tests/                         # 测试文件和测试数据
-│   └── pandas-1.0.0/              # Pandas测试数据（需自行下载）
-├── docs/                          # 文档
-│   ├── Pandas测试指南.md           # Pandas测试详细指南
-│   └── 扩展Bug列表说明.md          # 扩展Bug列表文档
-├── extended_bugs.py               # 扩展Bug列表（25个已知Bug）
-├── compare_pandas_bugs.py         # Bug对比分析脚本
-├── main.py                        # 主程序入口
-├── start_api.py                   # API启动脚本
-└── README.md                      # 项目说明
+├── docs/                           # 文档
+│   ├── Pandas测试指南.md            # Pandas测试详细指南
+│   ├── 扩展Bug列表说明.md           # 扩展Bug列表文档
+│   ├── workflow_diagram.md         # 工作流程图
+│   ├── system_architecture.md      # 系统架构说明
+│   ├── implementation_plan.md      # 实施计划
+│   ├── API_DOCUMENTATION.md        # API文档
+│   └── DEEPSEEK_API_GUIDE.md       # DeepSeek API指南
+├── tests/                          # 测试文件和测试数据
+│   ├── test_python.py              # Python测试
+│   └── pandas-1.0.0/               # Pandas测试数据（需自行下载）
+├── utils/                          # 工具函数
+│   └── project_runner.py           # 项目运行器
+├── extended_bugs.py                # 扩展Bug列表（25个已知Bug）
+├── compare_pandas_bugs.py          # Bug对比分析脚本
+├── main.py                         # 主程序入口（命令行版本）
+├── start_api.py                    # API启动脚本
+├── requirements.txt                # 项目依赖
+└── README.md                       # 项目说明
 ```
 
 ### 🆕 新增测试文件说明
@@ -136,6 +167,68 @@ python start_api.py
 # 3. 对比分析（检测完成后）
 python compare_pandas_bugs.py
 ```
+
+## ⚠️ 实际实现与原设计的关键差异
+
+### 主要变化
+1. **新增核心管理层**：`api/core/` 目录包含 `agent_manager.py` 和 `coordinator_manager.py`
+2. **API架构模块化**：5个独立的 API 模块（bug_detection, code_quality, code_analysis, dynamic, coordinator）
+3. **统一启动入口**：`main_api.py` 作为唯一启动点，管理所有组件生命周期
+4. **Coordinator优先启动**：先启动 Coordinator，再启动 Agent（确保协调中心就绪）
+5. **新增动态检测**：`DynamicDetectionAgent` 和 `dynamic_api.py`（运行时行为分析）
+6. **三种分析模式**：file（单文件）、project（项目）、dynamic（动态检测）
+7. **多页面前端**：8个HTML页面（login, main, analyse, deep_analysis, dynamic_detection等）
+
+### 工作流更新
+- **原设计**：用户请求 → API → Agent → 返回结果
+- **实际实现**：用户请求 → API路由 → Coordinator协调 → TaskManager分配 → Agent执行 → 返回结果
+
+### API层次结构
+```
+main_api.py (FastAPI主应用)
+  ├── coordinator_api.py (任务状态、Agent管理)
+  ├── bug_detection_api.py (缺陷检测)
+  ├── code_quality_api.py (代码质量)
+  ├── code_analysis_api.py (代码分析)
+  └── dynamic_api.py (动态检测)
+```
+
+## 🔄 实际工作流程
+
+### 系统启动顺序
+```
+python start_api.py
+  ↓
+main_api.py 启动
+  ↓
+1️⃣ CoordinatorManager → Coordinator (TaskManager + EventBus + DecisionEngine)
+  ↓
+2️⃣ AgentManager → 启动所有Agent并注册到Coordinator
+  ↓
+3️⃣ 挂载API路由（bug_detection, code_quality, code_analysis, dynamic, coordinator）
+  ↓
+✅ 系统就绪，监听 0.0.0.0:8001
+```
+
+### 用户请求流程
+```
+前端界面 → API路由分发 → Coordinator协调 → Agent执行 → 生成报告 → 返回前端
+```
+
+### API访问地址
+启动后可访问：
+- **API文档**: http://localhost:8001/docs （Swagger UI）
+- **ReDoc文档**: http://localhost:8001/redoc
+- **健康检查**: http://localhost:8001/health
+- **根路径**: http://localhost:8001/
+
+### 主要API端点
+- `/api/v1/detection/upload` - 上传文件进行缺陷检测
+- `/api/code-quality/analyze-upload` - 代码质量分析
+- `/api/code-analysis/analyze-upload` - 代码深度分析
+- `/api/dynamic/detect` - 动态检测
+- `/api/v1/tasks/{task_id}` - 查询任务状态
+- `/api/v1/coordinator/status` - Coordinator状态
 
 ## 🚀 快速开始
 
@@ -176,11 +269,15 @@ export DEEPSEEK_API_KEY="your_api_key_here"
 
 5. **启动系统**
 ```bash
-# 启动API服务
+# 启动API服务（推荐方式）
 python start_api.py
 
+# 或直接使用 uvicorn
+cd api
+python -m uvicorn main_api:app --host 0.0.0.0 --port 8001 --reload
+
 # 打开前端界面
-# 浏览器访问: frontend/index.html
+# 浏览器访问: frontend/index.html 或 frontend/main.html
 ```
 
 ## 🌍 多语言支持
@@ -271,8 +368,9 @@ python start_api.py
 - **enable_ai_analysis**: 启用AI分析（所有语言）
 
 ### 分析类型
-- **file**: 单文件分析
-- **project**: 项目分析
+- **file**: 单文件分析（静态代码检测）
+- **project**: 项目分析（批量文件检测）
+- **dynamic**: 动态检测（运行时行为分析）
 
 ## 📝 示例
 
@@ -368,4 +466,54 @@ python compare_pandas_bugs.py
 
 ---
 
-*最后更新: 2024年*
+## 📝 更新日志
+
+### 最新更新（2024年10月）
+
+#### 架构升级
+- ✅ 新增 `api/core/` 核心管理层
+  - `agent_manager.py`: Agent生命周期管理
+  - `coordinator_manager.py`: Coordinator管理
+- ✅ API架构模块化重构
+  - 5个独立API模块，使用 APIRouter
+  - `main_api.py` 作为统一启动入口
+- ✅ 完善协调中心（Coordinator）
+  - TaskManager: 任务管理器
+  - EventBus: 事件总线
+  - DecisionEngine: 决策引擎
+  - Message Types: 消息类型定义
+
+#### 功能增强
+- ✅ 新增动态检测功能
+  - `DynamicDetectionAgent`: 运行时行为分析
+  - `dynamic_api.py`: 动态检测API
+  - `dynamic_detection.html`: 动态检测界面
+- ✅ 三种分析模式
+  - file: 单文件分析
+  - project: 项目批量分析
+  - dynamic: 动态检测
+- ✅ 多页面前端设计
+  - 8个专业界面页面
+  - 更好的用户体验
+
+#### 工作流优化
+- ✅ Coordinator优先启动
+  - 确保协调中心先就绪
+  - 再启动和注册Agent
+- ✅ API路由分发机制
+  - 统一入口，模块化路由
+  - 清晰的职责划分
+- ✅ 任务状态跟踪
+  - 实时任务状态查询
+  - Agent状态监控
+
+#### 文档更新
+- ✅ 更新项目结构说明
+- ✅ 更新工作流程图
+- ✅ 更新系统架构图
+- ✅ 新增实际实现差异说明
+- ✅ 完善API文档
+
+---
+
+*最后更新: 2024年10月*
