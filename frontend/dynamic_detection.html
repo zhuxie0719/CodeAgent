@@ -406,6 +406,25 @@
             color: #28a745;
             font-weight: bold;
         }
+
+        .error-card {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .error-card h3 {
+            color: #c53030;
+            margin-bottom: 15px;
+        }
+
+        .error-card p {
+            color: #742a2a;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -484,7 +503,12 @@
                         <input type="checkbox" id="runtimeAnalysis" checked>
                         启用运行时分析
                     </label>
+                    <label class="checkbox" style="margin-top: 10px;">
+                        <input type="checkbox" id="enableWebAppTest">
+                        <span style="color: #dc3545;">⚠️ 启用Web应用测试（检测时间较长）</span>
+                    </label>
                 </div>
+                
             </div>
 
             <!-- 开始检测按钮 -->
@@ -535,6 +559,18 @@
                     <h3>详细信息</h3>
                     <div id="detailsContent">
                         <!-- 动态填充 -->
+                    </div>
+                </div>
+
+                <div class="result-card" id="aiReportCard" style="display: none;">
+                    <h3>🤖 AI分析报告</h3>
+                    <div style="margin-bottom: 15px;">
+                        <button onclick="downloadAIReport()" class="upload-button" style="padding: 8px 16px; font-size: 14px;">
+                            下载报告
+                        </button>
+                    </div>
+                    <div id="aiReportContent" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; max-height: 400px; overflow-y: auto;">
+                        <!-- AI报告内容 -->
                     </div>
                 </div>
             </div>
@@ -623,7 +659,8 @@
             const options = {
                 static_analysis: document.getElementById('staticAnalysis').checked,
                 dynamic_monitoring: document.getElementById('dynamicMonitoring').checked,
-                runtime_analysis: document.getElementById('runtimeAnalysis').checked
+                runtime_analysis: document.getElementById('runtimeAnalysis').checked,
+                enable_web_app_test: document.getElementById('enableWebAppTest').checked
             };
 
             // 先检查API状态
@@ -643,6 +680,7 @@
                 formData.append('static_analysis', options.static_analysis);
                 formData.append('dynamic_monitoring', options.dynamic_monitoring);
                 formData.append('runtime_analysis', options.runtime_analysis);
+                formData.append('enable_web_app_test', options.enable_web_app_test);
 
                 console.log('发送检测请求到:', `${API_BASE_URL}/detect`);
 
@@ -657,12 +695,12 @@
                 if (result.success) {
                     displayResults(result.data);
                 } else {
-                    alert('检测失败: ' + result.error);
+                    showError('检测失败: ' + result.error);
                 }
 
             } catch (error) {
                 console.error('检测失败:', error);
-                alert('检测失败: ' + error.message);
+                showError('检测失败: ' + error.message);
             } finally {
                 hideLoading();
             }
@@ -702,6 +740,20 @@
             }
             document.getElementById('progressFill').style.width = '100%';
             document.getElementById('progressText').textContent = '检测完成！';
+        }
+
+        // 显示错误信息
+        function showError(errorMessage) {
+            hideLoading();
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.innerHTML = `
+                <div class="error-card">
+                    <h3>❌ 检测失败</h3>
+                    <p>${errorMessage}</p>
+                    <button onclick="location.reload()" class="upload-button">重新检测</button>
+                </div>
+            `;
+            resultsSection.classList.add('show');
         }
 
         // 显示检测结果
@@ -753,6 +805,12 @@
             // 显示详细信息
             displayDetails(results);
             document.getElementById('detailsCard').style.display = 'block';
+            
+            // 显示AI报告
+            if (data.ai_report) {
+                displayAIReport(data.ai_report);
+                document.getElementById('aiReportCard').style.display = 'block';
+            }
         }
 
         // 显示问题列表
@@ -761,7 +819,7 @@
             let html = '';
 
             // 静态分析问题
-            const staticIssues = results.static_results.issues || [];
+            const staticIssues = results.static_analysis?.issues || [];
             staticIssues.forEach(issue => {
                 html += `
                     <div class="issue-item">
@@ -775,21 +833,21 @@
             });
 
             // 运行时问题
-            const runtimeIssues = results.runtime_results.analysis?.issues || [];
-            runtimeIssues.forEach(issue => {
+            const runtimeAnalysis = results.runtime_analysis || {};
+            if (runtimeAnalysis.error) {
                 html += `
                     <div class="issue-item">
                         <div>
-                            <strong>运行时问题</strong><br>
-                            <small>${issue.message}</small>
+                            <strong>运行时错误</strong><br>
+                            <small>${runtimeAnalysis.error}</small>
                         </div>
-                        <span class="issue-severity severity-${issue.severity}">${issue.severity}</span>
+                        <span class="issue-severity severity-error">错误</span>
                     </div>
                 `;
-            });
+            }
 
             // 动态监控问题
-            const dynamicAlerts = results.dynamic_results.result?.alerts || [];
+            const dynamicAlerts = results.dynamic_monitoring?.alerts || [];
             dynamicAlerts.forEach(alert => {
                 html += `
                     <div class="issue-item">
@@ -824,44 +882,89 @@
             let html = '';
 
             // 项目信息
-            if (results.project_info) {
-                html += `
-                    <h4>项目信息</h4>
-                    <p><strong>文件数:</strong> ${results.project_info.files?.length || 0}</p>
-                    <p><strong>检测时间:</strong> ${results.timestamp}</p>
-                `;
-            }
+            html += `
+                <h4>项目信息</h4>
+                <p><strong>文件数:</strong> ${results.files?.length || 0}</p>
+                <p><strong>检测时间:</strong> ${results.timestamp}</p>
+                <p><strong>检测类型:</strong> ${results.detection_type}</p>
+            `;
 
             // 静态分析结果
-            if (results.static_results.files_analyzed > 0) {
+            if (results.static_analysis) {
                 html += `
                     <h4>静态分析</h4>
-                    <p><strong>分析文件数:</strong> ${results.static_results.files_analyzed}</p>
-                    <p><strong>发现问题数:</strong> ${results.static_results.issues_found}</p>
+                    <p><strong>分析文件数:</strong> ${results.static_analysis.files_analyzed || 0}</p>
+                    <p><strong>发现问题数:</strong> ${results.static_analysis.issues?.length || 0}</p>
                 `;
             }
 
             // 运行时分析结果
-            if (results.runtime_results.success !== undefined) {
+            if (results.runtime_analysis) {
                 html += `
                     <h4>运行时分析</h4>
-                    <p><strong>运行状态:</strong> ${results.runtime_results.success ? '成功' : '失败'}</p>
+                    <p><strong>主文件:</strong> ${results.runtime_analysis.main_file || 'N/A'}</p>
+                    <p><strong>执行状态:</strong> ${results.runtime_analysis.execution_successful ? '成功' : '失败'}</p>
                 `;
-                if (results.runtime_results.monitor_result) {
-                    html += `<p><strong>执行时间:</strong> ${results.runtime_results.monitor_result.execution_time?.toFixed(2)}秒</p>`;
+                if (results.runtime_analysis.error) {
+                    html += `<p><strong>错误信息:</strong> ${results.runtime_analysis.error}</p>`;
                 }
             }
 
             // 动态监控结果
-            if (results.dynamic_results.result) {
+            if (results.dynamic_monitoring) {
                 html += `
                     <h4>动态监控</h4>
-                    <p><strong>监控指标数:</strong> ${results.dynamic_results.result.total_metrics}</p>
-                    <p><strong>告警数量:</strong> ${results.dynamic_results.result.total_alerts}</p>
+                    <p><strong>监控时长:</strong> ${results.dynamic_monitoring.duration || 0}秒</p>
+                    <p><strong>告警数量:</strong> ${results.dynamic_monitoring.alerts?.length || 0}</p>
                 `;
             }
 
             detailsContent.innerHTML = html;
+        }
+
+        // 显示AI报告
+        function displayAIReport(aiReport) {
+            const aiReportContent = document.getElementById('aiReportContent');
+            const htmlContent = convertMarkdownToHtml(aiReport);
+            aiReportContent.innerHTML = htmlContent;
+        }
+
+        // 转换Markdown为HTML
+        function convertMarkdownToHtml(markdown) {
+            return markdown
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                .replace(/^- (.*$)/gim, '<li>$1</li>')
+                .replace(/^(\d+)\. (.*$)/gim, '<li>$1. $2</li>')
+                .replace(/\n\n/gim, '</p><p>')
+                .replace(/\n/gim, '<br>')
+                .replace(/^(.+)$/gim, '<p>$1</p>')
+                .replace(/<p><\/p>/gim, '')
+                .replace(/<p><li>/gim, '<ul><li>')
+                .replace(/<\/li><\/p>/gim, '</li></ul>')
+                .replace(/✅/gim, '✅')
+                .replace(/⚠️/gim, '⚠️')
+                .replace(/❌/gim, '❌')
+                .replace(/ℹ️/gim, 'ℹ️');
+        }
+
+        // 下载AI报告
+        function downloadAIReport() {
+            const aiReportContent = document.getElementById('aiReportContent');
+            const content = aiReportContent.textContent || aiReportContent.innerText;
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ai_report.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // 获取状态文本
