@@ -818,14 +818,24 @@
             const issuesList = document.getElementById('issuesList');
             let html = '';
 
-            // 静态分析问题
+            // 静态分析问题 - 按严重程度排序显示
             const staticIssues = results.static_analysis?.issues || [];
-            staticIssues.forEach(issue => {
+            
+            // 按严重程度排序：error > warning > info
+            const severityOrder = { 'error': 0, 'warning': 1, 'info': 2 };
+            const sortedIssues = staticIssues.sort((a, b) => {
+                const aOrder = severityOrder[a.severity] ?? 3;
+                const bOrder = severityOrder[b.severity] ?? 3;
+                return aOrder - bOrder;
+            });
+
+            // 显示所有级别的问题，但按严重程度排序
+            sortedIssues.forEach(issue => {
                 html += `
                     <div class="issue-item">
                         <div>
                             <strong>${issue.file || 'N/A'}</strong><br>
-                            <small>${issue.message}</small>
+                            <small>第 ${issue.line || 'N/A'} 行: ${issue.message}</small>
                         </div>
                         <span class="issue-severity severity-${issue.severity}">${issue.severity}</span>
                     </div>
@@ -860,7 +870,7 @@
                 `;
             });
 
-            issuesList.innerHTML = html || '<p>未发现明显问题</p>';
+            issuesList.innerHTML = html || '<p>未发现问题</p>';
         }
 
         // 显示建议

@@ -1212,14 +1212,24 @@
 
     function renderIssues(issues) {
       const issuesList = document.getElementById('issuesList');
-      issuesList.innerHTML = issues.map((issue, index) => `
+      
+      // 按严重程度排序：error > warning > info
+      const severityOrder = { 'error': 0, 'warning': 1, 'info': 2 };
+      const sortedIssues = issues.sort((a, b) => {
+        const aOrder = severityOrder[a.severity] ?? 3;
+        const bOrder = severityOrder[b.severity] ?? 3;
+        return aOrder - bOrder;
+      });
+
+      // 显示所有级别的问题，但按严重程度排序
+      issuesList.innerHTML = sortedIssues.map((issue, index) => `
         <div class="issue-item" onclick="toggleIssue(${index + 1})">
           <div class="issue-header">
             <div class="issue-severity severity-${issue.severity}">
               ${issue.severity.toUpperCase()}
             </div>
             <div style="font-size: 12px; color: #6b7280;">
-              ${issue.file}:${issue.line}
+              第 ${issue.line} 行: ${issue.file}
             </div>
           </div>
           <div class="issue-message">${issue.message || issue.detailed_description || 'No message available'}</div>
