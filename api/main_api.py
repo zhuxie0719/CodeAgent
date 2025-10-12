@@ -140,6 +140,16 @@ async def startup_event():
         import traceback
         traceback.print_exc()
     
+    # 挂载修复执行 API
+    try:
+        import fix_execution_api
+        app.include_router(fix_execution_api.router)
+        print("✅ Fix Execution API 路由已挂载")
+    except Exception as e:
+        print(f"⚠️  挂载 Fix Execution API 失败: {e}")
+        import traceback
+        traceback.print_exc()
+    
     # 打印启动总结
     print("\n" + "="*60)
     print("🎉 系统启动完成！")
