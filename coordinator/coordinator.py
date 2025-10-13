@@ -53,18 +53,26 @@ class Coordinator:
         # 注册协调中心自身以接收 Result/Status/Error 消息
         async def _coordinator_bus_handler(message):
             try:
-                from .message_types import TaskMessage, ResultMessage, StatusMessage, ErrorMessage
+                from .message_types import TaskMessage, ResultMessage, StatusMessage, ErrorMessage, EventMessage
                 if isinstance(message, ResultMessage):
                     await self._handle_agent_result(message.source_agent, message)
                 elif isinstance(message, StatusMessage):
                     await self._handle_agent_status(message.source_agent, message)
                 elif isinstance(message, ErrorMessage):
                     await self._handle_agent_error(message.source_agent, message)
+                elif isinstance(message, EventMessage):
+                    # 处理事件消息
+                    if message.event_type.value == "task_completed":
+                        await self._handle_task_completed(message.payload)
+                    elif message.event_type.value == "task_failed":
+                        await self._handle_task_failed(message.payload)
                 elif isinstance(message, TaskMessage):
                     # 协调中心不直接处理 TaskMessage
                     self.logger.debug("Coordinator 收到 TaskMessage，忽略")
             except Exception as e:
                 self.logger.error(f"协调中心消息处理失败: {e}")
+                import traceback
+                self.logger.error(f"错误详情: {traceback.format_exc()}")
         await self.event_bus.subscribe("agent_message", "coordinator", _coordinator_bus_handler)
         
         self.logger.info("协调中心已启动")
@@ -203,6 +211,13 @@ class Coordinator:
         result = message.result
         success = message.status.value == "completed"
         
+        print(f"\n{'='*60}")
+        print(f"📨 Coordinator收到Agent结果消息")
+        print(f"Agent: {agent_id}")
+        print(f"Task ID: {task_id}")
+        print(f"Status: {'成功' if success else '失败'}")
+        print(f"{'='*60}\n")
+        
         # 更新任务结果
         await self.task_manager.update_task_result(task_id, result, success)
         
@@ -240,11 +255,19 @@ class Coordinator:
         agent_id = event_data.get("agent_id")
         result = event_data.get("result")
         
+        print(f"\n{'='*60}")
+        print(f"✅ 任务完成事件触发")
+        print(f"Task ID: {task_id}")
+        print(f"Agent: {agent_id}")
+        print(f"Result keys: {list(result.keys()) if result else 'None'}")
+        print(f"{'='*60}\n")
+        
         self.logger.info(f"任务完成: {task_id} by {agent_id}")
         
         # 根据任务类型进行后续处理
         task = self.task_manager.tasks.get(task_id)
         if task:
+            print(f"🔄 开始处理任务完成后续逻辑，任务类型: {task['type']}")
             await self._process_task_completion(task, result)
     
     async def _handle_task_failed(self, event_data):
@@ -274,8 +297,14 @@ class Coordinator:
     async def _process_detection_completion(self, task, result):
         """处理缺陷检测完成（透传 file_path / project_path）"""
         issues = result.get('detection_results', {}).get('issues', [])
+        
+        print(f"\n{'='*60}")
+        print(f"🔍 缺陷检测完成，开始处理")
+        print(f"发现 {len(issues)} 个缺陷")
+        print(f"{'='*60}\n")
 
         if issues:
+            print(f"🧠 使用决策引擎分析缺陷...")
             # 使用决策引擎分析缺陷
             decisions = await self.decision_engine.analyze_complexity(issues)
 
@@ -289,9 +318,11 @@ class Coordinator:
             if 'file_path' in task['data'] and task['data']['file_path']:
                 payload['file_path'] = task['data']['file_path']
 
+            print(f"🔧 创建修复任务...")
             # 创建修复任务
             fix_task_id = await self.create_task('fix_issues', payload, TaskPriority.HIGH)
 
+            print(f"📤 分配修复任务给 fix_execution_agent (task_id: {fix_task_id})")
             # 分配给修复执行Agent
             await self.assign_task(fix_task_id, 'fix_execution_agent')
         else:

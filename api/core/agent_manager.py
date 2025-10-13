@@ -13,6 +13,7 @@ from agents.bug_detection_agent.agent import BugDetectionAgent
 from agents.fix_execution_agent.agent import FixExecutionAgent
 from agents.code_analysis_agent.agent import CodeAnalysisAgent
 from agents.code_quality_agent.agent import CodeQualityAgent
+from agents.test_validation_agent.agent import TestValidationAgent
 
 
 class AgentManager:
@@ -29,6 +30,7 @@ class AgentManager:
         agent_configs = [
             ("bug_detection_agent", BugDetectionAgent, "📦", "缺陷检测"),
             ("fix_execution_agent", FixExecutionAgent, "🔧", "自动修复"),
+            ("test_validation_agent", TestValidationAgent, "🧪", "测试验证"),
             ("code_analysis_agent", CodeAnalysisAgent, "📊", "代码分析"),
             ("code_quality_agent", CodeQualityAgent, "⭐", "代码质量"),
         ]

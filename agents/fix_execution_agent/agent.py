@@ -12,7 +12,7 @@ class FixExecutionAgent(BaseAgent):
 
     def __init__(self, agent_id: str = "fix_execution_agent", config: Optional[Dict[str, Any]] = None):
         super().__init__(agent_id, config or {})
-        # API key硬编码
+         # API key硬编码
         self.llm = LLMFixer(
             api_key="sk-75db9bf464d44ee78b5d45a655431710",
             model=self.config.get("LLM_MODEL", "deepseek-coder"),
@@ -26,9 +26,31 @@ class FixExecutionAgent(BaseAgent):
         return ["llm_multi_issue_fix", "write_before_after_files"]
 
     async def process_task(self, task_id: str, task_data: Dict[str, Any]) -> Dict[str, Any]:
-        # 期望 task_data: { 'file_path': <path>, 'issues': <list from bug_format.json> }
-        base_file_path = task_data.get("file_path", "")
+        # 支持两种数据格式：
+        # 1. 旧格式: { 'file_path': <path>, 'issues': <list> }
+        # 2. 新格式: { 'project_path': <path>, 'issues': <list>, 'decisions': <dict> }
+        base_file_path = task_data.get("file_path") or task_data.get("project_path", "")
         issues: List[Dict[str, Any]] = task_data.get("issues", []) or []
+        
+        # 添加调试日志
+        self.logger.info(f"🔧 修复Agent接收任务数据:")
+        self.logger.info(f"   文件路径: {base_file_path}")
+        self.logger.info(f"   问题数量: {len(issues)}")
+        self.logger.info(f"   任务数据键: {list(task_data.keys())}")
+        
+        if not base_file_path:
+            return {
+                "success": False,
+                "task_id": task_id,
+                "fix_results": [],
+                "total_issues": 0,
+                "fixed_issues": 0,
+                "failed_issues": 0,
+                "skipped_issues": 0,
+                "errors": ["未提供文件路径"],
+                "timestamp": asyncio.get_event_loop().time(),
+                "message": "修复失败：未提供文件路径"
+            }
 
         # 输出文件夹
         output_dir = os.path.join(os.path.dirname(base_file_path), "output")
@@ -37,27 +59,47 @@ class FixExecutionAgent(BaseAgent):
         # 将问题按文件聚合
         issues_by_file: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
         for issue in issues:
-            file_name = issue.get("file_path") or issue.get("file") or os.path.basename(base_file_path)
+            # 获取问题所在的文件路径
+            issue_file_path = issue.get("file_path") or issue.get("file")
+            
+            if issue_file_path:
+                # 如果是绝对路径，直接使用
+                if os.path.isabs(issue_file_path):
+                    file_name = issue_file_path
+                else:
+                    # 如果是相对路径，相对于base_file_path所在目录
+                    abs_dir = os.path.dirname(base_file_path)
+                    file_name = os.path.join(abs_dir, issue_file_path)
+            else:
+                # 如果没有文件路径信息，使用base_file_path
+                file_name = base_file_path
+            
+            # 修复路径重复问题：如果file_name已经包含base_file_path，直接使用
+            if base_file_path in file_name and file_name != base_file_path:
+                file_name = base_file_path
+                
             issues_by_file[file_name].append(issue)
 
         fix_results: List[Dict[str, Any]] = []
         errors: List[str] = []
 
+        self.logger.info(f"🔧 开始处理修复，文件数量: {len(issues_by_file)}")
         for file_key, file_issues in issues_by_file.items():
+            self.logger.info(f"🔧 处理文件: {file_key}, 问题数量: {len(file_issues)}")
             try:
-                # 解析真实路径（如果 file_key 是相对名，则相对于 base_file_path 所在目录）
-                if os.path.isabs(file_key):
-                    abs_path = file_key
-                else:
-                    abs_dir = os.path.dirname(base_file_path)
-                    abs_path = os.path.join(abs_dir, file_key)
+                # file_key 已经是完整的文件路径
+                abs_path = file_key
+                self.logger.info(f"🔧 检查文件是否存在: {abs_path}")
 
                 if not os.path.exists(abs_path):
+                    self.logger.error(f"❌ 文件未找到: {abs_path}")
                     errors.append(f"文件未找到: {abs_path}")
                     continue
 
+                self.logger.info(f"🔧 读取文件内容: {abs_path}")
                 with open(abs_path, "r", encoding="utf-8") as f:
                     before_code = f.read()
+                self.logger.info(f"🔧 文件内容长度: {len(before_code)}")
 
                 language = (file_key.split(".")[-1] or "text").lower()
 
@@ -92,12 +134,35 @@ class FixExecutionAgent(BaseAgent):
                 print(f"[LLM Prompt] 写入: {prompt_out}")
 
                 # 调用LLM
-                after_code = self.llm.fix_code_multi(before_code, language, file_issues)
+                try:
+                    self.logger.info(f"🤖 开始修复文件: {abs_path}")
+                    self.logger.info(f"🤖 修复前代码长度: {len(before_code)}")
+                    self.logger.info(f"🤖 问题数量: {len(file_issues)}")
+                    
+                    # 使用LLM修复
+                    after_code = self.llm.fix_code_multi(before_code, language, file_issues)
+                    self.logger.info(f"🤖 LLM修复完成，代码长度: {len(after_code)}")
+                    
+                    self.logger.info(f"✅ 修复完成，生成代码长度: {len(after_code)}")
+                except Exception as e:
+                    self.logger.error(f"❌ 修复失败: {e}")
+                    import traceback
+                    self.logger.error(f"❌ 错误详情: {traceback.format_exc()}")
+                    errors.append(f"修复失败: {e}")
+                    continue
 
                 # 输出文件路径
                 base, ext = os.path.splitext(os.path.basename(abs_path))
                 before_out = os.path.join(output_dir, f"{base}_before{ext}")
                 after_out = os.path.join(output_dir, f"{base}_after{ext}")
+
+                # 输出完整路径到终端
+                print(f"\n{'='*60}")
+                print(f"📁 生成修复文件:")
+                print(f"   原始文件: {os.path.abspath(before_out)}")
+                print(f"   修复文件: {os.path.abspath(after_out)}")
+                print(f"   提示文件: {os.path.abspath(prompt_out)}")
+                print(f"{'='*60}\n")
 
                 # 写出 before/after 文件
                 with open(before_out, "w", encoding="utf-8") as bf:
@@ -129,5 +194,6 @@ class FixExecutionAgent(BaseAgent):
             "timestamp": asyncio.get_event_loop().time(),
             "message": "LLM multi-issue fix completed" if not errors else "LLM multi-issue fix completed with errors",
         }
+    
 
 
