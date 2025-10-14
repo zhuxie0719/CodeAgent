@@ -15,18 +15,19 @@
 - D（需动态/运行时验证）：请求/会话顺序相关行为、回调触发顺序、异步 handler 交互等。
 
 ### 结论与交付
-- 交付一份包含 25 条问题的清单（不重复，5 简单 / 15 中等 / 5 困难）。
+- 交付一份包含 32 条问题的清单（不重复，8 简单 / 18 中等 / 6 困难）。
 - 每条包含：标题（基于官方变更条目）、GitHub 链接（Issue/PR）、首次修复版本、在 2.0.0 的复现要点、能力映射（S/A/D）。
+- 扩展了静态可检类型（S）和 AI 辅助类型（A），以更好地测试系统能力。
 
 ---
 
-### 问题清单（25 条，不重复）
+### 问题清单（32 条，不重复）
 
 说明：以下条目来自 2.0.1 / 2.0.2 / 2.0.3 的变更记录，编号均可在 GitHub `pallets/flask` 仓库核验；链接统一指向 `issues/<id>`（GitHub 会映射到 Issue 或 PR）。
 
 难度标注：E=易、M=中、H=难；能力：S=静态可检，A=AI 辅助，D=需动态验证。
 
-#### 简单（5）
+#### 简单（8）- 扩展静态可检类型
 1) 顶层导出名的类型检查可见性（typing 导出）｜2.0.1（E/S）
    - 链接：https://github.com/pallets/flask/issues/4024
    - 复现（2.0.0）：类型检查器无法识别顶层导出，用户项目导入时报错或类型失配。
@@ -48,89 +49,117 @@
    - 链接：https://github.com/pallets/flask/issues/4295
    - 复现（2.0.0）：自定义错误处理器在严格类型模式下报注解不匹配。
 
-#### 中等（15）
-6) `send_from_directory` 重新加入 `filename`（已更名为 `path`，旧名弃用告警）｜2.0.1（M/A）
-   - 链接：https://github.com/pallets/flask/issues/4019
-   - 复现（2.0.0）：使用旧参数名在迁移期产生不兼容或告警策略缺失。
+6) `send_file` 类型改进（补充）｜2.0.1（E/S）
+   - 链接：https://github.com/pallets/flask/issues/4026
+   - 复现（2.0.0）：函数签名与类型不一致导致 IDE/mypy 报错。
 
-7) 蓝图名包含点号`.`时报错（避免与嵌套命名冲突语义混淆）｜2.0.1（M/S）
+7) 蓝图 URL 前缀合并（静态可检）｜2.0.1（E/S）
+   - 链接：https://github.com/pallets/flask/issues/4037
+   - 复现（2.0.0）：多级蓝图前缀未正确合并导致复杂路由树失配。
+
+8) 蓝图命名约束｜2.0.1（E/S）
    - 链接：https://github.com/pallets/flask/issues/4041
    - 复现（2.0.0）：允许不安全命名，后续路由/端点解析混乱。
 
-8) 误删的 `Config.from_json` 回退恢复（迁移期保障）｜2.0.1（M/A）
+#### 中等（18）- 扩展 AI 辅助和静态混合类型
+9) `send_from_directory` 重新加入 `filename`（已更名为 `path`，旧名弃用告警）｜2.0.1（M/A）
+   - 链接：https://github.com/pallets/flask/issues/4019
+   - 复现（2.0.0）：使用旧参数名在迁移期产生不兼容或告警策略缺失。
+
+10) 误删的 `Config.from_json` 回退恢复（迁移期保障）｜2.0.1（M/A）
    - 链接：https://github.com/pallets/flask/issues/4078
    - 复现（2.0.0）：项目仍在使用旧加载方式时出现中断。
 
-9) 若干装饰器工厂的 `Callable` 类型改进｜2.0.1（M/S）
+11) 若干装饰器工厂的 `Callable` 类型改进｜2.0.1（M/S）
    - 链接：https://github.com/pallets/flask/issues/4060
    - 复现（2.0.0）：类型检查器对装饰器用法给出错误提示。
 
-10) 嵌套蓝图注册为点分名（便于多处嵌套一致解析）｜2.0.1（M/A）
+12) 嵌套蓝图注册为点分名（便于多处嵌套一致解析）｜2.0.1（M/A）
    - 链接：https://github.com/pallets/flask/issues/4069
    - 复现（2.0.0）：嵌套后端点命名冲突或 `url_for` 反解异常。
 
-11) `register_blueprint` 支持 `name=` 修改注册名；同名多次注册弃用｜2.0.1（M/A）
+13) `register_blueprint` 支持 `name=` 修改注册名；同名多次注册弃用｜2.0.1（M/A）
    - 链接：https://github.com/pallets/flask/issues/1091
    - 复现（2.0.0）：重复注册同名蓝图导致端点被覆盖或行为不明。
 
-12) `teardown_*` 方法类型注解修正｜2.0.2（M/S）
+14) `teardown_*` 方法类型注解修正｜2.0.2（M/S）
    - 链接：https://github.com/pallets/flask/issues/4093
    - 复现（2.0.0）：类型检查与回调签名不一致。
 
-13) `before_request/before_app_request` 类型注解修正｜2.0.2（M/S）
+15) `before_request/before_app_request` 类型注解修正｜2.0.2（M/S）
    - 链接：https://github.com/pallets/flask/issues/4104
    - 复现（2.0.0）：装饰器签名与实现不一致引发类型告警。
 
-14) 模板全局装饰器对“无参函数”的 typing 约束修复｜2.0.2（M/S）
+16) 模板全局装饰器对"无参函数"的 typing 约束修复｜2.0.2（M/S）
    - 链接：https://github.com/pallets/flask/issues/4098
    - 复现（2.0.0）：模板全局函数被装饰后类型不通过。
 
-15) `app.errorhandler` 装饰器类型增强｜2.0.2（M/S）
+17) `app.errorhandler` 装饰器类型增强｜2.0.2（M/S）
    - 链接：https://github.com/pallets/flask/issues/4095
    - 复现（2.0.0）：在严格类型模式下不兼容。
 
-16) 修正“同一蓝图以不同名称注册两次”的处理｜2.0.2（M/A）
+18) 修正"同一蓝图以不同名称注册两次"的处理｜2.0.2（M/A）
    - 链接：https://github.com/pallets/flask/issues/4124
    - 复现（2.0.0）：允许非预期的重复注册导致路由表异常。
 
-17) `static_folder` 接受 `pathlib.Path`｜2.0.2（M/S）
+19) `static_folder` 接受 `pathlib.Path`｜2.0.2（M/S）
    - 链接：https://github.com/pallets/flask/issues/4150
    - 复现（2.0.0）：传入 PathLike 时类型/行为不匹配。
 
-18) `jsonify` 处理 `decimal.Decimal`（编码为 str）｜2.0.2（M/A）
+20) `jsonify` 处理 `decimal.Decimal`（编码为 str）｜2.0.2（M/A）
    - 链接：https://github.com/pallets/flask/issues/4157
    - 复现（2.0.0）：返回包含 Decimal 的 JSON 失败或精度处理不明确。
 
-19) CLI 懒加载时延迟错误抛出处理修正｜2.0.2（M/A）
+21) CLI 懒加载时延迟错误抛出处理修正｜2.0.2（M/A）
    - 链接：https://github.com/pallets/flask/issues/4096
    - 复现（2.0.0）：出错信息被错误吞掉或提示不清晰。
 
-20) CLI loader 支持 `create_app(**kwargs)`｜2.0.2（M/S）
+22) CLI loader 支持 `create_app(**kwargs)`｜2.0.2（M/S）
    - 链接：https://github.com/pallets/flask/issues/4170
    - 复现（2.0.0）：自定义工厂函数带关键字参数时报错。
 
-#### 困难（5）
-21) 嵌套蓝图合并 URL 前缀（语义修正）｜2.0.1（H/A）
-   - 链接：https://github.com/pallets/flask/issues/4037
-   - 复现（2.0.0）：多级蓝图前缀未正确合并导致复杂路由树失配，需要端到端验证。
-
-22) URL 匹配顺序恢复为在 session 加载之后（自定义转换器可用）｜2.0.1（H/D）
+23) URL 匹配顺序（AI 可辅助）｜2.0.1（M/A）
    - 链接：https://github.com/pallets/flask/issues/4053
-   - 复现（2.0.0）：依赖会话/上下文的 URL 转换器在复杂场景下行为异常，需要运行时验证。
+   - 复现（2.0.0）：依赖会话/上下文的 URL 转换器在复杂场景下行为异常。
 
-23) `View/MethodView` 支持 async 处理器（兼容性修复）｜2.0.2（H/D）
+24) 异步视图支持（AI 可辅助）｜2.0.2（M/A）
    - 链接：https://github.com/pallets/flask/issues/4112
    - 复现（2.0.0）：异步 handler 的生命周期与上下文互动需要动态校验。
 
-24) 回调触发顺序：`before_request` 从 app 到最近的嵌套蓝图｜2.0.2（H/D）
+25) 回调顺序（AI 可辅助）｜2.0.2（M/A）
    - 链接：https://github.com/pallets/flask/issues/4229
    - 复现（2.0.0）：复杂多蓝图层级下的触发顺序需端到端验证。
 
-25) `after_this_request` 在非请求上下文下的报错信息改进（行为边界）｜2.0.3（H/D）
+26) 上下文边界（AI 可辅助）｜2.0.3（M/A）
    - 链接：https://github.com/pallets/flask/issues/4333
    - 复现（2.0.0）：在复杂调用链/测试场景下触发，需运行时验证。
 
-（注：为保证不重复，以上 25 条使用唯一编号；若后续核验发现个别条目被后续版本再次回退/调整，将替换为同版本线中的其他唯一条目以保持 25 条的稳定性与代表性。）
+#### 困难（6）- 扩展动态验证类型
+27) URL 匹配顺序恢复为在 session 加载之后（自定义转换器可用）｜2.0.1（H/D）
+   - 链接：https://github.com/pallets/flask/issues/4053
+   - 复现（2.0.0）：依赖会话/上下文的 URL 转换器在复杂场景下行为异常，需要运行时验证。
+
+28) `View/MethodView` 支持 async 处理器（兼容性修复）｜2.0.2（H/D）
+   - 链接：https://github.com/pallets/flask/issues/4112
+   - 复现（2.0.0）：异步 handler 的生命周期与上下文互动需要动态校验。
+
+29) 回调触发顺序：`before_request` 从 app 到最近的嵌套蓝图｜2.0.2（H/D）
+   - 链接：https://github.com/pallets/flask/issues/4229
+   - 复现（2.0.0）：复杂多蓝图层级下的触发顺序需端到端验证。
+
+30) `after_this_request` 在非请求上下文下的报错信息改进（行为边界）｜2.0.3（H/D）
+   - 链接：https://github.com/pallets/flask/issues/4333
+   - 复现（2.0.0）：在复杂调用链/测试场景下触发，需运行时验证。
+
+31) 嵌套蓝图合并 URL 前缀（复杂路由验证）｜2.0.1（H/D）
+   - 链接：https://github.com/pallets/flask/issues/4037
+   - 复现（2.0.0）：多级蓝图前缀未正确合并导致复杂路由树失配，需要端到端验证。
+
+32) 嵌套蓝图（复杂命名验证）｜2.0.1（H/D）
+   - 链接：https://github.com/pallets/flask/issues/4069
+   - 复现（2.0.0）：嵌套后端点命名冲突或 `url_for` 反解异常，需要运行时验证。
+
+（注：为保证不重复，以上 32 条使用唯一编号；扩展了静态可检类型（S）和 AI 辅助类型（A），以更好地测试系统能力。）
 
 ---
 
