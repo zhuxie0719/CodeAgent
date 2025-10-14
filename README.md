@@ -435,6 +435,47 @@ python extended_bugs.py
 python compare_pandas_bugs.py
 ```
 
+### 🧪 Flask 2.0.0 测试对比（compare_flask_bugs.py）
+
+为与 Pandas 的 compare 脚本一致体验，项目提供了 Flask 版本的评测脚本：`project/CodeAgent/tools/compare_flask_bugs.py`。
+
+- **金标（ground truth）**：已内置 25 条 Flask 2.0.0 → 2.0.1/2.0.2/2.0.3 修复项（不依赖外部文档）。
+- **输入（Agent 输出 JSON）**：前端/后端在对上传的 Flask 源码包分析后，输出一个 JSON 列表，每项至少包含可识别的 issue 标识之一：`issue_id` / `id` / `url`。
+- **指标**：Precision / Recall / F1，缺失/多报列表；并提供按难度（simple/medium/hard）与能力（S/A/D）的分项统计。
+
+示例 JSON（任意一种字段均可）：
+```json
+[
+  {"issue_id": "flask#4037", "capability": "A", "fixed_version": "2.0.1"},
+  {"issue_id": "https://github.com/pallets/flask/issues/4053", "capability": "D"},
+  {"id": 4095, "cap": "S"}
+]
+```
+
+运行命令（Windows / Linux 通用，路径按需调整）：
+```bash
+# 方式一：无需参数，自动在常见目录中选取最近的 JSON（按修改时间）
+python project/CodeAgent/tools/compare_flask_bugs.py
+
+# 方式二：显式指定 Agent 输出 JSON 和摘要输出位置
+python project/CodeAgent/tools/compare_flask_bugs.py \
+  --agent-json path/to/agent_output.json \
+  --output-json path/to/summary.json
+```
+
+输出包含：
+- Overall: precision/recall/f1、tp/fp/fn
+- By difficulty: simple/medium/hard
+- By capability: S/A/D
+- Missing / Extra: 未检出与多报的 issue 列表
+
+默认自动发现的搜索目录（按优先级）：
+- `project/CodeAgent/api/reports`
+- `api/reports`
+- `project/CodeAgent/frontend/uploads`
+
+备注：如需自定义金标来源，后续可扩展 `--gold-md` 支持；当前版本默认使用内置集合，便于前端直接对接与联调。
+
 ---
 
 ### 📖 系统文档
