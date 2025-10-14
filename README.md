@@ -435,12 +435,73 @@ python extended_bugs.py
 python compare_pandas_bugs.py
 ```
 
+### 🧪 Flask 2.0.0 测试对比（compare_flask_bugs.py）
+
+项目提供了 Flask 版本的评测脚本：`project/CodeAgent/compare_flask_bugs.py`。
+
+#### 金标数据
+
+- **内置 32 条 Flask 2.0.x 修复的 Issue**，涵盖：
+  - **简单问题（8条）**：静态可检类型（S）- 类型注解、API参数等
+  - **中等问题（18条）**：AI辅助类型（A）- 蓝图路由、JSON行为等  
+  - **困难问题（6条）**：动态验证类型（D）- 异步上下文、运行时验证等
+
+#### 子域分类系统
+
+脚本将检测结果自动分类到以下子域：
+- `typing_decorators`：类型注解和装饰器问题
+- `blueprint_routing`：蓝图路由相关问题
+- `helpers_send_file`：文件发送API问题
+- `cli_loader`：CLI加载器问题
+- `json_behavior`：JSON行为问题
+- `static_pathlike`：路径类型问题
+- `blueprint_naming`：蓝图命名问题
+- `blueprint_registration`：蓝图注册问题
+- `async_ctx_order`：异步上下文和顺序问题
+
+#### 使用方法
+
+```bash
+# 自动检测最新报告（推荐）
+python compare_flask_bugs.py
+
+# 指定报告文件
+python compare_flask_bugs.py --agent-json path/to/report.json
+```
+
+#### 输出格式（与 Pandas 完全一致）
+
+脚本生成三段式输出格式：
+
+1. **已知Issue vs 系统检测对比**：按子域分类显示检测结果
+2. **总体检测率和预期检测率**：显示检测率统计
+3. **系统能力评估与改进建议**：评估静态分析、AI分析、动态分析能力
+
+#### 评估标准
+
+- **总体检测率**：基于所有已知Issue的检测率
+- **预期检测率**：基于可检测Issue的检测率（排除需要运行时验证的问题）
+- **能力评估**：分别评估静态分析、AI分析、动态分析能力
+
+#### 自动发现机制
+
+默认自动搜索目录（按优先级）：
+- `api/reports`
+- `project/CodeAgent/api/reports`  
+- `project/CodeAgent/frontend/uploads`
+
+#### 详细说明
+
+更多关于脚本映射实现、子域分类逻辑等技术细节，请参考：[Flask脚本映射实现指南](docs/Flask脚本映射实现指南.md)
+
 ---
 
 ### 📖 系统文档
 - [API接口文档](API_DOCUMENTATION.md) - 详细的API使用说明
 - [DeepSeek API指南](DEEPSEEK_API_GUIDE.md) - AI分析功能配置指南
 - [Agent架构文档](AGENT_DOCUMENTATION.md) - 系统架构和Agent设计
+- [Flask脚本映射实现指南](docs/Flask脚本映射实现指南.md) - Flask测试脚本技术实现详解
+- [Flask版本选择与Issue策略](docs/Flask版本选择与Issue策略.md) - Flask测试项目选择策略
 
 ## 🔮 未来扩展
 
