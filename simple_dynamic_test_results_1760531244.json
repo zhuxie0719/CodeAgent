@@ -1,0 +1,41 @@
+{
+  "test_type": "simple_dynamic_test",
+  "timestamp": "2025-10-15 20:27:23",
+  "tests": {
+    "python_environment": {
+      "status": "success",
+      "python_version": "3.12.0",
+      "platform": "Windows",
+      "architecture": "64bit",
+      "executable": "C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    "flask_import": {
+      "status": "failed",
+      "error": "Flask未安装: cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+    },
+    "basic_flask": {
+      "status": "failed",
+      "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+    },
+    "project_files": {
+      "status": "success",
+      "project_files": [
+        "dynamic_test_runner.py",
+        "flask_app.py",
+        "run_tests.py",
+        "simple_dynamic_test.py",
+        "test_flask_simple.py",
+        "README.md"
+      ],
+      "file_count": 6,
+      "current_directory": "C:\\Users\\Ding\\Desktop\\软件体系\\codeagent\\CodeAgent\\flask_simple_test"
+    }
+  },
+  "summary": {
+    "total_tests": 4,
+    "successful_tests": 2,
+    "failed_tests": 2,
+    "success_rate": 50.0,
+    "overall_status": "failed"
+  }
+}

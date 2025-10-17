@@ -1,0 +1,244 @@
+{
+  "test_type": "no_flask_dynamic_test",
+  "timestamp": "2025-10-15 20:57:37",
+  "tests": {
+    "python_environment": {
+      "status": "success",
+      "python_version": "3.12.0",
+      "platform": "Windows",
+      "architecture": "64bit",
+      "executable": "C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "path": [
+        "C:\\Users\\Ding\\Desktop\\软件体系\\codeagent\\CodeAgent\\flask_simple_test",
+        "C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\python312.zip",
+        "C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\DLLs"
+      ]
+    },
+    "syntax_check": {
+      "status": "success",
+      "total_files": 6,
+      "valid_files": 6,
+      "syntax_errors": [],
+      "error_count": 0
+    },
+    "import_check": {
+      "status": "partial",
+      "total_imports": 75,
+      "successful_imports": 56,
+      "import_issues": [
+        {
+          "file": "dynamic_test_runner.py",
+          "import": "flask",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "import": "flask.Flask",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "import": "flask.request",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "import": "flask.jsonify",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "import": "flask.Blueprint",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "import": "flask.g",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "import": "flask.abort",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "flask_app.py",
+          "import": "flask.Flask",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "flask_app.py",
+          "import": "flask.jsonify",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "run_tests.py",
+          "import": "dynamic_test_runner.FlaskDynamicTestRunner",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "simple_dynamic_test.py",
+          "import": "flask",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "simple_dynamic_test.py",
+          "import": "flask.Flask",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "test_flask_simple.py",
+          "import": "flask",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "test_flask_simple.py",
+          "import": "flask.Flask",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "test_flask_simple.py",
+          "import": "flask.request",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "test_flask_simple.py",
+          "import": "flask.jsonify",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "test_flask_simple.py",
+          "import": "flask.render_template_string",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "test_flask_simple.py",
+          "import": "flask.Blueprint",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        },
+        {
+          "file": "test_flask_simple.py",
+          "import": "flask.g",
+          "error": "cannot import name 'url_quote' from 'werkzeug.urls' (C:\\Users\\Ding\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\urls.py)"
+        }
+      ],
+      "issue_count": 19
+    },
+    "project_structure": {
+      "status": "success",
+      "total_files": 2126,
+      "total_directories": 131,
+      "python_files": 230,
+      "total_lines": 53753,
+      "average_file_size": 34895.95,
+      "project_scale": "large"
+    },
+    "code_quality": {
+      "status": "partial",
+      "total_functions": 101,
+      "total_classes": 4,
+      "quality_issues": [
+        {
+          "file": "dynamic_test_runner.py",
+          "type": "long_class",
+          "class": "FlaskDynamicTestRunner",
+          "line": 19,
+          "length": 581
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "type": "long_function",
+          "function": "run_dynamic_tests",
+          "line": 27,
+          "length": 58
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "type": "long_function",
+          "function": "_test_basic_app_creation",
+          "line": 87,
+          "length": 57
+        },
+        {
+          "file": "dynamic_test_runner.py",
+          "type": "long_function",
+          "function": "_test_error_handling",
+          "line": 347,
+          "length": 59
+        },
+        {
+          "file": "no_flask_dynamic_test.py",
+          "type": "long_class",
+          "class": "NoFlaskDynamicTest",
+          "line": 15,
+          "length": 414
+        },
+        {
+          "file": "no_flask_dynamic_test.py",
+          "type": "long_function",
+          "function": "_test_syntax_check",
+          "line": 93,
+          "length": 51
+        },
+        {
+          "file": "no_flask_dynamic_test.py",
+          "type": "long_function",
+          "function": "_test_import_check",
+          "line": 146,
+          "length": 71
+        },
+        {
+          "file": "no_flask_dynamic_test.py",
+          "type": "long_function",
+          "function": "_test_project_structure",
+          "line": 219,
+          "length": 66
+        },
+        {
+          "file": "no_flask_dynamic_test.py",
+          "type": "long_function",
+          "function": "_test_code_quality",
+          "line": 287,
+          "length": 94
+        },
+        {
+          "file": "no_flask_dynamic_test.py",
+          "type": "high_complexity",
+          "line": 0,
+          "max_depth": 7
+        },
+        {
+          "file": "simple_dynamic_test.py",
+          "type": "long_class",
+          "class": "SimpleDynamicTest",
+          "line": 13,
+          "length": 224
+        },
+        {
+          "file": "test_flask_simple.py",
+          "type": "long_function",
+          "function": "test_a_class_issues",
+          "line": 80,
+          "length": 134
+        },
+        {
+          "file": "test_flask_simple.py",
+          "type": "long_function",
+          "function": "test_d_class_issues",
+          "line": 218,
+          "length": 167
+        }
+      ],
+      "issue_count": 13,
+      "code_quality_score": 0
+    }
+  },
+  "summary": {
+    "total_tests": 5,
+    "successful_tests": 3,
+    "failed_tests": 0,
+    "partial_tests": 2,
+    "success_rate": 60.0,
+    "overall_status": "success"
+  }
+}
