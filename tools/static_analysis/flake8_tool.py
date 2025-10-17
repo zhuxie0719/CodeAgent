@@ -17,6 +17,14 @@ class Flake8Tool:
     async def analyze(self, file_path: str) -> Dict[str, Any]:
         """执行Flake8分析"""
         try:
+            # 检查文件是否存在
+            if not os.path.exists(file_path):
+                return {
+                    'success': False,
+                    'error': f'文件不存在: {file_path}',
+                    'issues': []
+                }
+            
             cmd = ['python', '-m', 'flake8', file_path] + self.flake8_args
             
             # 设置环境变量避免pager问题
@@ -25,6 +33,8 @@ class Flake8Tool:
             env['LESS'] = ''
             env['PYTHONUNBUFFERED'] = '1'
             env['TERM'] = 'dumb'
+            
+            print(f"执行Flake8命令: {' '.join(cmd)}")  # 调试信息
             
             result = subprocess.run(
                 cmd,
@@ -35,6 +45,10 @@ class Flake8Tool:
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0,
                 stdin=subprocess.DEVNULL
             )
+            
+            print(f"Flake8返回码: {result.returncode}")  # 调试信息
+            print(f"Flake8 stdout: {result.stdout[:200]}...")  # 调试信息
+            print(f"Flake8 stderr: {result.stderr[:200]}...")  # 调试信息
             
             issues = []
             for line in result.stdout.split('\n'):

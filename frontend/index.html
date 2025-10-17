@@ -261,6 +261,36 @@
             font-size: 0.9em;
         }
 
+        .directory-selector {
+            text-align: center;
+        }
+
+        .directory-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .directory-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .directory-hint {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
         .options-section {
             margin-bottom: 20px;
             background: #fff;
@@ -706,11 +736,20 @@
                 
                 <div class="file-input-wrapper">
                     <input type="file" id="fileInput" class="file-input" accept=".py,.java,.c,.cpp,.h,.hpp,.js,.ts,.go,.zip,.tar,.tar.gz" multiple>
+                    <input type="file" id="directoryInput" class="file-input" webkitdirectory style="display: none;">
                     <label for="fileInput" class="file-input-label">
                         <div class="upload-icon">📁</div>
                         <div class="upload-text" id="uploadText">点击选择代码文件或拖拽文件到此处</div>
                         <div class="upload-hint" id="uploadHint">支持多种编程语言文件，最大100MB</div>
                     </label>
+                </div>
+                
+                <!-- 目录选择按钮 -->
+                <div class="directory-selector" id="directorySelector" style="display: none; margin-top: 15px;">
+                    <button type="button" id="selectDirectoryBtn" class="directory-btn">
+                        <i class="fas fa-folder-open"></i> 选择项目目录
+                    </button>
+                    <div class="directory-hint">或者选择整个项目目录进行批量分析</div>
                 </div>
 
                 <!-- 分析类型选择 -->
@@ -810,6 +849,9 @@
 
         // DOM元素
         const fileInput = document.getElementById('fileInput');
+        const directoryInput = document.getElementById('directoryInput');
+        const selectDirectoryBtn = document.getElementById('selectDirectoryBtn');
+        const directorySelector = document.getElementById('directorySelector');
         const uploadButton = document.getElementById('uploadButton');
         const uploadSection = document.getElementById('uploadSection');
         const loading = document.getElementById('loading');
@@ -862,6 +904,12 @@
         // 文件选择处理
         fileInput.addEventListener('change', updateFileDisplay);
         
+        // 目录选择处理
+        directoryInput.addEventListener('change', updateDirectoryDisplay);
+        selectDirectoryBtn.addEventListener('click', () => {
+            directoryInput.click();
+        });
+        
         // 分析类型切换处理
         const analysisTypeRadios = document.querySelectorAll('input[name="analysisType"]');
         analysisTypeRadios.forEach(radio => {
@@ -873,17 +921,22 @@
             const uploadText = document.getElementById('uploadText');
             const uploadHint = document.getElementById('uploadHint');
             const fileInput = document.getElementById('fileInput');
+            const directorySelector = document.getElementById('directorySelector');
             
             if (selectedType === 'project') {
                 uploadText.textContent = '点击选择项目文件或拖拽压缩包到此处';
                 uploadHint.textContent = '支持.zip, .tar, .tar.gz等压缩文件，最大100MB';
                 fileInput.accept = '.zip,.tar,.tar.gz,.rar,.7z';
                 fileInput.removeAttribute('multiple');
+                fileInput.removeAttribute('webkitdirectory');
+                directorySelector.style.display = 'block';
             } else {
                 uploadText.textContent = '点击选择代码文件或拖拽文件到此处';
                 uploadHint.textContent = '支持Python, Java, C/C++, JavaScript, Go等文件，最大10MB';
                 fileInput.accept = '.py,.java,.c,.cpp,.h,.hpp,.js,.ts,.go';
                 fileInput.setAttribute('multiple', '');
+                fileInput.removeAttribute('webkitdirectory');
+                directorySelector.style.display = 'none';
             }
         }
 
@@ -921,6 +974,19 @@
                 document.querySelector('.upload-text').textContent = `已选择: ${fileNames}`;
             } else {
                 document.querySelector('.upload-text').textContent = '点击选择代码文件或拖拽文件到此处';
+            }
+            updateUploadButtonState();
+        }
+
+        function updateDirectoryDisplay() {
+            const files = directoryInput.files;
+            if (files.length > 0) {
+                const fileNames = Array.from(files).map(f => f.name).join(', ');
+                document.querySelector('.upload-text').textContent = `已选择目录: ${files.length} 个文件`;
+                // 将目录文件复制到主文件输入
+                fileInput.files = files;
+            } else {
+                document.querySelector('.upload-text').textContent = '点击选择项目文件或拖拽压缩包到此处';
             }
             updateUploadButtonState();
         }
