@@ -1,0 +1,113 @@
+{
+  "test_type": "dynamic_runtime_test",
+  "timestamp": "2025-10-17 19:42:16",
+  "enable_web_app_test": true,
+  "tests": {
+    "basic_app_creation": {
+      "status": "success",
+      "app_name": "dynamic_test_runner",
+      "debug_mode": false,
+      "testing_mode": true,
+      "config_keys": [
+        "ENV",
+        "DEBUG",
+        "TESTING",
+        "PROPAGATE_EXCEPTIONS",
+        "PRESERVE_CONTEXT_ON_EXCEPTION",
+        "SECRET_KEY",
+        "PERMANENT_SESSION_LIFETIME",
+        "USE_X_SENDFILE",
+        "SERVER_NAME",
+        "APPLICATION_ROOT",
+        "SESSION_COOKIE_NAME",
+        "SESSION_COOKIE_DOMAIN",
+        "SESSION_COOKIE_PATH",
+        "SESSION_COOKIE_HTTPONLY",
+        "SESSION_COOKIE_SECURE",
+        "SESSION_COOKIE_SAMESITE",
+        "SESSION_REFRESH_EACH_REQUEST",
+        "MAX_CONTENT_LENGTH",
+        "SEND_FILE_MAX_AGE_DEFAULT",
+        "TRAP_BAD_REQUEST_ERRORS",
+        "TRAP_HTTP_EXCEPTIONS",
+        "EXPLAIN_TEMPLATE_LOADING",
+        "PREFERRED_URL_SCHEME",
+        "JSON_AS_ASCII",
+        "JSON_SORT_KEYS",
+        "JSONIFY_PRETTYPRINT_REGULAR",
+        "JSONIFY_MIMETYPE",
+        "TEMPLATES_AUTO_RELOAD",
+        "MAX_COOKIE_SIZE"
+      ],
+      "url_map_rules": 1
+    },
+    "route_registration": {
+      "status": "success",
+      "total_routes": 5,
+      "index_route": true,
+      "int_parameter_route": true,
+      "string_parameter_route": true,
+      "post_method": true,
+      "get_method": true,
+      "all_tests_passed": true
+    },
+    "blueprint_functionality": {
+      "status": "success",
+      "blueprints_registered": 2,
+      "api_users_route": true,
+      "api_data_route": true,
+      "admin_settings_route": true,
+      "all_blueprint_tests_passed": true
+    },
+    "request_context": {
+      "status": "success",
+      "context_test_success": true,
+      "context_success": true,
+      "has_request_id": true,
+      "has_start_time": true,
+      "has_method": true,
+      "all_context_tests_passed": true
+    },
+    "error_handling": {
+      "status": "success",
+      "value_error_handling": true,
+      "not_found_handling": true,
+      "nonexistent_route_handling": true,
+      "all_error_tests_passed": true
+    },
+    "configuration": {
+      "status": "success",
+      "default_config": {
+        "DEBUG": false,
+        "TESTING": false,
+        "SECRET_KEY": false,
+        "JSONIFY_PRETTYPRINT_REGULAR": false
+      },
+      "custom_config": {
+        "CUSTOM_SETTING": "test_value",
+        "ANOTHER_SETTING": 123
+      },
+      "config_update_success": true
+    },
+    "web_server_test": {
+      "status": "success",
+      "server_port": 5002,
+      "tests": {
+        "root_endpoint": true,
+        "health_endpoint": true,
+        "test_endpoint": true,
+        "response_content": true
+      },
+      "all_tests_passed": true
+    }
+  },
+  "summary": {
+    "total_tests": 7,
+    "successful_tests": 7,
+    "failed_tests": 0,
+    "skipped_tests": 0,
+    "success_rate": 100.0,
+    "overall_status": "success",
+    "enable_web_app_test": true
+  }
+}

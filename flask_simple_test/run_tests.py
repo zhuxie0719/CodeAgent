@@ -1,61 +1,57 @@
 #!/usr/bin/env python3
 """
-Flask简单测试运行器
-支持静态和动态检测模式
+Flask 2.0.0 简化测试运行器
+支持静态和动态测试模式
 """
 
-import argparse
 import sys
-import os
+import argparse
 from pathlib import Path
 
-# 添加项目根目录到Python路径
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
-from flask_simple_test.dynamic_test_runner import DynamicTestRunner
-from flask_simple_test.test_flask_simple import StaticTestRunner
-
+# 添加当前目录到Python路径
+sys.path.insert(0, str(Path(__file__).parent))
 
 def main():
-    parser = argparse.ArgumentParser(description='Flask简单测试运行器')
-    parser.add_argument('--mode', choices=['static', 'dynamic', 'both'], 
-                       default='both', help='检测模式')
-    parser.add_argument('--target', type=str, default='.', 
-                       help='目标文件或目录路径')
-    parser.add_argument('--output', type=str, 
-                       help='输出文件路径（可选）')
-    
-    args = parser.parse_args()
-    
-    print("=" * 60)
-    print("Flask简单测试运行器")
-    print("=" * 60)
-    
-    # 运行静态检测
-    if args.mode in ['static', 'both']:
-        print("\n🔍 开始静态检测...")
-        static_runner = StaticTestRunner()
-        static_results = static_runner.run_analysis(args.target)
-        
-        if args.output:
-            static_output = f"{args.output}_static.json"
-            static_runner.save_results(static_results, static_output)
-            print(f"静态检测结果已保存到: {static_output}")
-    
-    # 运行动态检测
-    if args.mode in ['dynamic', 'both']:
-        print("\n🚀 开始动态检测...")
-        dynamic_runner = DynamicTestRunner()
-        dynamic_results = dynamic_runner.run_dynamic_tests(args.target)
-        
-        if args.output:
-            dynamic_output = f"{args.output}_dynamic.json"
-            dynamic_runner.save_results(dynamic_results, dynamic_output)
-            print(f"动态检测结果已保存到: {dynamic_output}")
-    
-    print("\n✅ 检测完成!")
+    """主函数"""
+    parser = argparse.ArgumentParser(description='Flask 2.0.0 测试运行器')
+    parser.add_argument('--mode', choices=['static', 'dynamic', 'both'],
+                       default='static', help='测试模式: static(静态), dynamic(动态), both(两者)')
+    parser.add_argument('--enable-web-test', action='store_true',
+                       help='启用Web应用测试（仅动态模式）')
 
+    args = parser.parse_args()
+
+    print(f"运行Flask 2.0.0测试... (模式: {args.mode})")
+    print("="*70)
+
+    try:
+        if args.mode in ['static', 'both']:
+            print("\n运行静态测试...")
+            import test_flask_simple
+            test_flask_simple.run_all_tests()
+
+        if args.mode in ['dynamic', 'both']:
+            print("\n运行动态测试...")
+            from dynamic_test_runner import FlaskDynamicTestRunner
+
+            runner = FlaskDynamicTestRunner()
+            results = runner.run_dynamic_tests(enable_web_app_test=args.enable_web_test)
+
+            # 显示动态测试摘要
+            summary = results.get("summary", {})
+            print("\n" + "="*50)
+            print("动态测试摘要")
+            print("="*50)
+            print(f"总测试数: {summary.get('total_tests', 0)}")
+            print(f"成功测试: {summary.get('successful_tests', 0)}")
+            print(f"失败测试: {summary.get('failed_tests', 0)}")
+            print(f"成功率: {summary.get('success_rate', 0)}%")
+            print(f"整体状态: {summary.get('overall_status', 'unknown')}")
+
+    except (ImportError, RuntimeError, AttributeError) as e:
+        print(f"❌ 测试运行失败: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()

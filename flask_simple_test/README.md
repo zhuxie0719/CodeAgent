@@ -1,93 +1,78 @@
-# Flask简单测试工具
+# Flask 2.0.0 简化测试项目
 
-这是一个用于测试Flask应用的简单工具，支持静态和动态检测。
-
-## 功能特性
-
-- **静态检测**: 基于Flask 2.0.0的已知问题进行代码分析
-- **动态检测**: 通过实际运行Flask应用来检测问题
-- **多模式支持**: 支持静态、动态或混合检测模式
+这个项目包含Flask 2.0.0中32个已知Issue的复现代码，避免循环导入问题。
 
 ## 文件说明
 
-- `run_tests.py`: 主运行脚本
-- `dynamic_test_runner.py`: 动态检测运行器
-- `test_flask_simple.py`: 静态检测运行器
-- `flask_app.py`: 示例Flask应用
-- `README.md`: 说明文档
+- `test_flask_simple.py` - 包含32个Issue的测试代码
+- `run_tests.py` - 测试运行器
+- `flask_app.py` - Flask Web应用（用于动态检测测试）
 
 ## 使用方法
 
-### 基本用法
+1. 运行测试：
+   ```bash
+   python run_tests.py
+   ```
 
-```bash
-# 运行所有检测
-python run_tests.py
+2. 启动Flask Web应用（用于动态检测测试）：
+   ```bash
+   python flask_app.py
+   ```
 
-# 只运行静态检测
-python run_tests.py --mode static
+3. 使用检测系统分析：
+   ```bash
+   python start_api.py
+   # 然后上传 flask_simple_test 目录
+   # 记得启用"Web应用测试"选项
+   ```
 
-# 只运行动态检测
-python run_tests.py --mode dynamic
+4. 运行对比分析：
+   ```bash
+   python compare_flask_bugs.py
+   ```
 
-# 指定目标文件或目录
-python run_tests.py --target /path/to/flask/app
+## 包含的Issue
 
-# 保存结果到文件
-python run_tests.py --output results.json
-```
+### S类（静态可检）- 8个
+- #4024 - 顶层导出名类型检查
+- #4020 - g对象类型提示
+- #4040 - 早期Python类型修正
+- #4044 - send_file类型改进
+- #4026 - send_file类型改进
+- #4295 - errorhandler类型注解
+- #4037 - 蓝图URL前缀合并
+- #4041 - 蓝图命名约束
 
-### 参数说明
+### A类（AI辅助）- 18个
+- #4019 - send_from_directory参数
+- #4078 - Config.from_json回退
+- #4060 - 装饰器工厂类型
+- #4069 - 嵌套蓝图注册
+- #1091 - 蓝图重复注册
+- #4093 - teardown方法类型
+- #4104 - before_request类型
+- #4098 - 模板全局装饰器
+- #4095 - errorhandler类型增强
+- #4124 - 蓝图重复注册处理
+- #4150 - static_folder PathLike
+- #4157 - jsonify Decimal处理
+- #4096 - CLI懒加载错误
+- #4170 - CLI loader kwargs
+- #4053 - URL匹配顺序
+- #4112 - 异步视图支持
+- #4229 - 回调顺序
+- #4333 - 上下文边界
 
-- `--mode`: 检测模式 (static/dynamic/both)
-- `--target`: 目标文件或目录路径
-- `--output`: 输出文件路径（可选）
-
-## 检测内容
-
-### 静态检测
-
-- Flask 2.0.0 已知问题检测
-- 代码质量问题
-- 安全问题
-- 性能问题
-
-### 动态检测
-
-- Flask应用启动测试
-- 路由功能测试
-- 错误处理测试
-- 性能测试
-
-## 环境要求
-
-- Python 3.6+
-- Flask 2.0.0+
-- Werkzeug (兼容版本)
+### D类（动态验证）- 6个
+- #4053 - URL匹配顺序（运行时）
+- #4112 - 异步视图（运行时）
+- #4229 - 回调顺序（运行时）
+- #4333 - 上下文边界（运行时）
+- #4037 - 蓝图前缀合并（复杂）
+- #4069 - 嵌套蓝图（复杂）
 
 ## 注意事项
 
-1. 动态检测需要Flask应用能够正常启动
-2. 某些Flask版本可能与Werkzeug版本不兼容
-3. 检测结果会保存为JSON格式
-
-## 示例输出
-
-```json
-{
-  "summary": {
-    "total_issues": 5,
-    "high_severity_issues": 2,
-    "flask_issues_count": 3,
-    "code_quality_issues_count": 1,
-    "security_issues_count": 1,
-    "performance_issues_count": 0
-  },
-  "details": {
-    "flask_issues": [...],
-    "code_quality": [...],
-    "security_issues": [...],
-    "performance_issues": [...]
-  }
-}
-```
+这个项目避免了循环导入问题，专注于测试代码的逻辑和结构。
+所有32个Issue都是基于官方文档中的已知问题。

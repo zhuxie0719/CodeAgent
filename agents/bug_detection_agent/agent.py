@@ -1,7 +1,7 @@
 """
-缺陷检测AGENT
+静态缺陷检测AGENT
 负责主动发现代码中的潜在缺陷和问题
-集成静态代码检测功能
+集成静态代码检测功能，支持多语言分析
 """
 
 import asyncio
@@ -42,15 +42,15 @@ settings = Settings()
 
 
 class BugDetectionAgent(BaseAgent):
-    """缺陷检测AGENT - 支持多语言和大型项目分析"""
+    """静态缺陷检测AGENT - 支持多语言和大型项目分析"""
     
     def __init__(self, config: Dict[str, Any]):
         super().__init__("bug_detection_agent", config)
-        self.static_detector = None
         self.pylint_tool = None
         self.flake8_tool = None
         self.bandit_tool = None
         self.mypy_tool = None
+        self.ai_analyzer = None
         self.detection_rules = {}
         self.tasks = {}  # 任务管理
         self.tasks_file = Path("api/tasks_state.json")  # 任务状态持久化文件
@@ -327,6 +327,15 @@ class BugDetectionAgent(BaseAgent):
                     import traceback
                     self.logger.error(f"Mypy错误详情: {traceback.format_exc()}")
             
+            # 初始化AI多语言分析器
+            try:
+                from tools.ai_static_analyzer import AIMultiLanguageAnalyzer
+                self.ai_analyzer = AIMultiLanguageAnalyzer()
+                self.logger.info("✅ AI多语言分析器初始化成功")
+            except Exception as e:
+                self.logger.warning(f"⚠️ AI多语言分析器初始化失败: {e}")
+                self.ai_analyzer = None
+            
             # 输出工具初始化状态
             tools_status = []
             if self.pylint_tool:
@@ -337,6 +346,8 @@ class BugDetectionAgent(BaseAgent):
                 tools_status.append("bandit")
             if self.mypy_tool:
                 tools_status.append("mypy")
+            if self.ai_analyzer:
+                tools_status.append("ai_analyzer")
             
             self.logger.info(f"检测工具初始化完成，可用工具: {', '.join(tools_status) if tools_status else '无'}")
             
@@ -1691,10 +1702,231 @@ class BugDetectionAgent(BaseAgent):
             return files_by_language
     
     async def analyze_project(self, project_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
-        """分析整个项目"""
+        """分析整个项目 - 增强版静态分析"""
         try:
             self.logger.info(f"开始分析项目: {project_path}")
             
+            # 执行增强的静态分析
+            analysis_result = await self._perform_enhanced_static_analysis(project_path, options)
+            
+            if analysis_result.get("success", False):
+                return {
+                    "success": True,
+                    "detection_results": analysis_result
+                }
+            else:
+                # 回退到基础分析
+                self.logger.warning("增强分析失败，回退到基础分析")
+                return await self._perform_basic_project_analysis(project_path, options)
+            
+        except Exception as e:
+            self.logger.error(f"项目分析失败: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "detection_results": {
+                    "project_path": project_path,
+                    "total_issues": 0,
+                    "issues": [],
+                    "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                }
+            }
+    
+    async def _perform_enhanced_static_analysis(self, project_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
+        """执行增强的静态分析，集成代码分析工具"""
+        try:
+            # 导入代码分析组件
+            from agents.code_analysis_agent.agent import CodeAnalysisAgent
+            
+            # 初始化代码分析代理
+            code_analysis_agent = CodeAnalysisAgent({
+                "enable_ai_analysis": True,
+                "analysis_depth": "comprehensive"
+            })
+            
+            # 执行项目结构分析
+            self.logger.info("开始项目结构分析...")
+            project_structure = await code_analysis_agent.project_analyzer.analyze_project_structure(project_path)
+            
+            # 执行代码质量分析
+            self.logger.info("开始代码质量分析...")
+            code_quality = await code_analysis_agent.code_analyzer.analyze_code_quality(project_path)
+            
+            # 执行依赖分析
+            self.logger.info("开始依赖关系分析...")
+            dependencies = await code_analysis_agent.dependency_analyzer.analyze_dependencies(project_path)
+            
+            # 收集所有支持的文件进行静态分析
+            python_files = []
+            other_language_files = []
+            skip_dirs = {'.git', '__pycache__', 'node_modules', '.venv', 'venv', 'doc', 'docs', '.github', 'ci', 'asv_bench', 'conda.recipe', 'web', 'LICENSES'}
+            
+            for root, dirs, files in os.walk(project_path):
+                dirs[:] = [d for d in dirs if d not in skip_dirs]
+                
+                for file in files:
+                    if not file.startswith('.'):
+                        file_path = os.path.join(root, file)
+                        try:
+                            if os.path.getsize(file_path) <= 2 * 1024 * 1024:  # 2MB限制
+                                if file.endswith('.py'):
+                                    python_files.append(file_path)
+                                elif self.ai_analyzer and self.ai_analyzer.is_supported_file(file_path):
+                                    other_language_files.append(file_path)
+                        except:
+                            continue
+            
+            # 限制分析的文件数量（提高效率）
+            if len(python_files) > 30:  # 进一步减少到30个文件
+                python_files = python_files[:30]
+            if len(other_language_files) > 20:  # 减少到20个文件
+                other_language_files = other_language_files[:20]
+            
+            # 执行Pylint和Flake8分析
+            pylint_issues = []
+            flake8_issues = []
+            
+            self.logger.info(f"开始静态分析 {len(python_files)} 个Python文件...")
+            for py_file in python_files[:15]:  # 只对前15个文件执行详细分析
+                try:
+                    rel_path = os.path.relpath(py_file, project_path)
+                    
+                    # Pylint分析
+                    if self.pylint_tool:
+                        pylint_result = await self.pylint_tool.analyze(py_file)
+                        if pylint_result.get('success') and pylint_result.get('issues'):
+                            for issue in pylint_result['issues']:
+                                issue['file'] = rel_path
+                                issue['tool'] = 'pylint'
+                                pylint_issues.append(issue)
+                    
+                    # Flake8分析
+                    if self.flake8_tool:
+                        flake8_result = await self.flake8_tool.analyze(py_file)
+                        if flake8_result.get('success') and flake8_result.get('issues'):
+                            for issue in flake8_result['issues']:
+                                issue['file'] = rel_path
+                                issue['tool'] = 'flake8'
+                                flake8_issues.append(issue)
+                                
+                except Exception as e:
+                    self.logger.warning(f"静态分析文件失败 {py_file}: {e}")
+                    continue
+            
+            # 执行AI多语言分析
+            ai_issues = []
+            if other_language_files and self.ai_analyzer:
+                self.logger.info(f"开始AI分析 {len(other_language_files)} 个其他语言文件...")
+                for other_file in other_language_files[:10]:  # 只对前10个文件执行AI分析
+                    try:
+                        rel_path = os.path.relpath(other_file, project_path)
+                        result = await self.ai_analyzer.analyze_file(other_file, project_path)
+                        
+                        if result and result.issues:
+                            for issue in result.issues:
+                                ai_issues.append({
+                                    'file': rel_path,
+                                    'line': issue.line_number,
+                                    'column': issue.column,
+                                    'type': issue.category,
+                                    'severity': issue.severity,
+                                    'message': issue.message,
+                                    'suggestion': issue.suggestion,
+                                    'tool': 'ai_analyzer',
+                                    'language': issue.language,
+                                    'confidence': issue.confidence
+                                })
+                                
+                    except Exception as e:
+                        self.logger.warning(f"AI分析文件失败 {other_file}: {e}")
+                        continue
+            
+            # 合并所有问题
+            all_issues = pylint_issues + flake8_issues + ai_issues
+            
+            # 添加代码质量分析中的问题
+            if code_quality.get('file_analysis'):
+                for file_analysis in code_quality['file_analysis']:
+                    if file_analysis.get('issues'):
+                        for issue in file_analysis['issues']:
+                            issue['file'] = file_analysis['file_path']
+                            issue['tool'] = 'code_analyzer'
+                            all_issues.append(issue)
+            
+            # 生成AI分析摘要
+            ai_summary = None
+            try:
+                ai_summary = await code_analysis_agent.ai_service.generate_project_summary({
+                    'project_structure': project_structure,
+                    'code_quality': code_quality,
+                    'dependencies': dependencies
+                })
+            except Exception as e:
+                self.logger.warning(f"AI分析失败: {e}")
+                ai_summary = {
+                    'success': False,
+                    'error': str(e),
+                    'summary': 'AI分析服务暂时不可用'
+                }
+            
+            # 计算统计信息
+            issues_by_severity = {}
+            issues_by_type = {}
+            issues_by_tool = {}
+            
+            for issue in all_issues:
+                severity = issue.get('severity', 'info')
+                issue_type = issue.get('type', 'unknown')
+                tool = issue.get('tool', 'unknown')
+                
+                issues_by_severity[severity] = issues_by_severity.get(severity, 0) + 1
+                issues_by_type[issue_type] = issues_by_type.get(issue_type, 0) + 1
+                issues_by_tool[tool] = issues_by_tool.get(tool, 0) + 1
+            
+            return {
+                "success": True,
+                "analysis_type": "enhanced_static_analysis",
+                "project_path": project_path,
+                "files_analyzed": len(python_files) + len(other_language_files),
+                "python_files_analyzed": len(python_files),
+                "other_language_files_analyzed": len(other_language_files),
+                "issues_found": len(all_issues),
+                "issues": all_issues[:100],  # 限制问题数量
+                "project_structure": project_structure,
+                "code_quality": code_quality,
+                "dependencies": dependencies,
+                "ai_summary": ai_summary,
+                "multi_language_analysis": {
+                    "python_issues": len(pylint_issues) + len(flake8_issues),
+                    "ai_issues": len(ai_issues),
+                    "supported_languages": list(set([issue.get('language', 'unknown') for issue in ai_issues]))
+                },
+                "statistics": {
+                    "issues_by_severity": issues_by_severity,
+                    "issues_by_type": issues_by_type,
+                    "issues_by_tool": issues_by_tool,
+                    "total_files": project_structure.get('total_files', 0),
+                    "total_lines": project_structure.get('total_lines', 0),
+                    "average_complexity": code_quality.get('average_complexity', 0),
+                    "maintainability_score": code_quality.get('maintainability_score', 0)
+                },
+                "summary": {
+                    "error_count": issues_by_severity.get('error', 0),
+                    "warning_count": issues_by_severity.get('warning', 0),
+                    "info_count": issues_by_severity.get('info', 0)
+                }
+            }
+            
+        except Exception as e:
+            self.logger.error(f"增强静态分析失败: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    async def _perform_basic_project_analysis(self, project_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
+        """执行基础项目分析（回退方案）"""
+        try:
             # 扫描项目文件（应用过滤规则）
             files_by_language = self.scan_project_files(project_path)
             
@@ -1702,12 +1934,10 @@ class BugDetectionAgent(BaseAgent):
                 return {
                     "success": False,
                     "error": "未找到支持的代码文件",
-                    "detection_results": {
-                        "project_path": project_path,
-                        "total_issues": 0,
-                        "issues": [],
-                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
-                    }
+                    "project_path": project_path,
+                    "total_issues": 0,
+                    "issues": [],
+                    "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
                 }
             
             # 应用文件过滤和采样
@@ -1721,12 +1951,10 @@ class BugDetectionAgent(BaseAgent):
                 return {
                     "success": False,
                     "error": f"项目文件过多 ({total_files} > {self.project_config['max_files_per_project']})",
-                    "detection_results": {
-                        "project_path": project_path,
-                        "total_issues": 0,
-                        "issues": [],
-                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
-                    }
+                    "project_path": project_path,
+                    "total_issues": 0,
+                    "issues": [],
+                    "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
                 }
             
             # 按语言分组分析
@@ -1748,23 +1976,22 @@ class BugDetectionAgent(BaseAgent):
             # 合并所有结果
             combined_result = self._combine_project_results(all_results, project_path)
             
-            self.logger.info(f"项目分析完成，共分析 {len(all_results)} 个文件")
+            self.logger.info(f"基础项目分析完成，共分析 {len(all_results)} 个文件")
             return {
                 "success": True,
-                "detection_results": combined_result
+                "analysis_type": "basic_static_analysis",
+                **combined_result
             }
             
         except Exception as e:
-            self.logger.error(f"项目分析失败: {e}")
+            self.logger.error(f"基础项目分析失败: {e}")
             return {
                 "success": False,
                 "error": str(e),
-                "detection_results": {
-                    "project_path": project_path,
-                    "total_issues": 0,
-                    "issues": [],
-                    "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
-                }
+                "project_path": project_path,
+                "total_issues": 0,
+                "issues": [],
+                "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
             }
     
     def _combine_project_results(self, results: List[Dict[str, Any]], project_path: str) -> Dict[str, Any]:
@@ -2105,3 +2332,206 @@ class BugDetectionAgent(BaseAgent):
             self.logger.debug(f"保存了 {len(self.tasks)} 个任务状态")
         except Exception as e:
             self.logger.error(f"保存任务状态失败: {e}")
+    
+    async def generate_ai_report(self, detection_results: Dict[str, Any], filename: str) -> str:
+        """生成AI静态检测报告"""
+        try:
+            from api.deepseek_config import deepseek_config
+            import aiohttp
+            
+            if not deepseek_config.is_configured():
+                self.logger.warning("DeepSeek API未配置，使用基础报告")
+                return self._generate_fallback_report(detection_results, filename)
+            
+            prompt = self._build_static_analysis_prompt(detection_results, filename)
+            
+            self.logger.info("🤖 正在生成AI静态检测报告...")
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=180.0)) as client:
+                response = await client.post(
+                    f"{deepseek_config.base_url}/chat/completions",
+                    headers=deepseek_config.get_headers(),
+                    json={
+                        "model": deepseek_config.model,
+                        "messages": [
+                            {"role": "user", "content": prompt}
+                        ],
+                        "max_tokens": deepseek_config.max_tokens,
+                        "temperature": deepseek_config.temperature
+                    }
+                )
+                
+                if response.status == 200:
+                    result = await response.json()
+                    ai_content = result["choices"][0]["message"]["content"]
+                    self.logger.info("✅ AI静态检测报告生成成功")
+                    return ai_content
+                else:
+                    self.logger.warning(f"❌ AI API调用失败: {response.status}")
+                    return self._generate_fallback_report(detection_results, filename)
+                    
+        except Exception as e:
+            self.logger.error(f"❌ AI报告生成异常: {e}")
+            return self._generate_fallback_report(detection_results, filename)
+    
+    def _build_static_analysis_prompt(self, detection_results: Dict[str, Any], filename: str) -> str:
+        """构建静态分析提示词"""
+        summary = detection_results.get("summary", {})
+        statistics = detection_results.get("statistics", {})
+        
+        prompt = f"""请分析以下静态检测结果，生成一份详细的自然语言报告：
+
+## 项目信息
+- 文件名: {filename}
+- 检测时间: {datetime.now().isoformat()}
+- 分析类型: {detection_results.get('analysis_type', 'unknown')}
+- 分析文件数: {detection_results.get('files_analyzed', 0)}
+
+## 检测统计
+- 总问题数: {summary.get('total_issues', 0)}
+- 严重问题: {summary.get('error_count', 0)}
+- 警告问题: {summary.get('warning_count', 0)}
+- 信息问题: {summary.get('info_count', 0)}
+
+## 详细统计
+- 总文件数: {statistics.get('total_files', 0)}
+- 总代码行数: {statistics.get('total_lines', 0)}
+- 平均复杂度: {statistics.get('average_complexity', 0)}
+- 可维护性评分: {statistics.get('maintainability_score', 0)}
+
+## 问题分布
+"""
+        
+        # 添加问题严重程度分布
+        issues_by_severity = statistics.get("issues_by_severity", {})
+        if issues_by_severity:
+            prompt += "\n### 问题严重程度分布:\n"
+            for severity, count in issues_by_severity.items():
+                prompt += f"- {severity}: {count}个\n"
+        
+        # 添加分析工具统计
+        issues_by_tool = statistics.get("issues_by_tool", {})
+        if issues_by_tool:
+            prompt += "\n### 分析工具统计:\n"
+            for tool, count in issues_by_tool.items():
+                prompt += f"- {tool}: {count}个问题\n"
+        
+        # 添加主要问题
+        issues = detection_results.get("issues", [])
+        if issues:
+            prompt += "\n### 主要问题:\n"
+            for i, issue in enumerate(issues[:10], 1):  # 只显示前10个问题
+                tool = issue.get('tool', 'unknown')
+                prompt += f"{i}. [{tool}] {issue.get('file', 'N/A')}: {issue.get('message', 'N/A')} [{issue.get('severity', 'info')}]\n"
+        
+        # 添加项目结构信息
+        project_structure = detection_results.get("project_structure", {})
+        if project_structure:
+            prompt += f"\n### 项目结构:\n"
+            prompt += f"- 项目类型: {project_structure.get('project_type', 'unknown')}\n"
+            prompt += f"- 主要语言: {project_structure.get('primary_language', 'unknown')}\n"
+            prompt += f"- 框架: {project_structure.get('framework', 'unknown')}\n"
+        
+        # 添加多语言分析信息
+        multi_lang = detection_results.get("multi_language_analysis", {})
+        if multi_lang:
+            prompt += f"\n### 多语言分析:\n"
+            prompt += f"- Python文件分析: {detection_results.get('python_files_analyzed', 0)}个\n"
+            prompt += f"- 其他语言文件分析: {detection_results.get('other_language_files_analyzed', 0)}个\n"
+            prompt += f"- Python问题: {multi_lang.get('python_issues', 0)}个\n"
+            prompt += f"- AI分析问题: {multi_lang.get('ai_issues', 0)}个\n"
+            supported_langs = multi_lang.get('supported_languages', [])
+            if supported_langs:
+                prompt += f"- 支持的语言: {', '.join(supported_langs)}\n"
+        
+        # 添加AI分析摘要
+        ai_summary = detection_results.get("ai_summary", {})
+        if ai_summary and ai_summary.get('success'):
+            prompt += f"\n### AI分析摘要:\n{ai_summary.get('summary', 'N/A')[:500]}...\n"
+        
+        prompt += """
+请生成一份详细的自然语言分析报告，包括：
+1. 项目概述
+2. 问题分析
+3. 风险评估
+4. 改进建议
+5. 总结
+
+报告应该专业、详细且易于理解。"""
+        
+        return prompt
+    
+    def _generate_fallback_report(self, detection_results: Dict[str, Any], filename: str) -> str:
+        """生成基础报告（当AI API不可用时）"""
+        summary = detection_results.get("summary", {})
+        statistics = detection_results.get("statistics", {})
+        
+        report = f"""# 静态检测报告
+
+## 项目概述
+- **项目名称**: {filename}
+- **检测时间**: {datetime.now().isoformat()}
+- **分析类型**: {detection_results.get('analysis_type', 'unknown')}
+- **分析文件数**: {detection_results.get('files_analyzed', 0)}
+
+## 检测结果摘要
+- **总问题数**: {summary.get('total_issues', 0)}
+- **严重问题**: {summary.get('error_count', 0)}
+- **警告问题**: {summary.get('warning_count', 0)}
+- **信息问题**: {summary.get('info_count', 0)}
+
+## 详细统计
+- **总文件数**: {statistics.get('total_files', 0)}
+- **总代码行数**: {statistics.get('total_lines', 0)}
+- **平均复杂度**: {statistics.get('average_complexity', 0)}
+- **可维护性评分**: {statistics.get('maintainability_score', 0)}
+
+## 问题分析
+"""
+        
+        if summary.get('error_count', 0) > 0:
+            report += "⚠️ **发现严重问题**，需要立即处理\n"
+        if summary.get('warning_count', 0) > 0:
+            report += "⚠️ **发现警告问题**，建议及时处理\n"
+        if summary.get('info_count', 0) > 0:
+            report += "ℹ️ **发现信息问题**，可选择性处理\n"
+        
+        if summary.get('total_issues', 0) == 0:
+            report += "✅ **未发现明显问题**\n"
+        
+        # 添加技术建议
+        report += "\n## 技术建议\n"
+        
+        # 基于复杂度给出建议
+        avg_complexity = statistics.get("average_complexity", 0)
+        if avg_complexity > 10:
+            report += "- 🔧 **代码复杂度较高**，建议重构复杂函数\n"
+        elif avg_complexity > 5:
+            report += "- 📝 **代码复杂度适中**，注意保持代码简洁\n"
+        else:
+            report += "- ✅ **代码复杂度良好**，继续保持\n"
+        
+        # 基于可维护性给出建议
+        maintainability_score = statistics.get("maintainability_score", 0)
+        if maintainability_score < 60:
+            report += "- 🔨 **可维护性较低**，建议改进代码结构和文档\n"
+        elif maintainability_score < 80:
+            report += "- 📊 **可维护性中等**，可以进一步优化\n"
+        else:
+            report += "- 🌟 **可维护性良好**，代码质量较高\n"
+        
+        # 基于工具分析给出建议
+        issues_by_tool = statistics.get("issues_by_tool", {})
+        if 'pylint' in issues_by_tool and issues_by_tool['pylint'] > 0:
+            report += "- 🐍 **Pylint发现问题**，建议修复代码质量问题\n"
+        if 'flake8' in issues_by_tool and issues_by_tool['flake8'] > 0:
+            report += "- 📏 **Flake8发现问题**，建议改进代码风格\n"
+        
+        report += "\n## 总结\n"
+        if summary.get('error_count', 0) > 0:
+            report += "项目存在严重问题，需要立即修复。建议优先处理严重问题，然后逐步改进代码质量。"
+        elif summary.get('warning_count', 0) > 0:
+            report += "项目存在一些警告问题，建议及时处理。重点关注代码质量和可维护性。"
+        else:
+            report += "项目整体质量良好，未发现严重问题。建议继续保持代码质量，定期进行代码审查。"
+        
+        return report

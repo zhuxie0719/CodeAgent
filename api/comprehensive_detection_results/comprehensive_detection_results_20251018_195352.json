@@ -1,0 +1,1665 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-10-18T19:52:05.268256",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\comprehensive_detection_kgywb1g3\\project.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true
+  },
+  "extracted_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp0i4eouxp",
+  "files": [
+    "flask_simple_test\\dynamic_test_runner.py",
+    "flask_simple_test\\flask_app.py",
+    "flask_simple_test\\no_flask_dynamic_test.py",
+    "flask_simple_test\\README.md",
+    "flask_simple_test\\run_tests.py",
+    "flask_simple_test\\simple_dynamic_test.py",
+    "flask_simple_test\\test_flask_simple.py",
+    "flask_simple_test\\__pycache__\\dynamic_test_runner.cpython-312.pyc",
+    "flask_simple_test\\__pycache__\\no_flask_dynamic_test.cpython-312.pyc"
+  ],
+  "static_analysis": {
+    "success": true,
+    "analysis_type": "enhanced_static_analysis",
+    "project_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp0i4eouxp",
+    "files_analyzed": 6,
+    "python_files_analyzed": 6,
+    "other_language_files_analyzed": 0,
+    "issues_found": 18,
+    "issues": [
+      {
+        "type": "long_function",
+        "message": "函数 run_dynamic_tests 过长 (71 行)",
+        "line": 31,
+        "file": "flask_simple_test\\dynamic_test_runner.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 FlaskDynamicTestRunner 过长 (494 行)",
+        "line": 23,
+        "file": "flask_simple_test\\dynamic_test_runner.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: werkzeug.urls",
+        "line": 61,
+        "file": "flask_simple_test\\dynamic_test_runner.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: werkzeug.utils",
+        "line": 64,
+        "file": "flask_simple_test\\dynamic_test_runner.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_project_structure 过长 (57 行)",
+        "line": 130,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_code_quality 过长 (123 行)",
+        "line": 189,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_dependencies 过长 (75 行)",
+        "line": 314,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_configuration 过长 (60 行)",
+        "line": 391,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_security_scan 过长 (86 行)",
+        "line": 453,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_performance_analysis 过长 (83 行)",
+        "line": 541,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 NoFlaskDynamicTest 过长 (644 行)",
+        "line": 17,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: flask_simple_test.dynamic_test_runner",
+        "line": 16,
+        "file": "flask_simple_test\\run_tests.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: flask_simple_test.test_flask_simple",
+        "line": 17,
+        "file": "flask_simple_test\\run_tests.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_code_syntax 过长 (55 行)",
+        "line": 149,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_imports 过长 (75 行)",
+        "line": 206,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_flask_detection 过长 (79 行)",
+        "line": 283,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 SimpleDynamicTest 过长 (384 行)",
+        "line": 15,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 StaticTestRunner 过长 (335 行)",
+        "line": 21,
+        "file": "flask_simple_test\\test_flask_simple.py",
+        "tool": "code_analyzer"
+      }
+    ],
+    "project_structure": {
+      "path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp0i4eouxp",
+      "total_files": 7,
+      "total_lines": 2262,
+      "file_types": {
+        ".py": 6,
+        ".md": 1
+      },
+      "directories": [
+        "flask_simple_test"
+      ],
+      "files": [
+        {
+          "path": "flask_simple_test\\dynamic_test_runner.py",
+          "lines": 529,
+          "size": 17626
+        },
+        {
+          "path": "flask_simple_test\\flask_app.py",
+          "lines": 96,
+          "size": 2564
+        },
+        {
+          "path": "flask_simple_test\\no_flask_dynamic_test.py",
+          "lines": 690,
+          "size": 28945
+        },
+        {
+          "path": "flask_simple_test\\README.md",
+          "lines": 93,
+          "size": 1974
+        },
+        {
+          "path": "flask_simple_test\\run_tests.py",
+          "lines": 61,
+          "size": 2050
+        },
+        {
+          "path": "flask_simple_test\\simple_dynamic_test.py",
+          "lines": 428,
+          "size": 15975
+        },
+        {
+          "path": "flask_simple_test\\test_flask_simple.py",
+          "lines": 365,
+          "size": 13964
+        }
+      ],
+      "project_type": "unknown",
+      "framework": "flask",
+      "primary_language": "python",
+      "has_tests": true,
+      "has_docs": true,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 6,
+      "analyzed_files": 6,
+      "total_lines": 2169,
+      "total_functions": 62,
+      "total_classes": 4,
+      "average_complexity": 37.833333333333336,
+      "max_complexity": 96,
+      "total_issues": 18,
+      "issues_by_type": {
+        "long_function": 10,
+        "long_class": 4,
+        "import_style": 4
+      },
+      "complexity_distribution": {
+        "36": 1,
+        "6": 1,
+        "96": 1,
+        "5": 1,
+        "51": 1,
+        "33": 1
+      },
+      "maintainability_score": 35.33333333333333,
+      "file_analysis": [
+        {
+          "file_path": "flask_simple_test\\dynamic_test_runner.py",
+          "lines_of_code": 529,
+          "function_count": 15,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 36,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 15,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 20
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 run_dynamic_tests 过长 (71 行)",
+              "line": 31,
+              "file": "flask_simple_test\\dynamic_test_runner.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_class",
+              "message": "类 FlaskDynamicTestRunner 过长 (494 行)",
+              "line": 23,
+              "file": "flask_simple_test\\dynamic_test_runner.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: werkzeug.urls",
+              "line": 61,
+              "file": "flask_simple_test\\dynamic_test_runner.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: werkzeug.utils",
+              "line": 64,
+              "file": "flask_simple_test\\dynamic_test_runner.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\dynamic_test_runner.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\flask_app.py",
+          "lines_of_code": 96,
+          "function_count": 11,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 6,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 11,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 3
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\flask_app.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\no_flask_dynamic_test.py",
+          "lines_of_code": 690,
+          "function_count": 12,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 96,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 12,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 20
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 _test_project_structure 过长 (57 行)",
+              "line": 130,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_code_quality 过长 (123 行)",
+              "line": 189,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_dependencies 过长 (75 行)",
+              "line": 314,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_configuration 过长 (60 行)",
+              "line": 391,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_security_scan 过长 (86 行)",
+              "line": 453,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_performance_analysis 过长 (83 行)",
+              "line": 541,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_class",
+              "message": "类 NoFlaskDynamicTest 过长 (644 行)",
+              "line": 17,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\no_flask_dynamic_test.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\run_tests.py",
+          "lines_of_code": 61,
+          "function_count": 1,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 5,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 1,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: flask_simple_test.dynamic_test_runner",
+              "line": 16,
+              "file": "flask_simple_test\\run_tests.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: flask_simple_test.test_flask_simple",
+              "line": 17,
+              "file": "flask_simple_test\\run_tests.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\run_tests.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\simple_dynamic_test.py",
+          "lines_of_code": 428,
+          "function_count": 10,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 51,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 10,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 16
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 _test_code_syntax 过长 (55 行)",
+              "line": 149,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_imports 过长 (75 行)",
+              "line": 206,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_flask_detection 过长 (79 行)",
+              "line": 283,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_class",
+              "message": "类 SimpleDynamicTest 过长 (384 行)",
+              "line": 15,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\simple_dynamic_test.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\test_flask_simple.py",
+          "lines_of_code": 365,
+          "function_count": 13,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 33,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 13,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 29
+          },
+          "issues": [
+            {
+              "type": "long_class",
+              "message": "类 StaticTestRunner 过长 (335 行)",
+              "line": 21,
+              "file": "flask_simple_test\\test_flask_simple.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\test_flask_simple.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "flask_simple_test\\dynamic_test_runner.py": [
+          "werkzeug",
+          "importlib.util",
+          "os",
+          "time",
+          "werkzeug.utils",
+          "sys",
+          "typing",
+          "flask",
+          "subprocess",
+          "tempfile",
+          "json",
+          "shutil",
+          "werkzeug.urls",
+          "pkg_resources",
+          "pathlib"
+        ],
+        "flask_simple_test\\flask_app.py": [
+          "time",
+          "json",
+          "flask"
+        ],
+        "flask_simple_test\\no_flask_dynamic_test.py": [
+          "ast",
+          "os",
+          "time",
+          "sys",
+          "typing",
+          "subprocess",
+          "traceback",
+          "json",
+          "pathlib",
+          "argparse"
+        ],
+        "flask_simple_test\\run_tests.py": [
+          "flask_simple_test.test_flask_simple",
+          "os",
+          "sys",
+          "flask_simple_test.dynamic_test_runner",
+          "pathlib",
+          "argparse"
+        ],
+        "flask_simple_test\\simple_dynamic_test.py": [
+          "os",
+          "time",
+          "sys",
+          "typing",
+          "traceback",
+          "json",
+          "pathlib",
+          "argparse"
+        ],
+        "flask_simple_test\\test_flask_simple.py": [
+          "ast",
+          "importlib.util",
+          "os",
+          "sys",
+          "re",
+          "typing",
+          "json",
+          "datetime",
+          "pathlib"
+        ]
+      },
+      "circular_dependencies": [],
+      "dependency_metrics": {
+        "total_packages": 0,
+        "total_imports": 51,
+        "circular_dependency_count": 0,
+        "dependency_depth": 0,
+        "coupling_score": 0.0
+      },
+      "internal_modules": []
+    },
+    "ai_summary": {
+      "success": false,
+      "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+      "analysis_data": {
+        "project_structure": {
+          "path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp0i4eouxp",
+          "total_files": 7,
+          "total_lines": 2262,
+          "file_types": {
+            ".py": 6,
+            ".md": 1
+          },
+          "directories": [
+            "flask_simple_test"
+          ],
+          "files": [
+            {
+              "path": "flask_simple_test\\dynamic_test_runner.py",
+              "lines": 529,
+              "size": 17626
+            },
+            {
+              "path": "flask_simple_test\\flask_app.py",
+              "lines": 96,
+              "size": 2564
+            },
+            {
+              "path": "flask_simple_test\\no_flask_dynamic_test.py",
+              "lines": 690,
+              "size": 28945
+            },
+            {
+              "path": "flask_simple_test\\README.md",
+              "lines": 93,
+              "size": 1974
+            },
+            {
+              "path": "flask_simple_test\\run_tests.py",
+              "lines": 61,
+              "size": 2050
+            },
+            {
+              "path": "flask_simple_test\\simple_dynamic_test.py",
+              "lines": 428,
+              "size": 15975
+            },
+            {
+              "path": "flask_simple_test\\test_flask_simple.py",
+              "lines": 365,
+              "size": 13964
+            }
+          ],
+          "project_type": "unknown",
+          "framework": "flask",
+          "primary_language": "python",
+          "has_tests": true,
+          "has_docs": true,
+          "has_config": false,
+          "total_functions": 0,
+          "total_classes": 0
+        },
+        "code_quality": {
+          "total_files": 6,
+          "analyzed_files": 6,
+          "total_lines": 2169,
+          "total_functions": 62,
+          "total_classes": 4,
+          "average_complexity": 37.833333333333336,
+          "max_complexity": 96,
+          "total_issues": 18,
+          "issues_by_type": {
+            "long_function": 10,
+            "long_class": 4,
+            "import_style": 4
+          },
+          "complexity_distribution": {
+            "36": 1,
+            "6": 1,
+            "96": 1,
+            "5": 1,
+            "51": 1,
+            "33": 1
+          },
+          "maintainability_score": 35.33333333333333,
+          "file_analysis": [
+            {
+              "file_path": "flask_simple_test\\dynamic_test_runner.py",
+              "lines_of_code": 529,
+              "function_count": 15,
+              "class_count": 1,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 36,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 15,
+                "class_count": 1,
+                "nested_depth": 0,
+                "parameter_count": 20
+              },
+              "issues": [
+                {
+                  "type": "long_function",
+                  "message": "函数 run_dynamic_tests 过长 (71 行)",
+                  "line": 31,
+                  "file": "flask_simple_test\\dynamic_test_runner.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_class",
+                  "message": "类 FlaskDynamicTestRunner 过长 (494 行)",
+                  "line": 23,
+                  "file": "flask_simple_test\\dynamic_test_runner.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "import_style",
+                  "message": "建议使用相对导入: werkzeug.urls",
+                  "line": 61,
+                  "file": "flask_simple_test\\dynamic_test_runner.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "import_style",
+                  "message": "建议使用相对导入: werkzeug.utils",
+                  "line": 64,
+                  "file": "flask_simple_test\\dynamic_test_runner.py",
+                  "tool": "code_analyzer"
+                }
+              ],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "flask_simple_test\\dynamic_test_runner.py"
+              }
+            },
+            {
+              "file_path": "flask_simple_test\\flask_app.py",
+              "lines_of_code": 96,
+              "function_count": 11,
+              "class_count": 0,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 6,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 11,
+                "class_count": 0,
+                "nested_depth": 0,
+                "parameter_count": 3
+              },
+              "issues": [],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "flask_simple_test\\flask_app.py"
+              }
+            },
+            {
+              "file_path": "flask_simple_test\\no_flask_dynamic_test.py",
+              "lines_of_code": 690,
+              "function_count": 12,
+              "class_count": 1,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 96,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 12,
+                "class_count": 1,
+                "nested_depth": 0,
+                "parameter_count": 20
+              },
+              "issues": [
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_project_structure 过长 (57 行)",
+                  "line": 130,
+                  "file": "flask_simple_test\\no_flask_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_code_quality 过长 (123 行)",
+                  "line": 189,
+                  "file": "flask_simple_test\\no_flask_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_dependencies 过长 (75 行)",
+                  "line": 314,
+                  "file": "flask_simple_test\\no_flask_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_configuration 过长 (60 行)",
+                  "line": 391,
+                  "file": "flask_simple_test\\no_flask_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_security_scan 过长 (86 行)",
+                  "line": 453,
+                  "file": "flask_simple_test\\no_flask_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_performance_analysis 过长 (83 行)",
+                  "line": 541,
+                  "file": "flask_simple_test\\no_flask_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_class",
+                  "message": "类 NoFlaskDynamicTest 过长 (644 行)",
+                  "line": 17,
+                  "file": "flask_simple_test\\no_flask_dynamic_test.py",
+                  "tool": "code_analyzer"
+                }
+              ],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "flask_simple_test\\no_flask_dynamic_test.py"
+              }
+            },
+            {
+              "file_path": "flask_simple_test\\run_tests.py",
+              "lines_of_code": 61,
+              "function_count": 1,
+              "class_count": 0,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 5,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 1,
+                "class_count": 0,
+                "nested_depth": 0,
+                "parameter_count": 0
+              },
+              "issues": [
+                {
+                  "type": "import_style",
+                  "message": "建议使用相对导入: flask_simple_test.dynamic_test_runner",
+                  "line": 16,
+                  "file": "flask_simple_test\\run_tests.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "import_style",
+                  "message": "建议使用相对导入: flask_simple_test.test_flask_simple",
+                  "line": 17,
+                  "file": "flask_simple_test\\run_tests.py",
+                  "tool": "code_analyzer"
+                }
+              ],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "flask_simple_test\\run_tests.py"
+              }
+            },
+            {
+              "file_path": "flask_simple_test\\simple_dynamic_test.py",
+              "lines_of_code": 428,
+              "function_count": 10,
+              "class_count": 1,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 51,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 10,
+                "class_count": 1,
+                "nested_depth": 0,
+                "parameter_count": 16
+              },
+              "issues": [
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_code_syntax 过长 (55 行)",
+                  "line": 149,
+                  "file": "flask_simple_test\\simple_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_imports 过长 (75 行)",
+                  "line": 206,
+                  "file": "flask_simple_test\\simple_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_function",
+                  "message": "函数 _test_flask_detection 过长 (79 行)",
+                  "line": 283,
+                  "file": "flask_simple_test\\simple_dynamic_test.py",
+                  "tool": "code_analyzer"
+                },
+                {
+                  "type": "long_class",
+                  "message": "类 SimpleDynamicTest 过长 (384 行)",
+                  "line": 15,
+                  "file": "flask_simple_test\\simple_dynamic_test.py",
+                  "tool": "code_analyzer"
+                }
+              ],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "flask_simple_test\\simple_dynamic_test.py"
+              }
+            },
+            {
+              "file_path": "flask_simple_test\\test_flask_simple.py",
+              "lines_of_code": 365,
+              "function_count": 13,
+              "class_count": 1,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 33,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 13,
+                "class_count": 1,
+                "nested_depth": 0,
+                "parameter_count": 29
+              },
+              "issues": [
+                {
+                  "type": "long_class",
+                  "message": "类 StaticTestRunner 过长 (335 行)",
+                  "line": 21,
+                  "file": "flask_simple_test\\test_flask_simple.py",
+                  "tool": "code_analyzer"
+                }
+              ],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "flask_simple_test\\test_flask_simple.py"
+              }
+            }
+          ],
+          "ai_analysis": []
+        },
+        "dependencies": {
+          "python_packages": [],
+          "node_modules": [],
+          "rust_crates": [],
+          "java_dependencies": [],
+          "go_modules": [],
+          "import_dependencies": {
+            "flask_simple_test\\dynamic_test_runner.py": [
+              "werkzeug",
+              "importlib.util",
+              "os",
+              "time",
+              "werkzeug.utils",
+              "sys",
+              "typing",
+              "flask",
+              "subprocess",
+              "tempfile",
+              "json",
+              "shutil",
+              "werkzeug.urls",
+              "pkg_resources",
+              "pathlib"
+            ],
+            "flask_simple_test\\flask_app.py": [
+              "time",
+              "json",
+              "flask"
+            ],
+            "flask_simple_test\\no_flask_dynamic_test.py": [
+              "ast",
+              "os",
+              "time",
+              "sys",
+              "typing",
+              "subprocess",
+              "traceback",
+              "json",
+              "pathlib",
+              "argparse"
+            ],
+            "flask_simple_test\\run_tests.py": [
+              "flask_simple_test.test_flask_simple",
+              "os",
+              "sys",
+              "flask_simple_test.dynamic_test_runner",
+              "pathlib",
+              "argparse"
+            ],
+            "flask_simple_test\\simple_dynamic_test.py": [
+              "os",
+              "time",
+              "sys",
+              "typing",
+              "traceback",
+              "json",
+              "pathlib",
+              "argparse"
+            ],
+            "flask_simple_test\\test_flask_simple.py": [
+              "ast",
+              "importlib.util",
+              "os",
+              "sys",
+              "re",
+              "typing",
+              "json",
+              "datetime",
+              "pathlib"
+            ]
+          },
+          "circular_dependencies": [],
+          "dependency_metrics": {
+            "total_packages": 0,
+            "total_imports": 51,
+            "circular_dependency_count": 0,
+            "dependency_depth": 0,
+            "coupling_score": 0.0
+          },
+          "internal_modules": []
+        }
+      }
+    },
+    "multi_language_analysis": {
+      "python_issues": 0,
+      "ai_issues": 0,
+      "supported_languages": []
+    },
+    "statistics": {
+      "issues_by_severity": {
+        "info": 18
+      },
+      "issues_by_type": {
+        "long_function": 10,
+        "long_class": 4,
+        "import_style": 4
+      },
+      "issues_by_tool": {
+        "code_analyzer": 18
+      },
+      "total_files": 7,
+      "total_lines": 2262,
+      "average_complexity": 37.833333333333336,
+      "maintainability_score": 35.33333333333333
+    },
+    "summary": {
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 18
+    }
+  },
+  "dynamic_monitoring": {
+    "success": true,
+    "duration": 60,
+    "metrics_count": 10,
+    "alerts_count": 0,
+    "report": {
+      "summary": {
+        "monitoring_duration": 60,
+        "total_metrics": 10,
+        "total_alerts": 0,
+        "alert_by_severity": {},
+        "alert_by_type": {},
+        "average_metrics": {
+          "avg_cpu": 15.55,
+          "max_cpu": 27.8,
+          "avg_memory": 41.980000000000004,
+          "max_memory": 42.5,
+          "avg_disk": 66.97999999999999,
+          "max_disk": 67.0
+        },
+        "monitoring_status": "completed"
+      },
+      "recommendations": [],
+      "detailed_metrics": [
+        {
+          "timestamp": "2025-10-18T19:52:08.173084",
+          "system": {
+            "cpu": {
+              "percent": 27.8,
+              "count": 20,
+              "frequency": 1040.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19601534976,
+              "percent": 42.5,
+              "used": 14469705728,
+              "free": 19601534976
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143737065472,
+              "free": 71012343808,
+              "percent": 66.9
+            },
+            "disk_io": {
+              "read_count": 456796,
+              "write_count": 743447,
+              "read_bytes": 16136950784,
+              "write_bytes": 22482040320
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:17.198031",
+          "system": {
+            "cpu": {
+              "percent": 16.5,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19815628800,
+              "percent": 41.8,
+              "used": 14255611904,
+              "free": 19815628800
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143737556992,
+              "free": 71011852288,
+              "percent": 66.9
+            },
+            "disk_io": {
+              "read_count": 456913,
+              "write_count": 743954,
+              "read_bytes": 16137716736,
+              "write_bytes": 22527776256
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:23.216861",
+          "system": {
+            "cpu": {
+              "percent": 17.7,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19767775232,
+              "percent": 42.0,
+              "used": 14303465472,
+              "free": 19767775232
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143788429312,
+              "free": 70960979968,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457017,
+              "write_count": 744395,
+              "read_bytes": 16138363904,
+              "write_bytes": 22558291456
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:29.232275",
+          "system": {
+            "cpu": {
+              "percent": 16.3,
+              "count": 20,
+              "frequency": 1040.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19749543936,
+              "percent": 42.0,
+              "used": 14321696768,
+              "free": 19749543936
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143788433408,
+              "free": 70960975872,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457143,
+              "write_count": 746131,
+              "read_bytes": 16146613248,
+              "write_bytes": 22601872896
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:35.245343",
+          "system": {
+            "cpu": {
+              "percent": 27.4,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19723329536,
+              "percent": 42.1,
+              "used": 14347911168,
+              "free": 19723329536
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143788507136,
+              "free": 70960902144,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457145,
+              "write_count": 746410,
+              "read_bytes": 16146646016,
+              "write_bytes": 22615840256
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:41.262683",
+          "system": {
+            "cpu": {
+              "percent": 17.2,
+              "count": 20,
+              "frequency": 1040.0,
+              "load_average": [
+                0.08,
+                0.02,
+                0.01
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19706511360,
+              "percent": 42.2,
+              "used": 14364729344,
+              "free": 19706511360
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143788679168,
+              "free": 70960730112,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457148,
+              "write_count": 746580,
+              "read_bytes": 16146711552,
+              "write_bytes": 22630856192
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:47.277731",
+          "system": {
+            "cpu": {
+              "percent": 10.7,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.07,
+                0.02,
+                0.01
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19831742464,
+              "percent": 41.8,
+              "used": 14239498240,
+              "free": 19831742464
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143789883392,
+              "free": 70959525888,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457157,
+              "write_count": 746846,
+              "read_bytes": 16146908160,
+              "write_bytes": 22650848768
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:53.291819",
+          "system": {
+            "cpu": {
+              "percent": 9.4,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.07,
+                0.02,
+                0.01
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19873361920,
+              "percent": 41.7,
+              "used": 14197878784,
+              "free": 19873361920
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143789883392,
+              "free": 70959525888,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457157,
+              "write_count": 746933,
+              "read_bytes": 16146908160,
+              "write_bytes": 22660576768
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:52:59.295627",
+          "system": {
+            "cpu": {
+              "percent": 2.4,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.14,
+                0.03,
+                0.01
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19761729536,
+              "percent": 42.0,
+              "used": 14309511168,
+              "free": 19761729536
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143789916160,
+              "free": 70959493120,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457184,
+              "write_count": 747784,
+              "read_bytes": 16147678208,
+              "write_bytes": 22683960832
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-10-18T19:53:05.304788",
+          "system": {
+            "cpu": {
+              "percent": 10.1,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.13,
+                0.03,
+                0.01
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 19871461376,
+              "percent": 41.7,
+              "used": 14199779328,
+              "free": 19871461376
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 0,
+              "free": 2147483648,
+              "percent": 0.0
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 143790075904,
+              "free": 70959333376,
+              "percent": 67.0
+            },
+            "disk_io": {
+              "read_count": 457188,
+              "write_count": 748045,
+              "read_bytes": 16147825664,
+              "write_bytes": 22689392128
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        }
+      ],
+      "recent_alerts": []
+    },
+    "timestamp": "2025-10-18T19:53:11.309636"
+  },
+  "runtime_analysis": {
+    "main_file": "flask_simple_test\\dynamic_test_runner.py",
+    "execution_successful": false,
+    "error": "检测到Web应用，跳过服务器启动测试",
+    "project_type": "web_application",
+    "suggestion": "请启用'Web应用测试'选项以进行完整的动态检测"
+  },
+  "dynamic_detection": {
+    "status": "completed",
+    "is_flask_project": true,
+    "enable_web_test": true,
+    "test_results": {
+      "status": "success",
+      "flask_info": {
+        "flask_installed": true,
+        "flask_version": "3.0.3",
+        "werkzeug_installed": true,
+        "werkzeug_version": "3.0.3",
+        "jinja2_version": "3.1.4",
+        "markupsafe_version": "2.1.3",
+        "itsdangerous_version": "2.2.0",
+        "click_version": "8.1.7"
+      },
+      "test_results": {
+        "app_startup": true,
+        "route_tests": {
+          "status": "success",
+          "output": "SUCCESS: 所有路由测试通过\n"
+        },
+        "error_handling": {
+          "status": "success",
+          "output": "SUCCESS: 错误处理测试通过\n"
+        },
+        "performance": {
+          "status": "success",
+          "output": "SUCCESS: 100次请求耗时 0.04 秒\n平均响应时间: 0.40 毫秒\n"
+        }
+      },
+      "timestamp": 1760788335.519943
+    },
+    "issues": [],
+    "recommendations": [
+      "动态测试成功率较低，建议检查Flask应用配置",
+      "建议启用Web应用测试以获得更全面的检测"
+    ],
+    "tests_completed": true,
+    "success_rate": 0
+  },
+  "summary": {
+    "total_files": 9,
+    "analysis_completed": true,
+    "issues_summary": {
+      "static": {
+        "analysis_type": "enhanced_static_analysis",
+        "files_analyzed": 6,
+        "issues_found": 18,
+        "total_files": 7,
+        "total_lines": 2262,
+        "average_complexity": 37.833333333333336,
+        "maintainability_score": 35.33333333333333,
+        "issues_by_severity": {
+          "info": 18
+        },
+        "issues_by_type": {
+          "long_function": 10,
+          "long_class": 4,
+          "import_style": 4
+        },
+        "issues_by_tool": {
+          "code_analyzer": 18
+        }
+      },
+      "dynamic": {
+        "monitoring_duration": 60,
+        "alerts_generated": 0
+      },
+      "runtime": {
+        "execution_successful": false,
+        "main_file": "flask_simple_test\\dynamic_test_runner.py"
+      },
+      "dynamic_detection": {
+        "status": "completed",
+        "is_flask_project": true,
+        "tests_completed": true,
+        "success_rate": 0
+      }
+    },
+    "total_issues": 19,
+    "critical_issues": 1,
+    "warning_issues": 0,
+    "info_issues": 18,
+    "overall_status": "error",
+    "recommendations": [
+      "发现严重问题，建议立即修复",
+      "运行时分析失败，检查项目配置和依赖"
+    ]
+  }
+}

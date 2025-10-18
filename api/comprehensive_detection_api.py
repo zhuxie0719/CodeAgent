@@ -1,6 +1,6 @@
 """
 综合检测API
-集成静态检测和动态检测功能
+统一的检测入口，集成静态检测和动态检测功能
 """
 
 import asyncio
@@ -242,12 +242,6 @@ class ComprehensiveDetector:
         except Exception as e:
             return {"error": str(e), "tests_completed": False}
     
-    
-    
-    
-    
-    
-    
     def _generate_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """生成综合摘要"""
         summary = {
@@ -381,7 +375,7 @@ class ComprehensiveDetector:
     def generate_report(self, results: Dict[str, Any]) -> str:
         """生成文本报告"""
         report_lines = [
-            "# 动态检测报告",
+            "# 综合检测报告",
             f"生成时间: {results.get('timestamp', 'unknown')}",
             f"检测类型: {results.get('detection_type', 'unknown')}",
             "",
@@ -416,16 +410,16 @@ class ComprehensiveDetector:
         except Exception as e:
             print(f"保存结果失败: {e}")
 
-async def generate_ai_dynamic_report(results: Dict[str, Any], filename: str) -> str:
-    """生成AI动态检测报告"""
+async def generate_ai_comprehensive_report(results: Dict[str, Any], filename: str) -> str:
+    """生成AI综合检测报告"""
     try:
         if not deepseek_config.is_configured():
             print("⚠️ DeepSeek API未配置，使用基础报告")
             return generate_fallback_report(results, filename)
         
-        prompt = build_dynamic_analysis_prompt(results, filename)
+        prompt = build_comprehensive_analysis_prompt(results, filename)
         
-        print("🤖 正在生成AI报告...")
+        print("🤖 正在生成AI综合报告...")
         async with httpx.AsyncClient(timeout=180.0) as client:
             response = await client.post(
                 f"{deepseek_config.base_url}/chat/completions",
@@ -443,7 +437,7 @@ async def generate_ai_dynamic_report(results: Dict[str, Any], filename: str) -> 
             if response.status_code == 200:
                 result = response.json()
                 ai_content = result["choices"][0]["message"]["content"]
-                print("✅ AI报告生成成功")
+                print("✅ AI综合报告生成成功")
                 return ai_content
             else:
                 print(f"❌ AI API调用失败: {response.status_code}")
@@ -459,11 +453,11 @@ async def generate_ai_dynamic_report(results: Dict[str, Any], filename: str) -> 
         print(f"❌ AI报告生成异常: {e}")
         return generate_fallback_report(results, filename)
 
-def build_dynamic_analysis_prompt(results: Dict[str, Any], filename: str) -> str:
-    """构建动态分析提示词"""
+def build_comprehensive_analysis_prompt(results: Dict[str, Any], filename: str) -> str:
+    """构建综合分析提示词"""
     summary = results.get("summary", {})
     
-    prompt = f"""请分析以下动态检测结果，生成一份详细的自然语言报告：
+    prompt = f"""请分析以下综合检测结果，生成一份详细的自然语言报告：
 
 ## 项目信息
 - 文件名: {filename}
@@ -506,51 +500,12 @@ def build_dynamic_analysis_prompt(results: Dict[str, Any], filename: str) -> str
             prompt += "\n### 分析工具统计:\n"
             for tool, count in issues_by_tool.items():
                 prompt += f"- {tool}: {count}个问题\n"
-        
-        # 添加问题详情
-        issues = static.get("issues", [])
-        if issues:
-            prompt += "\n### 主要问题:\n"
-            for i, issue in enumerate(issues[:5]):  # 只显示前5个问题
-                tool = issue.get('tool', 'unknown')
-                prompt += f"{i+1}. [{tool}] {issue.get('file', 'N/A')}: {issue.get('message', 'N/A')} [{issue.get('severity', 'info')}]\n"
-        
-        # 添加项目结构信息
-        project_structure = static.get("project_structure", {})
-        if project_structure:
-            prompt += f"\n### 项目结构:\n"
-            prompt += f"- 项目类型: {project_structure.get('project_type', 'unknown')}\n"
-            prompt += f"- 主要语言: {project_structure.get('primary_language', 'unknown')}\n"
-            prompt += f"- 框架: {project_structure.get('framework', 'unknown')}\n"
-        
-        # 添加多语言分析信息
-        multi_lang = static.get("multi_language_analysis", {})
-        if multi_lang:
-            prompt += f"\n### 多语言分析:\n"
-            prompt += f"- Python文件分析: {static.get('python_files_analyzed', 0)}个\n"
-            prompt += f"- 其他语言文件分析: {static.get('other_language_files_analyzed', 0)}个\n"
-            prompt += f"- Python问题: {multi_lang.get('python_issues', 0)}个\n"
-            prompt += f"- AI分析问题: {multi_lang.get('ai_issues', 0)}个\n"
-            supported_langs = multi_lang.get('supported_languages', [])
-            if supported_langs:
-                prompt += f"- 支持的语言: {', '.join(supported_langs)}\n"
-        
-        # 添加AI分析摘要
-        ai_summary = static.get("ai_summary", {})
-        if ai_summary and ai_summary.get('success'):
-            prompt += f"\n### AI分析摘要:\n{ai_summary.get('summary', 'N/A')[:500]}...\n"
     
     prompt += "\n## 动态监控结果\n"
     if "dynamic_monitoring" in results:
         dynamic = results["dynamic_monitoring"]
         prompt += f"- 监控时长: {dynamic.get('duration', 0)}秒\n"
         prompt += f"- 告警数量: {len(dynamic.get('alerts', []))}\n"
-        
-        alerts = dynamic.get("alerts", [])
-        if alerts:
-            prompt += "\n### 系统告警:\n"
-            for i, alert in enumerate(alerts[:3]):  # 只显示前3个告警
-                prompt += f"{i+1}. {alert.get('message', 'N/A')} [{alert.get('severity', 'info')}]\n"
     
     prompt += "\n## 运行时分析结果\n"
     if "runtime_analysis" in results:
@@ -559,6 +514,14 @@ def build_dynamic_analysis_prompt(results: Dict[str, Any], filename: str) -> str
         prompt += f"- 执行状态: {'成功' if runtime.get('execution_successful', False) else '失败'}\n"
         if runtime.get("error"):
             prompt += f"- 错误信息: {runtime.get('error')}\n"
+    
+    prompt += "\n## 动态检测结果\n"
+    if "dynamic_detection" in results:
+        dynamic_detection = results["dynamic_detection"]
+        prompt += f"- 状态: {dynamic_detection.get('status', 'unknown')}\n"
+        prompt += f"- 是Flask项目: {dynamic_detection.get('is_flask_project', False)}\n"
+        prompt += f"- 测试完成: {dynamic_detection.get('tests_completed', False)}\n"
+        prompt += f"- 成功率: {dynamic_detection.get('success_rate', 0)}%\n"
     
     prompt += """
 请生成一份详细的自然语言分析报告，包括：
@@ -576,7 +539,7 @@ def generate_fallback_report(results: Dict[str, Any], filename: str) -> str:
     """生成基础报告（当AI API不可用时）"""
     summary = results.get("summary", {})
     
-    report = f"""# 动态检测报告
+    report = f"""# 综合检测报告
 
 ## 项目概述
 - **项目名称**: {filename}
@@ -591,65 +554,8 @@ def generate_fallback_report(results: Dict[str, Any], filename: str) -> str:
 - **信息问题**: {summary.get('info_issues', 0)}
 - **整体状态**: {summary.get('overall_status', 'unknown')}
 
-## 静态分析详情
+## 问题分析
 """
-    
-    # 添加静态分析详细信息
-    if "static_analysis" in results:
-        static = results["static_analysis"]
-        statistics = static.get("statistics", {})
-        
-        report += f"- **分析类型**: {static.get('analysis_type', 'unknown')}\n"
-        report += f"- **分析文件数**: {static.get('files_analyzed', 0)}\n"
-        report += f"- **总代码行数**: {statistics.get('total_lines', 0)}\n"
-        report += f"- **平均复杂度**: {statistics.get('average_complexity', 0)}\n"
-        report += f"- **可维护性评分**: {statistics.get('maintainability_score', 0)}\n"
-        
-        # 添加问题统计
-        issues_by_severity = statistics.get("issues_by_severity", {})
-        issues_by_tool = statistics.get("issues_by_tool", {})
-        
-        if issues_by_severity:
-            report += "\n### 问题严重程度分布\n"
-            for severity, count in issues_by_severity.items():
-                report += f"- {severity}: {count}个\n"
-        
-        if issues_by_tool:
-            report += "\n### 分析工具统计\n"
-            for tool, count in issues_by_tool.items():
-                report += f"- {tool}: {count}个问题\n"
-        
-        # 添加项目结构信息
-        project_structure = static.get("project_structure", {})
-        if project_structure:
-            report += f"\n### 项目结构信息\n"
-            report += f"- **项目类型**: {project_structure.get('project_type', 'unknown')}\n"
-            report += f"- **主要语言**: {project_structure.get('primary_language', 'unknown')}\n"
-            report += f"- **框架**: {project_structure.get('framework', 'unknown')}\n"
-            report += f"- **包含测试**: {'是' if project_structure.get('has_tests', False) else '否'}\n"
-            report += f"- **包含文档**: {'是' if project_structure.get('has_docs', False) else '否'}\n"
-        
-        # 添加多语言分析信息
-        multi_lang = static.get("multi_language_analysis", {})
-        if multi_lang:
-            report += f"\n### 多语言分析信息\n"
-            report += f"- **Python文件分析**: {static.get('python_files_analyzed', 0)}个\n"
-            report += f"- **其他语言文件分析**: {static.get('other_language_files_analyzed', 0)}个\n"
-            report += f"- **Python问题**: {multi_lang.get('python_issues', 0)}个\n"
-            report += f"- **AI分析问题**: {multi_lang.get('ai_issues', 0)}个\n"
-            supported_langs = multi_lang.get('supported_languages', [])
-            if supported_langs:
-                report += f"- **支持的语言**: {', '.join(supported_langs)}\n"
-        
-        # 添加主要问题
-        issues = static.get("issues", [])
-        if issues:
-            report += "\n### 主要问题列表\n"
-            for i, issue in enumerate(issues[:10], 1):  # 显示前10个问题
-                tool = issue.get('tool', 'unknown')
-                report += f"{i}. **[{tool}]** {issue.get('file', 'N/A')}: {issue.get('message', 'N/A')} [{issue.get('severity', 'info')}]\n"
-    
-    report += "\n## 问题分析\n"
     
     if summary.get('critical_issues', 0) > 0:
         report += "⚠️ **发现严重问题**，需要立即处理\n"
@@ -668,38 +574,6 @@ def generate_fallback_report(results: Dict[str, Any], filename: str) -> str:
         for i, rec in enumerate(recommendations, 1):
             report += f"{i}. {rec}\n"
     
-    # 添加技术建议
-    if "static_analysis" in results:
-        static = results["static_analysis"]
-        statistics = static.get("statistics", {})
-        
-        report += "\n## 技术建议\n"
-        
-        # 基于复杂度给出建议
-        avg_complexity = statistics.get("average_complexity", 0)
-        if avg_complexity > 10:
-            report += "- 🔧 **代码复杂度较高**，建议重构复杂函数\n"
-        elif avg_complexity > 5:
-            report += "- 📝 **代码复杂度适中**，注意保持代码简洁\n"
-        else:
-            report += "- ✅ **代码复杂度良好**，继续保持\n"
-        
-        # 基于可维护性给出建议
-        maintainability_score = statistics.get("maintainability_score", 0)
-        if maintainability_score < 60:
-            report += "- 🔨 **可维护性较低**，建议改进代码结构和文档\n"
-        elif maintainability_score < 80:
-            report += "- 📊 **可维护性中等**，可以进一步优化\n"
-        else:
-            report += "- 🌟 **可维护性良好**，代码质量较高\n"
-        
-        # 基于工具分析给出建议
-        issues_by_tool = statistics.get("issues_by_tool", {})
-        if 'pylint' in issues_by_tool and issues_by_tool['pylint'] > 0:
-            report += "- 🐍 **Pylint发现问题**，建议修复代码质量问题\n"
-        if 'flake8' in issues_by_tool and issues_by_tool['flake8'] > 0:
-            report += "- 📏 **Flake8发现问题**，建议改进代码风格\n"
-    
     report += "\n## 总结\n"
     if summary.get('overall_status') == 'good':
         report += "项目整体质量良好，未发现严重问题。建议继续保持代码质量，定期进行代码审查。"
@@ -712,8 +586,7 @@ def generate_fallback_report(results: Dict[str, Any], filename: str) -> str:
     
     return report
 
-# 注意：不再使用全局检测器实例，每个请求创建独立实例
-
+# API端点
 @router.get("/")
 async def root():
     """根路径"""
@@ -748,32 +621,15 @@ async def comprehensive_detect(
 ):
     """综合检测 - 并行执行静态检测和动态检测"""
     
-    # 调试信息
-    print(f"🔧 API接收到的参数:")
-    print(f"   - static_analysis: {static_analysis} (type: {type(static_analysis)})")
-    print(f"   - dynamic_monitoring: {dynamic_monitoring} (type: {type(dynamic_monitoring)})")
-    print(f"   - runtime_analysis: {runtime_analysis} (type: {type(runtime_analysis)})")
-    print(f"   - enable_web_app_test: {enable_web_app_test} (type: {type(enable_web_app_test)})")
-    print(f"   - enable_dynamic_detection: {enable_dynamic_detection} (type: {type(enable_dynamic_detection)})")
-    print(f"   - enable_flask_specific_tests: {enable_flask_specific_tests} (type: {type(enable_flask_specific_tests)})")
-    print(f"   - enable_server_testing: {enable_server_testing} (type: {type(enable_server_testing)})")
-    print(f"   - upload_type: {upload_type}")
-    print(f"   - file: {file}")
-    print(f"   - files: {files}")
-    
     # 确保所有布尔参数都是布尔值
     def convert_to_bool(value, param_name):
         if isinstance(value, str):
             result = value.lower() in ('true', '1', 'yes', 'on')
-            print(f"🔄 转换{param_name}为布尔值: {value} -> {result}")
             return result
         elif isinstance(value, bool):
-            print(f"🔄 {param_name}已经是布尔值: {value}")
             return value
         else:
-            result = bool(value)
-            print(f"🔄 转换{param_name}为布尔值: {value} -> {result}")
-            return result
+            return bool(value)
     
     static_analysis = convert_to_bool(static_analysis, 'static_analysis')
     dynamic_monitoring = convert_to_bool(dynamic_monitoring, 'dynamic_monitoring')
@@ -782,21 +638,7 @@ async def comprehensive_detect(
     enable_dynamic_detection = convert_to_bool(enable_dynamic_detection, 'enable_dynamic_detection')
     enable_flask_specific_tests = convert_to_bool(enable_flask_specific_tests, 'enable_flask_specific_tests')
     enable_server_testing = convert_to_bool(enable_server_testing, 'enable_server_testing')
-    """
-    动态缺陷检测
     
-    Args:
-        file: 项目压缩包（单文件上传）
-        files: 项目文件列表（目录上传）
-        static_analysis: 是否进行静态分析
-        dynamic_monitoring: 是否进行动态监控
-        runtime_analysis: 是否进行运行时分析
-        enable_web_app_test: 是否启用Web应用测试（默认False，避免超时）
-        upload_type: 上传类型 ("file" 或 "directory")
-    
-    Returns:
-        检测结果
-    """
     # 验证输入
     if not file and not files:
         raise HTTPException(status_code=400, detail="请提供文件或文件列表")
@@ -833,19 +675,16 @@ async def comprehensive_detect(
             print(f"压缩包已保存到临时位置: {temp_file_path}")
         else:
             # 目录上传（多文件）
-            temp_dir = tempfile.mkdtemp(prefix="dynamic_detection_")
+            temp_dir = tempfile.mkdtemp(prefix="comprehensive_detection_")
             print(f"创建临时目录: {temp_dir}")
             
             # 保存所有文件到临时目录
             for file in upload_files:
                 if file.filename:
                     # 处理文件路径结构
-                    # 如果文件名包含路径分隔符，保持路径结构
-                    # 否则，将文件放在根目录
                     if '/' in file.filename or '\\' in file.filename:
                         file_path = os.path.join(temp_dir, file.filename)
                     else:
-                        # 没有路径信息，直接放在根目录
                         file_path = os.path.join(temp_dir, file.filename)
                     
                     os.makedirs(os.path.dirname(file_path), exist_ok=True)
@@ -873,13 +712,6 @@ async def comprehensive_detect(
         detector.enable_dynamic_detection = enable_dynamic_detection
         detector.enable_flask_specific_tests = enable_flask_specific_tests
         detector.enable_server_testing = enable_server_testing
-        
-        # 调试信息
-        print(f"🔧 API调试信息:")
-        print(f"   - enable_web_app_test参数: {enable_web_app_test} (type: {type(enable_web_app_test)})")
-        print(f"   - enable_dynamic_detection参数: {enable_dynamic_detection} (type: {type(enable_dynamic_detection)})")
-        print(f"   - enable_flask_specific_tests参数: {enable_flask_specific_tests} (type: {type(enable_flask_specific_tests)})")
-        print(f"   - enable_server_testing参数: {enable_server_testing} (type: {type(enable_server_testing)})")
         
         # 执行检测（添加超时处理）
         print("开始执行综合检测...")
@@ -913,19 +745,7 @@ async def comprehensive_detect(
         
         # 生成AI报告
         try:
-            # 生成静态检测AI报告
-            static_ai_report = ""
-            if results.get("static_analysis") and not results["static_analysis"].get("error"):
-                static_ai_report = await static_agent.generate_ai_report(results["static_analysis"], file.filename)
-            
-            # 生成动态检测AI报告
-            dynamic_ai_report = await generate_ai_dynamic_report(results, file.filename)
-            
-            ai_report = {
-                "static_report": static_ai_report,
-                "dynamic_report": dynamic_ai_report,
-                "success": True
-            }
+            ai_report = await generate_ai_comprehensive_report(results, file.filename)
             print("✅ AI报告生成成功")
         except Exception as e:
             print(f"⚠️ AI报告生成失败: {e}")
@@ -937,8 +757,8 @@ async def comprehensive_detect(
         
         # 保存结果到文件
         try:
-            results_file = f"detection_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            results_dir = Path("dynamic_detection_results")
+            results_file = f"comprehensive_detection_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            results_dir = Path("comprehensive_detection_results")
             results_dir.mkdir(exist_ok=True)
             results_path = results_dir / results_file
             detector.save_results(results, str(results_path))
@@ -979,67 +799,6 @@ async def comprehensive_detect(
             except Exception as e:
                 print(f"清理临时目录失败: {e}")
 
-@router.get("/results/{filename}")
-async def get_detection_results(filename: str):
-    """获取检测结果文件"""
-    try:
-        if not filename.endswith('.json'):
-            raise HTTPException(status_code=400, detail="只支持JSON格式的结果文件")
-        
-        # 在dynamic_detection_results目录中查找文件
-        results_dir = Path("dynamic_detection_results")
-        file_path = results_dir / filename
-        if not file_path.exists():
-            raise HTTPException(status_code=404, detail="结果文件不存在")
-        
-        with open(file_path, 'r', encoding='utf-8') as f:
-            results = json.load(f)
-        
-        return BaseResponse(
-            success=True,
-            message="获取检测结果成功",
-            data=results
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取检测结果失败: {str(e)}")
-
-@router.get("/results")
-async def list_detection_results():
-    """列出所有检测结果文件"""
-    try:
-        results_dir = Path("dynamic_detection_results")
-        if not results_dir.exists():
-            return BaseResponse(
-                success=True,
-                message="检测结果目录不存在",
-                data={"results": []}
-            )
-        
-        results_files = []
-        for file_path in results_dir.glob("detection_results_*.json"):
-            file_info = {
-                "filename": file_path.name,
-                "size": file_path.stat().st_size,
-                "created_time": datetime.fromtimestamp(file_path.stat().st_ctime).isoformat(),
-                "modified_time": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat()
-            }
-            results_files.append(file_info)
-        
-        # 按修改时间倒序排列
-        results_files.sort(key=lambda x: x["modified_time"], reverse=True)
-        
-        return BaseResponse(
-            success=True,
-            message="获取检测结果列表成功",
-            data={"results": results_files}
-        )
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取检测结果列表失败: {str(e)}")
-
 @router.get("/status")
 async def get_detection_status():
     """获取检测状态"""
@@ -1054,70 +813,3 @@ async def get_detection_status():
             "comprehensive_detection": True
         }
     }
-
-@router.post("/test-monitor")
-async def test_monitor(duration: int = 30):
-    """测试监控功能"""
-    try:
-        results = await dynamic_agent.start_monitoring(duration)
-        
-        return BaseResponse(
-            success=True,
-            message="监控测试完成",
-            data=results
-        )
-        
-    except Exception as e:
-        return BaseResponse(
-            success=False,
-            error=str(e),
-            message="监控测试失败"
-        )
-
-@router.post("/test-project-runner")
-async def test_project_runner():
-    """测试项目运行器"""
-    try:
-        from utils.project_runner import ProjectRunner
-        
-        runner = ProjectRunner()
-        
-        # 这里需要提供一个测试项目
-        # 目前返回模拟结果
-        return BaseResponse(
-            success=True,
-            message="项目运行器测试完成",
-            data={
-                "status": "ready",
-                "message": "项目运行器已就绪"
-            }
-        )
-        
-    except Exception as e:
-        return BaseResponse(
-            success=False,
-            error=str(e),
-            message="项目运行器测试失败"
-        )
-
-@router.get("/system-info")
-async def get_system_info():
-    """获取系统信息"""
-    try:
-        import psutil
-        import sys
-        
-        return {
-            "cpu_count": psutil.cpu_count(),
-            "memory_total": psutil.virtual_memory().total,
-            "disk_total": psutil.disk_usage('/').total,
-            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
-            "platform": sys.platform
-        }
-        
-    except Exception as e:
-        return {
-            "error": str(e)
-        }
-
-# 路由已配置完成，可以通过main_api.py统一启动

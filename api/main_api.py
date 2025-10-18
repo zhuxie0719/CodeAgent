@@ -130,13 +130,13 @@ async def startup_event():
         import traceback
         traceback.print_exc()
     
-    # 挂载动态检测 API
+    # 挂载综合检测 API
     try:
-        import dynamic_api
-        app.include_router(dynamic_api.router, prefix="/api/dynamic")
-        print("✅ Dynamic Detection API 路由已挂载")
+        import comprehensive_detection_api
+        app.include_router(comprehensive_detection_api.router, prefix="/api/comprehensive")
+        print("✅ Comprehensive Detection API 路由已挂载")
     except Exception as e:
-        print(f"⚠️  挂载 Dynamic Detection API 失败: {e}")
+        print(f"⚠️  挂载 Comprehensive Detection API 失败: {e}")
         import traceback
         traceback.print_exc()
     
@@ -247,12 +247,10 @@ async def root():
                 "项目分析": "POST /api/code-analysis/analyze",
                 "上传分析": "POST /api/code-analysis/analyze-upload"
             },
-            "动态检测": {
-                "上传检测": "POST /api/dynamic/detect",
-                "检测状态": "GET /api/dynamic/status",
-                "结果列表": "GET /api/dynamic/results",
-                "获取结果": "GET /api/dynamic/results/{filename}",
-                "系统信息": "GET /api/dynamic/system-info"
+            "综合检测": {
+                "上传检测": "POST /api/comprehensive/detect",
+                "检测状态": "GET /api/comprehensive/status",
+                "健康检查": "GET /api/comprehensive/health"
             }
         },
         "status": {

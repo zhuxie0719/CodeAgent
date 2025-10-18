@@ -1,0 +1,1102 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-10-18T19:31:28.182526",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpnrdvatx1.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true
+  },
+  "extracted_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpjqysco83",
+  "files": [
+    "puzzle\\.env",
+    "puzzle\\.gitignore",
+    "puzzle\\app.py",
+    "puzzle\\config.py",
+    "puzzle\\download_fonts.py",
+    "puzzle\\extensions.py",
+    "puzzle\\pic接口文档.md",
+    "puzzle\\README.md",
+    "puzzle\\requirements.txt",
+    "puzzle\\setup.py",
+    "puzzle\\table.sql",
+    "puzzle\\test.py",
+    "puzzle\\接口文档",
+    "puzzle\\核心问题与解决方案汇报.md",
+    "puzzle\\.idea\\.gitignore",
+    "puzzle\\battle_mode\\battle.html",
+    "puzzle\\scripts\\delete_puzzles_by_title.py",
+    "puzzle\\scripts\\delete_puzzles_cascade.py",
+    "puzzle\\scripts\\delete_puzzles_full_cascade.py",
+    "puzzle\\scripts\\seed_system_levels.py",
+    "puzzle\\static\\audio\\ai_theme.mp3",
+    "puzzle\\static\\audio\\click_sound.mp3",
+    "puzzle\\static\\audio\\game_theme.mp3",
+    "puzzle\\static\\audio\\main_theme.mp3",
+    "puzzle\\static\\audio\\README.md",
+    "puzzle\\static\\audio\\README.txt",
+    "puzzle\\static\\audio\\test_audio.html",
+    "puzzle\\static\\audio\\versus_theme.mp3",
+    "puzzle\\static\\css\\game-rank.css",
+    "puzzle\\static\\css\\mobile.css",
+    "puzzle\\static\\css\\style.css",
+    "puzzle\\static\\fonts\\PressStart2P-Regular.woff2",
+    "puzzle\\static\\fonts\\Zpix-Regular.ttf",
+    "puzzle\\static\\images\\background.jpg",
+    "puzzle\\static\\images\\background1.png",
+    "puzzle\\static\\images\\background2.png",
+    "puzzle\\static\\images\\background3.png",
+    "puzzle\\static\\images\\用户头像.jpg",
+    "puzzle\\static\\images\\animals\\chicken.png",
+    "puzzle\\static\\images\\animals\\dolphin.png",
+    "puzzle\\static\\images\\animals\\pikachu.webp",
+    "puzzle\\static\\images\\animals\\psyduck.webp",
+    "puzzle\\static\\images\\architecture\\church.png",
+    "puzzle\\static\\images\\architecture\\garden.png",
+    "puzzle\\static\\images\\architecture\\pyramid.png",
+    "puzzle\\static\\images\\cartoon\\nikki.png",
+    "puzzle\\static\\images\\nature\\desert.png",
+    "puzzle\\static\\images\\nature\\field.png",
+    "puzzle\\static\\images\\nature\\lake.png",
+    "puzzle\\static\\images\\nature\\meteor.png",
+    "puzzle\\static\\images\\nature\\mountain.png",
+    "puzzle\\static\\images\\nature\\ocean.png",
+    "puzzle\\static\\images\\nature\\snow.png",
+    "puzzle\\static\\images\\nature\\valley.png",
+    "puzzle\\static\\images\\nature\\woods.png",
+    "puzzle\\static\\js\\app.js",
+    "puzzle\\static\\js\\click_sound.js",
+    "puzzle\\static\\js\\game.js",
+    "puzzle\\static\\js\\global.js",
+    "puzzle\\static\\js\\mobile-support.js",
+    "puzzle\\static\\js\\music.js",
+    "puzzle\\static\\js\\online_game.js",
+    "puzzle\\static\\js\\online_script.js",
+    "puzzle\\static\\js\\script.js",
+    "puzzle\\static\\js\\share.js",
+    "puzzle\\templates\\ai.html",
+    "puzzle\\templates\\edditor.html",
+    "puzzle\\templates\\game.html",
+    "puzzle\\templates\\index.html",
+    "puzzle\\templates\\level_rank.html",
+    "puzzle\\templates\\messages.html",
+    "puzzle\\templates\\myPuzzle.html",
+    "puzzle\\templates\\new.html",
+    "puzzle\\templates\\online_editor.html",
+    "puzzle\\templates\\online_game.html",
+    "puzzle\\templates\\option.html",
+    "puzzle\\templates\\option_static.html",
+    "puzzle\\templates\\photo.html",
+    "puzzle\\templates\\rank.html",
+    "puzzle\\templates\\search_friend.html",
+    "puzzle\\templates\\share.html",
+    "puzzle\\templates\\versus.html",
+    "puzzle\\templates\\_navbar.html",
+    "puzzle\\views\\ai.py",
+    "puzzle\\views\\auth.py",
+    "puzzle\\views\\levels.py",
+    "puzzle\\views\\pic.py",
+    "puzzle\\views\\pvp.py",
+    "puzzle\\views\\ranking.py",
+    "puzzle\\views\\share.py",
+    "puzzle\\views\\social.py",
+    "puzzle\\views\\__pycache__\\ai.cpython-310.pyc",
+    "puzzle\\views\\__pycache__\\ai.cpython-311.pyc",
+    "puzzle\\views\\__pycache__\\ai.cpython-313.pyc",
+    "puzzle\\views\\__pycache__\\auth.cpython-310.pyc",
+    "puzzle\\views\\__pycache__\\auth.cpython-311.pyc",
+    "puzzle\\views\\__pycache__\\auth.cpython-313.pyc",
+    "puzzle\\views\\__pycache__\\levels.cpython-310.pyc",
+    "puzzle\\views\\__pycache__\\pic.cpython-310.pyc",
+    "puzzle\\views\\__pycache__\\pic.cpython-311.pyc",
+    "puzzle\\views\\__pycache__\\pic.cpython-313.pyc",
+    "puzzle\\views\\__pycache__\\pvp.cpython-310.pyc",
+    "puzzle\\views\\__pycache__\\pvp.cpython-311.pyc",
+    "puzzle\\views\\__pycache__\\pvp.cpython-313.pyc",
+    "puzzle\\views\\__pycache__\\ranking.cpython-310.pyc",
+    "puzzle\\views\\__pycache__\\ranking.cpython-311.pyc",
+    "puzzle\\views\\__pycache__\\share.cpython-310.pyc",
+    "puzzle\\views\\__pycache__\\social.cpython-310.pyc",
+    "puzzle\\__pycache__\\config.cpython-310.pyc",
+    "puzzle\\__pycache__\\config.cpython-311.pyc",
+    "puzzle\\__pycache__\\extensions.cpython-310.pyc",
+    "puzzle\\__pycache__\\extensions.cpython-311.pyc"
+  ],
+  "static_analysis": {
+    "success": true,
+    "analysis_type": "enhanced_static_analysis",
+    "project_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpjqysco83",
+    "files_analyzed": 18,
+    "python_files_analyzed": 18,
+    "other_language_files_analyzed": 0,
+    "issues_found": 22,
+    "issues": [
+      {
+        "type": "long_function",
+        "message": "函数 create_app 过长 (100 行)",
+        "line": 17,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.auth",
+        "line": 7,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.pic",
+        "line": 8,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.ai",
+        "line": 9,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.pvp",
+        "line": 10,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.ranking",
+        "line": 12,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.levels",
+        "line": 13,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.social",
+        "line": 14,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.share",
+        "line": 15,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: views.pvp",
+        "line": 125,
+        "file": "puzzle\\app.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: sqlalchemy.orm",
+        "line": 5,
+        "file": "puzzle\\extensions.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 main 过长 (80 行)",
+        "line": 7,
+        "file": "puzzle\\scripts\\delete_puzzles_by_title.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 main 过长 (102 行)",
+        "line": 7,
+        "file": "puzzle\\scripts\\delete_puzzles_cascade.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 main 过长 (123 行)",
+        "line": 7,
+        "file": "puzzle\\scripts\\delete_puzzles_full_cascade.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: werkzeug.security",
+        "line": 4,
+        "file": "puzzle\\views\\auth.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 update_level_record 过长 (56 行)",
+        "line": 87,
+        "file": "puzzle\\views\\levels.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 create_puzzle 过长 (68 行)",
+        "line": 18,
+        "file": "puzzle\\views\\pic.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: werkzeug.utils",
+        "line": 3,
+        "file": "puzzle\\views\\pic.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 register_socketio_events 过长 (123 行)",
+        "line": 27,
+        "file": "puzzle\\views\\pvp.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: werkzeug.utils",
+        "line": 4,
+        "file": "puzzle\\views\\pvp.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 update_record 过长 (84 行)",
+        "line": 11,
+        "file": "puzzle\\views\\ranking.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 create_share 过长 (52 行)",
+        "line": 13,
+        "file": "puzzle\\views\\share.py",
+        "tool": "code_analyzer"
+      }
+    ],
+    "project_structure": {
+      "path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpjqysco83",
+      "total_files": 8,
+      "total_lines": 1508,
+      "file_types": {
+        ".py": 8
+      },
+      "directories": [
+        "puzzle\\views"
+      ],
+      "files": [
+        {
+          "path": "puzzle\\views\\ai.py",
+          "lines": 20,
+          "size": 737
+        },
+        {
+          "path": "puzzle\\views\\auth.py",
+          "lines": 123,
+          "size": 4490
+        },
+        {
+          "path": "puzzle\\views\\levels.py",
+          "lines": 280,
+          "size": 10180
+        },
+        {
+          "path": "puzzle\\views\\pic.py",
+          "lines": 331,
+          "size": 13814
+        },
+        {
+          "path": "puzzle\\views\\pvp.py",
+          "lines": 219,
+          "size": 9254
+        },
+        {
+          "path": "puzzle\\views\\ranking.py",
+          "lines": 192,
+          "size": 7703
+        },
+        {
+          "path": "puzzle\\views\\share.py",
+          "lines": 193,
+          "size": 6089
+        },
+        {
+          "path": "puzzle\\views\\social.py",
+          "lines": 150,
+          "size": 6593
+        }
+      ],
+      "project_type": "unknown",
+      "framework": "unknown",
+      "primary_language": "python",
+      "has_tests": false,
+      "has_docs": false,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 28,
+      "analyzed_files": 28,
+      "total_lines": 8488,
+      "total_functions": 202,
+      "total_classes": 23,
+      "average_complexity": 22.821428571428573,
+      "max_complexity": 116,
+      "total_issues": 22,
+      "issues_by_type": {
+        "long_function": 9,
+        "import_style": 13
+      },
+      "complexity_distribution": {
+        "2": 3,
+        "0": 2,
+        "6": 1,
+        "4": 2,
+        "9": 1,
+        "12": 1,
+        "13": 3,
+        "16": 1,
+        "5": 1,
+        "45": 1,
+        "44": 1,
+        "38": 1,
+        "94": 1,
+        "116": 1,
+        "20": 3,
+        "24": 2,
+        "35": 1,
+        "39": 1,
+        "19": 1
+      },
+      "maintainability_score": 63.35714285714286,
+      "file_analysis": [
+        {
+          "file_path": "puzzle\\app.py",
+          "lines_of_code": 129,
+          "function_count": 18,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 2,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 18,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 create_app 过长 (100 行)",
+              "line": 17,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.auth",
+              "line": 7,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.pic",
+              "line": 8,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.ai",
+              "line": 9,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.pvp",
+              "line": 10,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.ranking",
+              "line": 12,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.levels",
+              "line": 13,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.social",
+              "line": 14,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.share",
+              "line": 15,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: views.pvp",
+              "line": 125,
+              "file": "puzzle\\app.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\app.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\config.py",
+          "lines_of_code": 13,
+          "function_count": 0,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 0,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 0,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\config.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\download_fonts.py",
+          "lines_of_code": 57,
+          "function_count": 2,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 6,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 2,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 2
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\download_fonts.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\extensions.py",
+          "lines_of_code": 124,
+          "function_count": 0,
+          "class_count": 10,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 0,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 0,
+            "class_count": 10,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: sqlalchemy.orm",
+              "line": 5,
+              "file": "puzzle\\extensions.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\extensions.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\setup.py",
+          "lines_of_code": 40,
+          "function_count": 2,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 4,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 2,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 2
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\setup.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\test.py",
+          "lines_of_code": 55,
+          "function_count": 5,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 2,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 5,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 5
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\test.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\scripts\\delete_puzzles_by_title.py",
+          "lines_of_code": 91,
+          "function_count": 1,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 9,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 1,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 main 过长 (80 行)",
+              "line": 7,
+              "file": "puzzle\\scripts\\delete_puzzles_by_title.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\scripts\\delete_puzzles_by_title.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\scripts\\delete_puzzles_cascade.py",
+          "lines_of_code": 113,
+          "function_count": 1,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 12,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 1,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 main 过长 (102 行)",
+              "line": 7,
+              "file": "puzzle\\scripts\\delete_puzzles_cascade.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\scripts\\delete_puzzles_cascade.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\scripts\\delete_puzzles_full_cascade.py",
+          "lines_of_code": 134,
+          "function_count": 1,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 13,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 1,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 main 过长 (123 行)",
+              "line": 7,
+              "file": "puzzle\\scripts\\delete_puzzles_full_cascade.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\scripts\\delete_puzzles_full_cascade.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\scripts\\seed_system_levels.py",
+          "lines_of_code": 162,
+          "function_count": 3,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 16,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 3,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 5
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\scripts\\seed_system_levels.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\static\\js\\app.js",
+          "lines_of_code": 47,
+          "function_count": 1,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 5,
+            "cognitive_complexity": 0,
+            "lines_of_code": 47,
+            "function_count": 1,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\click_sound.js",
+          "lines_of_code": 219,
+          "function_count": 4,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 13,
+            "cognitive_complexity": 0,
+            "lines_of_code": 219,
+            "function_count": 4,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\game.js",
+          "lines_of_code": 758,
+          "function_count": 0,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 45,
+            "cognitive_complexity": 0,
+            "lines_of_code": 758,
+            "function_count": 0,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\global.js",
+          "lines_of_code": 48,
+          "function_count": 2,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 4,
+            "cognitive_complexity": 0,
+            "lines_of_code": 48,
+            "function_count": 2,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\mobile-support.js",
+          "lines_of_code": 738,
+          "function_count": 0,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 44,
+            "cognitive_complexity": 0,
+            "lines_of_code": 738,
+            "function_count": 0,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\music.js",
+          "lines_of_code": 170,
+          "function_count": 0,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 13,
+            "cognitive_complexity": 0,
+            "lines_of_code": 170,
+            "function_count": 0,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\online_game.js",
+          "lines_of_code": 703,
+          "function_count": 0,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 38,
+            "cognitive_complexity": 0,
+            "lines_of_code": 703,
+            "function_count": 0,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\online_script.js",
+          "lines_of_code": 1370,
+          "function_count": 46,
+          "class_count": 4,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 94,
+            "cognitive_complexity": 0,
+            "lines_of_code": 1370,
+            "function_count": 46,
+            "class_count": 4,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\script.js",
+          "lines_of_code": 1611,
+          "function_count": 46,
+          "class_count": 4,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 116,
+            "cognitive_complexity": 0,
+            "lines_of_code": 1611,
+            "function_count": 46,
+            "class_count": 4,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\static\\js\\share.js",
+          "lines_of_code": 398,
+          "function_count": 6,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 20,
+            "cognitive_complexity": 0,
+            "lines_of_code": 398,
+            "function_count": 6,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "puzzle\\views\\ai.py",
+          "lines_of_code": 20,
+          "function_count": 1,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 2,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 1,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\ai.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\views\\auth.py",
+          "lines_of_code": 123,
+          "function_count": 8,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 20,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 8,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 7
+          },
+          "issues": [
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: werkzeug.security",
+              "line": 4,
+              "file": "puzzle\\views\\auth.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\auth.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\views\\levels.py",
+          "lines_of_code": 280,
+          "function_count": 10,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 24,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 10,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 7
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 update_level_record 过长 (56 行)",
+              "line": 87,
+              "file": "puzzle\\views\\levels.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\levels.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\views\\pic.py",
+          "lines_of_code": 331,
+          "function_count": 12,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 35,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 12,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 4
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 create_puzzle 过长 (68 行)",
+              "line": 18,
+              "file": "puzzle\\views\\pic.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: werkzeug.utils",
+              "line": 3,
+              "file": "puzzle\\views\\pic.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\pic.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\views\\pvp.py",
+          "lines_of_code": 219,
+          "function_count": 16,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 39,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 16,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 9
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 register_socketio_events 过长 (123 行)",
+              "line": 27,
+              "file": "puzzle\\views\\pvp.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: werkzeug.utils",
+              "line": 4,
+              "file": "puzzle\\views\\pvp.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\pvp.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\views\\ranking.py",
+          "lines_of_code": 192,
+          "function_count": 4,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 19,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 4,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 2
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 update_record 过长 (84 行)",
+              "line": 11,
+              "file": "puzzle\\views\\ranking.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\ranking.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\views\\share.py",
+          "lines_of_code": 193,
+          "function_count": 6,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 20,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 6,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 3
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 create_share 过长 (52 行)",
+              "line": 13,
+              "file": "puzzle\\views\\share.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\share.py"
+          }
+        },
+        {
+          "file_path": "puzzle\\views\\social.py",
+          "lines_of_code": 150,
+          "function_count": 7,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 24,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 7,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "puzzle\\views\\social.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "puzzle\\app.py": 

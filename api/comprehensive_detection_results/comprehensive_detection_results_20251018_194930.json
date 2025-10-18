@@ -1,0 +1,495 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-10-18T19:48:26.691947",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\comprehensive_detection_vxm0un2k\\project.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true
+  },
+  "extracted_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmppgdd2oll",
+  "files": [
+    "flask_simple_test\\dynamic_test_runner.py",
+    "flask_simple_test\\flask_app.py",
+    "flask_simple_test\\no_flask_dynamic_test.py",
+    "flask_simple_test\\README.md",
+    "flask_simple_test\\run_tests.py",
+    "flask_simple_test\\simple_dynamic_test.py",
+    "flask_simple_test\\test_flask_simple.py",
+    "flask_simple_test\\__pycache__\\dynamic_test_runner.cpython-312.pyc",
+    "flask_simple_test\\__pycache__\\no_flask_dynamic_test.cpython-312.pyc"
+  ],
+  "static_analysis": {
+    "success": true,
+    "analysis_type": "enhanced_static_analysis",
+    "project_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmppgdd2oll",
+    "files_analyzed": 6,
+    "python_files_analyzed": 6,
+    "other_language_files_analyzed": 0,
+    "issues_found": 17,
+    "issues": [
+      {
+        "type": "long_function",
+        "message": "函数 run_dynamic_tests 过长 (70 行)",
+        "line": 31,
+        "file": "flask_simple_test\\dynamic_test_runner.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 FlaskDynamicTestRunner 过长 (493 行)",
+        "line": 23,
+        "file": "flask_simple_test\\dynamic_test_runner.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: werkzeug.urls",
+        "line": 59,
+        "file": "flask_simple_test\\dynamic_test_runner.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_project_structure 过长 (57 行)",
+        "line": 130,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_code_quality 过长 (123 行)",
+        "line": 189,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_dependencies 过长 (75 行)",
+        "line": 314,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_configuration 过长 (60 行)",
+        "line": 391,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_security_scan 过长 (86 行)",
+        "line": 453,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_performance_analysis 过长 (83 行)",
+        "line": 541,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 NoFlaskDynamicTest 过长 (644 行)",
+        "line": 17,
+        "file": "flask_simple_test\\no_flask_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: flask_simple_test.dynamic_test_runner",
+        "line": 16,
+        "file": "flask_simple_test\\run_tests.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "import_style",
+        "message": "建议使用相对导入: flask_simple_test.test_flask_simple",
+        "line": 17,
+        "file": "flask_simple_test\\run_tests.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_code_syntax 过长 (55 行)",
+        "line": 149,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_imports 过长 (75 行)",
+        "line": 206,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_function",
+        "message": "函数 _test_flask_detection 过长 (79 行)",
+        "line": 283,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 SimpleDynamicTest 过长 (384 行)",
+        "line": 15,
+        "file": "flask_simple_test\\simple_dynamic_test.py",
+        "tool": "code_analyzer"
+      },
+      {
+        "type": "long_class",
+        "message": "类 StaticTestRunner 过长 (335 行)",
+        "line": 21,
+        "file": "flask_simple_test\\test_flask_simple.py",
+        "tool": "code_analyzer"
+      }
+    ],
+    "project_structure": {
+      "path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmppgdd2oll",
+      "total_files": 7,
+      "total_lines": 2261,
+      "file_types": {
+        ".py": 6,
+        ".md": 1
+      },
+      "directories": [
+        "flask_simple_test"
+      ],
+      "files": [
+        {
+          "path": "flask_simple_test\\dynamic_test_runner.py",
+          "lines": 528,
+          "size": 17397
+        },
+        {
+          "path": "flask_simple_test\\flask_app.py",
+          "lines": 96,
+          "size": 2564
+        },
+        {
+          "path": "flask_simple_test\\no_flask_dynamic_test.py",
+          "lines": 690,
+          "size": 28945
+        },
+        {
+          "path": "flask_simple_test\\README.md",
+          "lines": 93,
+          "size": 1974
+        },
+        {
+          "path": "flask_simple_test\\run_tests.py",
+          "lines": 61,
+          "size": 2050
+        },
+        {
+          "path": "flask_simple_test\\simple_dynamic_test.py",
+          "lines": 428,
+          "size": 15975
+        },
+        {
+          "path": "flask_simple_test\\test_flask_simple.py",
+          "lines": 365,
+          "size": 13964
+        }
+      ],
+      "project_type": "unknown",
+      "framework": "flask",
+      "primary_language": "python",
+      "has_tests": true,
+      "has_docs": true,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 6,
+      "analyzed_files": 6,
+      "total_lines": 2168,
+      "total_functions": 62,
+      "total_classes": 4,
+      "average_complexity": 37.666666666666664,
+      "max_complexity": 96,
+      "total_issues": 17,
+      "issues_by_type": {
+        "long_function": 10,
+        "long_class": 4,
+        "import_style": 3
+      },
+      "complexity_distribution": {
+        "35": 1,
+        "6": 1,
+        "96": 1,
+        "5": 1,
+        "51": 1,
+        "33": 1
+      },
+      "maintainability_score": 36.16666666666667,
+      "file_analysis": [
+        {
+          "file_path": "flask_simple_test\\dynamic_test_runner.py",
+          "lines_of_code": 528,
+          "function_count": 15,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 35,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 15,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 20
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 run_dynamic_tests 过长 (70 行)",
+              "line": 31,
+              "file": "flask_simple_test\\dynamic_test_runner.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_class",
+              "message": "类 FlaskDynamicTestRunner 过长 (493 行)",
+              "line": 23,
+              "file": "flask_simple_test\\dynamic_test_runner.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: werkzeug.urls",
+              "line": 59,
+              "file": "flask_simple_test\\dynamic_test_runner.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\dynamic_test_runner.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\flask_app.py",
+          "lines_of_code": 96,
+          "function_count": 11,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 6,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 11,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 3
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\flask_app.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\no_flask_dynamic_test.py",
+          "lines_of_code": 690,
+          "function_count": 12,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 96,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 12,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 20
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 _test_project_structure 过长 (57 行)",
+              "line": 130,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_code_quality 过长 (123 行)",
+              "line": 189,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_dependencies 过长 (75 行)",
+              "line": 314,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_configuration 过长 (60 行)",
+              "line": 391,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_security_scan 过长 (86 行)",
+              "line": 453,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_performance_analysis 过长 (83 行)",
+              "line": 541,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_class",
+              "message": "类 NoFlaskDynamicTest 过长 (644 行)",
+              "line": 17,
+              "file": "flask_simple_test\\no_flask_dynamic_test.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\no_flask_dynamic_test.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\run_tests.py",
+          "lines_of_code": 61,
+          "function_count": 1,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 5,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 1,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: flask_simple_test.dynamic_test_runner",
+              "line": 16,
+              "file": "flask_simple_test\\run_tests.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: flask_simple_test.test_flask_simple",
+              "line": 17,
+              "file": "flask_simple_test\\run_tests.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\run_tests.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\simple_dynamic_test.py",
+          "lines_of_code": 428,
+          "function_count": 10,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 51,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 10,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 16
+          },
+          "issues": [
+            {
+              "type": "long_function",
+              "message": "函数 _test_code_syntax 过长 (55 行)",
+              "line": 149,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_imports 过长 (75 行)",
+              "line": 206,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_function",
+              "message": "函数 _test_flask_detection 过长 (79 行)",
+              "line": 283,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            },
+            {
+              "type": "long_class",
+              "message": "类 SimpleDynamicTest 过长 (384 行)",
+              "line": 15,
+              "file": "flask_simple_test\\simple_dynamic_test.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\simple_dynamic_test.py"
+          }
+        },
+        {
+          "file_path": "flask_simple_test\\test_flask_simple.py",
+          "lines_of_code": 365,
+          "function_count": 13,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 33,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 13,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 29
+          },
+          "issues": [
+            {
+              "type": "long_class",
+              "message": "类 StaticTestRunner 过长 (335 行)",
+              "line": 21,
+              "file": "flask_simple_test\\test_flask_simple.py",
+              "tool": "code_analyzer"
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "flask_simple_test\\test_flask_simple.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "flask_simple_test\\dynamic_test_runner.py": 

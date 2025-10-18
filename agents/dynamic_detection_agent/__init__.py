@@ -1,7 +1,7 @@
 """
-动态监控Agent模块
+动态检测Agent模块
 """
 
-from .agent import DynamicMonitorAgent
+from .agent import DynamicDetectionAgent
 
-__all__ = ['DynamicMonitorAgent']
+__all__ = ['DynamicDetectionAgent']

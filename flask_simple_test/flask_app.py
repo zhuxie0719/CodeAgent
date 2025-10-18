@@ -1,96 +1,91 @@
 #!/usr/bin/env python3
 """
-简单的Flask应用示例
-用于动态测试
+简单的Flask应用用于测试动态检测功能
 """
 
-from flask import Flask, render_template, jsonify, request, url_for, session, redirect
-import json
-import time
+import os
+import sys
+from pathlib import Path
 
-app = Flask(__name__)
-app.secret_key = 'test_secret_key'
-
-# 模拟数据
-users = [
-    {"id": 1, "name": "张三", "email": "zhangsan@example.com"},
-    {"id": 2, "name": "李四", "email": "lisi@example.com"},
-    {"id": 3, "name": "王五", "email": "wangwu@example.com"}
-]
-
-@app.route('/')
-def index():
-    """首页"""
-    return render_template('index.html', users=users)
-
-@app.route('/api/users')
-def api_users():
-    """获取用户列表API"""
-    return jsonify(users)
-
-@app.route('/api/users/<int:user_id>')
-def api_user(user_id):
-    """获取单个用户API"""
-    user = next((u for u in users if u['id'] == user_id), None)
-    if user:
-        return jsonify(user)
-    return jsonify({"error": "用户不存在"}), 404
-
-@app.route('/test')
-def test_page():
-    """测试页面"""
-    return "这是一个测试页面"
-
-@app.route('/error')
-def error_page():
-    """故意出错的页面"""
-    raise ValueError("这是一个测试错误")
-
-@app.route('/slow')
-def slow_page():
-    """模拟慢页面"""
-    time.sleep(2)  # 模拟慢操作
-    return "这是一个慢页面"
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    """登录页面"""
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+# 应用Werkzeug兼容性补丁
+try:
+    import werkzeug.urls
+    from urllib.parse import quote as url_quote, urlparse as url_parse
+    patches_applied = []
+    
+    if not hasattr(werkzeug.urls, 'url_quote'):
+        werkzeug.urls.url_quote = url_quote
+        patches_applied.append("url_quote")
         
-        # 简单的验证逻辑
-        if username == 'admin' and password == 'password':
-            session['user'] = username
-            return redirect(url_for('dashboard'))
-        else:
-            return render_template('login.html', error='用户名或密码错误')
-    
-    return render_template('login.html')
+    if not hasattr(werkzeug.urls, 'url_parse'):
+        werkzeug.urls.url_parse = url_parse
+        patches_applied.append("url_parse")
+        
+    if patches_applied:
+        print(f"🔧 已应用Werkzeug兼容性补丁: {', '.join(patches_applied)}")
+except ImportError:
+    print("⚠️ 无法应用Werkzeug兼容性补丁")
 
-@app.route('/dashboard')
-def dashboard():
-    """仪表板"""
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
-    return render_template('dashboard.html', user=session['user'])
+# 添加当前目录到Python路径
+sys.path.insert(0, str(Path(__file__).parent))
 
-@app.route('/logout')
-def logout():
-    """登出"""
-    session.pop('user', None)
-    return redirect(url_for('index'))
+def create_app():
+    """创建Flask应用"""
+    try:
+        from flask import Flask, jsonify
 
-@app.errorhandler(404)
-def not_found(error):
-    """404错误处理"""
-    return render_template('404.html'), 404
+        app = Flask(__name__)
 
-@app.errorhandler(500)
-def internal_error(error):
-    """500错误处理"""
-    return render_template('500.html'), 500
+        @app.route('/')
+        def home():
+            return jsonify({
+                "message": "Flask应用运行正常",
+                "version": "2.0.0",
+                "status": "healthy"
+            })
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+        @app.route('/health')
+        def health():
+            return jsonify({
+                "status": "healthy",
+                "service": "flask_simple_test"
+            })
+
+        @app.route('/api/status')
+        def api_status():
+            return jsonify({
+                "api_version": "1.0.0",
+                "endpoints": ["/", "/health", "/api/status"]
+            })
+
+        return app
+    except ImportError as e:
+        print(f"❌ Flask导入失败: {e}")
+        print("请安装Flask: pip install flask")
+        return None
+
+def main():
+    """主函数"""
+    print("🚀 启动Flask应用...")
+
+    app = create_app()
+    if app is None:
+        return
+
+    # 获取端口配置
+    port = int(os.environ.get('FLASK_PORT', os.environ.get('PORT', 5000)))
+    debug = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+
+    print(f"📍 启动端口: {port}")
+    print(f"🔧 调试模式: {debug}")
+    print(f"🌐 访问地址: http://localhost:{port}")
+
+    try:
+        app.run(host='0.0.0.0', port=port, debug=debug)
+    except (OSError, RuntimeError, ImportError) as e:
+        print(f"❌ Flask应用启动失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
