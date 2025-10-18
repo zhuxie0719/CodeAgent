@@ -1180,7 +1180,8 @@ class DynamicDetectionAgent(BaseAgent):
             tests = flask_test_results.get("tests", {})
             
             for test_name, test_result in tests.items():
-                if test_result.get("success", False):
+                # 检查测试是否成功（Flask测试结果使用status字段）
+                if test_result.get("status") == "success" or test_result.get("success", False):
                     converted_tests[test_name] = {
                         "status": "success",
                         "message": f"{test_name}测试通过"
@@ -1194,7 +1195,8 @@ class DynamicDetectionAgent(BaseAgent):
             
             # 计算成功率
             total_tests = len(tests)
-            passed_tests = sum(1 for test in tests.values() if test.get("success", False))
+            passed_tests = sum(1 for test in tests.values() 
+                             if test.get("status") == "success" or test.get("success", False))
             success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
             
             # 生成summary
