@@ -18,6 +18,14 @@ class PylintTool:
     async def analyze(self, file_path: str) -> Dict[str, Any]:
         """执行Pylint分析"""
         try:
+            # 检查文件是否存在
+            if not os.path.exists(file_path):
+                return {
+                    'success': False,
+                    'error': f'文件不存在: {file_path}',
+                    'issues': []
+                }
+            
             cmd = ['python', '-m', 'pylint', file_path, '--output-format=json'] + self.pylint_args
             
             # 设置环境变量避免pager问题
@@ -28,8 +36,10 @@ class PylintTool:
             env['TERM'] = 'dumb'
             
             # 在Windows上添加额外的参数来避免交互
-            if os.name == 'nt':
+            if os.name == 'nt' and '--disable=C0114' not in cmd:
                 cmd.extend(['--disable=C0114'])  # 只禁用missing-module-docstring
+            
+            print(f"执行Pylint命令: {' '.join(cmd)}")  # 调试信息
             
             result = subprocess.run(
                 cmd,
@@ -40,6 +50,10 @@ class PylintTool:
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0,
                 stdin=subprocess.DEVNULL
             )
+            
+            print(f"Pylint返回码: {result.returncode}")  # 调试信息
+            print(f"Pylint stdout: {result.stdout[:200]}...")  # 调试信息
+            print(f"Pylint stderr: {result.stderr[:200]}...")  # 调试信息
             
             issues = []
             
@@ -85,12 +99,25 @@ class PylintTool:
                             except (ValueError, IndexError):
                                 continue
             
+            # Pylint返回码说明：
+            # 0 = 无问题
+            # 1 = 致命错误
+            # 2 = 错误
+            # 4 = 警告
+            # 8 = 重构建议
+            # 16 = 约定问题
+            # 32 = 使用错误
+            # 28 = 4+8+16 (警告+重构建议+约定问题)
+            # 只有致命错误(1)才认为失败
+            success = result.returncode != 1
+            
             return {
-                'success': result.returncode in [0, 1],  # 0=无问题, 1=发现问题
+                'success': success,
                 'issues': issues,
                 'total_issues': len(issues),
                 'stdout': result.stdout,
-                'stderr': result.stderr
+                'stderr': result.stderr,
+                'return_code': result.returncode
             }
         except Exception as e:
             return {

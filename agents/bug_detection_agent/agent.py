@@ -104,7 +104,7 @@ class BugDetectionAgent(BaseAgent):
             "max_project_size": 50 * 1024 * 1024,  # 50MB - 减少项目大小限制
             "parallel_analysis": True,
             "max_workers": 2,  # 减少并发数
-            "skip_dirs": [".git", "__pycache__", "node_modules", ".venv", "venv", "doc", "docs", "test", "tests", ".github", "ci", "asv_bench", "conda.recipe", "web", "LICENSES"],
+            "skip_dirs": [".git", "__pycache__", "node_modules", ".venv", "venv", "doc", "docs", "tests", ".github", "ci", "asv_bench", "conda.recipe", "web", "LICENSES"],
             "skip_files": ["*.pyc", "*.pyo", "*.pyd", "*.so", "*.dll", "*.rst", "*.md", "*.txt", "*.yml", "*.yaml", "*.json", "*.xml", "*.bat", "*.sh"],
             "timeout": 120,  # 2分钟超时
             "sample_ratio": 0.2  # 只分析20%的文件
@@ -973,6 +973,7 @@ class BugDetectionAgent(BaseAgent):
                     for issue in issues:
                         issue["file"] = Path(file_path).name
                         issue["language"] = language
+                        issue["detection_tool"] = "custom_analyzer"
                         if "column" not in issue:
                             issue["column"] = 0
                     
@@ -995,6 +996,7 @@ class BugDetectionAgent(BaseAgent):
                             for issue in pylint_result["issues"]:
                                 issue["language"] = language
                                 issue["file"] = Path(file_path).name
+                                issue["detection_tool"] = "pylint"
                             all_issues.extend(pylint_result["issues"])
                             detection_tools.append("pylint")
                             self.logger.info(f"Pylint检测到 {len(pylint_result['issues'])} 个问题")
@@ -1024,6 +1026,7 @@ class BugDetectionAgent(BaseAgent):
                             for issue in flake8_result["issues"]:
                                 issue["language"] = language
                                 issue["file"] = Path(file_path).name
+                                issue["detection_tool"] = "flake8"
                             all_issues.extend(flake8_result["issues"])
                             detection_tools.append("flake8")
                             self.logger.info(f"Flake8检测到 {len(flake8_result['issues'])} 个问题")
@@ -1048,6 +1051,7 @@ class BugDetectionAgent(BaseAgent):
                         for issue in bandit_result["issues"]:
                             issue["language"] = language
                             issue["file"] = Path(file_path).name
+                            issue["detection_tool"] = "bandit"
                         all_issues.extend(bandit_result["issues"])
                         detection_tools.append("bandit")
                     
@@ -1063,6 +1067,7 @@ class BugDetectionAgent(BaseAgent):
                         for issue in mypy_result["issues"]:
                             issue["language"] = language
                             issue["file"] = Path(file_path).name
+                            issue["detection_tool"] = "mypy"
                         all_issues.extend(mypy_result["issues"])
                         detection_tools.append("mypy")
                     
@@ -1075,6 +1080,8 @@ class BugDetectionAgent(BaseAgent):
                     issues = await self._analyze_file_content(file_path, content, language, options)
                     end_time = datetime.now()
                     
+                    for issue in issues:
+                        issue["detection_tool"] = "custom_analyzer"
                     all_issues.extend(issues)
                     detection_tools.append("custom_analyzer")
                     analysis_time += (end_time - start_time).total_seconds()
@@ -1085,9 +1092,35 @@ class BugDetectionAgent(BaseAgent):
                     ai_issues = await self._ai_analyze_file(file_path, language)
                     end_time = datetime.now()
                     
+                    for issue in ai_issues:
+                        issue["detection_tool"] = "ai_analyzer"
                     all_issues.extend(ai_issues)
                     detection_tools.append("ai_analyzer")
                     analysis_time += (end_time - start_time).total_seconds()
+            
+            # 动态检测
+            if options.get("enable_dynamic", False):
+                self.logger.info("开始动态检测...")
+                start_time = datetime.now()
+                try:
+                    dynamic_issues = await self._dynamic_analyze_file(file_path, language)
+                    end_time = datetime.now()
+                    
+                    for issue in dynamic_issues:
+                        issue["file"] = Path(file_path).name
+                        issue["language"] = language
+                        issue["detection_tool"] = "dynamic_analyzer"
+                        if "column" not in issue:
+                            issue["column"] = 0
+                    
+                    all_issues.extend(dynamic_issues)
+                    detection_tools.append("dynamic_analyzer")
+                    analysis_time += (end_time - start_time).total_seconds()
+                    self.logger.info(f"动态检测完成，发现 {len(dynamic_issues)} 个问题")
+                except Exception as e:
+                    self.logger.error(f"动态检测失败: {e}")
+                    import traceback
+                    self.logger.error(f"动态检测错误详情: {traceback.format_exc()}")
             
             # 应用过滤条件
             if options.get("severity_filter"):
@@ -1229,6 +1262,79 @@ class BugDetectionAgent(BaseAgent):
         
         except Exception as e:
             self.logger.error(f"AI分析文件失败 {file_path}: {e}")
+            return []
+    
+    async def _dynamic_analyze_file(self, file_path: str, language: str) -> List[Dict[str, Any]]:
+        """动态分析文件 - 检测运行时问题"""
+        try:
+            issues = []
+            
+            # 读取文件内容
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
+            # 动态检测规则
+            if language == "python":
+                # 检测潜在的运行时问题
+                lines = content.split('\n')
+                
+                for i, line in enumerate(lines, 1):
+                    line = line.strip()
+                    
+                    # 检测未处理的异常
+                    if 'except:' in line and 'Exception' not in line:
+                        issues.append({
+                            'type': 'dynamic',
+                            'severity': 'warning',
+                            'message': '使用了裸露的except语句，可能隐藏重要异常',
+                            'line': i,
+                            'column': line.find('except:') + 1
+                        })
+                    
+                    # 检测可能的无限循环
+                    if 'while True:' in line and 'break' not in content[content.find(line):content.find(line) + 200]:
+                        issues.append({
+                            'type': 'dynamic',
+                            'severity': 'warning',
+                            'message': '可能存在无限循环，缺少break语句',
+                            'line': i,
+                            'column': line.find('while True:') + 1
+                        })
+                    
+                    # 检测资源未释放
+                    if 'open(' in line and 'with' not in line:
+                        issues.append({
+                            'type': 'dynamic',
+                            'severity': 'info',
+                            'message': '文件操作未使用with语句，可能导致资源泄漏',
+                            'line': i,
+                            'column': line.find('open(') + 1
+                        })
+                    
+                    # 检测可能的竞态条件
+                    if 'threading' in line and 'lock' not in content.lower():
+                        issues.append({
+                            'type': 'dynamic',
+                            'severity': 'warning',
+                            'message': '使用多线程但未发现锁机制，可能存在竞态条件',
+                            'line': i,
+                            'column': line.find('threading') + 1
+                        })
+                    
+                    # 检测内存泄漏风险
+                    if 'global' in line and 'del' not in content:
+                        issues.append({
+                            'type': 'dynamic',
+                            'severity': 'info',
+                            'message': '使用全局变量但未发现清理机制，可能存在内存泄漏风险',
+                            'line': i,
+                            'column': line.find('global') + 1
+                        })
+            
+            return issues
+            
+        except Exception as e:
+            self.logger.error(f"动态分析文件失败 {file_path}: {e}")
             return []
     
     async def _detect_project_bugs(self, project_path: str, options: Dict[str, Any]) -> Dict[str, Any]:

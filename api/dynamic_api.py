@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 
-from fastapi import APIRouter, File, UploadFile, HTTPException, BackgroundTasks
+from fastapi import APIRouter, File, UploadFile, HTTPException, BackgroundTasks, Form
 from pydantic import BaseModel, Field
 
 # 导入检测组件
@@ -60,11 +60,17 @@ class SimpleDetector:
     def __init__(self, monitor_agent):
         self.monitor_agent = monitor_agent
         self.enable_web_app_test = False
+        self.enable_dynamic_detection = True
+        self.enable_flask_specific_tests = True
+        self.enable_server_testing = True
     
     async def detect_defects(self, zip_file_path: str, 
                            static_analysis: bool = True,
                            dynamic_monitoring: bool = True,
-                           runtime_analysis: bool = True) -> Dict[str, Any]:
+                           runtime_analysis: bool = True,
+                           enable_dynamic_detection: bool = True,
+                           enable_flask_specific_tests: bool = True,
+                           enable_server_testing: bool = True) -> Dict[str, Any]:
         """执行综合检测"""
         results = {
             "detection_type": "comprehensive",
@@ -73,7 +79,10 @@ class SimpleDetector:
             "analysis_options": {
                 "static_analysis": static_analysis,
                 "dynamic_monitoring": dynamic_monitoring,
-                "runtime_analysis": runtime_analysis
+                "runtime_analysis": runtime_analysis,
+                "enable_dynamic_detection": enable_dynamic_detection,
+                "enable_flask_specific_tests": enable_flask_specific_tests,
+                "enable_server_testing": enable_server_testing
             }
         }
         
@@ -105,15 +114,35 @@ class SimpleDetector:
             
             # 静态分析
             if static_analysis:
-                results["static_analysis"] = await self._perform_static_analysis(extract_dir)
+                try:
+                    results["static_analysis"] = await self._perform_static_analysis(extract_dir)
+                except Exception as e:
+                    print(f"静态分析失败: {e}")
+                    results["static_analysis"] = {"error": str(e), "issues": []}
             
             # 动态监控
             if dynamic_monitoring:
-                results["dynamic_monitoring"] = await self._perform_dynamic_monitoring()
+                try:
+                    results["dynamic_monitoring"] = await self._perform_dynamic_monitoring()
+                except Exception as e:
+                    print(f"动态监控失败: {e}")
+                    results["dynamic_monitoring"] = {"error": str(e), "alerts": []}
             
             # 运行时分析
             if runtime_analysis:
-                results["runtime_analysis"] = await self._perform_runtime_analysis(extract_dir)
+                try:
+                    results["runtime_analysis"] = await self._perform_runtime_analysis(extract_dir)
+                except Exception as e:
+                    print(f"运行时分析失败: {e}")
+                    results["runtime_analysis"] = {"error": str(e), "execution_successful": False}
+            
+            # 动态缺陷检测
+            if enable_dynamic_detection:
+                try:
+                    results["dynamic_detection"] = await self._perform_dynamic_detection(extract_dir, enable_flask_specific_tests, enable_server_testing)
+                except Exception as e:
+                    print(f"动态缺陷检测失败: {e}")
+                    results["dynamic_detection"] = {"error": str(e), "tests_completed": False}
             
             # 生成综合摘要
             results["summary"] = self._generate_summary(results)
@@ -125,6 +154,8 @@ class SimpleDetector:
             
         except Exception as e:
             results["error"] = str(e)
+            # 即使出现错误也要生成summary
+            results["summary"] = self._generate_summary(results)
             return results
     
     def _list_files(self, project_path: str) -> List[str]:
@@ -177,7 +208,7 @@ class SimpleDetector:
             # 收集所有支持的文件进行静态分析
             python_files = []
             other_language_files = []
-            skip_dirs = {'.git', '__pycache__', 'node_modules', '.venv', 'venv', 'doc', 'docs', 'test', 'tests', '.github', 'ci', 'asv_bench', 'conda.recipe', 'web', 'LICENSES'}
+            skip_dirs = {'.git', '__pycache__', 'node_modules', '.venv', 'venv', 'doc', 'docs', '.github', 'ci', 'asv_bench', 'conda.recipe', 'web', 'LICENSES'}
             
             for root, dirs, files in os.walk(project_path):
                 dirs[:] = [d for d in dirs if d not in skip_dirs]
@@ -231,6 +262,22 @@ class SimpleDetector:
                     print(f"静态分析文件失败 {py_file}: {e}")
                     continue
             
+            # 执行Flask特定问题检测
+            flask_issues = []
+            print("开始Flask特定问题检测...")
+            try:
+                # Flask检测器已禁用
+                # from api.tools.flask_issue_detector import FlaskIssueDetector
+                # flask_detector = FlaskIssueDetector()
+                # flask_result = flask_detector.detect_flask_issues(project_path)
+                # if flask_result.get('issues'):
+                #     for issue in flask_result['issues']:
+                #         flask_issues.append(issue)
+                # print(f"Flask检测完成，发现 {len(flask_issues)} 个Flask特定问题")
+                print("Flask检测器已禁用，跳过Flask特定问题检测")
+            except Exception as e:
+                print(f"Flask检测失败: {e}")
+            
             # 执行AI多语言分析
             ai_issues = []
             if other_language_files:
@@ -261,7 +308,7 @@ class SimpleDetector:
                         continue
             
             # 合并所有问题
-            all_issues = pylint_issues + flake8_issues + ai_issues
+            all_issues = pylint_issues + flake8_issues + ai_issues + flask_issues
             
             # 添加代码质量分析中的问题
             if code_quality.get('file_analysis'):
@@ -341,7 +388,7 @@ class SimpleDetector:
         python_files = []
         
         # 跳过目录
-        skip_dirs = {'.git', '__pycache__', 'node_modules', '.venv', 'venv', 'doc', 'docs', 'test', 'tests', '.github', 'ci', 'asv_bench', 'conda.recipe', 'web', 'LICENSES'}
+        skip_dirs = {'.git', '__pycache__', 'node_modules', '.venv', 'venv', 'doc', 'docs', '.github', 'ci', 'asv_bench', 'conda.recipe', 'web', 'LICENSES'}
         
         for root, dirs, files in os.walk(project_path):
             # 过滤掉不需要的目录
@@ -414,6 +461,139 @@ class SimpleDetector:
         except Exception as e:
             return {"error": f"动态监控失败: {e}"}
     
+    async def _perform_dynamic_detection(self, project_path: str, enable_flask_tests: bool = True, enable_server_tests: bool = True) -> Dict[str, Any]:
+        """执行动态缺陷检测"""
+        try:
+            print("开始动态缺陷检测...")
+            
+            # 检查是否是Flask项目
+            is_flask_project = await self._detect_flask_project(project_path)
+            
+            if not is_flask_project:
+                return {
+                    "status": "skipped",
+                    "reason": "不是Flask项目",
+                    "tests_completed": False
+                }
+            
+            # 运行动态测试
+            try:
+                from flask_simple_test.dynamic_test_runner import FlaskDynamicTestRunner
+                
+                runner = FlaskDynamicTestRunner()
+                
+                # 根据选项决定是否启用Web应用测试
+                enable_web_test = enable_server_tests and enable_flask_tests
+                
+                test_results = runner.run_dynamic_tests(enable_web_app_test=enable_web_test)
+            except Exception as e:
+                print(f"完整动态测试失败，使用无Flask测试: {e}")
+                # 回退到无Flask测试
+                from flask_simple_test.no_flask_dynamic_test import NoFlaskDynamicTest
+                
+                no_flask_tester = NoFlaskDynamicTest()
+                test_results = no_flask_tester.run_no_flask_tests()
+            
+            # 分析测试结果，生成问题报告
+            issues = []
+            recommendations = []
+            
+            # 检查测试结果中的问题
+            tests = test_results.get("tests", {})
+            for test_name, test_result in tests.items():
+                if test_result.get("status") == "failed":
+                    issues.append({
+                        "type": "dynamic_test_failure",
+                        "test": test_name,
+                        "severity": "warning",
+                        "message": f"动态测试失败: {test_name}",
+                        "details": test_result.get("error", "未知错误")
+                    })
+                elif test_result.get("status") == "partial":
+                    issues.append({
+                        "type": "dynamic_test_partial",
+                        "test": test_name,
+                        "severity": "info",
+                        "message": f"动态测试部分成功: {test_name}",
+                        "details": test_result.get("tests", {})
+                    })
+            
+            # 基于测试结果生成建议
+            summary = test_results.get("summary", {})
+            success_rate = summary.get("success_rate", 0)
+            
+            if success_rate < 50:
+                recommendations.append("动态测试成功率较低，建议检查Flask应用配置")
+            elif success_rate < 80:
+                recommendations.append("动态测试部分成功，建议优化Flask应用")
+            else:
+                recommendations.append("动态测试表现良好")
+            
+            if enable_web_test and not summary.get("enable_web_app_test", False):
+                recommendations.append("建议启用Web应用测试以获得更全面的检测")
+            
+            return {
+                "status": "completed",
+                "is_flask_project": is_flask_project,
+                "enable_web_test": enable_web_test,
+                "test_results": test_results,
+                "issues": issues,
+                "recommendations": recommendations,
+                "tests_completed": True,
+                "success_rate": success_rate
+            }
+            
+        except Exception as e:
+            print(f"动态缺陷检测异常: {e}")
+            return {
+                "status": "failed",
+                "error": str(e),
+                "tests_completed": False
+            }
+    
+    async def _detect_flask_project(self, project_path: str) -> bool:
+        """检测是否是Flask项目"""
+        try:
+            # 查找Flask相关文件
+            flask_indicators = [
+                'app.py', 'main.py', 'run.py', 'wsgi.py',
+                'requirements.txt', 'setup.py', 'pyproject.toml'
+            ]
+            
+            for root, dirs, files in os.walk(project_path):
+                for file in files:
+                    if file in flask_indicators:
+                        file_path = os.path.join(root, file)
+                        try:
+                            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                                if 'flask' in content.lower() or 'Flask' in content:
+                                    return True
+                        except:
+                            continue
+            
+            # 检查Python文件中的Flask导入
+            for root, dirs, files in os.walk(project_path):
+                for file in files:
+                    if file.endswith('.py'):
+                        file_path = os.path.join(root, file)
+                        try:
+                            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                                if any(keyword in content for keyword in [
+                                    'from flask import', 'import flask', 'Flask(',
+                                    'app = Flask', 'Flask(__name__)'
+                                ]):
+                                    return True
+                        except:
+                            continue
+            
+            return False
+            
+        except Exception as e:
+            print(f"检测Flask项目失败: {e}")
+            return False
+    
     async def _perform_runtime_analysis(self, project_path: str) -> Dict[str, Any]:
         """执行运行时分析"""
         try:
@@ -422,8 +602,8 @@ class SimpleDetector:
             test_files = []
             
             for root, dirs, files in os.walk(project_path):
-                # 跳过测试目录
-                if 'test' in root.lower():
+                # 跳过测试目录（但允许包含test的项目目录）
+                if any(part in ['test', 'tests'] for part in root.split(os.sep)):
                     continue
                     
                 for file in files:
@@ -446,7 +626,7 @@ class SimpleDetector:
             # 如果没有找到明确的主文件，尝试查找包含if __name__ == '__main__'的文件
             if not main_files:
                 for root, dirs, files in os.walk(project_path):
-                    if 'test' in root.lower():
+                    if any(part in ['test', 'tests'] for part in root.split(os.sep)):
                         continue
                         
                     for file in files:
@@ -471,24 +651,35 @@ class SimpleDetector:
                 # 检查是否是Web应用
                 is_web_app = await self._detect_web_app(main_file)
                 if is_web_app:
+                    # 调试信息
+                    print(f"🔍 调试信息:")
+                    print(f"   - hasattr(self, 'enable_web_app_test'): {hasattr(self, 'enable_web_app_test')}")
+                    print(f"   - self.enable_web_app_test: {getattr(self, 'enable_web_app_test', 'NOT_SET')}")
+                    
                     # 检查是否启用了Web应用测试
+                    print(f"🔍 Web应用检测调试:")
+                    print(f"   - hasattr(self, 'enable_web_app_test'): {hasattr(self, 'enable_web_app_test')}")
+                    print(f"   - self.enable_web_app_test: {getattr(self, 'enable_web_app_test', 'NOT_SET')} (type: {type(getattr(self, 'enable_web_app_test', None))})")
+                    
                     if hasattr(self, 'enable_web_app_test') and self.enable_web_app_test:
-                        print("检测到Web应用，尝试启动测试...")
+                        print("✅ 检测到Web应用，开始动态测试...")
                         # 尝试启动Web应用进行测试
                         web_test_result = await self._test_web_app(main_file, project_path)
                         return {
                             "main_file": os.path.relpath(main_file, project_path),
                             "execution_successful": web_test_result.get("success", False),
                             "project_type": "web_application",
-                            "web_test": web_test_result
+                            "web_test": web_test_result,
+                            "dynamic_test_enabled": True
                         }
                     else:
+                        print("❌ 检测到Web应用，但未启用Web应用测试")
                         return {
                             "main_file": os.path.relpath(main_file, project_path),
                             "execution_successful": False,
                             "error": "检测到Web应用，跳过服务器启动测试",
                             "project_type": "web_application",
-                            "suggestion": "Web应用需要数据库和依赖服务，建议使用静态分析验证代码质量"
+                            "suggestion": "请启用'Web应用测试'选项以进行完整的动态检测"
                         }
                 
                 # 尝试运行项目（添加超时）
@@ -556,12 +747,15 @@ class SimpleDetector:
             import subprocess
             import time
             import os
+            import socket
             
             print(f"开始测试Web应用: {main_file}")
             
-            # 创建环境变量
+            # 创建环境变量，设置测试端口
             env = os.environ.copy()
-            
+            test_port = 8002  # 使用不同的端口避免冲突
+            env['FLASK_PORT'] = str(test_port)
+            env['PORT'] = str(test_port)
             
             # 尝试启动Web应用
             process = None
@@ -595,12 +789,17 @@ class SimpleDetector:
                             "return_code": process.returncode
                         }
                     
+                    # 检查端口是否可用
+                    if self._is_port_available(test_port):
+                        print(f"Web应用已在端口 {test_port} 启动")
+                        break
+                    
                     time.sleep(1)
                 
                 # 如果进程还在运行，认为启动成功
                 if process.poll() is None:
                     # 尝试访问应用
-                    test_result = await self._test_web_endpoint()
+                    test_result = await self._test_web_endpoint(test_port)
                     
                     # 终止进程
                     try:
@@ -614,8 +813,9 @@ class SimpleDetector:
                     
                     return {
                         "success": True,
-                        "message": "Web应用启动成功",
+                        "message": f"Web应用在端口 {test_port} 启动成功",
                         "startup_time": time.time() - start_time,
+                        "test_port": test_port,
                         "endpoint_test": test_result
                     }
                 else:
@@ -644,36 +844,47 @@ class SimpleDetector:
                 "error": f"Web应用测试异常: {str(e)}"
             }
     
-    async def _test_web_endpoint(self) -> Dict[str, Any]:
+    def _is_port_available(self, port: int) -> bool:
+        """检查端口是否可用"""
+        try:
+            import socket
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind(('localhost', port))
+                return True
+        except OSError:
+            return False
+    
+    async def _test_web_endpoint(self, port: int = 8002) -> Dict[str, Any]:
         """测试Web端点"""
         try:
             import httpx
             
-            # 尝试访问常见的Flask端口
+            # 测试多个可能的端点
             test_urls = [
-                "http://localhost:5000",
-                "http://127.0.0.1:5000",
-                "http://localhost:8000",
-                "http://127.0.0.1:8000"
+                f"http://localhost:{port}/",
+                f"http://localhost:{port}/health",
+                f"http://localhost:{port}/api/health",
+                f"http://localhost:{port}/status",
+                f"http://127.0.0.1:{port}/"
             ]
             
             for url in test_urls:
                 try:
                     async with httpx.AsyncClient(timeout=5.0) as client:
                         response = await client.get(url)
-                        if response.status_code in [200, 404]:  # 404也算成功，说明服务器在运行
+                        if response.status_code < 500:  # 4xx也算成功，说明服务器在运行
                             return {
                                 "success": True,
                                 "url": url,
                                 "status_code": response.status_code,
-                                "message": "Web端点响应正常"
+                                "message": f"Web端点在端口 {port} 响应正常"
                             }
                 except:
                     continue
             
             return {
                 "success": False,
-                "message": "无法访问Web端点"
+                "message": f"无法访问端口 {port} 上的任何Web端点"
             }
             
         except Exception as e:
@@ -686,7 +897,7 @@ class SimpleDetector:
         """生成综合摘要"""
         summary = {
             "total_files": len(results.get("files", [])),
-            "analysis_completed": True,
+            "analysis_completed": not bool(results.get("error")),
             "issues_summary": {}
         }
         
@@ -758,6 +969,28 @@ class SimpleDetector:
             if runtime.get("error"):
                 total_issues += 1
                 critical_issues += 1
+        
+        # 统计动态检测结果
+        if "dynamic_detection" in results:
+            dynamic_detection = results["dynamic_detection"]
+            summary["issues_summary"]["dynamic_detection"] = {
+                "status": dynamic_detection.get("status", "unknown"),
+                "is_flask_project": dynamic_detection.get("is_flask_project", False),
+                "tests_completed": dynamic_detection.get("tests_completed", False),
+                "success_rate": dynamic_detection.get("success_rate", 0)
+            }
+            
+            # 统计动态检测问题
+            dynamic_issues = dynamic_detection.get("issues", [])
+            for issue in dynamic_issues:
+                total_issues += 1
+                severity = issue.get("severity", "info").lower()
+                if severity == "error" or severity == "critical":
+                    critical_issues += 1
+                elif severity == "warning":
+                    warning_issues += 1
+                else:
+                    info_issues += 1
         
         # 设置整体状态
         if critical_issues > 0:
@@ -1124,8 +1357,7 @@ def generate_fallback_report(results: Dict[str, Any], filename: str) -> str:
     
     return report
 
-# 创建检测器实例
-detector = SimpleDetector(monitor_agent)
+# 注意：不再使用全局检测器实例，每个请求创建独立实例
 
 @router.get("/")
 async def root():
@@ -1148,47 +1380,155 @@ async def health():
 @router.post("/detect", response_model=BaseResponse)
 async def dynamic_detect(
     background_tasks: BackgroundTasks,
-    file: UploadFile = File(...),
-    static_analysis: bool = True,
-    dynamic_monitoring: bool = True,
-    runtime_analysis: bool = True,
-    enable_web_app_test: bool = False
+    file: UploadFile = File(None),
+    files: List[UploadFile] = File(None),
+    static_analysis: str = Form("true"),
+    dynamic_monitoring: str = Form("true"),
+    runtime_analysis: str = Form("true"),
+    enable_web_app_test: str = Form("false"),
+    enable_dynamic_detection: str = Form("true"),
+    enable_flask_specific_tests: str = Form("true"),
+    enable_server_testing: str = Form("true"),
+    upload_type: str = Form("file")
 ):
+    """动态缺陷检测"""
+    
+    # 调试信息
+    print(f"🔧 API接收到的参数:")
+    print(f"   - static_analysis: {static_analysis} (type: {type(static_analysis)})")
+    print(f"   - dynamic_monitoring: {dynamic_monitoring} (type: {type(dynamic_monitoring)})")
+    print(f"   - runtime_analysis: {runtime_analysis} (type: {type(runtime_analysis)})")
+    print(f"   - enable_web_app_test: {enable_web_app_test} (type: {type(enable_web_app_test)})")
+    print(f"   - enable_dynamic_detection: {enable_dynamic_detection} (type: {type(enable_dynamic_detection)})")
+    print(f"   - enable_flask_specific_tests: {enable_flask_specific_tests} (type: {type(enable_flask_specific_tests)})")
+    print(f"   - enable_server_testing: {enable_server_testing} (type: {type(enable_server_testing)})")
+    print(f"   - upload_type: {upload_type}")
+    print(f"   - file: {file}")
+    print(f"   - files: {files}")
+    
+    # 确保所有布尔参数都是布尔值
+    def convert_to_bool(value, param_name):
+        if isinstance(value, str):
+            result = value.lower() in ('true', '1', 'yes', 'on')
+            print(f"🔄 转换{param_name}为布尔值: {value} -> {result}")
+            return result
+        elif isinstance(value, bool):
+            print(f"🔄 {param_name}已经是布尔值: {value}")
+            return value
+        else:
+            result = bool(value)
+            print(f"🔄 转换{param_name}为布尔值: {value} -> {result}")
+            return result
+    
+    static_analysis = convert_to_bool(static_analysis, 'static_analysis')
+    dynamic_monitoring = convert_to_bool(dynamic_monitoring, 'dynamic_monitoring')
+    runtime_analysis = convert_to_bool(runtime_analysis, 'runtime_analysis')
+    enable_web_app_test = convert_to_bool(enable_web_app_test, 'enable_web_app_test')
+    enable_dynamic_detection = convert_to_bool(enable_dynamic_detection, 'enable_dynamic_detection')
+    enable_flask_specific_tests = convert_to_bool(enable_flask_specific_tests, 'enable_flask_specific_tests')
+    enable_server_testing = convert_to_bool(enable_server_testing, 'enable_server_testing')
     """
     动态缺陷检测
     
     Args:
-        file: 项目压缩包
+        file: 项目压缩包（单文件上传）
+        files: 项目文件列表（目录上传）
         static_analysis: 是否进行静态分析
         dynamic_monitoring: 是否进行动态监控
         runtime_analysis: 是否进行运行时分析
         enable_web_app_test: 是否启用Web应用测试（默认False，避免超时）
+        upload_type: 上传类型 ("file" 或 "directory")
     
     Returns:
         检测结果
     """
-    if not file.filename.endswith('.zip'):
-        raise HTTPException(status_code=400, detail="只支持ZIP格式的压缩包")
+    # 验证输入
+    if not file and not files:
+        raise HTTPException(status_code=400, detail="请提供文件或文件列表")
+    
+    if file and files:
+        raise HTTPException(status_code=400, detail="请选择单文件上传或目录上传，不能同时使用")
+    
+    # 处理单文件上传（压缩包）
+    if file:
+        if not file.filename.endswith('.zip'):
+            raise HTTPException(status_code=400, detail="只支持ZIP格式的压缩包")
+        upload_files = [file]
+        filename = file.filename
+    else:
+        # 处理多文件上传（目录）
+        if not files or len(files) == 0:
+            raise HTTPException(status_code=400, detail="目录上传需要至少一个文件")
+        upload_files = files
+        filename = f"directory_{len(files)}_files"
     
     temp_file_path = None
+    temp_dir = None
     
     try:
-        print(f"开始处理上传文件: {file.filename}")
+        print(f"开始处理上传文件: {filename}")
         
-        # 保存上传文件
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_file:
-            content = await file.read()
-            tmp_file.write(content)
-            temp_file_path = tmp_file.name
+        if upload_type == "file":
+            # 单文件上传（压缩包）
+            file = upload_files[0]
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_file:
+                content = await file.read()
+                tmp_file.write(content)
+                temp_file_path = tmp_file.name
+            print(f"压缩包已保存到临时位置: {temp_file_path}")
+        else:
+            # 目录上传（多文件）
+            temp_dir = tempfile.mkdtemp(prefix="dynamic_detection_")
+            print(f"创建临时目录: {temp_dir}")
+            
+            # 保存所有文件到临时目录
+            for file in upload_files:
+                if file.filename:
+                    # 处理文件路径结构
+                    # 如果文件名包含路径分隔符，保持路径结构
+                    # 否则，将文件放在根目录
+                    if '/' in file.filename or '\\' in file.filename:
+                        file_path = os.path.join(temp_dir, file.filename)
+                    else:
+                        # 没有路径信息，直接放在根目录
+                        file_path = os.path.join(temp_dir, file.filename)
+                    
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    
+                    with open(file_path, "wb") as f:
+                        content = await file.read()
+                        f.write(content)
+                    print(f"保存文件: {file.filename} -> {file_path}")
+            
+            # 创建ZIP文件
+            temp_file_path = os.path.join(temp_dir, "project.zip")
+            with zipfile.ZipFile(temp_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                for root, dirs, files in os.walk(temp_dir):
+                    for file in files:
+                        if file != "project.zip":  # 避免包含自己
+                            file_path = os.path.join(root, file)
+                            arcname = os.path.relpath(file_path, temp_dir)
+                            zipf.write(file_path, arcname)
+            
+            print(f"目录已打包为ZIP: {temp_file_path}")
         
-        print(f"文件已保存到临时位置: {temp_file_path}")
-        
-        # 设置Web应用测试选项
+        # 为每个请求创建独立的检测器实例
+        detector = SimpleDetector(monitor_agent)
         detector.enable_web_app_test = enable_web_app_test
+        detector.enable_dynamic_detection = enable_dynamic_detection
+        detector.enable_flask_specific_tests = enable_flask_specific_tests
+        detector.enable_server_testing = enable_server_testing
+        
+        # 调试信息
+        print(f"🔧 API调试信息:")
+        print(f"   - enable_web_app_test参数: {enable_web_app_test} (type: {type(enable_web_app_test)})")
+        print(f"   - enable_dynamic_detection参数: {enable_dynamic_detection} (type: {type(enable_dynamic_detection)})")
+        print(f"   - enable_flask_specific_tests参数: {enable_flask_specific_tests} (type: {type(enable_flask_specific_tests)})")
+        print(f"   - enable_server_testing参数: {enable_server_testing} (type: {type(enable_server_testing)})")
         
         # 执行检测（添加超时处理）
         print("开始执行综合检测...")
-        if enable_web_app_test:
+        if enable_web_app_test or enable_server_testing:
             print("⚠️ 已启用Web应用测试，检测时间可能较长...")
         
         try:
@@ -1197,7 +1537,10 @@ async def dynamic_detect(
                     zip_file_path=temp_file_path,
                     static_analysis=static_analysis,
                     dynamic_monitoring=dynamic_monitoring,
-                    runtime_analysis=runtime_analysis
+                    runtime_analysis=runtime_analysis,
+                    enable_dynamic_detection=enable_dynamic_detection,
+                    enable_flask_specific_tests=enable_flask_specific_tests,
+                    enable_server_testing=enable_server_testing
                 ),
                 timeout=600  # 10分钟超时
             )
@@ -1250,14 +1593,6 @@ async def dynamic_detect(
                 "detection_time": datetime.now().isoformat()
             }
         )
-        
-    except Exception as e:
-        print(f"检测过程中出错: {e}")
-        return BaseResponse(
-            success=False,
-            error=str(e),
-            message="检测失败"
-        )
     
     finally:
         # 清理临时文件
@@ -1267,6 +1602,15 @@ async def dynamic_detect(
                 print(f"已清理临时文件: {temp_file_path}")
             except Exception as e:
                 print(f"清理临时文件失败: {e}")
+        
+        # 清理临时目录
+        if temp_dir and os.path.exists(temp_dir):
+            try:
+                import shutil
+                shutil.rmtree(temp_dir)
+                print(f"已清理临时目录: {temp_dir}")
+            except Exception as e:
+                print(f"清理临时目录失败: {e}")
 
 @router.get("/results/{filename}")
 async def get_detection_results(filename: str):

@@ -388,7 +388,7 @@ class Coordinator:
                         'enable_bandit': True,
                         'enable_mypy': True,
                         'enable_ai_analysis': True,
-                        'enable_dynamic': False  # 暂时禁用动态检测
+                        'enable_dynamic': True  # 启用动态检测
                     }
                 }
             else:
@@ -401,7 +401,7 @@ class Coordinator:
                         'enable_bandit': True,
                         'enable_mypy': True,
                         'enable_ai_analysis': True,
-                        'enable_dynamic': False  # 暂时禁用动态检测
+                        'enable_dynamic': True  # 启用动态检测
                     }
                 }
             detection_task_id = await self.create_task('detect_bugs', detection_task_payload, TaskPriority.HIGH)

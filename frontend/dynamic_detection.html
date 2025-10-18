@@ -470,11 +470,34 @@
             <!-- 上传区域 -->
             <div class="upload-section" id="uploadSection">
                 <h2>📁 选择项目文件</h2>
-                <p>支持ZIP格式的压缩包，最大100MB</p>
-                <input type="file" id="fileInput" class="file-input" accept=".zip">
-                <button class="upload-button" onclick="document.getElementById('fileInput').click()">
-                    选择文件
-                </button>
+                <p>支持ZIP格式的压缩包或直接选择项目目录，最大100MB</p>
+                
+                <!-- 文件上传方式选择 -->
+                <div style="margin: 20px 0;">
+                    <label style="margin-right: 20px;">
+                        <input type="radio" name="uploadType" value="file" checked onchange="updateUploadType()">
+                        压缩包上传
+                    </label>
+                    <label>
+                        <input type="radio" name="uploadType" value="directory" onchange="updateUploadType()">
+                        目录上传
+                    </label>
+                </div>
+                
+                <!-- 文件输入 -->
+                <input type="file" id="fileInput" class="file-input" accept=".zip,.tar,.tar.gz,.rar,.7z">
+                <input type="file" id="directoryInput" class="file-input" webkitdirectory style="display: none;">
+                
+                <!-- 上传按钮 -->
+                <div style="margin: 15px 0;">
+                    <button class="upload-button" id="selectFileBtn" onclick="document.getElementById('fileInput').click()">
+                        📁 选择压缩包
+                    </button>
+                    <button class="upload-button" id="selectDirectoryBtn" onclick="document.getElementById('directoryInput').click()" style="display: none;">
+                        📁 选择项目目录
+                    </button>
+                </div>
+                
                 <div id="fileInfo" style="margin-top: 15px; color: #666;"></div>
             </div>
 
@@ -504,8 +527,25 @@
                         启用运行时分析
                     </label>
                     <label class="checkbox" style="margin-top: 10px;">
-                        <input type="checkbox" id="enableWebAppTest">
-                        <span style="color: #dc3545;">⚠️ 启用Web应用测试（检测时间较长）</span>
+                        <input type="checkbox" id="enableWebAppTest" checked>
+                        <span style="color: #28a745;">✅ 启用Web应用测试（推荐用于动态检测）</span>
+                    </label>
+                </div>
+                
+                <div class="option-card active">
+                    <h3>⚡ 动态缺陷检测</h3>
+                    <p>实时运行Flask应用并检测运行时问题</p>
+                    <label class="checkbox">
+                        <input type="checkbox" id="enableDynamicDetection" checked>
+                        启用动态缺陷检测
+                    </label>
+                    <label class="checkbox" style="margin-top: 10px;">
+                        <input type="checkbox" id="enableFlaskSpecificTests" checked>
+                        <span style="color: #007bff;">🔍 启用Flask特定问题检测</span>
+                    </label>
+                    <label class="checkbox" style="margin-top: 10px;">
+                        <input type="checkbox" id="enableServerTesting" checked>
+                        <span style="color: #dc3545;">🌐 启用服务器启动测试</span>
                     </label>
                 </div>
                 
@@ -602,6 +642,27 @@
             }
         });
 
+        // 更新上传类型
+        function updateUploadType() {
+            const uploadType = document.querySelector('input[name="uploadType"]:checked').value;
+            const fileInput = document.getElementById('fileInput');
+            const directoryInput = document.getElementById('directoryInput');
+            const selectFileBtn = document.getElementById('selectFileBtn');
+            const selectDirectoryBtn = document.getElementById('selectDirectoryBtn');
+            
+            if (uploadType === 'directory') {
+                fileInput.style.display = 'none';
+                directoryInput.style.display = 'block';
+                selectFileBtn.style.display = 'none';
+                selectDirectoryBtn.style.display = 'inline-block';
+            } else {
+                fileInput.style.display = 'block';
+                directoryInput.style.display = 'none';
+                selectFileBtn.style.display = 'inline-block';
+                selectDirectoryBtn.style.display = 'none';
+            }
+        }
+
         // 文件选择处理
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -610,6 +671,28 @@
                     <strong>已选择:</strong> ${file.name}<br>
                     <strong>大小:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB
                 `;
+            }
+        });
+
+        // 目录选择处理
+        document.getElementById('directoryInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                // 检查文件是否有路径信息
+                const hasPathInfo = Array.from(files).some(file => file.webkitRelativePath && file.webkitRelativePath.includes('/'));
+                
+                if (!hasPathInfo) {
+                    console.warn('警告: 文件没有路径信息，可能影响检测结果');
+                    alert('警告: 选择的文件没有路径信息，建议使用ZIP文件上传以获得更好的检测结果');
+                }
+                
+                document.getElementById('fileInfo').innerHTML = `
+                    <strong>已选择目录:</strong> ${files.length} 个文件<br>
+                    <strong>总大小:</strong> ${(Array.from(files).reduce((sum, file) => sum + file.size, 0) / 1024 / 1024).toFixed(2)} MB<br>
+                    <strong>路径信息:</strong> ${hasPathInfo ? '有' : '无'}
+                `;
+                // 将目录文件复制到主文件输入
+                document.getElementById('fileInput').files = files;
             }
         });
 
@@ -633,14 +716,27 @@
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 const file = files[0];
-                if (file.name.endsWith('.zip')) {
+                const uploadType = document.querySelector('input[name="uploadType"]:checked').value;
+                
+                if (uploadType === 'file') {
+                    // 压缩包上传
+                    if (file.name.endsWith('.zip') || file.name.endsWith('.tar') || file.name.endsWith('.tar.gz')) {
+                        document.getElementById('fileInput').files = files;
+                        document.getElementById('fileInfo').innerHTML = `
+                            <strong>已选择:</strong> ${file.name}<br>
+                            <strong>大小:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB
+                        `;
+                    } else {
+                        alert('请选择ZIP、TAR或TAR.GZ格式的压缩包');
+                    }
+                } else {
+                    // 目录上传
+                    document.getElementById('directoryInput').files = files;
                     document.getElementById('fileInput').files = files;
                     document.getElementById('fileInfo').innerHTML = `
-                        <strong>已选择:</strong> ${file.name}<br>
-                        <strong>大小:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB
+                        <strong>已选择目录:</strong> ${files.length} 个文件<br>
+                        <strong>总大小:</strong> ${(Array.from(files).reduce((sum, file) => sum + file.size, 0) / 1024 / 1024).toFixed(2)} MB
                     `;
-                } else {
-                    alert('请选择ZIP格式的压缩包');
                 }
             }
         });
@@ -648,10 +744,10 @@
         // 开始检测
         async function startDetection() {
             const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
+            const files = fileInput.files;
             
-            if (!file) {
-                alert('请先选择文件');
+            if (!files || files.length === 0) {
+                alert('请先选择文件或目录');
                 return;
             }
 
@@ -660,8 +756,21 @@
                 static_analysis: document.getElementById('staticAnalysis').checked,
                 dynamic_monitoring: document.getElementById('dynamicMonitoring').checked,
                 runtime_analysis: document.getElementById('runtimeAnalysis').checked,
-                enable_web_app_test: document.getElementById('enableWebAppTest').checked
+                enable_web_app_test: document.getElementById('enableWebAppTest').checked,
+                enable_dynamic_detection: document.getElementById('enableDynamicDetection').checked,
+                enable_flask_specific_tests: document.getElementById('enableFlaskSpecificTests').checked,
+                enable_server_testing: document.getElementById('enableServerTesting').checked
             };
+            
+            // 调试信息
+            console.log('🔍 前端调试信息:');
+            console.log('   - static_analysis:', options.static_analysis);
+            console.log('   - dynamic_monitoring:', options.dynamic_monitoring);
+            console.log('   - runtime_analysis:', options.runtime_analysis);
+            console.log('   - enable_web_app_test:', options.enable_web_app_test);
+            console.log('   - enable_dynamic_detection:', options.enable_dynamic_detection);
+            console.log('   - enable_flask_specific_tests:', options.enable_flask_specific_tests);
+            console.log('   - enable_server_testing:', options.enable_server_testing);
 
             // 先检查API状态
             const apiStatus = await checkApiStatus();
@@ -676,11 +785,33 @@
             try {
                 // 创建FormData
                 const formData = new FormData();
-                formData.append('file', file);
-                formData.append('static_analysis', options.static_analysis);
-                formData.append('dynamic_monitoring', options.dynamic_monitoring);
-                formData.append('runtime_analysis', options.runtime_analysis);
-                formData.append('enable_web_app_test', options.enable_web_app_test);
+                
+                // 根据上传类型处理文件
+                const uploadType = document.querySelector('input[name="uploadType"]:checked').value;
+                if (uploadType === 'file') {
+                    // 压缩包上传
+                    formData.append('file', files[0]);
+                } else {
+                    // 目录上传 - 添加所有文件
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append('files', files[i]);
+                    }
+                }
+                
+                formData.append('static_analysis', options.static_analysis.toString());
+                formData.append('dynamic_monitoring', options.dynamic_monitoring.toString());
+                formData.append('runtime_analysis', options.runtime_analysis.toString());
+                formData.append('enable_web_app_test', options.enable_web_app_test.toString());
+                formData.append('enable_dynamic_detection', options.enable_dynamic_detection.toString());
+                formData.append('enable_flask_specific_tests', options.enable_flask_specific_tests.toString());
+                formData.append('enable_server_testing', options.enable_server_testing.toString());
+                formData.append('upload_type', uploadType);
+
+                // 调试FormData内容
+                console.log('📋 FormData内容:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(`   - ${key}: ${value}`);
+                }
 
                 console.log('发送检测请求到:', `${API_BASE_URL}/detect`);
 
@@ -758,8 +889,23 @@
 
         // 显示检测结果
         function displayResults(data) {
+            console.log('API响应数据:', data);
+            
+            // 验证数据结构
+            if (!data || !data.results) {
+                showError('检测结果数据格式错误：缺少results字段');
+                return;
+            }
+            
             const results = data.results;
             const summary = results.summary;
+
+            // 验证summary对象
+            if (!summary) {
+                console.error('缺少summary字段，results结构:', results);
+                showError('检测结果数据格式错误：缺少summary字段');
+                return;
+            }
 
             // 显示结果区域
             document.getElementById('resultsSection').classList.add('show');
@@ -870,6 +1016,21 @@
                 `;
             });
 
+            // 动态检测问题
+            const dynamicDetection = results.dynamic_detection || {};
+            const dynamicIssues = dynamicDetection.issues || [];
+            dynamicIssues.forEach(issue => {
+                html += `
+                    <div class="issue-item">
+                        <div>
+                            <strong>动态检测 - ${issue.test || '未知测试'}</strong><br>
+                            <small>${issue.message}</small>
+                        </div>
+                        <span class="issue-severity severity-${issue.severity}">${issue.severity}</span>
+                    </div>
+                `;
+            });
+
             issuesList.innerHTML = html || '<p>未发现问题</p>';
         }
 
@@ -926,6 +1087,19 @@
                     <h4>动态监控</h4>
                     <p><strong>监控时长:</strong> ${results.dynamic_monitoring.duration || 0}秒</p>
                     <p><strong>告警数量:</strong> ${results.dynamic_monitoring.alerts?.length || 0}</p>
+                `;
+            }
+
+            // 动态检测结果
+            if (results.dynamic_detection) {
+                const dynamicDetection = results.dynamic_detection;
+                html += `
+                    <h4>动态缺陷检测</h4>
+                    <p><strong>检测状态:</strong> ${dynamicDetection.status || 'unknown'}</p>
+                    <p><strong>Flask项目:</strong> ${dynamicDetection.is_flask_project ? '是' : '否'}</p>
+                    <p><strong>测试完成:</strong> ${dynamicDetection.tests_completed ? '是' : '否'}</p>
+                    <p><strong>成功率:</strong> ${dynamicDetection.success_rate || 0}%</p>
+                    <p><strong>发现问题:</strong> ${dynamicDetection.issues?.length || 0}个</p>
                 `;
             }
 
