@@ -461,6 +461,24 @@ class SimpleDetector:
         except Exception as e:
             return {"error": f"动态监控失败: {e}"}
     
+    async def _detect_flask_d_class_issues(self, project_path: str) -> Dict[str, Any]:
+        """检测Flask D类问题"""
+        try:
+            from tools.flask_d_class_detector import FlaskDClassDetector
+            
+            detector = FlaskDClassDetector()
+            results = await detector.detect_d_class_issues(project_path)
+            
+            return results
+        except Exception as e:
+            print(f"Flask D类问题检测失败: {e}")
+            return {
+                "detection_type": "flask_d_class",
+                "error": str(e),
+                "issues_found": [],
+                "summary": {"total_issues": 0}
+            }
+    
     async def _perform_dynamic_detection(self, project_path: str, enable_flask_tests: bool = True, enable_server_tests: bool = True) -> Dict[str, Any]:
         """执行动态缺陷检测"""
         try:
@@ -476,15 +494,14 @@ class SimpleDetector:
                     "tests_completed": False
                 }
             
+            # 根据选项决定是否启用Web应用测试
+            enable_web_test = enable_server_tests and enable_flask_tests
+            
             # 运行动态测试
             try:
                 from flask_simple_test.dynamic_test_runner import FlaskDynamicTestRunner
                 
                 runner = FlaskDynamicTestRunner()
-                
-                # 根据选项决定是否启用Web应用测试
-                enable_web_test = enable_server_tests and enable_flask_tests
-                
                 test_results = runner.run_dynamic_tests(enable_web_app_test=enable_web_test)
             except Exception as e:
                 print(f"完整动态测试失败，使用无Flask测试: {e}")
@@ -493,6 +510,9 @@ class SimpleDetector:
                 
                 no_flask_tester = NoFlaskDynamicTest()
                 test_results = no_flask_tester.run_no_flask_tests()
+            
+            # 新增：Flask D类问题检测
+            flask_d_class_results = await self._detect_flask_d_class_issues(project_path)
             
             # 分析测试结果，生成问题报告
             issues = []
@@ -509,7 +529,23 @@ class SimpleDetector:
                         "message": f"动态测试失败: {test_name}",
                         "details": test_result.get("error", "未知错误")
                     })
-                elif test_result.get("status") == "partial":
+            
+            # 添加Flask D类问题
+            if flask_d_class_results.get("issues_found"):
+                for issue in flask_d_class_results["issues_found"]:
+                    issues.append({
+                        "type": "flask_d_class_issue",
+                        "severity": issue["severity"],
+                        "message": f"Flask D类问题: {issue['title']}",
+                        "description": issue["description"],
+                        "github_link": issue["github_link"],
+                        "issue_id": issue["issue_id"],
+                        "detection_method": "flask_d_class_detector"
+                    })
+            
+            # 检查部分成功的测试
+            for test_name, test_result in tests.items():
+                if test_result.get("status") == "partial":
                     issues.append({
                         "type": "dynamic_test_partial",
                         "test": test_name,
@@ -537,10 +573,16 @@ class SimpleDetector:
                 "is_flask_project": is_flask_project,
                 "enable_web_test": enable_web_test,
                 "test_results": test_results,
+                "flask_d_class_results": flask_d_class_results,
                 "issues": issues,
                 "recommendations": recommendations,
                 "tests_completed": True,
-                "success_rate": success_rate
+                "success_rate": success_rate,
+                "summary": {
+                    "total_issues": len(issues),
+                    "dynamic_test_issues": len([i for i in issues if i["type"] == "dynamic_test_failure"]),
+                    "flask_d_class_issues": len([i for i in issues if i["type"] == "flask_d_class_issue"])
+                }
             }
             
         except Exception as e:
@@ -1055,8 +1097,24 @@ class SimpleDetector:
     def save_results(self, results: Dict[str, Any], file_path: str):
         """保存结果到文件"""
         try:
+            # 递归处理不可序列化的对象
+            def convert_to_serializable(obj):
+                if isinstance(obj, set):
+                    return list(obj)
+                elif isinstance(obj, dict):
+                    return {k: convert_to_serializable(v) for k, v in obj.items()}
+                elif isinstance(obj, (list, tuple)):
+                    return [convert_to_serializable(item) for item in obj]
+                elif hasattr(obj, '__dict__'):
+                    return convert_to_serializable(obj.__dict__)
+                else:
+                    return obj
+            
+            # 转换结果数据
+            serializable_results = convert_to_serializable(results)
+            
             with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(results, f, indent=2, ensure_ascii=False)
+                json.dump(serializable_results, f, indent=2, ensure_ascii=False)
             print(f"检测结果已保存到: {file_path}")
         except Exception as e:
             print(f"保存结果失败: {e}")

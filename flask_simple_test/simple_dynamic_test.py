@@ -1,428 +1,288 @@
 #!/usr/bin/env python3
 """
-简化动态测试 - 避免Flask版本兼容性问题
-专注于基础功能测试，作为完整测试的回退方案
+简化的动态测试，避免Flask版本兼容性问题
 """
 
-import sys
-import os
-import json
 import time
-import traceback
+import json
 from pathlib import Path
 from typing import Dict, Any, List
 
+# 应用Werkzeug兼容性补丁
+try:
+    import werkzeug.urls
+    from urllib.parse import quote as url_quote, urlparse as url_parse
+    patches_applied = []
+
+    if not hasattr(werkzeug.urls, 'url_quote'):
+        werkzeug.urls.url_quote = url_quote
+        patches_applied.append("url_quote")
+
+    if not hasattr(werkzeug.urls, 'url_parse'):
+        werkzeug.urls.url_parse = url_parse
+        patches_applied.append("url_parse")
+        
+    if patches_applied:
+        print(f"🔧 已应用Werkzeug兼容性补丁: {', '.join(patches_applied)}")
+except ImportError:
+    print("⚠️ 无法应用Werkzeug兼容性补丁")
+
 class SimpleDynamicTest:
     """简化的动态测试类"""
-    
+
     def __init__(self):
-        self.test_results = {
-            "timestamp": time.time(),
-            "test_type": "simple_dynamic",
-            "tests": {},
-            "summary": {
-                "total_tests": 0,
-                "passed_tests": 0,
-                "failed_tests": 0,
-                "skipped_tests": 0,
-                "success_rate": 0.0,
-                "overall_status": "unknown"
-            }
-        }
-    
-    def run_simple_tests(self, target_path: str = ".") -> Dict[str, Any]:
+        self.test_results = {}
+
+    def run_simple_tests(self) -> Dict[str, Any]:
         """运行简化的动态测试"""
-        print("🔧 运行简化动态测试...")
-        print(f"🎯 目标路径: {target_path}")
-        
+        print("开始简化动态测试...")
+        print("="*50)
+
+        results = {
+            "test_type": "simple_dynamic_test",
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "tests": {}
+        }
+
         try:
             # 测试1: Python环境检查
-            self._test_python_environment()
-            
-            # 测试2: 文件系统检查
-            self._test_file_system(target_path)
-            
-            # 测试3: 代码语法检查
-            self._test_code_syntax(target_path)
-            
-            # 测试4: 导入检查
-            self._test_imports(target_path)
-            
-            # 测试5: 基础Flask检测
-            self._test_flask_detection(target_path)
-            
-            # 计算总结
-            self._calculate_summary()
-            
-            print(f"✅ 简化动态测试完成")
-            print(f"📊 成功率: {self.test_results['summary']['success_rate']:.1f}%")
-            
-            return self.test_results
-            
-        except Exception as e:
-            print(f"❌ 简化动态测试失败: {e}")
-            traceback.print_exc()
-            return {
-                "error": str(e),
-                "timestamp": time.time(),
-                "test_type": "simple_dynamic"
-            }
-    
-    def _test_python_environment(self):
+            print("\n测试1: Python环境检查")
+            results["tests"]["python_environment"] = self._test_python_environment()
+
+            # 测试2: Flask导入检查
+            print("\n测试2: Flask导入检查")
+            results["tests"]["flask_import"] = self._test_flask_import()
+
+            # 测试3: 基础Flask功能
+            print("\n测试3: 基础Flask功能")
+            results["tests"]["basic_flask"] = self._test_basic_flask()
+
+            # 测试4: 项目文件检查
+            print("\n测试4: 项目文件检查")
+            results["tests"]["project_files"] = self._test_project_files()
+
+            # 生成测试摘要
+            results["summary"] = self._generate_test_summary(results)
+
+            print("\n简化动态测试完成！")
+            return results
+
+        except (ImportError, RuntimeError, AttributeError, OSError) as e:
+            print(f"\n简化动态测试失败: {e}")
+            results["error"] = str(e)
+            results["summary"] = self._generate_test_summary(results)
+            return results
+
+    def _test_python_environment(self) -> Dict[str, Any]:
         """测试Python环境"""
-        test_name = "python_environment"
-        print(f"  🐍 测试Python环境...")
-        
         try:
-            # 检查Python版本
-            python_version = sys.version_info
-            version_str = f"{python_version.major}.{python_version.minor}.{python_version.micro}"
-            
+            import sys
+            import platform
+
+            result = {
+                "status": "success",
+                "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+                "platform": platform.system(),
+                "architecture": platform.architecture()[0],
+                "executable": sys.executable
+            }
+
+            print("  ✅ Python环境检查成功")
+            print(f"  - Python版本: {result['python_version']}")
+            print(f"  - 平台: {result['platform']}")
+
+            return result
+
+        except (ImportError, RuntimeError, AttributeError, OSError) as e:
+            print(f"  ❌ Python环境检查失败: {e}")
+            return {
+                "status": "failed",
+                "error": str(e)
+            }
+
+    def _test_flask_import(self) -> Dict[str, Any]:
+        """测试Flask导入"""
+        try:
+            import flask
+            flask_version = flask.__version__
+
             # 检查关键模块
-            modules = ['os', 'sys', 'json', 'pathlib', 'time']
+            modules_to_check = [
+                'flask.Flask',
+                'flask.request',
+                'flask.jsonify',
+                'flask.Blueprint'
+            ]
+
             available_modules = []
-            
-            for module in modules:
+            for module in modules_to_check:
                 try:
-                    __import__(module)
+                    exec(f"from {module} import *")
                     available_modules.append(module)
-                except ImportError:
-                    pass
-            
-            self.test_results["tests"][test_name] = {
-                "status": "passed",
-                "details": {
-                    "python_version": version_str,
-                    "available_modules": available_modules,
-                    "platform": sys.platform
-                }
-            }
-            print(f"    ✅ Python环境正常")
-            
-        except Exception as e:
-            self.test_results["tests"][test_name] = {
-                "status": "failed",
-                "error": str(e)
-            }
-            print(f"    ❌ Python环境测试失败: {e}")
-    
-    def _test_file_system(self, target_path: str):
-        """测试文件系统"""
-        test_name = "file_system"
-        print(f"  📁 测试文件系统...")
-        
-        try:
-            path = Path(target_path)
-            
-            # 检查路径是否存在
-            exists = path.exists()
-            is_file = path.is_file() if exists else False
-            is_dir = path.is_dir() if exists else False
-            
-            # 如果是目录，检查内容
-            contents = []
-            if is_dir:
-                try:
-                    contents = [str(item) for item in path.iterdir()]
-                except PermissionError:
-                    contents = ["权限不足"]
-            
-            self.test_results["tests"][test_name] = {
-                "status": "passed",
-                "details": {
-                    "path": str(path),
-                    "exists": exists,
-                    "is_file": is_file,
-                    "is_dir": is_dir,
-                    "contents_count": len(contents) if is_dir else 0
-                }
-            }
-            print(f"    ✅ 文件系统访问正常")
-            
-        except Exception as e:
-            self.test_results["tests"][test_name] = {
-                "status": "failed",
-                "error": str(e)
-            }
-            print(f"    ❌ 文件系统测试失败: {e}")
-    
-    def _test_code_syntax(self, target_path: str):
-        """测试代码语法"""
-        test_name = "code_syntax"
-        print(f"  🔍 测试代码语法...")
-        
-        try:
-            path = Path(target_path)
-            python_files = []
-            syntax_errors = []
-            
-            if path.is_file() and path.suffix == '.py':
-                python_files = [str(path)]
-            elif path.is_dir():
-                python_files = [str(f) for f in path.rglob('*.py')]
-            
-            # 检查每个Python文件的语法
-            for py_file in python_files[:10]:  # 限制检查文件数量
-                try:
-                    with open(py_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                    
-                    # 尝试编译代码
-                    compile(content, py_file, 'exec')
-                    
-                except SyntaxError as e:
-                    syntax_errors.append({
-                        "file": py_file,
-                        "error": str(e),
-                        "line": e.lineno
-                    })
-                except Exception as e:
-                    syntax_errors.append({
-                        "file": py_file,
-                        "error": str(e)
-                    })
-            
-            self.test_results["tests"][test_name] = {
-                "status": "passed" if not syntax_errors else "failed",
-                "details": {
-                    "python_files_found": len(python_files),
-                    "files_checked": min(len(python_files), 10),
-                    "syntax_errors": syntax_errors
-                }
-            }
-            
-            if syntax_errors:
-                print(f"    ⚠️ 发现 {len(syntax_errors)} 个语法错误")
-            else:
-                print(f"    ✅ 代码语法检查通过")
-            
-        except Exception as e:
-            self.test_results["tests"][test_name] = {
-                "status": "failed",
-                "error": str(e)
-            }
-            print(f"    ❌ 代码语法测试失败: {e}")
-    
-    def _test_imports(self, target_path: str):
-        """测试导入"""
-        test_name = "imports"
-        print(f"  📦 测试导入...")
-        
-        try:
-            path = Path(target_path)
-            import_errors = []
-            
-            # 查找Python文件
-            python_files = []
-            if path.is_file() and path.suffix == '.py':
-                python_files = [path]
-            elif path.is_dir():
-                python_files = list(path.rglob('*.py'))
-            
-            # 检查导入
-            for py_file in python_files[:5]:  # 限制检查文件数量
-                try:
-                    with open(py_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                    
-                    # 简单的导入检查
-                    lines = content.split('\n')
-                    for i, line in enumerate(lines):
-                        line = line.strip()
-                        if line.startswith('import ') or line.startswith('from '):
-                            try:
-                                # 尝试解析导入语句
-                                if 'import' in line:
-                                    parts = line.split('import')
-                                    if len(parts) == 2:
-                                        module = parts[1].strip().split(',')[0].strip()
-                                        # 跳过相对导入
-                                        if not module.startswith('.'):
-                                            try:
-                                                __import__(module)
-                                            except ImportError:
-                                                import_errors.append({
-                                                    "file": str(py_file),
-                                                    "line": i + 1,
-                                                    "module": module,
-                                                    "error": "模块未找到"
-                                                })
-                            except Exception as e:
-                                import_errors.append({
-                                    "file": str(py_file),
-                                    "line": i + 1,
-                                    "error": str(e)
-                                })
-                
-                except Exception as e:
-                    import_errors.append({
-                        "file": str(py_file),
-                        "error": str(e)
-                    })
-            
-            self.test_results["tests"][test_name] = {
-                "status": "passed" if not import_errors else "failed",
-                "details": {
-                    "python_files_checked": len(python_files),
-                    "import_errors": import_errors
-                }
-            }
-            
-            if import_errors:
-                print(f"    ⚠️ 发现 {len(import_errors)} 个导入问题")
-            else:
-                print(f"    ✅ 导入检查通过")
-            
-        except Exception as e:
-            self.test_results["tests"][test_name] = {
-                "status": "failed",
-                "error": str(e)
-            }
-            print(f"    ❌ 导入测试失败: {e}")
-    
-    def _test_flask_detection(self, target_path: str):
-        """测试Flask检测"""
-        test_name = "flask_detection"
-        print(f"  🌐 测试Flask检测...")
-        
-        try:
-            path = Path(target_path)
-            flask_indicators = []
-            
-            # 查找Flask相关文件
-            if path.is_file():
-                files_to_check = [path]
-            else:
-                files_to_check = list(path.rglob('*.py'))
-            
-            # 检查Flask相关代码
-            for py_file in files_to_check[:10]:  # 限制检查文件数量
-                try:
-                    with open(py_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                    
-                    # 检查Flask相关关键词
-                    flask_keywords = [
-                        'from flask import',
-                        'import flask',
-                        'Flask(',
-                        '@app.route',
-                        'app.run(',
-                        'render_template',
-                        'request',
-                        'jsonify'
-                    ]
-                    
-                    for keyword in flask_keywords:
-                        if keyword in content:
-                            flask_indicators.append({
-                                "file": str(py_file),
-                                "indicator": keyword
-                            })
-                            break
-                
-                except Exception as e:
-                    pass
-            
-            # 检查requirements.txt
-            req_file = path / 'requirements.txt' if path.is_dir() else path.parent / 'requirements.txt'
-            if req_file.exists():
-                try:
-                    with open(req_file, 'r', encoding='utf-8') as f:
-                        req_content = f.read()
-                    if 'flask' in req_content.lower():
-                        flask_indicators.append({
-                            "file": str(req_file),
-                            "indicator": "requirements.txt中的flask依赖"
-                        })
                 except Exception:
                     pass
-            
-            is_flask_project = len(flask_indicators) > 0
-            
-            self.test_results["tests"][test_name] = {
-                "status": "passed",
-                "details": {
-                    "is_flask_project": is_flask_project,
-                    "flask_indicators": flask_indicators,
-                    "indicators_count": len(flask_indicators)
-                }
+
+            result = {
+                "status": "success",
+                "flask_version": flask_version,
+                "available_modules": available_modules,
+                "module_count": len(available_modules)
             }
-            
-            if is_flask_project:
-                print(f"    ✅ 检测到Flask项目 ({len(flask_indicators)} 个指标)")
-            else:
-                print(f"    ℹ️ 未检测到Flask项目")
-            
-        except Exception as e:
-            self.test_results["tests"][test_name] = {
+
+            print("  ✅ Flask导入检查成功")
+            print(f"  - Flask版本: {flask_version}")
+            print(f"  - 可用模块: {len(available_modules)}/{len(modules_to_check)}")
+
+            return result
+
+        except ImportError as e:
+            print(f"  ❌ Flask导入失败: {e}")
+            return {
+                "status": "failed",
+                "error": f"Flask未安装: {e}"
+            }
+        except (RuntimeError, AttributeError, OSError) as e:
+            print(f"  ❌ Flask导入检查失败: {e}")
+            return {
                 "status": "failed",
                 "error": str(e)
             }
-            print(f"    ❌ Flask检测测试失败: {e}")
-    
-    def _calculate_summary(self):
-        """计算测试总结"""
-        tests = self.test_results["tests"]
-        total = len(tests)
-        passed = sum(1 for test in tests.values() if test["status"] == "passed")
-        failed = sum(1 for test in tests.values() if test["status"] == "failed")
-        skipped = sum(1 for test in tests.values() if test["status"] == "skipped")
-        
-        success_rate = (passed / total * 100) if total > 0 else 0
-        
-        if success_rate >= 80:
-            overall_status = "excellent"
-        elif success_rate >= 60:
-            overall_status = "good"
-        elif success_rate >= 40:
-            overall_status = "fair"
-        else:
-            overall_status = "poor"
-        
-        self.test_results["summary"].update({
-            "total_tests": total,
-            "passed_tests": passed,
-            "failed_tests": failed,
-            "skipped_tests": skipped,
-            "success_rate": success_rate,
-            "overall_status": overall_status
-        })
-    
-    def save_results(self, results: Dict[str, Any], output_file: str):
-        """保存测试结果"""
-        try:
-            with open(output_file, 'w', encoding='utf-8') as f:
-                json.dump(results, f, indent=2, ensure_ascii=False)
-            print(f"📄 测试结果已保存到: {output_file}")
-        except Exception as e:
-            print(f"❌ 保存结果失败: {e}")
 
+    def _test_basic_flask(self) -> Dict[str, Any]:
+        """测试基础Flask功能"""
+        try:
+            from flask import Flask
+
+            # 创建应用
+            app = Flask(__name__)
+            app.config['TESTING'] = True
+
+            # 测试基本属性
+            result = {
+                "status": "success",
+                "app_name": app.name,
+                "debug_mode": app.debug,
+                "testing_mode": app.testing,
+                "config_keys": len(app.config),
+                "url_rules": len(app.url_map._rules)
+            }
+
+            print("  ✅ 基础Flask功能测试成功")
+            print(f"  - 应用名称: {app.name}")
+            print(f"  - 配置项数量: {len(app.config)}")
+
+            return result
+
+        except (ImportError, RuntimeError, AttributeError, OSError) as e:
+            print(f"  ❌ 基础Flask功能测试失败: {e}")
+            return {
+                "status": "failed",
+                "error": str(e)
+            }
+
+    def _test_project_files(self) -> Dict[str, Any]:
+        """测试项目文件"""
+        try:
+            current_dir = Path(__file__).parent
+            project_files = []
+
+            # 查找Python文件
+            for py_file in current_dir.glob("*.py"):
+                if py_file.name != __file__:
+                    project_files.append(py_file.name)
+
+            # 查找其他重要文件
+            important_files = ['README.md', 'requirements.txt', 'setup.py']
+            for file_name in important_files:
+                file_path = current_dir / file_name
+                if file_path.exists():
+                    project_files.append(file_name)
+
+            result = {
+                "status": "success",
+                "project_files": project_files,
+                "file_count": len(project_files),
+                "current_directory": str(current_dir)
+            }
+
+            print("  ✅ 项目文件检查成功")
+            print(f"  - 发现文件: {len(project_files)}个")
+            print(f"  - 文件列表: {', '.join(project_files[:5])}{'...' if len(project_files) > 5 else ''}")
+
+            return result
+
+        except (ImportError, RuntimeError, AttributeError, OSError) as e:
+            print(f"  ❌ 项目文件检查失败: {e}")
+            return {
+                "status": "failed",
+                "error": str(e)
+            }
+
+    def _generate_test_summary(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """生成测试摘要"""
+        tests = results.get("tests", {})
+
+        # 统计测试结果
+        total_tests = len(tests)
+        successful_tests = 0
+        failed_tests = 0
+
+        for _, test_result in tests.items():
+            status = test_result.get("status", "unknown")
+            if status == "success":
+                successful_tests += 1
+            elif status == "failed":
+                failed_tests += 1
+
+        # 计算成功率
+        success_rate = (successful_tests / total_tests * 100) if total_tests > 0 else 0
+
+        # 确定整体状态
+        if failed_tests == 0:
+            overall_status = "success"
+        elif successful_tests > failed_tests:
+            overall_status = "partial"
+        else:
+            overall_status = "failed"
+
+        return {
+            "total_tests": total_tests,
+            "successful_tests": successful_tests,
+            "failed_tests": failed_tests,
+            "success_rate": round(success_rate, 2),
+            "overall_status": overall_status
+        }
 
 def main():
     """主函数"""
-    import argparse
-    
-    parser = argparse.ArgumentParser(description='简化动态测试')
-    parser.add_argument('--target', type=str, default='.', 
-                       help='目标文件或目录路径')
-    parser.add_argument('--output', type=str, 
-                       help='输出文件路径（可选）')
-    
-    args = parser.parse_args()
-    
-    print("=" * 50)
-    print("简化动态测试")
-    print("=" * 50)
-    
-    tester = SimpleDynamicTest()
-    results = tester.run_simple_tests(args.target)
-    
-    if args.output:
-        tester.save_results(results, args.output)
-    
-    return results
+    print("简化动态测试运行器")
+    print("="*30)
 
+    # 创建测试实例
+    tester = SimpleDynamicTest()
+
+    # 运行测试
+    results = tester.run_simple_tests()
+
+    # 显示测试摘要
+    summary = results.get("summary", {})
+    print("\n" + "="*30)
+    print("测试摘要")
+    print("="*30)
+    print(f"总测试数: {summary.get('total_tests', 0)}")
+    print(f"成功测试: {summary.get('successful_tests', 0)}")
+    print(f"失败测试: {summary.get('failed_tests', 0)}")
+    print(f"成功率: {summary.get('success_rate', 0)}%")
+    print(f"整体状态: {summary.get('overall_status', 'unknown')}")
+
+    # 保存结果
+    try:
+        results_file = f"simple_dynamic_test_results_{int(time.time())}.json"
+        with open(results_file, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        print(f"\n测试结果已保存到: {results_file}")
+    except (ImportError, RuntimeError, AttributeError, OSError) as e:
+        print(f"\n保存结果失败: {e}")
 
 if __name__ == "__main__":
     main()

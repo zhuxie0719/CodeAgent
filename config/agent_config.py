@@ -34,7 +34,7 @@ BUG_DETECTION_CONFIG = {
         },
         "flake8": {
             "enabled": True,
-            "args": ["--max-line-length=88", "--ignore=E203,W503"]
+            "args": ["--max-line-length=120", "--select=E,W,F"]
         },
         "bandit": {
             "enabled": True,
