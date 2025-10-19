@@ -1,0 +1,25 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-10-18T19:29:02.093375",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpxjak1imy.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true
+  },
+  "error": "Bad magic number for central directory",
+  "summary": {
+    "total_files": 0,
+    "analysis_completed": false,
+    "issues_summary": {},
+    "total_issues": 0,
+    "critical_issues": 0,
+    "warning_issues": 0,
+    "info_issues": 0,
+    "overall_status": "good",
+    "recommendations": []
+  }
+}

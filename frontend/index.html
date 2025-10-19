@@ -696,14 +696,14 @@
                     </div>
                 </div>
                 
-                <div class="analysis-type-card" data-type="dynamic">
+                <div class="analysis-type-card" data-type="comprehensive">
                     <div class="icon">
                         <i class="fas fa-play-circle"></i>
                     </div>
-                    <h3>动态检测</h3>
-                    <p>运行时分析，监控系统资源使用，检测运行时错误和性能问题</p>
+                    <h3>综合检测</h3>
+                    <p>并行执行静态检测和动态检测，提供全面的代码分析</p>
                     <div class="features">
-                        <i class="fas fa-check"></i> 运行时监控 <i class="fas fa-check"></i> 性能分析 <i class="fas fa-check"></i> 资源使用
+                        <i class="fas fa-check"></i> 静态分析 <i class="fas fa-check"></i> 动态监控 <i class="fas fa-check"></i> 运行时检测
                     </div>
                 </div>
                 
@@ -952,7 +952,7 @@
                     analysisTypeSelector.style.display = 'block';
                     staticOptions.style.display = 'block';
                     break;
-                case 'dynamic':
+                case 'comprehensive':
                     analysisTypeSelector.style.display = 'block';
                     break;
                 case 'deep':
@@ -1008,7 +1008,7 @@
         function getAnalysisTypeName(type) {
             const names = {
                 'static': '静态分析',
-                'dynamic': '动态检测',
+                'comprehensive': '综合检测',
                 'deep': '深度分析',
                 'quality': '质量分析'
             };
@@ -1050,8 +1050,8 @@
                     case 'static':
                         await handleStaticAnalysis(formData, file, analysisType);
                         break;
-                    case 'dynamic':
-                        await handleDynamicAnalysis(formData, file);
+                    case 'comprehensive':
+                        await handleComprehensiveAnalysis(formData, file);
                         break;
                     case 'deep':
                         await handleDeepAnalysis(formData, file, analysisType);
@@ -1108,16 +1108,16 @@
             }
         }
 
-        // 处理动态分析
-        async function handleDynamicAnalysis(formData, file) {
-            // 跳转到动态检测页面
-            localStorage.setItem('dynamicAnalysisFile', file.name);
-            localStorage.setItem('dynamicAnalysisData', JSON.stringify({
+        // 处理综合分析
+        async function handleComprehensiveAnalysis(formData, file) {
+            // 跳转到综合检测页面
+            localStorage.setItem('comprehensiveAnalysisFile', file.name);
+            localStorage.setItem('comprehensiveAnalysisData', JSON.stringify({
                 fileName: file.name,
                 fileSize: file.size,
                 timestamp: new Date().toISOString()
             }));
-            window.location.href = 'dynamic_detection.html';
+            window.location.href = 'comprehensive_detection.html';
         }
 
         // 处理深度分析
