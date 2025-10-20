@@ -3,8 +3,6 @@
 简化的动态测试，避免Flask版本兼容性问题
 """
 
-import sys
-import os
 import time
 import json
 from pathlib import Path
@@ -15,11 +13,11 @@ try:
     import werkzeug.urls
     from urllib.parse import quote as url_quote, urlparse as url_parse
     patches_applied = []
-    
+
     if not hasattr(werkzeug.urls, 'url_quote'):
         werkzeug.urls.url_quote = url_quote
         patches_applied.append("url_quote")
-        
+
     if not hasattr(werkzeug.urls, 'url_parse'):
         werkzeug.urls.url_parse = url_parse
         patches_applied.append("url_parse")
@@ -121,7 +119,7 @@ class SimpleDynamicTest:
                 try:
                     exec(f"from {module} import *")
                     available_modules.append(module)
-                except:
+                except Exception:
                     pass
 
             result = {
@@ -143,7 +141,7 @@ class SimpleDynamicTest:
                 "status": "failed",
                 "error": f"Flask未安装: {e}"
             }
-        except (ImportError, RuntimeError, AttributeError, OSError) as e:
+        except (RuntimeError, AttributeError, OSError) as e:
             print(f"  ❌ Flask导入检查失败: {e}")
             return {
                 "status": "failed",
@@ -229,7 +227,7 @@ class SimpleDynamicTest:
         successful_tests = 0
         failed_tests = 0
 
-        for test_name, test_result in tests.items():
+        for _, test_result in tests.items():
             status = test_result.get("status", "unknown")
             if status == "success":
                 successful_tests += 1

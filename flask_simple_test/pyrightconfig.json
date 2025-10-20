@@ -1,0 +1,74 @@
+{
+  "include": [
+    "flask_simple_test"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__"
+  ],
+  "reportMissingImports": "error",
+  "reportMissingTypeStubs": "warning",
+  "reportUnknownMemberType": "error",
+  "reportUnknownArgumentType": "error",
+  "reportUnknownVariableType": "error",
+  "reportUnknownParameterType": "error",
+  "reportUnknownLambdaType": "error",
+  "reportUnknownReturnType": "error",
+  "reportUnknownArgumentType": "error",
+  "reportUnknownVariableType": "error",
+  "reportUnknownParameterType": "error",
+  "reportUnknownLambdaType": "error",
+  "reportUnknownReturnType": "error",
+  "reportUntypedFunctionDecorator": "error",
+  "reportUntypedClassDecorator": "error",
+  "reportUntypedBaseClass": "error",
+  "reportUntypedNamedTuple": "error",
+  "reportPrivateUsage": "warning",
+  "reportConstantRedefinition": "error",
+  "reportIncompatibleMethodOverride": "error",
+  "reportIncompatibleVariableOverride": "error",
+  "reportInconsistentConstructor": "error",
+  "reportOverlappingOverload": "error",
+  "reportMissingSuperCall": "error",
+  "reportUninitializedInstanceVariable": "error",
+  "reportInvalidStringEscapeSequence": "error",
+  "reportUnknownMemberType": "error",
+  "reportUnknownArgumentType": "error",
+  "reportUnknownVariableType": "error",
+  "reportUnknownParameterType": "error",
+  "reportUnknownLambdaType": "error",
+  "reportUnknownReturnType": "error",
+  "reportUntypedFunctionDecorator": "error",
+  "reportUntypedClassDecorator": "error",
+  "reportUntypedBaseClass": "error",
+  "reportUntypedNamedTuple": "error",
+  "reportPrivateUsage": "warning",
+  "reportConstantRedefinition": "error",
+  "reportIncompatibleMethodOverride": "error",
+  "reportIncompatibleVariableOverride": "error",
+  "reportInconsistentConstructor": "error",
+  "reportOverlappingOverload": "error",
+  "reportMissingSuperCall": "error",
+  "reportUninitializedInstanceVariable": "error",
+  "reportInvalidStringEscapeSequence": "error",
+  "pythonVersion": "3.8",
+  "pythonPlatform": "All",
+  "executionEnvironments": [
+    {
+      "root": "flask_simple_test",
+      "pythonVersion": "3.8",
+      "pythonPlatform": "All",
+      "extraPaths": [
+        "."
+      ]
+    }
+  ],
+  "typeCheckingMode": "strict",
+  "useLibraryCodeForTypes": true,
+  "autoSearchPaths": true,
+  "autoImportCompletions": true,
+  "indexing": true,
+  "logLevel": "information"
+}
+
+

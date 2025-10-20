@@ -3,12 +3,9 @@
 不依赖Flask的动态测试，专注于代码分析
 """
 
-import sys
-import os
 import time
 import json
 import ast
-import subprocess
 from pathlib import Path
 from typing import Dict, Any, List
 
@@ -243,13 +240,13 @@ class NoFlaskDynamicTest:
                             with open(item, 'r', encoding='utf-8') as f:
                                 lines = len(f.readlines())
                                 structure["total_lines"] += lines
-                        except:
+                        except Exception:
                             pass
 
                     try:
                         size = item.stat().st_size
                         structure["file_sizes"].append(size)
-                    except:
+                    except Exception:
                         pass
 
                 elif item.is_dir() and not any(part.startswith('.') for part in item.parts):
@@ -399,7 +396,7 @@ class NoFlaskDynamicTest:
         failed_tests = 0
         partial_tests = 0
 
-        for test_name, test_result in tests.items():
+        for _, test_result in tests.items():
             status = test_result.get("status", "unknown")
             if status == "success":
                 successful_tests += 1

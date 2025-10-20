@@ -4,7 +4,6 @@ Flask 2.0.0 简化测试运行器
 支持静态和动态测试模式
 """
 
-import sys
 import argparse
 from pathlib import Path
 
