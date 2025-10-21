@@ -1,0 +1,179 @@
+{
+  "flask#4041": {
+    "issue_id": "flask#4041",
+    "issue_number": "4041",
+    "pr_number": "4045",
+    "title": "Raise error when blueprint name contains a dot",
+    "description": "This is required since every dot is now significant since blueprints can be nested. An error was already added for endpoint names in 1.0, but should have been added for this as well.",
+    "pr_title": "blueprint name may not contain a dot",
+    "pr_description": "closes #4041 ",
+    "github_fix": {
+      "files_changed": [
+        "CHANGES.rst",
+        "src/flask/blueprints.py",
+        "tests/test_basic.py",
+        "tests/test_blueprints.py"
+      ],
+      "primary_file": "src/flask/blueprints.py",
+      "lines_added": 28,
+      "lines_removed": 85,
+      "fix_strategy": "添加蓝图名称验证，禁止在名称中使用点号字符，因为点号用于分隔嵌套蓝图名称和端点名称。将assert改为ValueError异常抛出。",
+      "code_changes_summary": [
+        "修改 CHANGES.rst: +3/-0",
+        "修改 src/flask/blueprints.py: +10/-6",
+        "修改 tests/test_basic.py: +3/-3",
+        "修改 tests/test_blueprints.py: +12/-76"
+      ],
+      "test_files": [
+        "tests/test_basic.py",
+        "tests/test_blueprints.py"
+      ],
+      "commits": [],
+      "detailed_changes": [
+        {
+          "filename": "CHANGES.rst",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0,
+          "changes": 3,
+          "patch": "@@ -15,6 +15,9 @@ Unreleased\n -   Fix some types that weren't available in Python 3.6.0. :issue:`4040`\n -   Improve typing for ``send_file``, ``send_from_directory``, and\n     ``get_send_file_max_age``. :issue:`4044`, :pr:`4026`\n+-   Show an error when a blueprint name contains a dot. The ``.`` has\n+    special meaning, it is used to separate (nested) blueprint names and\n+    the endpoint name. :issue:`4041`\n \n \n Version 2.0.0"
+        },
+        {
+          "filename": "src/flask/blueprints.py",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 6,
+          "changes": 16,
+          "patch": "@@ -188,6 +188,10 @@ def __init__(\n             template_folder=template_folder,\n             root_path=root_path,\n         )\n+\n+        if \".\" in name:\n+            raise ValueError(\"'name' may not contain a dot '.' character.\")\n+\n         self.name = name\n         self.url_prefix = url_prefix\n         self.subdomain = subdomain\n@@ -360,12 +364,12 @@ def add_url_rule(\n         \"\"\"Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for\n         the :func:`url_for` function is prefixed with the name of the blueprint.\n         \"\"\"\n-        if endpoint:\n-            assert \".\" not in endpoint, \"Blueprint endpoints should not contain dots\"\n-        if view_func and hasattr(view_func, \"__name__\"):\n-            assert (\n-                \".\" not in view_func.__name__\n-            ), \"Blueprint view function name should not contain dots\"\n+        if endpoint and \".\" in endpoint:\n+            raise ValueError(\"'endpoint' may not contain a dot '.' character.\")\n+\n+        if view_func and hasattr(view_func, \"__name__\") and \".\" in view_func.__name__:\n+            raise ValueError(\"'view_func' name may not contain a dot '.' character.\")\n+\n         self.record(lambda s: s.add_url_rule(rule, endpoint, view_func, **options))\n \n     def app_template_filter(self, name: t.Optional[str] = None) -> t.Callable:"
+        },
+        {
+          "filename": "tests/test_basic.py",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3,
+          "changes": 6,
+          "patch": "@@ -1631,7 +1631,7 @@ def something_else():\n \n \n def test_inject_blueprint_url_defaults(app):\n-    bp = flask.Blueprint(\"foo.bar.baz\", __name__, template_folder=\"template\")\n+    bp = flask.Blueprint(\"foo\", __name__, template_folder=\"template\")\n \n     @bp.url_defaults\n     def bp_defaults(endpoint, values):\n@@ -1644,12 +1644,12 @@ def view(page):\n     app.register_blueprint(bp)\n \n     values = dict()\n-    app.inject_url_defaults(\"foo.bar.baz.view\", values)\n+    app.inject_url_defaults(\"foo.view\", values)\n     expected = dict(page=\"login\")\n     assert values == expected\n \n     with app.test_request_context(\"/somepage\"):\n-        url = flask.url_for(\"foo.bar.baz.view\")\n+        url = flask.url_for(\"foo.view\")\n     expected = \"/login\"\n     assert url == expected\n "
+        },
+        {
+          "filename": "tests/test_blueprints.py",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 76,
+          "changes": 88,
+          "patch": "@@ -253,28 +251,9 @@ def test_templates_list(test_apps):\n-def test_dotted_names(app, client):\n-    frontend = flask.Blueprint(\"myapp.frontend\", __name__)\n-    backend = flask.Blueprint(\"myapp.backend\", __name__)\n...\n+def test_dotted_name_not_allowed(app, client):\n+    with pytest.raises(ValueError):\n+        flask.Blueprint(\"app.ui\", __name__)"
+        }
+      ]
+    },
+    "url": "https://github.com/pallets/flask/issues/4041",
+    "pr_url": "https://github.com/pallets/flask/pull/4045"
+  },
+  "flask#4019": {
+    "issue_id": "flask#4019",
+    "issue_number": "4019",
+    "pr_number": "4019",
+    "title": "Re-add filename parameter for send_from_directory",
+    "pr_title": "Re-add filename parameter for send_from_directory",
+    "pr_description": "Re-add the `filename` parameter with a deprecation warning, then we can remove it in 2.1.0.",
+    "github_fix": {
+      "files_changed": [
+        "CHANGES.rst",
+        "src/flask/helpers.py"
+      ],
+      "primary_file": "CHANGES.rst",
+      "lines_added": 19,
+      "lines_removed": 1,
+      "fix_strategy": "Re-add filename parameter for send_from_directory. Re-add the `filename` parameter with a deprecation warning, then we can remove it in 2.1.0.",
+      "code_changes_summary": [
+        "修改 CHANGES.rst: +4/-0",
+        "修改 src/flask/helpers.py: +15/-1"
+      ],
+      "test_files": [],
+      "detailed_changes": [
+        {
+          "filename": "CHANGES.rst",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4,
+          "patch": "@@ -5,6 +5,10 @@ Version 2.0.1\n \n Unreleased\n \n+-   Re-add the ``filename`` parameter in ``send_from_directory``. The\n+    ``filename`` parameter has been renamed to ``path``, the old name\n+    is deprecated. :pr:`4019`\n+\n \n Version 2.0.0\n -------------"
+        },
+        {
+          "filename": "src/flask/helpers.py",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1,
+          "changes": 16,
+          "patch": "@@ -642,7 +642,9 @@ def safe_join(directory: str, *pathnames: str) -> str:\n     return path\n \n \n-def send_from_directory(directory: str, path: str, **kwargs: t.Any) -> \"Response\":\n+def send_from_directory(\n+    directory: str, path: str, filename: t.Optional[str] = None, **kwargs: t.Any\n+) -> \"Response\":\n     \"\"\"Send a file from within a directory using :func:`send_file`.\n \n     .. code-block:: python\n@@ -666,12 +668,24 @@ def download_file(name):\n         ``directory``.\n     :param kwargs: Arguments to pass to :func:`send_file`.\n \n+    .. versionchanged:: 2.0\n+        ``path`` replaces the ``filename`` parameter.\n+\n     .. versionadded:: 2.0\n         Moved the implementation to Werkzeug. This is now a wrapper to\n         pass some Flask-specific arguments.\n \n     .. versionadded:: 0.5\n     \"\"\"\n+    if filename is not None:\n+        warnings.warn(\n+            \"The 'filename' parameter has been renamed to 'path'. The\"\n+            \" old name will be removed in Flask 2.1.\",\n+            DeprecationWarning,\n+            stacklevel=2,\n+        )\n+        path = filename\n+\n     return werkzeug.utils.send_from_directory(  # type: ignore\n         directory, path, **_prepare_send_file_kwargs(**kwargs)\n     )"
+        }
+      ]
+    },
+    "url": "https://github.com/pallets/flask/issues/4019",
+    "pr_url": "https://github.com/pallets/flask/pull/4019"
+  },
+  "flask#4053": {
+    "issue_id": "flask#4053",
+    "issue_number": "4053",
+    "pr_number": "4055",
+    "title": "converters have access to session",
+    "pr_title": "converters have access to session",
+    "pr_description": "The request context matches the URL after opening the session. This allows custom converters to have access to the session, such as logged in user information. If a custom session interface needs access to the matched URL, it will need to call `_request_ctx_stack.top.match_request()` manually.\r\n\r\n<!--\r\nLink to relevant issues or previous PRs, one per line. Use \"fixes\" to\r\nautomatically close an issue.\r\n-->\r\n\r\n- fixes #4053 \r\n- reverts #3794 \r\n\r\n<!--\r\nEnsure each step in CONTRIBUTING.rst is complete by adding an \"x\" to\r\neach box below.\r\n\r\nIf only docs were changed, these aren't relevant and can be removed.\r\n-->\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n",
+    "github_fix": {
+      "files_changed": [
+        "CHANGES.rst",
+        "src/flask/ctx.py",
+        "tests/test_converters.py",
+        "tests/test_session_interface.py"
+      ],
+      "primary_file": "CHANGES.rst",
+      "lines_added": 28,
+      "lines_removed": 16,
+      "fix_strategy": "converters have access to session. The request context matches the URL after opening the session. This allows custom converters to have access to the session, such as logged in user information. If a custom session interface needs acce",
+      "code_changes_summary": [
+        "修改 CHANGES.rst: +3/-0",
+        "修改 src/flask/ctx.py: +5/-3",
+        "修改 tests/test_converters.py: +5/-3",
+        "修改 tests/test_session_interface.py: +15/-10"
+      ],
+      "test_files": [
+        "tests/test_converters.py",
+        "tests/test_session_interface.py"
+      ],
+      "detailed_changes": [
+        {
+          "filename": "CHANGES.rst",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0,
+          "changes": 3,
+          "patch": "@@ -20,6 +20,9 @@ Unreleased\n     the endpoint name. :issue:`4041`\n -   Combine URL prefixes when nesting blueprints that were created with\n     a ``url_prefix`` value. :issue:`4037`\n+-   Roll back a change to the order that URL matching was done. The\n+    URL is again matched after the session is loaded, so the session is\n+    available in custom URL converters. :issue:`4053`\n \n \n Version 2.0.0"
+        },
+        {
+          "filename": "src/flask/ctx.py",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3,
+          "changes": 8,
+          "patch": "@@ -395,9 +395,6 @@ def push(self) -> None:\n \n         _request_ctx_stack.push(self)\n \n-        if self.url_adapter is not None:\n-            self.match_request()\n-\n         # Open the session at the moment that the request context is available.\n         # This allows a custom open_session method to use the request context.\n         # Only open a new session if this is the first time the request was\n@@ -409,6 +406,11 @@ def push(self) -> None:\n             if self.session is None:\n                 self.session = session_interface.make_null_session(self.app)\n \n+        # Match the request URL after loading the session, so that the\n+        # session is available in custom URL converters.\n+        if self.url_adapter is not None:\n+            self.match_request()\n+\n     def pop(self, exc: t.Optional[BaseException] = _sentinel) -> None:  # type: ignore\n         \"\"\"Pops the request context and unbinds it by doing that.  This will\n         also trigger the execution of functions registered by the"
+        },
+        {
+          "filename": "tests/test_converters.py",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3,
+          "changes": 8,
+          "patch": "@@ -1,6 +1,7 @@\n from werkzeug.routing import BaseConverter\n \n-from flask import has_request_context\n+from flask import request\n+from flask import session\n from flask import url_for\n \n \n@@ -28,12 +29,13 @@ def index(args):\n def test_context_available(app, client):\n     class ContextConverter(BaseConverter):\n         def to_python(self, value):\n-            assert has_request_context()\n+            assert request is not None\n+            assert session is not None\n             return value\n \n     app.url_map.converters[\"ctx\"] = ContextConverter\n \n-    @app.route(\"/<ctx:name>\")\n+    @app.get(\"/<ctx:name>\")\n     def index(name):\n         return name\n "
+        },
+        {
+          "filename": "tests/test_session_interface.py",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 10,
+          "changes": 25,
+          "patch": "@@ -2,21 +2,26 @@\n from flask.sessions import SessionInterface\n \n \n-def test_open_session_endpoint_not_none():\n-    # Define a session interface that breaks if request.endpoint is None\n+def test_open_session_with_endpoint():\n+    \"\"\"If request.endpoint (or other URL matching behavior) is needed\n+    while loading the session, RequestContext.match_request() can be\n+    called manually.\n+    \"\"\"\n+\n     class MySessionInterface(SessionInterface):\n-        def save_session(self):\n+        def save_session(self, app, session, response):\n             pass\n \n-        def open_session(self, _, request):\n+        def open_session(self, app, request):\n+            flask._request_ctx_stack.top.match_request()\n             assert request.endpoint is not None\n \n-    def index():\n-        return \"Hello World!\"\n-\n-    # Confirm a 200 response, indicating that request.endpoint was NOT None\n     app = flask.Flask(__name__)\n-    app.route(\"/\")(index)\n     app.session_interface = MySessionInterface()\n-    response = app.test_client().open(\"/\")\n+\n+    @app.get(\"/\")\n+    def index():\n+        return \"Hello, World!\"\n+\n+    response = app.test_client().get(\"/\")\n     assert response.status_code == 200"
+        }
+      ]
+    },
+    "url": "https://github.com/pallets/flask/issues/4053",
+    "pr_url": "https://github.com/pallets/flask/pull/4055"
+  }
+}
