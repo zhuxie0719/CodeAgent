@@ -15,25 +15,25 @@ try:
     import werkzeug.urls
     from urllib.parse import quote as url_quote, urlparse as url_parse
     patches_applied = []
-    
+
     if not hasattr(werkzeug.urls, 'url_quote'):
         werkzeug.urls.url_quote = url_quote
         patches_applied.append("url_quote")
-        
+
     if not hasattr(werkzeug.urls, 'url_parse'):
         werkzeug.urls.url_parse = url_parse
         patches_applied.append("url_parse")
-    
+
     # 添加__version__属性到werkzeug模块
     if not hasattr(werkzeug, '__version__'):
         try:
             import pkg_resources
             werkzeug.__version__ = pkg_resources.get_distribution('werkzeug').version
             patches_applied.append("__version__")
-        except:
+        except Exception:
             werkzeug.__version__ = '3.1.3'  # 默认版本
             patches_applied.append("__version__ (default)")
-        
+
     if patches_applied:
         print(f"🔧 已应用Werkzeug兼容性补丁: {', '.join(patches_applied)}")
 except ImportError:
@@ -132,11 +132,11 @@ class FlaskDynamicTestRunner:
                     try:
                         import pkg_resources
                         werkzeug_version = pkg_resources.get_distribution('werkzeug').version
-                    except:
+                    except Exception:
                         try:
                             import werkzeug.routing
                             werkzeug_version = getattr(werkzeug.routing, '__version__', 'unknown')
-                        except:
+                        except Exception:
                             werkzeug_version = 'unknown'
                 
                 print(f"  - Werkzeug版本: {werkzeug_version}")

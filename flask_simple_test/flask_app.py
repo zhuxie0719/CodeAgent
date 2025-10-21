@@ -3,8 +3,6 @@
 简单的Flask应用用于测试动态检测功能
 """
 
-import os
-import sys
 from pathlib import Path
 
 # 应用Werkzeug兼容性补丁
@@ -12,11 +10,11 @@ try:
     import werkzeug.urls
     from urllib.parse import quote as url_quote, urlparse as url_parse
     patches_applied = []
-    
+
     if not hasattr(werkzeug.urls, 'url_quote'):
         werkzeug.urls.url_quote = url_quote
         patches_applied.append("url_quote")
-        
+
     if not hasattr(werkzeug.urls, 'url_parse'):
         werkzeug.urls.url_parse = url_parse
         patches_applied.append("url_parse")

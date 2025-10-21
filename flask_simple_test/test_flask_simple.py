@@ -4,8 +4,6 @@ Flask 2.0.0 简化测试文件
 包含官方文档中的32个已知Issue的复现代码
 """
 
-import sys
-import os
 from pathlib import Path
 import decimal
 from typing import Callable, Any, Optional, Union
@@ -16,11 +14,11 @@ try:
     import werkzeug.urls
     from urllib.parse import quote as url_quote, urlparse as url_parse
     patches_applied = []
-    
+
     if not hasattr(werkzeug.urls, 'url_quote'):
         werkzeug.urls.url_quote = url_quote
         patches_applied.append("url_quote")
-        
+
     if not hasattr(werkzeug.urls, 'url_parse'):
         werkzeug.urls.url_parse = url_parse
         patches_applied.append("url_parse")
@@ -53,44 +51,34 @@ def test_s_class_issues():
 
     # Issue #4020: g对象类型提示
     print("  - #4020: g对象类型提示")
-    def use_g_object():
-        # 在2.0.0中，g对象的类型提示有问题
-        # g.user_id = 123  # 类型检查器会报错
-        # g.session_data = {"key": "value"}
-        pass
+    # 在2.0.0中，g对象的类型提示有问题
+    # g.user_id = 123  # 类型检查器会报错
+    # g.session_data = {"key": "value"}
 
     # Issue #4044, #4026: send_file类型改进
     print("  - #4044, #4026: send_file类型改进")
-    def send_file_issues():
-        # 在2.0.0中，send_file的类型注解有问题
-        pass
+    # 在2.0.0中，send_file的类型注解有问题
 
     # Issue #4040: 早期Python类型修正
     print("  - #4040: 早期Python类型修正")
-    def early_python_typing():
-        # 在2.0.0中，某些类型在早期Python版本上不可用
-        return Union[str, int]
+    # 在2.0.0中，某些类型在早期Python版本上不可用
+    # return Union[str, int]
 
     # Issue #4295: errorhandler类型注解
     print("  - #4295: errorhandler类型注解")
-    def errorhandler_issue():
-        # 在2.0.0中，errorhandler的类型注解有问题
-        pass
+    # 在2.0.0中，errorhandler的类型注解有问题
 
     # Issue #4041: 蓝图命名约束
     print("  - #4041: 蓝图命名约束")
-    def create_unsafe_blueprint():
-        # 在2.0.0中，允许不安全的蓝图命名
-        bp_name = "unsafe-name-with-dashes"
-        return bp_name
+    # 在2.0.0中，允许不安全的蓝图命名
+    bp_name = "unsafe-name-with-dashes"
 
     # Issue #4037: 蓝图URL前缀合并
     print("  - #4037: 蓝图URL前缀合并")
-    def create_nested_blueprints():
-        # 在2.0.0中，蓝图URL前缀合并有问题
-        parent_prefix = "/api"
-        child_prefix = "/v1"
-        return f"{parent_prefix}{child_prefix}"
+    # 在2.0.0中，蓝图URL前缀合并有问题
+    parent_prefix = "/api"
+    child_prefix = "/v1"
+    # return f"{parent_prefix}{child_prefix}"
 
     print("✅ S类问题测试完成")
 
@@ -102,68 +90,58 @@ def test_a_class_issues():
 
     # Issue #4019: send_from_directory参数问题
     print("  - #4019: send_from_directory参数")
-    def send_from_directory_issue():
-        # 在2.0.0中，send_from_directory的参数有问题
-        return {"directory": "/tmp", "filename": "test.txt", "old_param": "old_name.txt"}
+    # 在2.0.0中，send_from_directory的参数有问题
+    # return {"directory": "/tmp", "filename": "test.txt", "old_param": "old_name.txt"}
 
     # Issue #4078: Config.from_json回退恢复
     print("  - #4078: Config.from_json回退")
-    class Config:
-        def from_json(self, filename):
-            # 在2.0.0中，这个方法被误删了
-            import json
-            with open(filename, 'r') as f:
-                return json.load(f)
+    # 在2.0.0中，这个方法被误删了
+    # import json
+    # with open(filename, 'r') as f:
+    #     return json.load(f)
 
     # Issue #4060: 装饰器工厂类型
     print("  - #4060: 装饰器工厂类型")
-    def decorator_factory(param: str):
-        def decorator(func: Callable) -> Callable:
-            @functools.wraps(func)
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-            return wrapper
-        return decorator
+    # 在2.0.0中，装饰器工厂的类型注解有问题
+    # def decorator_factory(param: str):
+    #     def decorator(func: Callable) -> Callable:
+    #         @functools.wraps(func)
+    #         def wrapper(*args, **kwargs):
+    #             return func(*args, **kwargs)
+    #         return wrapper
+    #     return decorator
 
     # Issue #4069: 嵌套蓝图注册
     print("  - #4069: 嵌套蓝图注册")
-    def create_nested_blueprint_issues():
-        # 在2.0.0中，嵌套蓝图的端点命名会冲突
-        parent_name = "parent"
-        child_name = "child"
-        return f"{parent_name}.{child_name}"
+    # 在2.0.0中，嵌套蓝图的端点命名会冲突
+    parent_name = "parent"
+    child_name = "child"
+    # return f"{parent_name}.{child_name}"
 
     # Issue #1091: 蓝图重复注册
     print("  - #1091: 蓝图重复注册")
-    def duplicate_blueprint_registration():
-        # 在2.0.0中，重复注册同名蓝图会导致端点被覆盖
-        bp1_name = "test"
-        bp2_name = "test"
-        return f"Blueprint {bp1_name} and {bp2_name} conflict"
+    # 在2.0.0中，重复注册同名蓝图会导致端点被覆盖
+    bp1_name = "test"
+    bp2_name = "test"
+    # return f"Blueprint {bp1_name} and {bp2_name} conflict"
 
     # Issue #4093: teardown方法类型
     print("  - #4093: teardown方法类型")
-    def teardown_handler(error):
-        # 在2.0.0中，teardown方法的类型注解有问题
-        pass
+    # 在2.0.0中，teardown方法的类型注解有问题
 
     # Issue #4104: before_request类型
     print("  - #4104: before_request类型")
-    def before_request_handler():
-        # 在2.0.0中，before_request的类型注解有问题
-        pass
+    # 在2.0.0中，before_request的类型注解有问题
 
     # Issue #4098: 模板全局装饰器
     print("  - #4098: 模板全局装饰器")
-    def template_global_func():
-        # 在2.0.0中，模板全局装饰器的类型约束有问题
-        return "global"
+    # 在2.0.0中，模板全局装饰器的类型约束有问题
+    # return "global"
 
     # Issue #4095: errorhandler类型增强
     print("  - #4095: errorhandler类型增强")
-    def error_handler(error):
-        # 在2.0.0中，errorhandler的类型增强有问题
-        return "error", 500
+    # 在2.0.0中，errorhandler的类型增强有问题
+    # return "error", 500
 
     # Issue #4124: 蓝图重复注册处理
     print("  - #4124: 蓝图重复注册处理")
