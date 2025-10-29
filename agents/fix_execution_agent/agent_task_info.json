@@ -1,0 +1,18 @@
+[
+  {
+  "task": "Raise error when blueprint name contains a dot",
+  "problem_file": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/src/flask/blueprints.py",
+  "project_root": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0",
+  "agent_test_path": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/agent-test",
+  "backup_agent_path": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/backup-agent"
+  }
+  ,
+  {
+  "task": "Fix import error in tests",
+  "problem_file": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/tests/test_blueprints.py",
+  "project_root": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0",
+  "agent_test_path": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/agent-test",
+  "backup_agent_path": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/backup-agent"
+  }
+]
+
