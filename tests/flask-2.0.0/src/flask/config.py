@@ -4,7 +4,6 @@ import types
 import typing as t
 
 from werkzeug.utils import import_string
-import warnings
 
 
 class ConfigAttribute:
@@ -202,31 +201,6 @@ class Config(dict):
             raise
 
         return self.from_mapping(obj)
-
-    def from_json(self, filename: str, silent: bool = False) -> bool:
-        """Update the values in the config from a JSON file.
-        This is deprecated and will be removed in Flask 2.1.
-        Use :meth: with  instead.
-
-        .. code-block:: python
-
-            import json
-            app.config.from_file("config.json", load=json.load)
-
-        :param filename: The path to the JSON file. This can be an
-            absolute path or relative to the config root path.
-        :param silent: Ignore the file if it doesn't exist.
-
-        .. deprecated:: 2.0
-        """
-        warnings.warn(
-            "Config.from_json is deprecated and will be removed in Flask 2.1."
-            " Use Config.from_file with json.load instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        import json
-        return self.from_file(filename, load=json.load, silent=silent)
 
     def from_mapping(
         self, mapping: t.Optional[t.Mapping[str, t.Any]] = None, **kwargs: t.Any
