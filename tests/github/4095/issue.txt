@@ -1,0 +1,37 @@
+Issue Fixed
+Fixed the errorhandler decorator to enforce type consistency between the error parameter and the 
+exception type. Previously, ErrorHandlerCallable was typed as Callable[[Exception], 
+ResponseReturnValue], which forced users to cast specific exception types like 
+auth.ExpiredTokenException to Exception, losing type safety. The fix allows error handlers to use
+specific exception types directly without casting.
+
+Files Modified
+
+src/flask/typing.py
+Change: Modified ErrorHandlerCallable type definition to use a generic TypeVar for exceptions
+Location: Added TypeVar E definition and changed ErrorHandlerCallable from Callable[[Exception], 
+ResponseReturnValue] to Callable[[E], ResponseReturnValue]
+Reason: To allow error handlers to accept specific exception types instead of being forced to use
+the base Exception type
+
+src/flask/scaffold.py
+Change: Updated errorhandler and register_error_handler method signatures to use generic 
+exception types
+Location: 
+  - errorhandler method: Changed parameter type from t.Union[t.Type[Exception], int] to 
+t.Union[t.Type[E], int] and return type to properly handle generic callables
+  - register_error_handler method: Changed parameter types to use generic exception type E
+  - Added TypeVar E definition at module level
+Reason: To maintain type consistency throughout the error handling system and allow specific 
+exception types in error handlers
+
+Testing
+- Created test scripts to verify the fix works with various exception types
+- Tested that the exact code from the issue description now works without casting
+- Ran existing Flask error handling tests to ensure no regression
+- All tests pass successfully, confirming the fix maintains backward compatibility
+- Type checking with mypy confirms proper type enforcement
+
+Backups Created
+backup-agent/typing.py (original typing.py)
+backup-agent/scaffold.py (original scaffold.py)
