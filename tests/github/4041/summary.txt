@@ -1,0 +1,20 @@
+Summary of Changes 
+Issue Fixed 
+Prevent blueprint names from containing dots by raising a ValueError when a dot is detected in the blueprint name. 
+Files Modified 
+1. src/flask/blueprints.py 
+Change: Added validation in the Blueprint class constructor to check if the blueprint name contains a dot (‘.’)
+Location: Before self.name = name assignment in __init__ method
+Validation: if "." in name: raise ValueError("Blueprint names may not contain dots.") 
+2. tests/test_blueprints.py 
+Change: Updated test_dotted_names test to use underscores instead of dots in blueprint names
+Reason: The test was specifically testing dotted blueprint names which are now invalid
+Preserved: The test’s intent (testing URL generation between blueprints) remains unchanged 
+Testing 
+All existing Flask blueprint tests pass (49/49)
+Custom tests confirm the fix works correctly for various edge cases
+Blueprints with dots in names now properly raise ValueError
+Blueprints without dots continue to work normally 
+Backups Created 
+backup-agent/blueprints.py (original blueprints.py)
+backup-agent/test_blueprints.py (original test file)
