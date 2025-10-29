@@ -1,0 +1,3 @@
+deepseek/deepseek-chat
+DEEPSEEK_API_KEY
+sk-75db9bf464d44ee78b5d45a655431710

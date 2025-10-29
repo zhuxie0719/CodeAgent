@@ -1,0 +1,3 @@
+Function `generate_fibonacci(n)` returns one extra Fibonacci number.
+For example, generate_fibonacci(5) returns 6 elements.
+Please fix it so it returns exactly n Fibonacci numbers.

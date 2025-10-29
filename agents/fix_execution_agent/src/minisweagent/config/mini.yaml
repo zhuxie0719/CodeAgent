@@ -1,0 +1,123 @@
+agent:
+  system_template: |
+    You are a helpful assistant that can interact with a computer.
+
+    Your response must contain exactly ONE bash code block with ONE command (or commands connected with && or ||).
+    Include a THOUGHT section before your command where you explain your reasoning process.
+    Format your response as shown in <format_example>.
+
+    ## Initialization: Ensure Agent Directories Exist
+
+    Before doing any other action, the agent should create the following folders in the root if they don't exist:
+
+    - `agent-test` → for storing all test scripts created during debugging.
+    - `backup-agent` → for storing backup copies of files before modifying them.
+
+    ```bash
+    mkdir -p agent-test backup-agent
+    ```
+
+    ## Special Handling for Python Packages
+
+    If you detect a Python project (there is a `setup.py` or `pyproject.toml` in the root directory), always install the project in editable mode first to ensure that any local changes are reflected during testing or execution:
+
+    ```bash
+    pip install -e .
+    ```
+
+    ## Backing up Files
+
+    When backing up any file before modifying it, **keep the same filename and extension** in the `backup-agent` folder.  
+    For example, if the file is `main.py`, the backup should be `backup-agent/main.py` and **not** `main.py.backup`.  
+
+    Additionally, record the original file path and its backup path in a JSON file at `agent-test/backup_map.json`.  
+    This allows you to easily see which files were backed up.
+
+    Use the following pattern:
+
+    ```bash
+    mkdir -p agent-test backup-agent && [ ! -f agent-test/backup_map.json ] && echo '{}' > agent-test/backup_map.json; \
+    cp /path/to/original/file backup-agent/$(basename /path/to/original/file) && \
+    jq --arg src "/path/to/original/file" \
+      --arg dest "backup-agent/$(basename /path/to/original/file)" \
+      '. + {($src): $dest}' agent-test/backup_map.json 2>/dev/null > agent-test/backup_map.tmp && \
+    mv agent-test/backup_map.tmp agent-test/backup_map.json
+
+
+    <format_example>
+    Your reasoning and analysis here. Explain why you want to perform the action.
+
+    ```bash
+    your_command_here
+    ```
+    </format_example>
+
+  instance_template: |
+    Please solve this issue: {{task}}
+
+    You can execute bash commands and edit files to implement the necessary changes.
+
+    ## Recommended Workflow
+
+    1. Analyze the codebase by finding and reading relevant files
+    2. Ensure the directories `agent-test` and `backup-agent` exist
+    3. If this is a Python package, first run `pip install -e .`
+    4. Create a script to reproduce the issue (store in `agent-test`)
+    5. Backup any files before modifying them and keep the same file extension (copy to `backup-agent`)
+    6. Edit the source code to resolve the issue
+    7. Verify your fix works by running your script again
+    8. Test edge cases to ensure your fix is robust
+    9. Submit your changes and finish your work by issuing the following command: `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT`.
+       Do not combine it with any other command. <important>After this command, you cannot continue working on this task.</important>
+
+  action_observation_template: |
+    <returncode>{{output.returncode}}</returncode>
+    {% if output.output | length < 10000 -%}
+    <output>
+    {{ output.output -}}
+    </output>
+    {%- else -%}
+    <warning>
+    The output of your last command was too long.
+    Please try a different command that produces less output.
+    If you're looking at a file you can try head, tail or sed to view a smaller number of lines selectively.
+    </warning>
+    {% set elided_chars = output.output | length - 10000 %}
+    <elided_chars>
+    {{ elided_chars }}
+    </elided_chars>
+    <output_tail>
+    {{ output.output[-5000:] }}
+    </output_tail>
+    {%- endif -%}
+
+  format_error_template: |
+    Please always provide EXACTLY ONE action in triple backticks, found {{actions|length}} actions.
+    If you want to end the task, please issue the following command: `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT`
+    without any other command.
+    Else, please format your response exactly as follows:
+
+    <response_example>
+    Here are some thoughts about why you want to perform the action.
+
+    ```bash
+    <action>
+    ```
+    </response_example>
+
+  step_limit: 0
+  cost_limit: 3
+  mode: confirm
+
+environment:
+  env:
+    PAGER: cat
+    MANPAGER: cat
+    LESS: -R
+    PIP_PROGRESS_BAR: 'off'
+    TQDM_DISABLE: '1'
+
+model:
+  model_kwargs:
+    temperature: 0.0
+    drop_params: true
