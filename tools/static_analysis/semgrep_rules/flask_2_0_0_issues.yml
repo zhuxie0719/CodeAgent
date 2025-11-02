@@ -1,0 +1,363 @@
+rules:
+  # ============================================
+  # Flask 2.0.0 已知问题检测规则
+  # 基于 Flask 版本选择与Issue策略文档
+  # ============================================
+
+  # ============================================
+  # 1. 蓝图相关问题检测
+  # ============================================
+
+  - id: flask-blueprint-nested-naming
+    patterns:
+      - pattern: |
+          $PARENT = Blueprint(...)
+          $CHILD = Blueprint(...)
+          $PARENT.register_blueprint($CHILD)
+      - pattern-not: |
+          $PARENT.register_blueprint($CHILD, name=...)
+    message: |
+      检测到嵌套蓝图可能缺少显式命名（Flask Issue #4069）。
+      在Flask 2.0.1中，嵌套蓝图应使用点分名（如 "parent.child"）来避免端点命名冲突。
+      建议：使用 `register_blueprint(child, name="parent.child")` 显式指定嵌套名称。
+    languages:
+      - python
+    severity: WARNING
+    metadata:
+      category: "flask-blueprint"
+      issue_id: 4069
+      flask_version: "2.0.0"
+      fixed_in: "2.0.1"
+      cwe: []
+      references:
+        - https://github.com/pallets/flask/issues/4069
+      tags:
+        - flask
+        - blueprint
+        - nested
+
+  - id: flask-blueprint-duplicate-registration
+    patterns:
+      - pattern-either:
+          - pattern: |
+              app.register_blueprint($BP, name=$NAME)
+              ...
+              app.register_blueprint($BP, name=$NAME)
+          - pattern: |
+              app.register_blueprint($BP)
+              ...
+              app.register_blueprint($BP)
+          - pattern: |
+              $APP.register_blueprint($BP)
+              ...
+              $APP.register_blueprint($BP)
+    message: |
+      检测到同一蓝图可能被重复注册（Flask Issue #1091, #4124）。
+      在Flask 2.0.1中，同名多次注册会被弃用警告，可能导致端点覆盖或行为异常。
+      建议：使用不同的 `name=` 参数，或避免重复注册。
+    languages:
+      - python
+    severity: ERROR
+    metadata:
+      category: "flask-blueprint"
+      issue_ids: [1091, 4124]
+      flask_version: "2.0.0"
+      fixed_in: "2.0.1"
+      references:
+        - https://github.com/pallets/flask/issues/1091
+        - https://github.com/pallets/flask/issues/4124
+      tags:
+        - flask
+        - blueprint
+        - duplicate
+
+  - id: flask-blueprint-unsafe-naming
+    patterns:
+      - pattern-either:
+          - pattern: |
+              Blueprint("", ...)
+          - pattern: |
+              Blueprint(None, ...)
+          - pattern: |
+              Blueprint(name="", ...)
+          - pattern: |
+              Blueprint(name=None, ...)
+          - pattern-inside: |
+              Blueprint($NAME, ...)
+              where:
+                - metavariable-regex:
+                    metavariable: $NAME
+                    regex: '^\.|/'
+          - pattern-inside: |
+              Blueprint(name=$NAME, ...)
+              where:
+                - metavariable-regex:
+                    metavariable: $NAME
+                    regex: '^\.|/'
+    message: |
+      检测到不安全的蓝图命名（Flask Issue #4041）。
+      蓝图名称不应为空、None、以点开头或包含斜杠，这会导致路由/端点解析混乱。
+      建议：使用有效的Python标识符作为蓝图名称。
+    languages:
+      - python
+    severity: ERROR
+    metadata:
+      category: "flask-blueprint"
+      issue_id: 4041
+      flask_version: "2.0.0"
+      fixed_in: "2.0.1"
+      references:
+        - https://github.com/pallets/flask/issues/4041
+      tags:
+        - flask
+        - blueprint
+        - naming
+
+  - id: flask-blueprint-url-prefix-nesting
+    patterns:
+      - pattern: |
+          $PARENT = Blueprint(..., url_prefix=$PARENT_PREFIX)
+          $CHILD = Blueprint(..., url_prefix=$CHILD_PREFIX)
+          $PARENT.register_blueprint($CHILD)
+      - pattern-inside: |
+          $APP = Flask(...)
+          ...
+          $APP.register_blueprint($PARENT, url_prefix=$APP_PREFIX)
+    message: |
+      检测到多层蓝图URL前缀嵌套（Flask Issue #4037）。
+      在Flask 2.0.0中，多级蓝图前缀可能未正确合并，导致复杂路由树失配。
+      最终URL前缀应为：app_prefix + parent_prefix + child_prefix
+      建议：检查最终URL前缀是否正确合并，确保使用Flask 2.0.1+版本。
+    languages:
+      - python
+    severity: WARNING
+    metadata:
+      category: "flask-blueprint"
+      issue_id: 4037
+      flask_version: "2.0.0"
+      fixed_in: "2.0.1"
+      references:
+        - https://github.com/pallets/flask/issues/4037
+      tags:
+        - flask
+        - blueprint
+        - url-prefix
+
+  # ============================================
+  # 2. API参数问题检测
+  # ============================================
+
+  - id: flask-send-from-directory-filename-param
+    pattern: |
+      send_from_directory($DIRECTORY, filename=$FILENAME, ...)
+    message: |
+      检测到使用已弃用的 `filename` 参数（Flask Issue #4019）。
+      在Flask 2.0.1中，`filename` 参数已重命名为 `path`，旧参数名会产生弃用警告。
+      建议：将 `filename=` 替换为 `path=`。
+    languages:
+      - python
+    severity: WARNING
+    metadata:
+      category: "flask-api"
+      issue_id: 4019
+      flask_version: "2.0.0"
+      fixed_in: "2.0.1"
+      references:
+        - https://github.com/pallets/flask/issues/4019
+      tags:
+        - flask
+        - api
+        - deprecation
+
+  - id: flask-config-from-json-missing
+    patterns:
+      - pattern-not: |
+          class Config:
+              ...
+              def from_json(...): ...
+      - pattern: |
+          $CONFIG.from_json($ARG)
+    message: |
+      检测到使用 `Config.from_json` 方法（Flask Issue #4078）。
+      在Flask 2.0.0中该方法被误删，2.0.1中已恢复。
+      如果在Flask 2.0.0中使用会导致 AttributeError。
+      建议：确保使用Flask 2.0.1+版本。
+    languages:
+      - python
+    severity: ERROR
+    metadata:
+      category: "flask-config"
+      issue_id: 4078
+      flask_version: "2.0.0"
+      fixed_in: "2.0.1"
+      references:
+        - https://github.com/pallets/flask/issues/4078
+      tags:
+        - flask
+        - config
+        - migration
+
+  # ============================================
+  # 3. 装饰器使用问题检测
+  # ============================================
+
+  - id: flask-errorhandler-decorator-type
+    patterns:
+      - pattern-either:
+          - pattern: |
+              @app.errorhandler($CODE)
+              def $FUNC(...): ...
+              where:
+                - pattern-not-inside: |
+                    from flask import Flask, $OTHER
+          - pattern: |
+              @$BP.errorhandler($CODE)
+              def $FUNC(...): ...
+    message: |
+      检测到 errorhandler 装饰器使用（Flask Issue #4295）。
+      在Flask 2.0.0中，errorhandler 的类型注解可能不完整，在严格类型模式下会报错。
+      建议：确保使用Flask 2.0.3+版本，或添加适当的类型注解。
+    languages:
+      - python
+    severity: INFO
+    metadata:
+      category: "flask-decorator"
+      issue_id: 4295
+      flask_version: "2.0.0"
+      fixed_in: "2.0.3"
+      references:
+        - https://github.com/pallets/flask/issues/4295
+      tags:
+        - flask
+        - decorator
+        - typing
+
+  - id: flask-before-request-decorator-type
+    patterns:
+      - pattern-either:
+          - pattern: |
+              @app.before_request
+              def $FUNC(...): ...
+          - pattern: |
+              @$BP.before_request
+              def $FUNC(...): ...
+          - pattern: |
+              @$BP.before_app_request
+              def $FUNC(...): ...
+    message: |
+      检测到 before_request 装饰器使用（Flask Issue #4104）。
+      在Flask 2.0.0中，before_request 的类型注解可能不一致，在严格类型模式下会报错。
+      建议：确保使用Flask 2.0.2+版本。
+    languages:
+      - python
+    severity: INFO
+    metadata:
+      category: "flask-decorator"
+      issue_id: 4104
+      flask_version: "2.0.0"
+      fixed_in: "2.0.2"
+      references:
+        - https://github.com/pallets/flask/issues/4104
+      tags:
+        - flask
+        - decorator
+        - typing
+
+  # ============================================
+  # 4. JSON处理问题检测
+  # ============================================
+
+  - id: flask-jsonify-decimal-encoding
+    pattern: |
+      from decimal import Decimal
+      ...
+      $DATA = {..., $KEY: Decimal(...), ...}
+      ...
+      return jsonify($DATA)
+    message: |
+      检测到可能使用 Decimal 类型的 jsonify（Flask Issue #4157）。
+      在Flask 2.0.0中，jsonify 不能正确处理 Decimal 类型，会返回错误或精度丢失。
+      建议：确保使用Flask 2.0.2+版本，或手动转换 Decimal 为字符串。
+    languages:
+      - python
+    severity: WARNING
+    metadata:
+      category: "flask-json"
+      issue_id: 4157
+      flask_version: "2.0.0"
+      fixed_in: "2.0.2"
+      references:
+        - https://github.com/pallets/flask/issues/4157
+      tags:
+        - flask
+        - json
+        - decimal
+
+  # ============================================
+  # 5. CLI相关问题检测
+  # ============================================
+
+  - id: flask-cli-loader-kwargs
+    pattern: |
+      def create_app($ARG, **kwargs):
+          ...
+    message: |
+      检测到 CLI loader 使用关键字参数（Flask Issue #4170）。
+      在Flask 2.0.0中，CLI loader 不支持 create_app(**kwargs) 形式的工厂函数。
+      建议：确保使用Flask 2.0.2+版本，或重构工厂函数签名为 `create_app(env)` 形式。
+    languages:
+      - python
+    severity: WARNING
+    metadata:
+      category: "flask-cli"
+      issue_id: 4170
+      flask_version: "2.0.0"
+      fixed_in: "2.0.2"
+      references:
+        - https://github.com/pallets/flask/issues/4170
+      tags:
+        - flask
+        - cli
+        - factory
+
+  # ============================================
+  # 6. 静态文件夹路径类型检测
+  # ============================================
+
+  - id: flask-static-folder-pathlike
+    patterns:
+      - pattern-either:
+          - pattern: |
+              Flask(static_folder=Path(...), ...)
+          - pattern: |
+              Flask(static_folder=pathlib.Path(...), ...)
+          - pattern: |
+              $PATH = Path(...)
+              ...
+              Flask(static_folder=$PATH, ...)
+          - pattern: |
+              Blueprint(..., static_folder=Path(...), ...)
+          - pattern: |
+              Blueprint(..., static_folder=pathlib.Path(...), ...)
+          - pattern-inside: |
+              $PATH = Path(...)
+              ...
+              Blueprint(..., static_folder=$PATH, ...)
+    message: |
+      检测到使用 pathlib.Path 作为 static_folder（Flask Issue #4150）。
+      在Flask 2.0.0中，static_folder 不接受 PathLike 类型，会导致类型/行为不匹配。
+      建议：确保使用Flask 2.0.2+版本，或将 Path 转换为字符串：`str(path)`。
+    languages:
+      - python
+    severity: WARNING
+    metadata:
+      category: "flask-config"
+      issue_id: 4150
+      flask_version: "2.0.0"
+      fixed_in: "2.0.2"
+      references:
+        - https://github.com/pallets/flask/issues/4150
+      tags:
+        - flask
+        - pathlike
+        - static-folder

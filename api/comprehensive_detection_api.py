@@ -9,6 +9,8 @@ import os
 import json
 import sys
 import httpx
+import zipfile
+import shutil
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 from pathlib import Path
@@ -81,7 +83,14 @@ class ComprehensiveDetector:
                            runtime_analysis: bool = True,
                            enable_dynamic_detection: bool = True,
                            enable_flask_specific_tests: bool = True,
-                           enable_server_testing: bool = True) -> Dict[str, Any]:
+                           enable_server_testing: bool = True,
+                           # 静态检测工具选择
+                           enable_pylint: bool = True,
+                           enable_mypy: bool = True,
+                           enable_semgrep: bool = True,
+                           enable_ruff: bool = True,
+                           enable_bandit: bool = True,
+                           enable_llm_filter: bool = True) -> Dict[str, Any]:
         """执行综合检测"""
         results = {
             "detection_type": "comprehensive",
@@ -93,7 +102,14 @@ class ComprehensiveDetector:
                 "runtime_analysis": runtime_analysis,
                 "enable_dynamic_detection": enable_dynamic_detection,
                 "enable_flask_specific_tests": enable_flask_specific_tests,
-                "enable_server_testing": enable_server_testing
+                "enable_server_testing": enable_server_testing,
+                # 静态检测工具选择
+                "enable_pylint": enable_pylint,
+                "enable_mypy": enable_mypy,
+                "enable_semgrep": enable_semgrep,
+                "enable_ruff": enable_ruff,
+                "enable_bandit": enable_bandit,
+                "enable_llm_filter": enable_llm_filter
             }
         }
         
@@ -106,10 +122,7 @@ class ComprehensiveDetector:
                 results["error"] = f"文件过大 ({file_size // (1024*1024)}MB > {max_size // (1024*1024)}MB)"
                 return results
             
-            # 解压项目
-            import zipfile
-            import tempfile
-            import shutil
+            # 解压项目（zipfile, tempfile, shutil 已在顶部导入）
             
             extract_dir = tempfile.mkdtemp()
             with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
@@ -123,12 +136,34 @@ class ComprehensiveDetector:
                 results["warning"] = f"文件数量过多 ({len(results['files'])} > 1000)，将进行采样分析"
                 results["files"] = results["files"][:1000]  # 只取前1000个文件
             
+            # ========== 步骤1: 执行初步代码分析 ==========
+            print("🔍 开始初步代码分析...")
+            preliminary_analysis = await self._perform_preliminary_analysis(extract_dir)
+            results["preliminary_analysis"] = preliminary_analysis
+            
+            # 生成仓库结构文件
+            repository_structure_file = await self._generate_repository_structure(extract_dir)
+            if repository_structure_file:
+                results["repository_structure_file"] = repository_structure_file
+            
+            # 保存初步分析结果供静态检测使用
+            self._current_preliminary_analysis = preliminary_analysis
+            
+            # ========== 步骤2: 执行静态分析和动态检测 ==========
             # 并行执行静态分析和动态检测
             tasks = []
             
             # 静态分析
             if static_analysis:
-                tasks.append(self._perform_static_analysis_async(extract_dir))
+                tasks.append(self._perform_static_analysis_async(
+                    extract_dir,
+                    enable_pylint=enable_pylint,
+                    enable_mypy=enable_mypy,
+                    enable_semgrep=enable_semgrep,
+                    enable_ruff=enable_ruff,
+                    enable_bandit=enable_bandit,
+                    enable_llm_filter=enable_llm_filter
+                ))
             
             # 动态监控
             if dynamic_monitoring:
@@ -178,8 +213,60 @@ class ComprehensiveDetector:
             # 生成综合摘要
             results["summary"] = self._generate_summary(results)
             
-            # 清理临时目录
-            shutil.rmtree(extract_dir, ignore_errors=True)
+            # 合并静态和动态检测缺陷清单，生成统一格式
+            print("📋 [DEBUG] 开始合并缺陷清单...")
+            merged_defects = self._merge_defects_list(results, extract_dir)
+            results["merged_defects"] = merged_defects
+            print(f"📋 [DEBUG] 合并后的缺陷数量: {len(merged_defects)}")
+            if merged_defects:
+                print(f"📋 [DEBUG] 前3个缺陷示例:")
+                for i, defect in enumerate(merged_defects[:3], 1):
+                    print(f"  {i}. 文件: {defect.get('file', 'N/A')}, 行号: {defect.get('line', 'N/A')}, 来源: {defect.get('source', 'N/A')}")
+            else:
+                print("⚠️ [DEBUG] 警告: merged_defects 为空！")
+            
+            # 生成任务信息JSON文件供修复工作流使用（保存到永久位置）
+            print("📝 [DEBUG] 开始生成任务信息JSON...")
+            task_info_path = self._generate_task_info_json(merged_defects, extract_dir)
+            print(f"📝 [DEBUG] task_info_path = {task_info_path}")
+            if task_info_path:
+                print(f"📝 [DEBUG] 检查文件是否存在: {os.path.exists(task_info_path)}")
+            else:
+                print("⚠️ [DEBUG] 警告: task_info_path 为 None，可能没有生成任务信息")
+            
+            if task_info_path and os.path.exists(task_info_path):
+                # 将任务信息文件复制到结果目录（使用绝对路径，确保保存在项目根目录）
+                # 获取项目根目录（API文件所在目录的父目录）
+                api_dir = Path(__file__).parent
+                project_root = api_dir.parent
+                results_dir = project_root / "comprehensive_detection_results"
+                results_dir.mkdir(exist_ok=True)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                permanent_task_info_file = results_dir / f"agent_task_info_{timestamp}.json"
+                permanent_task_info_file_abs = permanent_task_info_file.resolve()
+                print(f"📝 [DEBUG] 复制任务信息文件到永久位置:")
+                print(f"   相对路径: {permanent_task_info_file}")
+                print(f"   绝对路径: {permanent_task_info_file_abs}")
+                shutil.copy2(task_info_path, permanent_task_info_file_abs)
+                results["task_info_file"] = str(permanent_task_info_file_abs)
+                print(f"✅ [DEBUG] 文件已复制，验证文件存在: {permanent_task_info_file_abs.exists()}")
+                # 同时将任务信息内容包含在结果中
+                with open(permanent_task_info_file_abs, 'r', encoding='utf-8') as f:
+                    task_info_data = json.load(f)
+                    results["task_info"] = task_info_data
+                print(f"✅ [DEBUG] 任务信息已保存，任务数量: {len(task_info_data)}")
+                print(f"📝 [DEBUG] 注意: 任务信息中的文件路径为绝对路径")
+                print(f"📝 [DEBUG] 临时目录: {extract_dir}")
+                print(f"📝 [DEBUG] 临时目录将保留，以便修复Agent使用")
+            else:
+                print("⚠️ [DEBUG] 警告: 未保存任务信息文件到永久位置")
+                results["task_info_file"] = None
+                results["task_info"] = []
+            
+            # 不删除临时目录，保留上传的文件以便后续修复使用
+            # 注意：临时目录会一直保留，需要手动清理或定期清理
+            print(f"📝 [DEBUG] 保留临时目录: {extract_dir}")
+            print(f"⚠️ [DEBUG] 注意: 临时目录未删除，需要定期清理以释放磁盘空间")
             
             return results
             
@@ -198,21 +285,130 @@ class ComprehensiveDetector:
                 files.append(file_path)
         return files
     
-    async def _perform_static_analysis_async(self, project_path: str) -> Dict[str, Any]:
+    async def _perform_preliminary_analysis(self, project_path: str) -> Dict[str, Any]:
+        """执行初步代码分析（项目结构、代码质量、依赖关系）"""
+        try:
+            from agents.code_analysis_agent.agent import CodeAnalysisAgent
+            
+            # 初始化代码分析代理
+            code_analysis_agent = CodeAnalysisAgent({
+                "enable_ai_analysis": True,
+                "analysis_depth": "comprehensive"
+            })
+            
+            print("  📊 执行项目结构分析...")
+            project_structure = await code_analysis_agent.project_analyzer.analyze_project_structure(project_path)
+            
+            print("  📈 执行代码质量分析...")
+            code_quality = await code_analysis_agent.code_analyzer.analyze_code_quality(project_path)
+            
+            print("  🔗 执行依赖关系分析...")
+            dependencies = await code_analysis_agent.dependency_analyzer.analyze_dependencies(project_path)
+            
+            print("✅ 初步代码分析完成")
+            
+            return {
+                "success": True,
+                "project_structure": project_structure,
+                "code_quality": code_quality,
+                "dependencies": dependencies
+            }
+        except Exception as e:
+            print(f"❌ 初步代码分析失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return {
+                "success": False,
+                "error": str(e),
+                "project_structure": {},
+                "code_quality": {},
+                "dependencies": {}
+            }
+    
+    async def _generate_repository_structure(self, project_path: str) -> Optional[str]:
+        """生成仓库结构文件（tree格式）"""
+        try:
+            from tools.repository_structure_generator import repository_structure_generator
+            
+            # 创建输出目录（使用绝对路径）
+            api_dir = Path(__file__).parent
+            project_root = api_dir.parent
+            structure_dir = project_root / "comprehensive_detection_results"
+            structure_dir.mkdir(exist_ok=True)
+            
+            # 生成文件名
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            structure_file = structure_dir / f"repository_structure_{timestamp}.txt"
+            
+            # 生成并保存树形结构
+            success = repository_structure_generator.save_tree_structure(
+                project_path, 
+                str(structure_file),
+                max_depth=10
+            )
+            
+            if success:
+                print(f"✅ 仓库结构文件已生成: {structure_file}")
+                return str(structure_file)
+            else:
+                print("⚠️ 仓库结构文件生成失败")
+                return None
+        except Exception as e:
+            print(f"❌ 生成仓库结构文件失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+    
+    async def _perform_static_analysis_async(self, project_path: str,
+                                             enable_pylint: bool = True,
+                                             enable_mypy: bool = True,
+                                             enable_semgrep: bool = True,
+                                             enable_ruff: bool = True,
+                                             enable_bandit: bool = True,
+                                             enable_llm_filter: bool = True) -> Dict[str, Any]:
         """异步执行静态分析"""
         try:
-            # 调用静态检测agent
+            # 确保静态检测agent已初始化（工具初始化）
+            if not hasattr(self.static_agent, '_tools_initialized') or not self.static_agent._tools_initialized:
+                print("🔧 初始化静态检测工具...")
+                await self.static_agent.initialize()
+                self.static_agent._tools_initialized = True
+                print("✅ 静态检测工具初始化完成")
+            
+            # 获取初步分析结果（如果已执行）
+            preliminary_analysis = None
+            if hasattr(self, '_current_preliminary_analysis'):
+                preliminary_analysis = self._current_preliminary_analysis
+            
+            # 调用静态检测agent（传递初步分析结果和工具选择）
             analysis_result = await self.static_agent.analyze_project(project_path, {
                 "enable_static": True,
-                "enable_pylint": True,
-                "enable_flake8": True,
-                "enable_bandit": True,
-                "enable_mypy": True,
-                "enable_ai_analysis": True
+                "enable_pylint": enable_pylint,
+                "enable_mypy": enable_mypy,
+                "enable_semgrep": enable_semgrep,
+                "enable_ruff": enable_ruff,
+                "enable_bandit": enable_bandit,
+                "enable_llm_filter": enable_llm_filter,
+                "enable_ai_analysis": True,
+                "preliminary_analysis": preliminary_analysis,  # 传递初步分析结果
+                "pylint_directory_mode": False,  # 禁用目录模式，使用单文件模式以确保问题不被过滤掉
+                "max_parallel_files": 10,  # 并行文件数限制
+                "max_issues_to_return": 1000  # 限制返回的问题数量，避免数据过大
             })
             
             if analysis_result.get("success", False):
-                return analysis_result.get("detection_results", {})
+                detection_results = analysis_result.get("detection_results", {})
+                # 调试：检查结果结构
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.info(f"静态分析结果: success={analysis_result.get('success')}, detection_results keys={list(detection_results.keys()) if detection_results else 'None'}")
+                if detection_results:
+                    logger.info(f"检测到的问题数: {len(detection_results.get('issues', []))}")
+                    logger.info(f"工具覆盖率: {detection_results.get('tool_coverage', {})}")
+                # 如果有初步分析结果，合并进去
+                if preliminary_analysis and preliminary_analysis.get("success"):
+                    detection_results["preliminary_analysis"] = preliminary_analysis
+                return detection_results
             else:
                 return {
                     "error": analysis_result.get("error", "静态分析失败"),
@@ -371,6 +567,289 @@ class ComprehensiveDetector:
         })
         
         return summary
+    
+    def _generate_natural_language_description(self, issue: Dict[str, Any], source: str = "static") -> str:
+        """
+        为每个缺陷生成自然语言描述
+        
+        Args:
+            issue: 缺陷信息字典
+            source: 来源（"static" 或 "dynamic"）
+        
+        Returns:
+            自然语言描述字符串
+        """
+        if source == "static":
+            tool = issue.get("tool", "unknown")
+            message = issue.get("message", "")
+            severity = issue.get("severity", "info")
+            file_path = issue.get("file", "unknown")
+            line = issue.get("line", 0)
+            symbol = issue.get("symbol", "")
+            
+            # 根据工具和问题类型生成描述
+            if tool == "pylint":
+                if "import" in message.lower() and "error" in message.lower():
+                    return f"在 {file_path} 的第 {line} 行，存在导入错误：{message}"
+                elif "missing" in message.lower() and "docstring" in message.lower():
+                    return f"在 {file_path} 的第 {line} 行，缺少函数或方法的文档字符串"
+                elif "unused" in message.lower():
+                    return f"在 {file_path} 的第 {line} 行，存在未使用的变量或参数：{message}"
+                elif severity == "error":
+                    return f"在 {file_path} 的第 {line} 行，发现严重错误：{message}"
+                else:
+                    return f"在 {file_path} 的第 {line} 行，{tool} 检测到问题：{message}"
+            
+            elif tool == "mypy":
+                return f"在 {file_path} 的第 {line} 行，类型检查发现问题：{message}"
+            
+            elif tool == "semgrep":
+                rule_id = issue.get("check_id", "")
+                return f"在 {file_path} 的第 {line} 行，检测到安全或代码质量问题（规则：{rule_id}）：{message}"
+            
+            elif tool == "ruff":
+                rule_code = issue.get("code", "")
+                return f"在 {file_path} 的第 {line} 行，代码规范问题（规则：{rule_code}）：{message}"
+            
+            elif tool == "bandit":
+                test_id = issue.get("test_id", "")
+                return f"在 {file_path} 的第 {line} 行，发现安全问题（检测项：{test_id}）：{message}"
+            
+            else:
+                return f"在 {file_path} 的第 {line} 行，{tool} 检测到{severity}级别问题：{message}"
+        
+        elif source == "dynamic":
+            issue_type = issue.get("type", "unknown")
+            message = issue.get("message", "")
+            file_path = issue.get("file", "unknown")
+            line = issue.get("line", 0)
+            
+            if issue_type == "import_error":
+                import_name = issue.get("import", "")
+                return f"在 {file_path} 的第 {line} 行，动态检测发现导入错误：无法导入模块 '{import_name}'"
+            
+            elif "flask" in issue_type.lower() or "functionality" in issue_type.lower():
+                return f"在 {file_path} 的第 {line} 行，Flask功能测试发现问题：{message}"
+            
+            elif "runtime" in issue_type.lower():
+                return f"在 {file_path} 的第 {line} 行，运行时检测发现问题：{message}"
+            
+            elif issue_type in ["cpu_high", "memory_high", "disk_high", "network_high"]:
+                return f"系统资源监控告警：{message}"
+            
+            else:
+                return f"在 {file_path} 的第 {line} 行，动态检测发现问题：{message}"
+        
+        else:
+            return issue.get("message", "检测到问题")
+    
+    def _merge_defects_list(self, results: Dict[str, Any], project_path: str) -> List[Dict[str, Any]]:
+        """
+        合并静态检测和动态检测的缺陷清单，生成统一格式
+        
+        Args:
+            results: 检测结果字典
+            project_path: 项目路径
+        
+        Returns:
+            合并后的缺陷列表，每个缺陷包含：
+            - description: 自然语言描述
+            - file: 文件路径（相对路径）
+            - line: 行号
+            - severity: 严重程度
+            - source: 来源（"static" 或 "dynamic"）
+            - tool: 检测工具
+            - original_issue: 原始问题信息
+        """
+        merged_defects = []
+        
+        # 处理静态分析结果
+        if "static_analysis" in results:
+            static_result = results["static_analysis"]
+            if isinstance(static_result, dict) and not static_result.get("error"):
+                issues = static_result.get("issues", [])
+                for issue in issues:
+                    file_path = issue.get("file", "")
+                    line = issue.get("line", 0)
+                    
+                    # 转换为相对路径
+                    if file_path and os.path.isabs(file_path):
+                        try:
+                            file_path = os.path.relpath(file_path, project_path)
+                        except:
+                            pass
+                    
+                    # 生成自然语言描述时使用相对路径
+                    issue_for_desc = issue.copy()
+                    issue_for_desc["file"] = file_path  # 使用已转换的相对路径
+                    merged_defect = {
+                        "description": self._generate_natural_language_description(issue_for_desc, "static"),
+                        "file": file_path,
+                        "line": line,
+                        "severity": issue.get("severity", "info"),
+                        "source": "static",
+                        "tool": issue.get("tool", "unknown"),
+                        "original_issue": issue
+                    }
+                    merged_defects.append(merged_defect)
+        
+        # 处理动态监控结果
+        if "dynamic_monitoring" in results:
+            dynamic_result = results["dynamic_monitoring"]
+            if isinstance(dynamic_result, dict) and not dynamic_result.get("error"):
+                alerts = dynamic_result.get("alerts", [])
+                for alert in alerts:
+                    # 动态监控告警可能没有文件信息
+                    file_path = alert.get("file", "")
+                    line = alert.get("line", 0)
+                    
+                    if file_path and os.path.isabs(file_path):
+                        try:
+                            file_path = os.path.relpath(file_path, project_path)
+                        except:
+                            pass
+                    
+                    # 生成自然语言描述时使用相对路径
+                    alert_for_desc = alert.copy()
+                    alert_for_desc["file"] = file_path if file_path else "system"
+                    merged_defect = {
+                        "description": self._generate_natural_language_description(alert_for_desc, "dynamic"),
+                        "file": file_path if file_path else "system",
+                        "line": line if line else 0,
+                        "severity": alert.get("severity", "warning"),
+                        "source": "dynamic",
+                        "tool": "dynamic_monitoring",
+                        "original_issue": alert
+                    }
+                    merged_defects.append(merged_defect)
+        
+        # 处理动态检测结果
+        if "dynamic_detection" in results:
+            dynamic_detection_result = results["dynamic_detection"]
+            if isinstance(dynamic_detection_result, dict) and not dynamic_detection_result.get("error"):
+                issues = dynamic_detection_result.get("issues", [])
+                for issue in issues:
+                    file_path = issue.get("file", "")
+                    line = issue.get("line", 0)
+                    
+                    if file_path and os.path.isabs(file_path):
+                        try:
+                            file_path = os.path.relpath(file_path, project_path)
+                        except:
+                            pass
+                    
+                    # 生成自然语言描述时使用相对路径
+                    issue_for_desc = issue.copy()
+                    issue_for_desc["file"] = file_path if file_path else "unknown"
+                    merged_defect = {
+                        "description": self._generate_natural_language_description(issue_for_desc, "dynamic"),
+                        "file": file_path if file_path else "unknown",
+                        "line": line if line else 0,
+                        "severity": issue.get("severity", "error"),
+                        "source": "dynamic",
+                        "tool": "dynamic_detection",
+                        "original_issue": issue
+                    }
+                    merged_defects.append(merged_defect)
+        
+        # 按文件路径和行号排序
+        merged_defects.sort(key=lambda x: (x.get("file", ""), x.get("line", 0)))
+        
+        return merged_defects
+    
+    def _generate_task_info_json(self, merged_defects: List[Dict[str, Any]], project_path: str) -> Optional[str]:
+        """
+        生成任务信息JSON文件供修复工作流使用
+        每个缺陷生成一个独立任务，task字段为缺陷的简单描述
+        
+        Args:
+            merged_defects: 合并后的缺陷列表
+            project_path: 项目路径
+        
+        Returns:
+            生成的任务信息JSON文件路径，如果生成失败则返回None
+        """
+        try:
+            print(f"📝 [DEBUG] _generate_task_info_json: 输入缺陷数量={len(merged_defects)}, 项目路径={project_path}")
+            
+            # 为每个缺陷生成一个任务
+            tasks = []
+            skipped_count = 0
+            not_exist_count = 0
+            
+            for defect in merged_defects:
+                file_path = defect.get("file", "")
+                if not file_path or file_path in ["system", "unknown"]:
+                    skipped_count += 1
+                    print(f"  ⚠️ [DEBUG] 跳过无效文件路径的缺陷: {file_path}")
+                    continue
+                
+                # 转换为绝对路径
+                abs_file_path = os.path.join(project_path, file_path)
+                if not os.path.exists(abs_file_path):
+                    not_exist_count += 1
+                    print(f"  ⚠️ [DEBUG] 文件不存在: {abs_file_path}")
+                    # 注意：即使文件不存在，也创建任务（文件可能在后续步骤中创建）
+                    # 使用相对路径作为problem_file，在修复时再转换为绝对路径
+                
+                # 获取缺陷描述作为任务描述
+                task_description = defect.get("description", "")
+                if not task_description:
+                    # 如果没有描述，生成一个简单的描述
+                    severity = defect.get("severity", "unknown")
+                    tool = defect.get("tool", "unknown")
+                    line = defect.get("line", 0)
+                    file_name = os.path.basename(file_path)
+                    task_description = f"修复 {file_name} 第 {line} 行的 {tool} {severity} 级别问题"
+                
+                # 转换为绝对路径并统一使用正斜杠
+                abs_file_path = os.path.join(project_path, file_path)
+                problem_file = abs_file_path.replace("\\", "/")
+                
+                task = {
+                    "task": task_description,  # 使用缺陷的简单描述
+                    "problem_file": problem_file,  # 保存绝对路径
+                    "project_root": project_path.replace("\\", "/"),
+                    "agent_test_path": os.path.join(project_path, "agent-test").replace("\\", "/"),
+                    "backup_agent_path": os.path.join(project_path, "backup-agent").replace("\\", "/"),
+                    # 可选：添加缺陷的详细信息，方便后续处理
+                    "defect_info": {
+                        "line": defect.get("line", 0),
+                        "severity": defect.get("severity", "unknown"),
+                        "tool": defect.get("tool", "unknown"),
+                        "source": defect.get("source", "unknown")
+                    }
+                }
+                tasks.append(task)
+            
+            print(f"📝 [DEBUG] 生成任务统计:")
+            print(f"   总缺陷数: {len(merged_defects)}")
+            print(f"   生成任务数: {len(tasks)}")
+            print(f"   跳过缺陷数: {skipped_count}")
+            print(f"   文件不存在数: {not_exist_count}")
+            
+            if not tasks:
+                print("⚠️ [DEBUG] 警告: tasks 为空，无法生成任务信息JSON文件")
+                return None
+            
+            # 保存任务信息JSON文件
+            task_info_dir = Path(project_path)
+            task_info_dir.mkdir(parents=True, exist_ok=True)
+            task_info_file = task_info_dir / "agent_task_info.json"
+            
+            print(f"📝 [DEBUG] 保存任务信息到: {task_info_file}")
+            with open(task_info_file, 'w', encoding='utf-8') as f:
+                json.dump(tasks, f, indent=2, ensure_ascii=False)
+            
+            print(f"✅ [DEBUG] 任务信息JSON文件已生成: {task_info_file}")
+            print(f"✅ [DEBUG] 每个缺陷都生成了一个独立任务")
+            return str(task_info_file)
+        
+        except Exception as e:
+            print(f"❌ [DEBUG] 生成任务信息JSON文件失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
     
     def generate_report(self, results: Dict[str, Any]) -> str:
         """生成文本报告"""
@@ -617,7 +1096,14 @@ async def comprehensive_detect(
     enable_dynamic_detection: str = Form("true"),
     enable_flask_specific_tests: str = Form("true"),
     enable_server_testing: str = Form("true"),
-    upload_type: str = Form("file")
+    upload_type: str = Form("file"),
+    # 静态检测工具选择参数
+    enable_pylint: str = Form("true"),
+    enable_mypy: str = Form("true"),
+    enable_semgrep: str = Form("true"),
+    enable_ruff: str = Form("true"),
+    enable_bandit: str = Form("true"),
+    enable_llm_filter: str = Form("true")
 ):
     """综合检测 - 并行执行静态检测和动态检测"""
     
@@ -638,6 +1124,13 @@ async def comprehensive_detect(
     enable_dynamic_detection = convert_to_bool(enable_dynamic_detection, 'enable_dynamic_detection')
     enable_flask_specific_tests = convert_to_bool(enable_flask_specific_tests, 'enable_flask_specific_tests')
     enable_server_testing = convert_to_bool(enable_server_testing, 'enable_server_testing')
+    # 静态检测工具选择
+    enable_pylint = convert_to_bool(enable_pylint, 'enable_pylint')
+    enable_mypy = convert_to_bool(enable_mypy, 'enable_mypy')
+    enable_semgrep = convert_to_bool(enable_semgrep, 'enable_semgrep')
+    enable_ruff = convert_to_bool(enable_ruff, 'enable_ruff')
+    enable_bandit = convert_to_bool(enable_bandit, 'enable_bandit')
+    enable_llm_filter = convert_to_bool(enable_llm_filter, 'enable_llm_filter')
     
     # 验证输入
     if not file and not files:
@@ -714,7 +1207,24 @@ async def comprehensive_detect(
         detector.enable_server_testing = enable_server_testing
         
         # 执行检测（添加超时处理）
-        print("开始执行综合检测...")
+        print("=" * 60)
+        print("🚀 [API] 开始执行综合检测...")
+        print(f"📁 [API] 文件路径: {temp_file_path}")
+        print(f"⚙️  [API] 检测选项:")
+        print(f"   - static_analysis: {static_analysis}")
+        print(f"   - dynamic_monitoring: {dynamic_monitoring}")
+        print(f"   - runtime_analysis: {runtime_analysis}")
+        print(f"   - enable_dynamic_detection: {enable_dynamic_detection}")
+        print(f"   - enable_flask_specific_tests: {enable_flask_specific_tests}")
+        print(f"   - enable_server_testing: {enable_server_testing}")
+        print(f"   - enable_pylint: {enable_pylint}")
+        print(f"   - enable_mypy: {enable_mypy}")
+        print(f"   - enable_semgrep: {enable_semgrep}")
+        print(f"   - enable_ruff: {enable_ruff}")
+        print(f"   - enable_bandit: {enable_bandit}")
+        print(f"   - enable_llm_filter: {enable_llm_filter}")
+        print("=" * 60)
+        
         if enable_web_app_test or enable_server_testing:
             print("⚠️ 已启用Web应用测试，检测时间可能较长...")
         
@@ -727,10 +1237,33 @@ async def comprehensive_detect(
                     runtime_analysis=runtime_analysis,
                     enable_dynamic_detection=enable_dynamic_detection,
                     enable_flask_specific_tests=enable_flask_specific_tests,
-                    enable_server_testing=enable_server_testing
+                    enable_server_testing=enable_server_testing,
+                    # 静态检测工具选择
+                    enable_pylint=enable_pylint,
+                    enable_mypy=enable_mypy,
+                    enable_semgrep=enable_semgrep,
+                    enable_ruff=enable_ruff,
+                    enable_bandit=enable_bandit,
+                    enable_llm_filter=enable_llm_filter
                 ),
                 timeout=600  # 10分钟超时
             )
+            print("=" * 60)
+            print("✅ [API] 检测完成")
+            print(f"📊 [API] 检测结果摘要:")
+            if results.get("summary"):
+                summary = results["summary"]
+                print(f"   - 总文件数: {summary.get('total_files', 0)}")
+                print(f"   - 总问题数: {summary.get('total_issues', 0)}")
+                print(f"   - 严重问题: {summary.get('critical_issues', 0)}")
+                print(f"   - 警告问题: {summary.get('warning_issues', 0)}")
+            if results.get("merged_defects"):
+                print(f"   - 合并缺陷数: {len(results['merged_defects'])}")
+            if results.get("task_info_file"):
+                print(f"   - 任务信息文件: {results['task_info_file']}")
+            if results.get("task_info"):
+                print(f"   - 任务数量: {len(results['task_info'])}")
+            print("=" * 60)
         except asyncio.TimeoutError:
             return BaseResponse(
                 success=False,
@@ -738,34 +1271,63 @@ async def comprehensive_detect(
                 message="检测过程超时，请尝试上传较小的项目"
             )
         
-        print("检测完成，生成报告...")
+        print("\n📝 [API] 检测完成，生成报告...")
         
         # 生成文本报告
         report = detector.generate_report(results)
+        print("✅ [API] 文本报告已生成")
         
         # 生成AI报告
         try:
-            ai_report = await generate_ai_comprehensive_report(results, file.filename)
-            print("✅ AI报告生成成功")
+            filename = file.filename if file else (files[0].filename if files else "unknown")
+            ai_report = await generate_ai_comprehensive_report(results, filename)
+            print("✅ [API] AI报告生成成功")
         except Exception as e:
-            print(f"⚠️ AI报告生成失败: {e}")
+            print(f"⚠️ [API] AI报告生成失败: {e}")
             ai_report = {
                 "success": False,
                 "error": str(e),
                 "summary": "AI报告生成失败，请查看详细检测结果"
             }
         
-        # 保存结果到文件
+        # 保存结果到文件（使用绝对路径）
         try:
             results_file = f"comprehensive_detection_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            results_dir = Path("comprehensive_detection_results")
+            # 获取项目根目录（API文件所在目录的父目录）
+            api_dir = Path(__file__).parent
+            project_root = api_dir.parent
+            results_dir = project_root / "comprehensive_detection_results"
             results_dir.mkdir(exist_ok=True)
             results_path = results_dir / results_file
-            detector.save_results(results, str(results_path))
-            print(f"✅ 结果已保存到: {results_path}")
+            results_path_abs = results_path.resolve()
+            detector.save_results(results, str(results_path_abs))
+            print(f"✅ [API] 结果已保存到:")
+            print(f"   相对路径: {results_path}")
+            print(f"   绝对路径: {results_path_abs}")
+            print(f"📊 [API] 文件大小: {results_path_abs.stat().st_size / 1024:.2f} KB")
         except Exception as e:
-            print(f"⚠️ 保存结果文件失败: {e}")
+            print(f"⚠️ [API] 保存结果文件失败: {e}")
+            import traceback
+            traceback.print_exc()
             results_file = None
+        
+        # 检查任务信息文件
+        if results.get("task_info_file"):
+            task_info_path = Path(results["task_info_file"])
+            task_info_path_abs = task_info_path.resolve()
+            if task_info_path_abs.exists():
+                print(f"✅ [API] 任务信息文件已保存:")
+                print(f"   相对路径: {task_info_path}")
+                print(f"   绝对路径: {task_info_path_abs}")
+                print(f"📊 [API] 任务数量: {len(results.get('task_info', []))}")
+                print(f"📊 [API] 文件大小: {task_info_path_abs.stat().st_size / 1024:.2f} KB")
+            else:
+                print(f"⚠️ [API] 警告: 任务信息文件路径存在但文件不存在:")
+                print(f"   相对路径: {task_info_path}")
+                print(f"   绝对路径: {task_info_path_abs}")
+                print(f"   当前工作目录: {os.getcwd()}")
+        else:
+            print("⚠️ [API] 警告: 未生成任务信息文件")
         
         # 返回结果
         return BaseResponse(
@@ -782,22 +1344,26 @@ async def comprehensive_detect(
         )
     
     finally:
-        # 清理临时文件
+        # 注意：临时文件保留，不删除上传的文件，以便修复Agent使用
+        # 只删除上传的ZIP压缩包（如果存在）
         if temp_file_path and os.path.exists(temp_file_path):
+            # 检查是否是ZIP文件（上传的压缩包可以删除）
+            # 解压后的目录保留在extract_dir中，不在这里删除
             try:
-                os.unlink(temp_file_path)
-                print(f"已清理临时文件: {temp_file_path}")
+                # 只删除ZIP文件，不删除解压后的目录
+                if temp_file_path.endswith('.zip'):
+                    os.unlink(temp_file_path)
+                    print(f"✅ [API] 已清理上传的ZIP文件: {temp_file_path}")
+                else:
+                    print(f"📝 [API] 保留文件: {temp_file_path}")
             except Exception as e:
-                print(f"清理临时文件失败: {e}")
+                print(f"⚠️ [API] 清理ZIP文件失败: {e}")
         
-        # 清理临时目录
+        # 不清理临时目录，保留解压后的项目文件
+        # extract_dir中的文件需要保留供修复Agent使用
         if temp_dir and os.path.exists(temp_dir):
-            try:
-                import shutil
-                shutil.rmtree(temp_dir)
-                print(f"已清理临时目录: {temp_dir}")
-            except Exception as e:
-                print(f"清理临时目录失败: {e}")
+            print(f"📝 [API] 保留临时目录（解压后的项目文件）: {temp_dir}")
+            print(f"⚠️ [API] 注意: 临时目录未删除，需要定期清理以释放磁盘空间")
 
 @router.get("/status")
 async def get_detection_status():

@@ -1,16 +1,22 @@
 {
   "detection_type": "comprehensive",
-  "timestamp": "2025-10-18T19:34:52.601824",
-  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp9c5jomwi.zip",
+  "timestamp": "2025-11-02T22:47:34.051362",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpyg1bkxps.zip",
   "analysis_options": {
     "static_analysis": true,
     "dynamic_monitoring": true,
     "runtime_analysis": true,
     "enable_dynamic_detection": true,
     "enable_flask_specific_tests": true,
-    "enable_server_testing": true
+    "enable_server_testing": true,
+    "enable_pylint": true,
+    "enable_mypy": true,
+    "enable_semgrep": true,
+    "enable_ruff": true,
+    "enable_bandit": true,
+    "enable_llm_filter": true
   },
-  "extracted_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpzlksx_wl",
+  "extracted_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp19vrltw9",
   "files": [
     "flask-2.0.0\\.editorconfig",
     "flask-2.0.0\\.gitignore",
@@ -248,718 +254,10 @@
     "flask-2.0.0\\tests\\test_apps\\subdomaintestmodule\\__init__.py",
     "flask-2.0.0\\tests\\test_apps\\subdomaintestmodule\\static\\hello.txt"
   ],
-  "static_analysis": {
+  "preliminary_analysis": {
     "success": true,
-    "analysis_type": "enhanced_static_analysis",
-    "project_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpzlksx_wl",
-    "files_analyzed": 30,
-    "python_files_analyzed": 30,
-    "other_language_files_analyzed": 0,
-    "issues_found": 147,
-    "issues": [
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: docutils.nodes",
-        "line": 88,
-        "file": "flask-2.0.0\\docs\\conf.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: docutils.parsers.rst.roles",
-        "line": 89,
-        "file": "flask-2.0.0\\docs\\conf.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.security",
-        "line": 11,
-        "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\auth.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.security",
-        "line": 12,
-        "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\auth.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.db",
-        "line": 14,
-        "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\auth.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 8,
-        "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\blog.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.auth",
-        "line": 10,
-        "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\blog.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.db",
-        "line": 11,
-        "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\blog.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flask.cli",
-        "line": 6,
-        "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\db.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.db",
-        "line": 7,
-        "file": "flask-2.0.0\\examples\\tutorial\\tests\\conftest.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.db",
-        "line": 8,
-        "file": "flask-2.0.0\\examples\\tutorial\\tests\\conftest.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.db",
-        "line": 5,
-        "file": "flask-2.0.0\\examples\\tutorial\\tests\\test_auth.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.db",
-        "line": 3,
-        "file": "flask-2.0.0\\examples\\tutorial\\tests\\test_blog.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flaskr.db",
-        "line": 5,
-        "file": "flask-2.0.0\\examples\\tutorial\\tests\\test_db.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 __init__ 过长 (136 行)",
-        "line": 385,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 run 过长 (120 行)",
-        "line": 805,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_client 过长 (56 行)",
-        "line": 927,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 add_url_rule 过长 (56 行)",
-        "line": 1032,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 make_response 过长 (116 行)",
-        "line": 1616,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_request_context 过长 (54 行)",
-        "line": 1965,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_class",
-        "message": "类 Flask 过长 (1975 行)",
-        "line": 100,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.datastructures",
-        "line": 13,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.datastructures",
-        "line": 14,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 15,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 16,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 17,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 18,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.local",
-        "line": 19,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 20,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 21,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 22,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 23,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 24,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 25,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.wrappers",
-        "line": 26,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.serving",
-        "line": 917,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: asgiref.sync",
-        "line": 1601,
-        "file": "flask-2.0.0\\src\\flask\\app.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 register 过长 (96 行)",
-        "line": 255,
-        "file": "flask-2.0.0\\src\\flask\\blueprints.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_class",
-        "message": "类 Blueprint 过长 (434 行)",
-        "line": 108,
-        "file": "flask-2.0.0\\src\\flask\\blueprints.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 find_app_by_string 过长 (72 行)",
-        "line": 148,
-        "file": "flask-2.0.0\\src\\flask\\cli.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 load_dotenv 过长 (54 行)",
-        "line": 606,
-        "file": "flask-2.0.0\\src\\flask\\cli.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.utils",
-        "line": 15,
-        "file": "flask-2.0.0\\src\\flask\\cli.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.serving",
-        "line": 847,
-        "file": "flask-2.0.0\\src\\flask\\cli.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_class",
-        "message": "类 Config 过长 (238 行)",
-        "line": 28,
-        "file": "flask-2.0.0\\src\\flask\\config.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.utils",
-        "line": 6,
-        "file": "flask-2.0.0\\src\\flask\\config.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_class",
-        "message": "类 RequestContext 过长 (212 行)",
-        "line": 248,
-        "file": "flask-2.0.0\\src\\flask\\ctx.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 6,
-        "file": "flask-2.0.0\\src\\flask\\ctx.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.local",
-        "line": 4,
-        "file": "flask-2.0.0\\src\\flask\\globals.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.local",
-        "line": 5,
-        "file": "flask-2.0.0\\src\\flask\\globals.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 stream_with_context 过长 (74 行)",
-        "line": 64,
-        "file": "flask-2.0.0\\src\\flask\\helpers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 url_for 过长 (148 行)",
-        "line": 190,
-        "file": "flask-2.0.0\\src\\flask\\helpers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 send_file 过长 (129 行)",
-        "line": 490,
-        "file": "flask-2.0.0\\src\\flask\\helpers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 12,
-        "file": "flask-2.0.0\\src\\flask\\helpers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 13,
-        "file": "flask-2.0.0\\src\\flask\\helpers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.urls",
-        "line": 14,
-        "file": "flask-2.0.0\\src\\flask\\helpers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.local",
-        "line": 5,
-        "file": "flask-2.0.0\\src\\flask\\logging.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 __init__ 过长 (146 行)",
-        "line": 89,
-        "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 add_url_rule 过长 (65 行)",
-        "line": 439,
-        "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_class",
-        "message": "类 Scaffold 过长 (676 行)",
-        "line": 59,
-        "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 12,
-        "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 13,
-        "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 get_cookie_domain 过长 (56 行)",
-        "line": 177,
-        "file": "flask-2.0.0\\src\\flask\\sessions.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_class",
-        "message": "类 SessionInterface 过长 (203 行)",
-        "line": 106,
-        "file": "flask-2.0.0\\src\\flask\\sessions.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: collections.abc",
-        "line": 4,
-        "file": "flask-2.0.0\\src\\flask\\sessions.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.datastructures",
-        "line": 9,
-        "file": "flask-2.0.0\\src\\flask\\sessions.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: json.tag",
-        "line": 12,
-        "file": "flask-2.0.0\\src\\flask\\sessions.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 session_transaction 过长 (52 行)",
-        "line": 120,
-        "file": "flask-2.0.0\\src\\flask\\testing.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: click.testing",
-        "line": 7,
-        "file": "flask-2.0.0\\src\\flask\\testing.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.test",
-        "line": 8,
-        "file": "flask-2.0.0\\src\\flask\\testing.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.urls",
-        "line": 9,
-        "file": "flask-2.0.0\\src\\flask\\testing.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.wrappers",
-        "line": 10,
-        "file": "flask-2.0.0\\src\\flask\\testing.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.datastructures",
-        "line": 5,
-        "file": "flask-2.0.0\\src\\flask\\typing.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: wsgiref.types",
-        "line": 6,
-        "file": "flask-2.0.0\\src\\flask\\typing.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 3,
-        "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.wrappers",
-        "line": 4,
-        "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.wrappers",
-        "line": 5,
-        "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 11,
-        "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 3,
-        "file": "flask-2.0.0\\src\\flask\\__init__.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.utils",
-        "line": 4,
-        "file": "flask-2.0.0\\src\\flask\\__init__.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.http",
-        "line": 50,
-        "file": "flask-2.0.0\\src\\flask\\json\\tag.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.http",
-        "line": 51,
-        "file": "flask-2.0.0\\src\\flask\\json\\tag.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 jsonify 过长 (66 行)",
-        "line": 284,
-        "file": "flask-2.0.0\\src\\flask\\json\\__init__.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: jinja2.utils",
-        "line": 8,
-        "file": "flask-2.0.0\\src\\flask\\json\\__init__.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.http",
-        "line": 9,
-        "file": "flask-2.0.0\\src\\flask\\json\\__init__.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_async_before_after_request 过长 (55 行)",
-        "line": 78,
-        "file": "flask-2.0.0\\tests\\test_async.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_session_vary_cookie 过长 (52 行)",
-        "line": 542,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_extended_flashing 过长 (78 行)",
-        "line": 606,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_response_types 过长 (83 行)",
-        "line": 1131,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 13,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 14,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.exceptions",
-        "line": 15,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.http",
-        "line": 16,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 17,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 195,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 215,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: flask.debughelpers",
-        "line": 1113,
-        "file": "flask-2.0.0\\tests\\test_basic.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_route_decorator_custom_endpoint_with_dots 过长 (58 行)",
-        "line": 343,
-        "file": "flask-2.0.0\\tests\\test_blueprints.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.http",
-        "line": 5,
-        "file": "flask-2.0.0\\tests\\test_blueprints.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "import_style",
-        "message": "建议使用相对导入: werkzeug.routing",
-        "line": 405,
-        "file": "flask-2.0.0\\tests\\test_blueprints.py",
-        "tool": "code_analyzer"
-      },
-      {
-        "type": "long_function",
-        "message": "函数 test_find_best_app 过长 (99 行)",
-        "line": 48,
-        "file": "flask-2.0.0\\tests\\test_cli.py",
-        "tool": "code_analyzer"
-      }
-    ],
     "project_structure": {
-      "path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpzlksx_wl",
+      "path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp19vrltw9",
       "total_files": 1,
       "total_lines": 1,
       "file_types": {
@@ -1073,16 +371,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: docutils.nodes",
-              "line": 88,
-              "file": "flask-2.0.0\\docs\\conf.py",
-              "tool": "code_analyzer"
+              "line": 88
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: docutils.parsers.rst.roles",
-              "line": 89,
-              "file": "flask-2.0.0\\docs\\conf.py",
-              "tool": "code_analyzer"
+              "line": 89
             }
           ],
           "ai_analysis": {
@@ -1235,23 +529,17 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.security",
-              "line": 11,
-              "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\auth.py",
-              "tool": "code_analyzer"
+              "line": 11
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.security",
-              "line": 12,
-              "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\auth.py",
-              "tool": "code_analyzer"
+              "line": 12
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.db",
-              "line": 14,
-              "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\auth.py",
-              "tool": "code_analyzer"
+              "line": 14
             }
           ],
           "ai_analysis": {
@@ -1278,23 +566,17 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 8,
-              "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\blog.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.auth",
-              "line": 10,
-              "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\blog.py",
-              "tool": "code_analyzer"
+              "line": 10
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.db",
-              "line": 11,
-              "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\blog.py",
-              "tool": "code_analyzer"
+              "line": 11
             }
           ],
           "ai_analysis": {
@@ -1321,9 +603,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 6,
-              "file": "flask-2.0.0\\examples\\tutorial\\flaskr\\db.py",
-              "tool": "code_analyzer"
+              "line": 6
             }
           ],
           "ai_analysis": {
@@ -1371,16 +651,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.db",
-              "line": 7,
-              "file": "flask-2.0.0\\examples\\tutorial\\tests\\conftest.py",
-              "tool": "code_analyzer"
+              "line": 7
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.db",
-              "line": 8,
-              "file": "flask-2.0.0\\examples\\tutorial\\tests\\conftest.py",
-              "tool": "code_analyzer"
+              "line": 8
             }
           ],
           "ai_analysis": {
@@ -1407,9 +683,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.db",
-              "line": 5,
-              "file": "flask-2.0.0\\examples\\tutorial\\tests\\test_auth.py",
-              "tool": "code_analyzer"
+              "line": 5
             }
           ],
           "ai_analysis": {
@@ -1436,9 +710,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.db",
-              "line": 3,
-              "file": "flask-2.0.0\\examples\\tutorial\\tests\\test_blog.py",
-              "tool": "code_analyzer"
+              "line": 3
             }
           ],
           "ai_analysis": {
@@ -1465,9 +737,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flaskr.db",
-              "line": 5,
-              "file": "flask-2.0.0\\examples\\tutorial\\tests\\test_db.py",
-              "tool": "code_analyzer"
+              "line": 5
             }
           ],
           "ai_analysis": {
@@ -1515,163 +785,117 @@
             {
               "type": "long_function",
               "message": "函数 __init__ 过长 (136 行)",
-              "line": 385,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 385
             },
             {
               "type": "long_function",
               "message": "函数 run 过长 (120 行)",
-              "line": 805,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 805
             },
             {
               "type": "long_function",
               "message": "函数 test_client 过长 (56 行)",
-              "line": 927,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 927
             },
             {
               "type": "long_function",
               "message": "函数 add_url_rule 过长 (56 行)",
-              "line": 1032,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 1032
             },
             {
               "type": "long_function",
               "message": "函数 make_response 过长 (116 行)",
-              "line": 1616,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 1616
             },
             {
               "type": "long_function",
               "message": "函数 test_request_context 过长 (54 行)",
-              "line": 1965,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 1965
             },
             {
               "type": "long_class",
               "message": "类 Flask 过长 (1975 行)",
-              "line": 100,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 100
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.datastructures",
-              "line": 13,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 13
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.datastructures",
-              "line": 14,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 14
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 15,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 15
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 16,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 16
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 17,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 17
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 18,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 18
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.local",
-              "line": 19,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 19
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 20,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 20
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 21,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 21
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 22,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 22
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 23,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 23
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 24,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 24
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 25,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 25
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.wrappers",
-              "line": 26,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 26
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.serving",
-              "line": 917,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 917
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: asgiref.sync",
-              "line": 1601,
-              "file": "flask-2.0.0\\src\\flask\\app.py",
-              "tool": "code_analyzer"
+              "line": 1601
             }
           ],
           "ai_analysis": {
@@ -1698,16 +922,12 @@
             {
               "type": "long_function",
               "message": "函数 register 过长 (96 行)",
-              "line": 255,
-              "file": "flask-2.0.0\\src\\flask\\blueprints.py",
-              "tool": "code_analyzer"
+              "line": 255
             },
             {
               "type": "long_class",
               "message": "类 Blueprint 过长 (434 行)",
-              "line": 108,
-              "file": "flask-2.0.0\\src\\flask\\blueprints.py",
-              "tool": "code_analyzer"
+              "line": 108
             }
           ],
           "ai_analysis": {
@@ -1734,30 +954,22 @@
             {
               "type": "long_function",
               "message": "函数 find_app_by_string 过长 (72 行)",
-              "line": 148,
-              "file": "flask-2.0.0\\src\\flask\\cli.py",
-              "tool": "code_analyzer"
+              "line": 148
             },
             {
               "type": "long_function",
               "message": "函数 load_dotenv 过长 (54 行)",
-              "line": 606,
-              "file": "flask-2.0.0\\src\\flask\\cli.py",
-              "tool": "code_analyzer"
+              "line": 606
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.utils",
-              "line": 15,
-              "file": "flask-2.0.0\\src\\flask\\cli.py",
-              "tool": "code_analyzer"
+              "line": 15
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.serving",
-              "line": 847,
-              "file": "flask-2.0.0\\src\\flask\\cli.py",
-              "tool": "code_analyzer"
+              "line": 847
             }
           ],
           "ai_analysis": {
@@ -1784,16 +996,12 @@
             {
               "type": "long_class",
               "message": "类 Config 过长 (238 行)",
-              "line": 28,
-              "file": "flask-2.0.0\\src\\flask\\config.py",
-              "tool": "code_analyzer"
+              "line": 28
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.utils",
-              "line": 6,
-              "file": "flask-2.0.0\\src\\flask\\config.py",
-              "tool": "code_analyzer"
+              "line": 6
             }
           ],
           "ai_analysis": {
@@ -1820,16 +1028,12 @@
             {
               "type": "long_class",
               "message": "类 RequestContext 过长 (212 行)",
-              "line": 248,
-              "file": "flask-2.0.0\\src\\flask\\ctx.py",
-              "tool": "code_analyzer"
+              "line": 248
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 6,
-              "file": "flask-2.0.0\\src\\flask\\ctx.py",
-              "tool": "code_analyzer"
+              "line": 6
             }
           ],
           "ai_analysis": {
@@ -1877,16 +1081,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.local",
-              "line": 4,
-              "file": "flask-2.0.0\\src\\flask\\globals.py",
-              "tool": "code_analyzer"
+              "line": 4
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.local",
-              "line": 5,
-              "file": "flask-2.0.0\\src\\flask\\globals.py",
-              "tool": "code_analyzer"
+              "line": 5
             }
           ],
           "ai_analysis": {
@@ -1913,44 +1113,32 @@
             {
               "type": "long_function",
               "message": "函数 stream_with_context 过长 (74 行)",
-              "line": 64,
-              "file": "flask-2.0.0\\src\\flask\\helpers.py",
-              "tool": "code_analyzer"
+              "line": 64
             },
             {
               "type": "long_function",
               "message": "函数 url_for 过长 (148 行)",
-              "line": 190,
-              "file": "flask-2.0.0\\src\\flask\\helpers.py",
-              "tool": "code_analyzer"
+              "line": 190
             },
             {
               "type": "long_function",
               "message": "函数 send_file 过长 (129 行)",
-              "line": 490,
-              "file": "flask-2.0.0\\src\\flask\\helpers.py",
-              "tool": "code_analyzer"
+              "line": 490
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 12,
-              "file": "flask-2.0.0\\src\\flask\\helpers.py",
-              "tool": "code_analyzer"
+              "line": 12
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 13,
-              "file": "flask-2.0.0\\src\\flask\\helpers.py",
-              "tool": "code_analyzer"
+              "line": 13
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.urls",
-              "line": 14,
-              "file": "flask-2.0.0\\src\\flask\\helpers.py",
-              "tool": "code_analyzer"
+              "line": 14
             }
           ],
           "ai_analysis": {
@@ -1977,9 +1165,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.local",
-              "line": 5,
-              "file": "flask-2.0.0\\src\\flask\\logging.py",
-              "tool": "code_analyzer"
+              "line": 5
             }
           ],
           "ai_analysis": {
@@ -2006,37 +1192,27 @@
             {
               "type": "long_function",
               "message": "函数 __init__ 过长 (146 行)",
-              "line": 89,
-              "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-              "tool": "code_analyzer"
+              "line": 89
             },
             {
               "type": "long_function",
               "message": "函数 add_url_rule 过长 (65 行)",
-              "line": 439,
-              "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-              "tool": "code_analyzer"
+              "line": 439
             },
             {
               "type": "long_class",
               "message": "类 Scaffold 过长 (676 行)",
-              "line": 59,
-              "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-              "tool": "code_analyzer"
+              "line": 59
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 12,
-              "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-              "tool": "code_analyzer"
+              "line": 12
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 13,
-              "file": "flask-2.0.0\\src\\flask\\scaffold.py",
-              "tool": "code_analyzer"
+              "line": 13
             }
           ],
           "ai_analysis": {
@@ -2063,37 +1239,27 @@
             {
               "type": "long_function",
               "message": "函数 get_cookie_domain 过长 (56 行)",
-              "line": 177,
-              "file": "flask-2.0.0\\src\\flask\\sessions.py",
-              "tool": "code_analyzer"
+              "line": 177
             },
             {
               "type": "long_class",
               "message": "类 SessionInterface 过长 (203 行)",
-              "line": 106,
-              "file": "flask-2.0.0\\src\\flask\\sessions.py",
-              "tool": "code_analyzer"
+              "line": 106
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: collections.abc",
-              "line": 4,
-              "file": "flask-2.0.0\\src\\flask\\sessions.py",
-              "tool": "code_analyzer"
+              "line": 4
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.datastructures",
-              "line": 9,
-              "file": "flask-2.0.0\\src\\flask\\sessions.py",
-              "tool": "code_analyzer"
+              "line": 9
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: json.tag",
-              "line": 12,
-              "file": "flask-2.0.0\\src\\flask\\sessions.py",
-              "tool": "code_analyzer"
+              "line": 12
             }
           ],
           "ai_analysis": {
@@ -2162,37 +1328,27 @@
             {
               "type": "long_function",
               "message": "函数 session_transaction 过长 (52 行)",
-              "line": 120,
-              "file": "flask-2.0.0\\src\\flask\\testing.py",
-              "tool": "code_analyzer"
+              "line": 120
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: click.testing",
-              "line": 7,
-              "file": "flask-2.0.0\\src\\flask\\testing.py",
-              "tool": "code_analyzer"
+              "line": 7
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.test",
-              "line": 8,
-              "file": "flask-2.0.0\\src\\flask\\testing.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.urls",
-              "line": 9,
-              "file": "flask-2.0.0\\src\\flask\\testing.py",
-              "tool": "code_analyzer"
+              "line": 9
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.wrappers",
-              "line": 10,
-              "file": "flask-2.0.0\\src\\flask\\testing.py",
-              "tool": "code_analyzer"
+              "line": 10
             }
           ],
           "ai_analysis": {
@@ -2219,16 +1375,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.datastructures",
-              "line": 5,
-              "file": "flask-2.0.0\\src\\flask\\typing.py",
-              "tool": "code_analyzer"
+              "line": 5
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: wsgiref.types",
-              "line": 6,
-              "file": "flask-2.0.0\\src\\flask\\typing.py",
-              "tool": "code_analyzer"
+              "line": 6
             }
           ],
           "ai_analysis": {
@@ -2276,30 +1428,22 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 3,
-              "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-              "tool": "code_analyzer"
+              "line": 3
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.wrappers",
-              "line": 4,
-              "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-              "tool": "code_analyzer"
+              "line": 4
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.wrappers",
-              "line": 5,
-              "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-              "tool": "code_analyzer"
+              "line": 5
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 11,
-              "file": "flask-2.0.0\\src\\flask\\wrappers.py",
-              "tool": "code_analyzer"
+              "line": 11
             }
           ],
           "ai_analysis": {
@@ -2326,16 +1470,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 3,
-              "file": "flask-2.0.0\\src\\flask\\__init__.py",
-              "tool": "code_analyzer"
+              "line": 3
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.utils",
-              "line": 4,
-              "file": "flask-2.0.0\\src\\flask\\__init__.py",
-              "tool": "code_analyzer"
+              "line": 4
             }
           ],
           "ai_analysis": {
@@ -2383,16 +1523,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.http",
-              "line": 50,
-              "file": "flask-2.0.0\\src\\flask\\json\\tag.py",
-              "tool": "code_analyzer"
+              "line": 50
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.http",
-              "line": 51,
-              "file": "flask-2.0.0\\src\\flask\\json\\tag.py",
-              "tool": "code_analyzer"
+              "line": 51
             }
           ],
           "ai_analysis": {
@@ -2419,23 +1555,17 @@
             {
               "type": "long_function",
               "message": "函数 jsonify 过长 (66 行)",
-              "line": 284,
-              "file": "flask-2.0.0\\src\\flask\\json\\__init__.py",
-              "tool": "code_analyzer"
+              "line": 284
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: jinja2.utils",
-              "line": 8,
-              "file": "flask-2.0.0\\src\\flask\\json\\__init__.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.http",
-              "line": 9,
-              "file": "flask-2.0.0\\src\\flask\\json\\__init__.py",
-              "tool": "code_analyzer"
+              "line": 9
             }
           ],
           "ai_analysis": {
@@ -2504,9 +1634,7 @@
             {
               "type": "long_function",
               "message": "函数 test_async_before_after_request 过长 (55 行)",
-              "line": 78,
-              "file": "flask-2.0.0\\tests\\test_async.py",
-              "tool": "code_analyzer"
+              "line": 78
             }
           ],
           "ai_analysis": {
@@ -2533,79 +1661,57 @@
             {
               "type": "long_function",
               "message": "函数 test_session_vary_cookie 过长 (52 行)",
-              "line": 542,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 542
             },
             {
               "type": "long_function",
               "message": "函数 test_extended_flashing 过长 (78 行)",
-              "line": 606,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 606
             },
             {
               "type": "long_function",
               "message": "函数 test_response_types 过长 (83 行)",
-              "line": 1131,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 1131
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 13,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 13
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 14,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 14
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 15,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 15
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.http",
-              "line": 16,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 16
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 17,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 17
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 195,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 195
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 215,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 215
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.debughelpers",
-              "line": 1113,
-              "file": "flask-2.0.0\\tests\\test_basic.py",
-              "tool": "code_analyzer"
+              "line": 1113
             }
           ],
           "ai_analysis": {
@@ -2632,23 +1738,17 @@
             {
               "type": "long_function",
               "message": "函数 test_route_decorator_custom_endpoint_with_dots 过长 (58 行)",
-              "line": 343,
-              "file": "flask-2.0.0\\tests\\test_blueprints.py",
-              "tool": "code_analyzer"
+              "line": 343
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.http",
-              "line": 5,
-              "file": "flask-2.0.0\\tests\\test_blueprints.py",
-              "tool": "code_analyzer"
+              "line": 5
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 405,
-              "file": "flask-2.0.0\\tests\\test_blueprints.py",
-              "tool": "code_analyzer"
+              "line": 405
             }
           ],
           "ai_analysis": {
@@ -2675,142 +1775,102 @@
             {
               "type": "long_function",
               "message": "函数 test_find_best_app 过长 (99 行)",
-              "line": 48,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 48
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: unittest.mock",
-              "line": 8,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: _pytest.monkeypatch",
-              "line": 12,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 12
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: click.testing",
-              "line": 13,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 13
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 18,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 18
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 19,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 19
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 20,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 20
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 21,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 21
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 22,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 22
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 23,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 23
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 24,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 24
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 25,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 25
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 26,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 26
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 27,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 27
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 28,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 28
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 29,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 29
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 30,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 30
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: cliapp.app",
-              "line": 43,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 43
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 402,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 402
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 412,
-              "file": "flask-2.0.0\\tests\\test_cli.py",
-              "tool": "code_analyzer"
+              "line": 412
             }
           ],
           "ai_analysis": {
@@ -2858,9 +1918,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.routing",
-              "line": 1,
-              "file": "flask-2.0.0\\tests\\test_converters.py",
-              "tool": "code_analyzer"
+              "line": 1
             }
           ],
           "ai_analysis": {
@@ -2887,23 +1945,17 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.helpers",
-              "line": 7,
-              "file": "flask-2.0.0\\tests\\test_helpers.py",
-              "tool": "code_analyzer"
+              "line": 7
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.helpers",
-              "line": 8,
-              "file": "flask-2.0.0\\tests\\test_helpers.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.views",
-              "line": 140,
-              "file": "flask-2.0.0\\tests\\test_helpers.py",
-              "tool": "code_analyzer"
+              "line": 140
             }
           ],
           "ai_analysis": {
@@ -2951,16 +2003,12 @@
             {
               "type": "long_function",
               "message": "函数 test_json_key_sorting 过长 (68 行)",
-              "line": 325,
-              "file": "flask-2.0.0\\tests\\test_json.py",
-              "tool": "code_analyzer"
+              "line": 325
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.http",
-              "line": 6,
-              "file": "flask-2.0.0\\tests\\test_json.py",
-              "tool": "code_analyzer"
+              "line": 6
             }
           ],
           "ai_analysis": {
@@ -2987,16 +2035,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.json.tag",
-              "line": 8,
-              "file": "flask-2.0.0\\tests\\test_json_tag.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.json.tag",
-              "line": 9,
-              "file": "flask-2.0.0\\tests\\test_json_tag.py",
-              "tool": "code_analyzer"
+              "line": 9
             }
           ],
           "ai_analysis": {
@@ -3023,23 +2067,17 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.logging",
-              "line": 7,
-              "file": "flask-2.0.0\\tests\\test_logging.py",
-              "tool": "code_analyzer"
+              "line": 7
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.logging",
-              "line": 8,
-              "file": "flask-2.0.0\\tests\\test_logging.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.logging",
-              "line": 9,
-              "file": "flask-2.0.0\\tests\\test_logging.py",
-              "tool": "code_analyzer"
+              "line": 9
             }
           ],
           "ai_analysis": {
@@ -3087,30 +2125,22 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.sessions",
-              "line": 4,
-              "file": "flask-2.0.0\\tests\\test_reqctx.py",
-              "tool": "code_analyzer"
+              "line": 4
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.sessions",
-              "line": 5,
-              "file": "flask-2.0.0\\tests\\test_reqctx.py",
-              "tool": "code_analyzer"
+              "line": 5
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.testing",
-              "line": 278,
-              "file": "flask-2.0.0\\tests\\test_reqctx.py",
-              "tool": "code_analyzer"
+              "line": 278
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.testing",
-              "line": 298,
-              "file": "flask-2.0.0\\tests\\test_reqctx.py",
-              "tool": "code_analyzer"
+              "line": 298
             }
           ],
           "ai_analysis": {
@@ -3137,9 +2167,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.sessions",
-              "line": 2,
-              "file": "flask-2.0.0\\tests\\test_session_interface.py",
-              "tool": "code_analyzer"
+              "line": 2
             }
           ],
           "ai_analysis": {
@@ -3229,30 +2257,22 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.cli",
-              "line": 7,
-              "file": "flask-2.0.0\\tests\\test_testing.py",
-              "tool": "code_analyzer"
+              "line": 7
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.json",
-              "line": 8,
-              "file": "flask-2.0.0\\tests\\test_testing.py",
-              "tool": "code_analyzer"
+              "line": 8
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.testing",
-              "line": 9,
-              "file": "flask-2.0.0\\tests\\test_testing.py",
-              "tool": "code_analyzer"
+              "line": 9
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: flask.testing",
-              "line": 10,
-              "file": "flask-2.0.0\\tests\\test_testing.py",
-              "tool": "code_analyzer"
+              "line": 10
             }
           ],
           "ai_analysis": {
@@ -3279,37 +2299,27 @@
             {
               "type": "long_function",
               "message": "函数 test_default_error_handler 过长 (51 行)",
-              "line": 157,
-              "file": "flask-2.0.0\\tests\\test_user_error_handler.py",
-              "tool": "code_analyzer"
+              "line": 157
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 2,
-              "file": "flask-2.0.0\\tests\\test_user_error_handler.py",
-              "tool": "code_analyzer"
+              "line": 2
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 3,
-              "file": "flask-2.0.0\\tests\\test_user_error_handler.py",
-              "tool": "code_analyzer"
+              "line": 3
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 4,
-              "file": "flask-2.0.0\\tests\\test_user_error_handler.py",
-              "tool": "code_analyzer"
+              "line": 4
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.exceptions",
-              "line": 5,
-              "file": "flask-2.0.0\\tests\\test_user_error_handler.py",
-              "tool": "code_analyzer"
+              "line": 5
             }
           ],
           "ai_analysis": {
@@ -3336,9 +2346,7 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: werkzeug.http",
-              "line": 2,
-              "file": "flask-2.0.0\\tests\\test_views.py",
-              "tool": "code_analyzer"
+              "line": 2
             }
           ],
           "ai_analysis": {
@@ -3365,16 +2373,12 @@
             {
               "type": "import_style",
               "message": "建议使用相对导入: blueprintapp.apps.admin",
-              "line": 5,
-              "file": "flask-2.0.0\\tests\\test_apps\\blueprintapp\\__init__.py",
-              "tool": "code_analyzer"
+              "line": 5
             },
             {
               "type": "import_style",
               "message": "建议使用相对导入: blueprintapp.apps.frontend",
-              "line": 6,
-              "file": "flask-2.0.0\\tests\\test_apps\\blueprintapp\\__init__.py",
-              "tool": "code_analyzer"
+              "line": 6
             }
           ],
           "ai_analysis": {

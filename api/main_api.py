@@ -13,6 +13,8 @@ from datetime import datetime
 
 # 添加项目根目录到 Python 路径
 sys.path.append(str(Path(__file__).parent.parent))
+# 添加当前目录到 Python 路径（确保可以导入core模块）
+sys.path.insert(0, str(Path(__file__).parent))
 
 # 导入核心管理器
 from core.agent_manager import AgentManager
