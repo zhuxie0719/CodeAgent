@@ -2120,11 +2120,35 @@ class BugDetectionAgent(BaseAgent):
                     self.logger.info(f"安装输出: {result['stdout'][:500]}")
                 return True
             else:
-                error_msg = result.get("error", "未知错误")
+                error_msg = result.get("error")
                 stderr = result.get("stderr", "")
-                self.logger.warning(f"Docker依赖安装失败: {error_msg}")
+                stdout = result.get("stdout", "")
+                returncode = result.get("returncode", -1)
+                
+                # 构建详细的错误信息
+                full_error_parts = []
+                if error_msg:
+                    full_error_parts.append(error_msg)
+                
+                # 优先使用stderr，如果没有则使用stdout（某些命令可能将错误输出到stdout）
+                error_output = stderr if stderr else stdout
+                if error_output:
+                    # 显示完整的错误输出（限制长度）
+                    full_error_parts.append(f"错误输出: {error_output[:1000]}")
+                
+                if not full_error_parts:
+                    full_error_parts.append(f"命令执行失败（返回码: {returncode}），无错误详情")
+                
+                full_error = "\n".join(full_error_parts)
+                
+                self.logger.warning(f"Docker依赖安装失败: {full_error}")
+                
+                # 额外记录详细信息
+                if stdout:
+                    self.logger.debug(f"Docker stdout: {stdout[:500]}")
                 if stderr:
-                    self.logger.warning(f"错误详情: {stderr[:500]}")
+                    self.logger.debug(f"Docker stderr: {stderr[:500]}")
+                
                 return False
             
         except Exception as e:

@@ -117,21 +117,45 @@ class DockerRunner:
             if sys.platform == 'win32':
                 # Windows: 使用同步subprocess在后台线程中执行
                 def run_build():
-                    result = subprocess.run(
-                        cmd,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        cwd=str(build_context),
-                        timeout=600,  # 10分钟超时
-                        text=False  # 返回bytes
-                    )
-                    return result.returncode, result.stdout, result.stderr
+                    try:
+                        result = subprocess.run(
+                            cmd,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            cwd=str(build_context),
+                            timeout=600,  # 10分钟超时
+                            text=False  # 返回bytes
+                        )
+                        return result.returncode, result.stdout, result.stderr
+                    except subprocess.TimeoutExpired as e:
+                        # 超時異常，返回錯誤碼和錯誤信息
+                        logger.error(f"Docker構建超時: {e}")
+                        return -1, b"", f"Docker構建超時: {e}".encode('utf-8')
+                    except Exception as e:
+                        # 其他異常，返回錯誤碼和錯誤信息
+                        logger.error(f"Docker構建異常: {e}")
+                        return -1, b"", f"Docker構建異常: {e}".encode('utf-8')
                 
                 loop = asyncio.get_event_loop()
                 returncode, stdout, stderr = await asyncio.wait_for(
                     loop.run_in_executor(None, run_build),
                     timeout=600
                 )
+                
+                # 檢查構建結果
+                if returncode == 0:
+                    logger.info("Docker镜像构建成功")
+                    if stdout:
+                        logger.debug(f"构建输出: {stdout.decode('utf-8', errors='replace')[:500]}")
+                    return True
+                else:
+                    error_output = stderr.decode('utf-8', errors='replace') if stderr else ""
+                    logger.error(f"Docker镜像构建失败 (返回碼: {returncode})")
+                    if error_output:
+                        logger.error(f"构建错误输出: {error_output[:1000]}")
+                    if stdout:
+                        logger.debug(f"构建标准输出: {stdout.decode('utf-8', errors='replace')[:500]}")
+                    return False
             else:
                 # Unix/Linux: 使用异步exec方式执行
                 process = await asyncio.create_subprocess_exec(
@@ -200,6 +224,29 @@ class DockerRunner:
                     "returncode": -1
                 }
             
+            # 确保项目路径存在
+            project_path = Path(project_path)
+            if not project_path.exists():
+                logger.error(f"项目路径不存在: {project_path}")
+                return {
+                    "success": False,
+                    "error": f"项目路径不存在: {project_path}",
+                    "stdout": "",
+                    "stderr": "",
+                    "returncode": -1
+                }
+            
+            # 确保项目路径是目录
+            if not project_path.is_dir():
+                logger.error(f"项目路径不是目录: {project_path}")
+                return {
+                    "success": False,
+                    "error": f"项目路径不是目录: {project_path}",
+                    "stdout": "",
+                    "stderr": "",
+                    "returncode": -1
+                }
+            
             # 生成唯一的容器名
             container_name = f"{self.container_prefix}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
             
@@ -220,6 +267,7 @@ class DockerRunner:
             ] + command
             
             logger.info(f"执行Docker命令: {' '.join(docker_cmd)}")
+            logger.info(f"项目路径: {project_path.absolute()}")
             
             # 设置工作目录（如果命令不是sh -c格式，需要包装）
             if working_dir:
@@ -273,13 +321,40 @@ class DockerRunner:
                         except Exception as e:
                             logger.warning(f"停止容器失败: {e}")
                     
+                    # 构建错误信息
+                    error_msg = None
+                    stdout_text = stdout.decode('utf-8', errors='replace') if stdout else ""
+                    stderr_text = stderr.decode('utf-8', errors='replace') if stderr else ""
+                    
+                    if error_type == "timeout":
+                        error_msg = "命令执行超时"
+                    elif error_type == "interrupted":
+                        error_msg = "用户中断"
+                    elif error_type == "error":
+                        error_msg = stderr_text[:500] if stderr_text else "执行错误"
+                    elif returncode != 0:
+                        # 命令执行失败，使用 stderr 或 stdout 作为错误信息
+                        # 某些命令可能将错误输出到stdout
+                        if stderr_text:
+                            error_msg = f"命令执行失败（返回码: {returncode}）: {stderr_text[:500]}"
+                        elif stdout_text:
+                            error_msg = f"命令执行失败（返回码: {returncode}）: {stdout_text[:500]}"
+                        else:
+                            error_msg = f"命令执行失败（返回码: {returncode}）"
+                        
+                        # 记录完整的输出用于调试
+                        if stderr_text:
+                            logger.error(f"Docker命令stderr: {stderr_text[:1000]}")
+                        if stdout_text:
+                            logger.debug(f"Docker命令stdout: {stdout_text[:1000]}")
+                    
                     return {
                         "success": returncode == 0,
                         "stdout": stdout.decode('utf-8', errors='replace') if stdout else "",
                         "stderr": stderr.decode('utf-8', errors='replace') if stderr else "",
                         "returncode": returncode,
                         "container_name": container_name,
-                        "error": "命令执行超时" if error_type == "timeout" else ("用户中断" if error_type == "interrupted" else None)
+                        "error": error_msg
                     }
                 except asyncio.TimeoutError:
                     # 超时，尝试停止容器
@@ -335,12 +410,33 @@ class DockerRunner:
                         timeout=timeout
                     )
                     
+                    stdout_text = stdout.decode('utf-8', errors='replace') if stdout else ""
+                    stderr_text = stderr.decode('utf-8', errors='replace') if stderr else ""
+                    returncode = process.returncode
+                    
+                    # 构建错误信息
+                    error_msg = None
+                    if returncode != 0:
+                        if stderr_text:
+                            error_msg = f"命令执行失败（返回码: {returncode}）: {stderr_text[:500]}"
+                        elif stdout_text:
+                            error_msg = f"命令执行失败（返回码: {returncode}）: {stdout_text[:500]}"
+                        else:
+                            error_msg = f"命令执行失败（返回码: {returncode}）"
+                        
+                        # 记录完整的输出用于调试
+                        if stderr_text:
+                            logger.error(f"Docker命令stderr: {stderr_text[:1000]}")
+                        if stdout_text:
+                            logger.debug(f"Docker命令stdout: {stdout_text[:1000]}")
+                    
                     return {
-                        "success": process.returncode == 0,
-                        "stdout": stdout.decode('utf-8', errors='replace'),
-                        "stderr": stderr.decode('utf-8', errors='replace'),
-                        "returncode": process.returncode,
-                        "container_name": container_name
+                        "success": returncode == 0,
+                        "stdout": stdout_text,
+                        "stderr": stderr_text,
+                        "returncode": returncode,
+                        "container_name": container_name,
+                        "error": error_msg
                     }
                 except asyncio.TimeoutError:
                     # 超时，尝试停止容器
@@ -392,10 +488,12 @@ class DockerRunner:
                 # 获取相对于project_path的路径
                 try:
                     rel_path = requirements_file.relative_to(project_path)
-                    container_req_path = f"/app/test_project/{rel_path}"
+                    # 使用as_posix()确保路径使用正斜杠（POSIX格式），适用于Docker容器
+                    rel_path_posix = rel_path.as_posix()
+                    container_req_path = f"/app/test_project/{rel_path_posix}"
                     # 获取requirements.txt所在的目录（容器内）
-                    req_dir = str(rel_path.parent) if rel_path.parent != Path('.') else ""
-                    container_req_dir = f"/app/test_project/{req_dir}" if req_dir else "/app/test_project"
+                    req_dir_posix = rel_path.parent.as_posix() if rel_path.parent != Path('.') else ""
+                    container_req_dir = f"/app/test_project/{req_dir_posix}" if req_dir_posix else "/app/test_project"
                 except ValueError:
                     # 如果不在project_path下，使用绝对路径的最后部分
                     container_req_path = f"/app/test_project/{requirements_file.name}"
@@ -406,11 +504,14 @@ class DockerRunner:
                 logger.info(f"容器内工作目录: {container_req_dir}")
                 
                 # 直接安装requirements.txt中的依赖，让pip根据requirements.txt中的版本要求处理
+                # 注意：使用2>&1将stderr重定向到stdout，所以错误信息会在stdout中
                 install_cmd = [
                     "sh", "-c",
                     f"cd {container_req_dir} && "
                     f"pip install -r {container_req_path} --no-cache-dir 2>&1"
                 ]
+                
+                logger.info(f"执行安装命令: {' '.join(install_cmd)}")
             else:
                 # 没有requirements.txt，不安装任何依赖
                 logger.warning("未找到requirements.txt，跳过依赖安装")
@@ -427,6 +528,15 @@ class DockerRunner:
                 command=install_cmd,
                 timeout=600  # 10分钟超时
             )
+            
+            # 记录结果用于调试
+            if result.get("success"):
+                logger.info("依赖安装成功")
+            else:
+                logger.error(f"依赖安装失败: returncode={result.get('returncode')}")
+                logger.error(f"错误信息: {result.get('error')}")
+                logger.error(f"stdout: {result.get('stdout', '')[:1000]}")
+                logger.error(f"stderr: {result.get('stderr', '')[:1000]}")
             
             return result
             
@@ -446,8 +556,10 @@ class DockerRunner:
                                timeout: int = 300) -> Dict[str, Any]:
         """在Docker容器中运行Python脚本"""
         try:
+            # 将脚本路径转换为POSIX格式（使用正斜杠），适用于Docker容器
+            script_path_posix = script_path.replace("\\", "/")
             # 构建Python命令
-            cmd = ["python", f"/app/test_project/{script_path}"]
+            cmd = ["python", f"/app/test_project/{script_path_posix}"]
             if args:
                 cmd.extend(args)
             
