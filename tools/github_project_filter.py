@@ -260,11 +260,25 @@ class GitHubProjectFilter:
         file_dir = os.path.dirname(file_path)
         file_ext = os.path.splitext(file_name)[1].lower()
         
+        # 优先检查：是否为源码目录下的文件（应该保留）
+        # 源码目录模式：src/, lib/（但不是第三方库安装位置）
+        if self._is_source_directory_file(file_path, project_type):
+            # 即使是源码目录，也要检查环境文件和文档
+            if self._is_environment_file(file_path, file_name, file_dir, file_ext, project_type):
+                return False, "环境文件"
+            if self._is_documentation_file(file_path, file_name, file_ext):
+                return False, "文档文件"
+            if self._is_asset_file(file_path, file_name, file_ext):
+                return False, "资源文件"
+            # 源码目录下的源代码文件应该分析
+            if file_ext in ['.py', '.js', '.ts', '.java', '.cpp', '.c', '.go', '.rs', '.php', '.rb', '.cs']:
+                return True, "源码目录下的源代码文件"
+        
         # 检查环境文件
         if self._is_environment_file(file_path, file_name, file_dir, file_ext, project_type):
             return False, "环境文件"
         
-        # 检查第三方库
+        # 检查第三方库（排除源码目录）
         if self._is_third_party_file(file_path, file_name, file_dir, project_type):
             return False, "第三方库文件"
         
@@ -324,19 +338,71 @@ class GitHubProjectFilter:
         
         return False
     
+    def _is_source_directory_file(self, file_path: str, project_type: str) -> bool:
+        """
+        检查是否为源码目录下的文件
+        源码目录：src/, lib/（但不包括第三方库安装位置如 site-packages, node_modules）
+        """
+        # 明确的第三方库安装路径模式（这些不应该被视为源码目录）
+        third_party_install_paths = [
+            'site-packages',
+            'node_modules',
+            'lib/python',
+            'lib64/python',
+            'Lib/site-packages',
+            'venv',
+            '.venv',
+            'env',
+            '.env'
+        ]
+        
+        # 检查是否在明确的第三方库安装路径中
+        for path_pattern in third_party_install_paths:
+            if path_pattern in file_path.lower():
+                return False
+        
+        # 源码目录模式：src/, lib/（在项目根目录下）
+        source_dir_patterns = [
+            r'^src/',
+            r'^lib/',
+            r'/[^/]+/src/',  # 如 flask-2.0.0/src/
+            r'/[^/]+/lib/',  # 如 myproject/lib/
+        ]
+        
+        import re
+        for pattern in source_dir_patterns:
+            if re.search(pattern, file_path):
+                return True
+        
+        return False
+    
     def _is_third_party_file(self, file_path: str, file_name: str, file_dir: str, 
                            project_type: str) -> bool:
         """检查是否为第三方库文件"""
+        # 如果已经在源码目录中，不视为第三方库
+        if self._is_source_directory_file(file_path, project_type):
+            return False
+        
         # 检查特定语言的第三方库模式
         lib_key = f"{project_type}_libs"
         if lib_key in self.third_party_patterns:
             patterns = self.third_party_patterns[lib_key]
             
-            # 检查目录
+            # 检查目录（但排除源码目录）
             for dir_pattern in patterns['dirs']:
-                if self._match_pattern(file_dir, dir_pattern) or \
-                   self._match_pattern(file_path, f"*/{dir_pattern}/*"):
-                    return True
+                # 只有当路径不包含 src/ 或 lib/（源码目录）时才视为第三方库
+                if 'src/' in file_path or '/src/' in file_path:
+                    continue
+                if 'lib/' in file_path or '/lib/' in file_path:
+                    # 检查是否为第三方库安装位置
+                    if 'site-packages' in file_path or 'node_modules' in file_path:
+                        if self._match_pattern(file_dir, dir_pattern) or \
+                           self._match_pattern(file_path, f"*/{dir_pattern}/*"):
+                            return True
+                else:
+                    if self._match_pattern(file_dir, dir_pattern) or \
+                       self._match_pattern(file_path, f"*/{dir_pattern}/*"):
+                        return True
             
             # 检查文件
             for file_pattern in patterns['files']:

@@ -521,6 +521,34 @@
                         <input type="checkbox" id="staticAnalysis" checked>
                         启用静态分析
                     </label>
+                    <!-- 静态检测工具选择 -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;"><strong>选择检测工具：</strong></p>
+                        <label class="checkbox" style="font-size: 0.85em;">
+                            <input type="checkbox" id="enablePylint" checked>
+                            Pylint（代码质量检查）
+                        </label>
+                        <label class="checkbox" style="font-size: 0.85em;">
+                            <input type="checkbox" id="enableMypy" checked>
+                            Mypy（类型检查）
+                        </label>
+                        <label class="checkbox" style="font-size: 0.85em;">
+                            <input type="checkbox" id="enableSemgrep" checked>
+                            Semgrep（Flask规则检测）
+                        </label>
+                        <label class="checkbox" style="font-size: 0.85em;">
+                            <input type="checkbox" id="enableRuff" checked>
+                            Ruff（快速代码检查）
+                        </label>
+                        <label class="checkbox" style="font-size: 0.85em;">
+                            <input type="checkbox" id="enableBandit" checked>
+                            Bandit（安全检测）
+                        </label>
+                        <label class="checkbox" style="font-size: 0.85em;">
+                            <input type="checkbox" id="enableLlmFilter" checked>
+                            <span style="color: #007bff;">🤖 LLM误报过滤</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="option-card active">
                     <h3>⚡ 动态监控</h3>
@@ -770,7 +798,14 @@
                 enable_web_app_test: document.getElementById('enableWebAppTest').checked,
                 enable_dynamic_detection: document.getElementById('enableDynamicDetection').checked,
                 enable_flask_specific_tests: document.getElementById('enableFlaskSpecificTests').checked,
-                enable_server_testing: document.getElementById('enableServerTesting').checked
+                enable_server_testing: document.getElementById('enableServerTesting').checked,
+                // 静态检测工具选择
+                enable_pylint: document.getElementById('enablePylint').checked,
+                enable_mypy: document.getElementById('enableMypy').checked,
+                enable_semgrep: document.getElementById('enableSemgrep').checked,
+                enable_ruff: document.getElementById('enableRuff').checked,
+                enable_bandit: document.getElementById('enableBandit').checked,
+                enable_llm_filter: document.getElementById('enableLlmFilter').checked
             };
             
             // 调试信息
@@ -782,6 +817,13 @@
             console.log('   - enable_dynamic_detection:', options.enable_dynamic_detection);
             console.log('   - enable_flask_specific_tests:', options.enable_flask_specific_tests);
             console.log('   - enable_server_testing:', options.enable_server_testing);
+            console.log('   静态检测工具:');
+            console.log('     - enable_pylint:', options.enable_pylint);
+            console.log('     - enable_mypy:', options.enable_mypy);
+            console.log('     - enable_semgrep:', options.enable_semgrep);
+            console.log('     - enable_ruff:', options.enable_ruff);
+            console.log('     - enable_bandit:', options.enable_bandit);
+            console.log('     - enable_llm_filter:', options.enable_llm_filter);
 
             // 先检查API状态
             const apiStatus = await checkApiStatus();
@@ -816,6 +858,13 @@
                 formData.append('enable_dynamic_detection', options.enable_dynamic_detection.toString());
                 formData.append('enable_flask_specific_tests', options.enable_flask_specific_tests.toString());
                 formData.append('enable_server_testing', options.enable_server_testing.toString());
+                // 静态检测工具选择
+                formData.append('enable_pylint', options.enable_pylint.toString());
+                formData.append('enable_mypy', options.enable_mypy.toString());
+                formData.append('enable_semgrep', options.enable_semgrep.toString());
+                formData.append('enable_ruff', options.enable_ruff.toString());
+                formData.append('enable_bandit', options.enable_bandit.toString());
+                formData.append('enable_llm_filter', options.enable_llm_filter.toString());
                 formData.append('upload_type', uploadType);
 
                 // 调试FormData内容

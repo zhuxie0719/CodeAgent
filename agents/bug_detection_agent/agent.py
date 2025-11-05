@@ -24,16 +24,16 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from ..base_agent import BaseAgent, TaskStatus
 from tools.static_analysis.pylint_tool import PylintTool
-from tools.static_analysis.flake8_tool import Flake8Tool
 from tools.static_analysis.bandit_tool import BanditTool
 from tools.static_analysis.mypy_tool import MypyTool
+from tools.static_analysis.semgrep_tool import SemgrepTool
+from tools.static_analysis.ruff_tool import RuffTool
 
 # 简化的设置类
 class Settings:
     AGENTS = {"bug_detection_agent": {"enabled": True}}
     TOOLS = {
         "pylint": {"enabled": True, "pylint_args": ["--disable=C0114"]},
-        "flake8": {"enabled": True, "flake8_args": ["--max-line-length=120"]},
         "bandit": {"enabled": True},
         "mypy": {"enabled": True}
     }
@@ -47,13 +47,15 @@ class BugDetectionAgent(BaseAgent):
     def __init__(self, config: Dict[str, Any]):
         super().__init__("bug_detection_agent", config)
         self.pylint_tool = None
-        self.flake8_tool = None
         self.bandit_tool = None
         self.mypy_tool = None
+        self.semgrep_tool = None
+        self.ruff_tool = None
         self.ai_analyzer = None
         self.detection_rules = {}
         self.tasks = {}  # 任务管理
         self.tasks_file = Path("api/tasks_state.json")  # 任务状态持久化文件
+        self._tools_initialized = False  # 标记工具是否已初始化
         
         # Docker支持配置
         self.use_docker = config.get("use_docker", False)  # 默认不启用Docker
@@ -102,7 +104,7 @@ class BugDetectionAgent(BaseAgent):
         self.supported_languages = {
             "python": {
                 "extensions": [".py", ".pyw", ".pyi"],
-                "tools": ["pylint", "flake8", "static_detector"],
+                "tools": ["pylint", "ruff", "mypy", "semgrep", "static_detector"],
                 "ai_analysis": True
             },
             "java": {
@@ -160,10 +162,14 @@ class BugDetectionAgent(BaseAgent):
             await self._load_detection_rules()
             
             self.logger.info("缺陷检测AGENT初始化完成")
+            self._tools_initialized = True  # 标记工具已初始化
             return True
             
         except Exception as e:
             self.logger.error(f"缺陷检测AGENT初始化失败: {e}")
+            import traceback
+            self.logger.error(f"初始化错误详情: {traceback.format_exc()}")
+            self._tools_initialized = False
             return False
     
     async def start(self):
@@ -336,17 +342,6 @@ class BugDetectionAgent(BaseAgent):
                     import traceback
                     self.logger.error(f"Pylint错误详情: {traceback.format_exc()}")
             
-            # 初始化Flake8工具
-            if settings.TOOLS.get("flake8", {}).get("enabled", True):
-                try:
-                    self.logger.info("正在初始化Flake8工具...")
-                    self.flake8_tool = Flake8Tool(settings.TOOLS["flake8"])
-                    self.logger.info("✅ Flake8工具初始化成功")
-                except Exception as e:
-                    self.logger.error(f"❌ Flake8工具初始化失败: {e}")
-                    import traceback
-                    self.logger.error(f"Flake8错误详情: {traceback.format_exc()}")
-            
             # 初始化Bandit工具
             if settings.TOOLS.get("bandit", {}).get("enabled", True):
                 try:
@@ -358,16 +353,39 @@ class BugDetectionAgent(BaseAgent):
                     import traceback
                     self.logger.error(f"Bandit错误详情: {traceback.format_exc()}")
             
-            # 初始化Mypy工具
+            # 初始化Mypy工具（增强严格模式）
             if settings.TOOLS.get("mypy", {}).get("enabled", True):
                 try:
-                    self.logger.info("正在初始化Mypy工具...")
-                    self.mypy_tool = MypyTool(settings.TOOLS["mypy"])
-                    self.logger.info("✅ Mypy工具初始化成功")
+                    self.logger.info("正在初始化Mypy工具（严格模式）...")
+                    # 确保启用严格模式
+                    mypy_config = settings.TOOLS.get("mypy", {})
+                    mypy_config.setdefault("strict_mode", True)
+                    self.mypy_tool = MypyTool(mypy_config)
+                    self.logger.info("✅ Mypy工具初始化成功（严格模式已启用）")
                 except Exception as e:
                     self.logger.error(f"❌ Mypy工具初始化失败: {e}")
                     import traceback
                     self.logger.error(f"Mypy错误详情: {traceback.format_exc()}")
+            
+            # 初始化Semgrep工具（方案B必需）
+            if settings.TOOLS.get("semgrep", {}).get("enabled", True):
+                try:
+                    self.logger.info("正在初始化Semgrep工具...")
+                    self.semgrep_tool = SemgrepTool(settings.TOOLS.get("semgrep", {}))
+                    self.logger.info("✅ Semgrep工具初始化成功")
+                except Exception as e:
+                    self.logger.warning(f"⚠️ Semgrep工具初始化失败（可能未安装）: {e}")
+                    self.semgrep_tool = None
+            
+            # 初始化Ruff工具（方案B推荐，替代flake8，更快且功能更强）
+            if settings.TOOLS.get("ruff", {}).get("enabled", True):
+                try:
+                    self.logger.info("正在初始化Ruff工具...")
+                    self.ruff_tool = RuffTool(settings.TOOLS.get("ruff", {}))
+                    self.logger.info("✅ Ruff工具初始化成功")
+                except Exception as e:
+                    self.logger.warning(f"⚠️ Ruff工具初始化失败（可能未安装）: {e}")
+                    self.ruff_tool = None
             
             # 初始化AI多语言分析器
             try:
@@ -382,16 +400,18 @@ class BugDetectionAgent(BaseAgent):
             tools_status = []
             if self.pylint_tool:
                 tools_status.append("pylint")
-            if self.flake8_tool:
-                tools_status.append("flake8")
             if self.bandit_tool:
                 tools_status.append("bandit")
             if self.mypy_tool:
-                tools_status.append("mypy")
+                tools_status.append("mypy(strict)")
+            if self.semgrep_tool:
+                tools_status.append("semgrep")
+            if self.ruff_tool:
+                tools_status.append("ruff")
             if self.ai_analyzer:
                 tools_status.append("ai_analyzer")
             
-            self.logger.info(f"检测工具初始化完成，可用工具: {', '.join(tools_status) if tools_status else '无'}")
+            self.logger.info(f"检测工具初始化完成（方案B标准配置），可用工具: {', '.join(tools_status) if tools_status else '无'}")
             
         except Exception as e:
             self.logger.error(f"初始化检测工具失败: {e}")
@@ -1063,36 +1083,6 @@ class BugDetectionAgent(BaseAgent):
                         self.logger.error(f"Pylint错误详情: {traceback.format_exc()}")
                 elif options.get("enable_pylint", True):
                     self.logger.warning("Pylint工具未初始化，跳过Pylint检测")
-                
-                # Flake8检测
-                if options.get("enable_flake8", True) and self.flake8_tool:
-                    self.logger.info("开始Flake8检测...")
-                    start_time = datetime.now()
-                    try:
-                        flake8_result = await self.flake8_tool.analyze(file_path)
-                        end_time = datetime.now()
-                        
-                        self.logger.info(f"Flake8检测完成，结果: {flake8_result}")
-                        
-                        # flake8 发现问题时通常返回非零退出码，这里以 issues 是否非空为准
-                        if flake8_result.get("issues"):
-                            for issue in flake8_result["issues"]:
-                                issue["language"] = language
-                                issue["file"] = Path(file_path).name
-                                issue["detection_tool"] = "flake8"
-                            all_issues.extend(flake8_result["issues"])
-                            detection_tools.append("flake8")
-                            self.logger.info(f"Flake8检测到 {len(flake8_result['issues'])} 个问题")
-                        else:
-                            self.logger.info("Flake8没有检测到问题")
-                        
-                        analysis_time += (end_time - start_time).total_seconds()
-                    except Exception as e:
-                        self.logger.error(f"Flake8检测失败: {e}")
-                        import traceback
-                        self.logger.error(f"Flake8错误详情: {traceback.format_exc()}")
-                elif options.get("enable_flake8", True):
-                    self.logger.warning("Flake8工具未初始化，跳过Flake8检测")
                 
                 # Bandit安全检测
                 if options.get("enable_bandit", True) and self.bandit_tool:
@@ -2233,6 +2223,109 @@ class BugDetectionAgent(BaseAgent):
             self.logger.error(f"项目文件扫描失败: {e}")
             return {}
     
+    async def _filter_project_files(self, project_path: str) -> Dict[str, Any]:
+        """
+        过滤项目文件，排除第三方库、环境文件等，只保留核心源代码文件
+        
+        Args:
+            project_path: 项目路径
+            
+        Returns:
+            {
+                "core_files": List[str],  # 核心文件列表（相对路径）
+                "excluded_files": List[str],  # 被排除的文件列表（相对路径）
+                "statistics": Dict[str, Any]  # 统计信息
+            }
+        """
+        try:
+            from tools.github_project_filter import github_filter
+            
+            # 使用GitHub项目过滤器进行文件过滤
+            filter_result = github_filter.filter_project_files(project_path)
+            
+            core_files = filter_result.get('analyze_files', [])
+            excluded_files = filter_result.get('skip_files', [])
+            statistics = filter_result.get('statistics', {})
+            
+            # 额外过滤：排除常见的第三方库目录
+            additional_exclude_patterns = [
+                # Python第三方库常见位置
+                r'site-packages',
+                r'lib/python\d+',
+                r'Lib/site-packages',
+                # Node.js第三方库
+                r'node_modules',
+                r'bower_components',
+                # Java第三方库
+                r'lib[\\/].*\.jar',
+                # 通用第三方库目录
+                r'vendor',
+                r'third_party',
+                r'third-party',
+                r'external',
+                r'dependencies',
+                r'deps',
+                # 测试生成的目录
+                r'\.pytest_cache',
+                r'\.coverage',
+                r'htmlcov',
+                # 构建产物
+                r'build[\\/]lib',
+                r'dist[\\/].*\.egg',
+            ]
+            
+            import re
+            final_core_files = []
+            additional_excluded = []
+            
+            for file_path in core_files:
+                # 检查是否匹配排除模式
+                should_exclude = False
+                for pattern in additional_exclude_patterns:
+                    if re.search(pattern, file_path, re.IGNORECASE):
+                        should_exclude = True
+                        break
+                
+                if should_exclude:
+                    additional_excluded.append(file_path)
+                else:
+                    final_core_files.append(file_path)
+            
+            # 更新统计信息
+            statistics['additional_excluded'] = len(additional_excluded)
+            statistics['final_core_files'] = len(final_core_files)
+            statistics['filter_ratio'] = len(final_core_files) / (len(final_core_files) + len(excluded_files) + len(additional_excluded)) if (len(final_core_files) + len(excluded_files) + len(additional_excluded)) > 0 else 0
+            
+            self.logger.info(f"文件过滤统计: 核心文件 {len(final_core_files)}, 排除 {len(excluded_files) + len(additional_excluded)}, 过滤比例 {statistics['filter_ratio']:.2%}")
+            
+            return {
+                "core_files": final_core_files,
+                "excluded_files": excluded_files + additional_excluded,
+                "statistics": statistics
+            }
+            
+        except Exception as e:
+            self.logger.error(f"文件过滤失败: {e}")
+            import traceback
+            traceback.print_exc()
+            # 如果过滤失败，返回所有文件作为核心文件
+            all_files = []
+            for root, dirs, files in os.walk(project_path):
+                dirs[:] = [d for d in dirs if d not in self.project_config["skip_dirs"]]
+                for file in files:
+                    if not any(file.endswith(ext) for ext in ['.pyc', '.pyo', '.pyd', '.so', '.dll', '.exe']):
+                        rel_path = os.path.relpath(os.path.join(root, file), project_path)
+                        all_files.append(rel_path)
+            
+            return {
+                "core_files": all_files,
+                "excluded_files": [],
+                "statistics": {
+                    "error": str(e),
+                    "fallback_mode": True
+                }
+            }
+    
     def _filter_and_sample_files(self, files_by_language: Dict[str, List[str]]) -> Dict[str, List[str]]:
         """过滤和采样文件，提高分析效率"""
         try:
@@ -2322,7 +2415,7 @@ class BugDetectionAgent(BaseAgent):
             }
     
     async def _perform_enhanced_static_analysis(self, project_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
-        """执行增强的静态分析，集成代码分析工具"""
+        """执行增强的静态分析（已移除代码分析，仅执行缺陷检测）"""
         try:
             # 简化的项目结构分析，避免复杂的agent初始化
             self.logger.info("开始简化项目结构分析...")
@@ -2335,70 +2428,397 @@ class BugDetectionAgent(BaseAgent):
             # 简化的依赖分析
             self.logger.info("开始简化依赖关系分析...")
             dependencies = await self._simple_dependency_analysis(project_path)
+            # 获取初步分析结果（如果已由综合检测器执行）
+            preliminary_analysis = options.get("preliminary_analysis")
+            if preliminary_analysis and preliminary_analysis.get("success"):
+                project_structure = preliminary_analysis.get("project_structure", {})
+                code_quality = preliminary_analysis.get("code_quality", {})
+                dependencies = preliminary_analysis.get("dependencies", {})
+                self.logger.info("使用初步分析结果（来自综合检测器）")
+            else:
+                # 如果没有初步分析结果，使用空字典
+                project_structure = {}
+                code_quality = {}
+                dependencies = {}
+                self.logger.info("未找到初步分析结果，使用默认值")
             
-            # 收集所有支持的文件进行静态分析
+            # ========== 步骤1: 文件过滤（排除第三方库等）==========
+            self.logger.info("开始过滤项目文件，排除第三方库...")
+            filtered_files_info = await self._filter_project_files(project_path)
+            
+            core_files = filtered_files_info.get("core_files", [])
+            excluded_files = filtered_files_info.get("excluded_files", [])
+            filter_statistics = filtered_files_info.get("statistics", {})
+            
+            self.logger.info(f"文件过滤完成: 核心文件 {len(core_files)} 个, 排除文件 {len(excluded_files)} 个")
+            
+            # 将相对路径转换为绝对路径（用于后续分析）
             python_files = []
             other_language_files = []
-            skip_dirs = {'.git', '__pycache__', 'node_modules', '.venv', 'venv', 'doc', 'docs', '.github', 'ci', 'asv_bench', 'conda.recipe', 'web', 'LICENSES'}
             
-            for root, dirs, files in os.walk(project_path):
-                dirs[:] = [d for d in dirs if d not in skip_dirs]
-                
-                for file in files:
-                    if not file.startswith('.'):
-                        file_path = os.path.join(root, file)
-                        try:
-                            if os.path.getsize(file_path) <= 2 * 1024 * 1024:  # 2MB限制
-                                if file.endswith('.py'):
-                                    python_files.append(file_path)
-                                elif self.ai_analyzer and self.ai_analyzer.is_supported_file(file_path):
-                                    other_language_files.append(file_path)
-                        except:
-                            continue
-            
-            # 限制分析的文件数量（提高效率）
-            if len(python_files) > 30:  # 进一步减少到30个文件
-                python_files = python_files[:30]
-            if len(other_language_files) > 20:  # 减少到20个文件
-                other_language_files = other_language_files[:20]
-            
-            # 执行Pylint和Flake8分析
-            pylint_issues = []
-            flake8_issues = []
-            
-            self.logger.info(f"开始静态分析 {len(python_files)} 个Python文件...")
-            for py_file in python_files[:15]:  # 只对前15个文件执行详细分析
-                try:
-                    rel_path = os.path.relpath(py_file, project_path)
-                    
-                    # Pylint分析
-                    if self.pylint_tool:
-                        pylint_result = await self.pylint_tool.analyze(py_file)
-                        if pylint_result.get('success') and pylint_result.get('issues'):
-                            for issue in pylint_result['issues']:
-                                issue['file'] = rel_path
-                                issue['tool'] = 'pylint'
-                                pylint_issues.append(issue)
-                    
-                    # Flake8分析
-                    if self.flake8_tool:
-                        flake8_result = await self.flake8_tool.analyze(py_file)
-                        if flake8_result.get('success') and flake8_result.get('issues'):
-                            for issue in flake8_result['issues']:
-                                issue['file'] = rel_path
-                                issue['tool'] = 'flake8'
-                                flake8_issues.append(issue)
-                                
-                except Exception as e:
-                    self.logger.warning(f"静态分析文件失败 {py_file}: {e}")
+            for rel_file in core_files:
+                abs_file_path = os.path.join(project_path, rel_file)
+                if not os.path.exists(abs_file_path):
                     continue
+                
+                try:
+                    # 文件大小限制
+                    if os.path.getsize(abs_file_path) <= 2 * 1024 * 1024:  # 2MB限制
+                        if rel_file.endswith('.py'):
+                            python_files.append(abs_file_path)
+                        elif self.ai_analyzer and self.ai_analyzer.is_supported_file(abs_file_path):
+                            other_language_files.append(abs_file_path)
+                except:
+                    continue
+            
+            # ========== 步骤2: 执行静态分析（方案B标准工具集）==========
+            # 使用并行处理提高效率
+            import asyncio
+            
+            pylint_issues = []
+            mypy_issues = []
+            semgrep_issues = []
+            ruff_issues = []
+            bandit_issues = []
+            
+            self.logger.info(f"开始静态分析 {len(python_files)} 个核心Python文件（已过滤，方案B标准工具集）...")
+            
+            # 文件已通过过滤机制筛选，只保留核心文件，无需再限制数量
+            # 如果需要，可以设置一个合理的上限以避免超大项目性能问题（如100个文件）
+            max_files_for_detailed_analysis = options.get("max_files_for_analysis", 100)
+            
+            # Pylint性能优化：如果文件数量较多，使用目录模式而不是逐个文件分析
+            pylint_dir_mode_option = options.get("pylint_directory_mode", True)
+            use_pylint_directory_mode = pylint_dir_mode_option and len(python_files) > 10
+            
+            self.logger.info(f"Pylint目录模式配置: option={pylint_dir_mode_option}, use_directory_mode={use_pylint_directory_mode}, python_files_count={len(python_files)}")
+            
+            if len(python_files) > max_files_for_detailed_analysis:
+                self.logger.info(f"核心文件数 ({len(python_files)}) 超过上限 ({max_files_for_detailed_analysis})，仅分析前 {max_files_for_detailed_analysis} 个文件")
+                analysis_files = python_files[:max_files_for_detailed_analysis]
+            else:
+                analysis_files = python_files  # 分析所有过滤后的核心文件
+            
+            self.logger.info(f"实际分析文件数: {len(analysis_files)}")
+            
+            # Pylint：优先使用目录模式（更高效）
+            if options.get("enable_pylint", True) and self.pylint_tool:
+                if use_pylint_directory_mode and hasattr(self.pylint_tool, 'analyze_directory'):
+                    self.logger.info(f"使用Pylint目录模式分析（更高效，文件数: {len(analysis_files)}）...")
+                    try:
+                        # 只分析包含核心文件的目录
+                        # 获取所有需要分析的文件的共同父目录
+                        if analysis_files:
+                            common_path = os.path.commonpath(analysis_files)
+                            pylint_result = await self.pylint_tool.analyze_directory(common_path, '*.py')
+                            
+                            if pylint_result.get('success') and pylint_result.get('issues'):
+                                # 只保留核心文件的问题
+                                # 构建文件路径映射（支持多种路径格式）
+                                core_file_basenames = {os.path.basename(os.path.normpath(f)) for f in analysis_files}
+                                core_file_relpaths = {os.path.normpath(os.path.relpath(cf, project_path)) for cf in analysis_files}
+                                
+                                for issue in pylint_result['issues']:
+                                    issue_path = issue.get('file', '')
+                                    if not issue_path:
+                                        continue
+                                    
+                                    issue_path_norm = os.path.normpath(issue_path)
+                                    issue_basename = os.path.basename(issue_path_norm)
+                                    
+                                    # 检查是否在核心文件列表中（多种匹配方式）
+                                    is_core_file = False
+                                    # 方式1: 完全匹配绝对路径
+                                    if issue_path_norm in {os.path.normpath(f) for f in analysis_files}:
+                                        is_core_file = True
+                                    # 方式2: 匹配相对路径
+                                    elif any(issue_path_norm.endswith(rel_path) or issue_path_norm == rel_path 
+                                             for rel_path in core_file_relpaths):
+                                        is_core_file = True
+                                    # 方式3: 匹配文件名（防止路径格式差异）
+                                    elif issue_basename in core_file_basenames:
+                                        is_core_file = True
+                                    
+                                    if is_core_file:
+                                        # 转换为相对路径
+                                        try:
+                                            if os.path.isabs(issue_path):
+                                                issue['file'] = os.path.relpath(issue_path, project_path)
+                                            else:
+                                                issue['file'] = issue_path
+                                        except:
+                                            issue['file'] = issue_path
+                                        issue['tool'] = 'pylint'
+                                        pylint_issues.append(issue)
+                                
+                                self.logger.info(f"Pylint目录模式检测到 {len(pylint_issues)} 个问题（已过滤为核心文件，原始问题数: {len(pylint_result['issues'])})")
+                    except Exception as e:
+                        self.logger.warning(f"Pylint目录模式分析失败，回退到单文件模式: {e}")
+                        use_pylint_directory_mode = False  # 回退到单文件模式
+            
+            # 如果目录模式失败或禁用，使用单文件并行模式
+            self.logger.info(f"use_pylint_directory_mode={use_pylint_directory_mode}, 将使用{'目录模式' if use_pylint_directory_mode else '单文件模式'}")
+            if not use_pylint_directory_mode:
+                # 并行执行单个文件分析工具（Pylint、Mypy）
+                async def analyze_file_tools(file_path: str):
+                    """并行分析单个文件"""
+                    file_issues = {
+                        'pylint': [],
+                        'mypy': []
+                    }
+                    rel_path = os.path.relpath(file_path, project_path)
+                    
+                    try:
+                        # 并行执行Pylint、Mypy（根据选项启用/禁用）
+                        tasks = []
+                        
+                        if options.get("enable_pylint", True) and self.pylint_tool:
+                            tasks.append(('pylint', self.pylint_tool.analyze(file_path)))
+                        if options.get("enable_mypy", True) and self.mypy_tool:
+                            tasks.append(('mypy', self.mypy_tool.analyze(file_path)))
+                        
+                        # 并行执行所有工具
+                        if tasks:
+                            results = await asyncio.gather(*[task[1] for task in tasks], return_exceptions=True)
+                            
+                            for (tool_name, _), result in zip(tasks, results):
+                                if isinstance(result, Exception):
+                                    self.logger.warning(f"{tool_name}分析失败 {file_path}: {result}")
+                                    continue
+                                
+                                if result.get('success') and result.get('issues'):
+                                    for issue in result['issues']:
+                                        issue['file'] = rel_path
+                                        issue['tool'] = tool_name
+                                        file_issues[tool_name].append(issue)
+                    
+                    except Exception as e:
+                        self.logger.warning(f"文件工具分析失败 {file_path}: {e}")
+                    
+                    return file_issues
+                
+                # 批量并行处理文件（限制并发数以避免资源耗尽）
+                if analysis_files:
+                    max_workers = options.get("max_parallel_files", 10)  # 默认最多10个文件并行
+                    
+                    # 分批处理
+                    for i in range(0, len(analysis_files), max_workers):
+                        batch = analysis_files[i:i + max_workers]
+                        self.logger.info(f"并行分析文件批次 {i//max_workers + 1}/{(len(analysis_files) + max_workers - 1)//max_workers} ({len(batch)} 个文件)...")
+                        
+                        file_results = await asyncio.gather(*[analyze_file_tools(f) for f in batch], return_exceptions=True)
+                        
+                        batch_pylint_count = 0
+                        batch_mypy_count = 0
+                        for result in file_results:
+                            if isinstance(result, Exception):
+                                self.logger.warning(f"文件分析异常: {result}")
+                                continue
+                            pylint_batch = result.get('pylint', [])
+                            mypy_batch = result.get('mypy', [])
+                            batch_pylint_count += len(pylint_batch)
+                            batch_mypy_count += len(mypy_batch)
+                            pylint_issues.extend(pylint_batch)
+                            mypy_issues.extend(mypy_batch)
+                        
+                        self.logger.info(f"批次 {i//max_workers + 1} 完成: Pylint={batch_pylint_count}个问题, Mypy={batch_mypy_count}个问题")
+            
+            # Mypy仍然使用单文件模式（因为Mypy需要类型检查，目录模式可能不够精确）
+            # 注意：如果使用了Pylint目录模式，Mypy需要单独执行
+            if options.get("enable_mypy", True) and self.mypy_tool:
+                if use_pylint_directory_mode:
+                    # 如果使用了Pylint目录模式，需要单独执行Mypy
+                    self.logger.info("使用Mypy单文件模式分析（Pylint已使用目录模式）...")
+                    async def analyze_mypy_file(file_path: str):
+                        """分析单个文件的Mypy"""
+                        rel_path = os.path.relpath(file_path, project_path)
+                        try:
+                            result = await self.mypy_tool.analyze(file_path)
+                            issues = []
+                            if result.get('success') and result.get('issues'):
+                                for issue in result['issues']:
+                                    issue['file'] = rel_path
+                                    issue['tool'] = 'mypy'
+                                    issues.append(issue)
+                            return issues
+                        except Exception as e:
+                            self.logger.warning(f"Mypy分析失败 {file_path}: {e}")
+                            return []
+                    
+                    # 批量并行处理Mypy
+                    max_workers = options.get("max_parallel_files", 10)
+                    for i in range(0, len(analysis_files), max_workers):
+                        batch = analysis_files[i:i + max_workers]
+                        mypy_results = await asyncio.gather(*[analyze_mypy_file(f) for f in batch], return_exceptions=True)
+                        for result in mypy_results:
+                            if isinstance(result, Exception):
+                                continue
+                            mypy_issues.extend(result)
+                # else: Mypy的分析已经在单文件模式中处理了（在analyze_file_tools中）
+            
+            # Bandit：对整个目录进行安全检测（优先使用目录模式，更高效）
+            if options.get("enable_bandit", True) and self.bandit_tool:
+                self.logger.info("开始Bandit安全检测...")
+                try:
+                    # Bandit优先使用目录模式，更高效
+                    if hasattr(self.bandit_tool, 'analyze_directory'):
+                        bandit_result = await self.bandit_tool.analyze_directory(project_path)
+                        
+                        if bandit_result.get('success') and bandit_result.get('issues'):
+                            # 只保留核心文件的问题
+                            # 构建多种路径格式用于匹配（绝对路径、相对路径、文件名）
+                            core_file_norms = {os.path.normpath(f) for f in analysis_files}
+                            core_file_rels = {os.path.normpath(os.path.relpath(cf, project_path)) for cf in analysis_files}
+                            core_file_basenames = {os.path.basename(os.path.normpath(f)) for f in analysis_files}
+                            
+                            for issue in bandit_result['issues']:
+                                issue_path = issue.get('file', '')
+                                if not issue_path:
+                                    continue
+                                
+                                issue_path_norm = os.path.normpath(issue_path)
+                                issue_basename = os.path.basename(issue_path_norm)
+                                
+                                # 多种匹配方式
+                                is_core_file = False
+                                # 方式1: 完全匹配绝对路径
+                                if issue_path_norm in core_file_norms:
+                                    is_core_file = True
+                                # 方式2: 匹配相对路径（issue_path可能包含相对路径）
+                                elif any(issue_path_norm.endswith(rel_path) or issue_path_norm == rel_path 
+                                         for rel_path in core_file_rels):
+                                    is_core_file = True
+                                # 方式3: 匹配文件名（防止路径格式差异）
+                                elif issue_basename in core_file_basenames:
+                                    # 进一步验证：检查是否在项目目录下
+                                    if os.path.isabs(issue_path):
+                                        if any(issue_path_norm.startswith(os.path.dirname(cf)) for cf in analysis_files):
+                                            is_core_file = True
+                                    else:
+                                        # 相对路径，检查是否匹配任何核心文件的相对路径
+                                        if any(issue_path_norm in rel_path or rel_path.endswith(issue_path_norm) 
+                                               for rel_path in core_file_rels):
+                                            is_core_file = True
+                                
+                                if is_core_file:
+                                    # 转换为相对路径
+                                    try:
+                                        if os.path.isabs(issue_path):
+                                            issue['file'] = os.path.relpath(issue_path, project_path)
+                                        else:
+                                            issue['file'] = issue_path
+                                    except:
+                                        issue['file'] = issue_path
+                                    issue['tool'] = 'bandit'
+                                    bandit_issues.append(issue)
+                            
+                            self.logger.info(f"Bandit目录模式检测到 {len(bandit_issues)} 个安全问题（已过滤为核心文件）")
+                        elif not bandit_result.get('success'):
+                            self.logger.warning(f"Bandit目录分析失败: {bandit_result.get('error', '未知错误')}")
+                    else:
+                        # 如果没有目录模式，使用单文件模式
+                        self.logger.info("Bandit使用单文件模式分析...")
+                        async def analyze_bandit_file(file_path: str):
+                            """分析单个文件的Bandit"""
+                            rel_path = os.path.relpath(file_path, project_path)
+                            try:
+                                result = await self.bandit_tool.analyze(file_path)
+                                issues = []
+                                if result.get('success') and result.get('issues'):
+                                    for issue in result['issues']:
+                                        issue['file'] = rel_path
+                                        issue['tool'] = 'bandit'
+                                        issues.append(issue)
+                                return issues
+                            except Exception as e:
+                                self.logger.warning(f"Bandit分析失败 {file_path}: {e}")
+                                return []
+                        
+                        # 批量并行处理Bandit
+                        max_workers = options.get("max_parallel_files", 10)
+                        for i in range(0, len(analysis_files), max_workers):
+                            batch = analysis_files[i:i + max_workers]
+                            bandit_results = await asyncio.gather(*[analyze_bandit_file(f) for f in batch], return_exceptions=True)
+                            for result in bandit_results:
+                                if isinstance(result, Exception):
+                                    continue
+                                bandit_issues.extend(result)
+                    
+                    if len(bandit_issues) > 0:
+                        self.logger.info(f"Bandit检测到 {len(bandit_issues)} 个安全问题")
+                    else:
+                        self.logger.info("Bandit未检测到安全问题")
+                except Exception as e:
+                    self.logger.warning(f"Bandit分析失败: {e}")
+                    import traceback
+                    self.logger.debug(traceback.format_exc())
+            
+            # Semgrep：对整个目录进行分析（更高效，方案B推荐方式）
+            if options.get("enable_semgrep", True):
+                if self.semgrep_tool:
+                    self.logger.info("开始Semgrep目录分析（规则引擎检测Flask特定问题）...")
+                    try:
+                        semgrep_result = await self.semgrep_tool.analyze_directory(project_path)
+                        if semgrep_result.get('success'):
+                            issues_found = semgrep_result.get('issues', [])
+                            if issues_found:
+                                for issue in issues_found:
+                                    # 转换为相对路径
+                                    if 'file' in issue:
+                                        issue['file'] = os.path.relpath(issue['file'], project_path) if os.path.isabs(issue['file']) else issue['file']
+                                    issue['tool'] = 'semgrep'
+                                    semgrep_issues.append(issue)
+                                self.logger.info(f"Semgrep检测到 {len(semgrep_issues)} 个问题")
+                            else:
+                                self.logger.info(f"Semgrep执行成功但未检测到问题（可能Flask代码符合规则）")
+                        else:
+                            error_msg = semgrep_result.get('error', '未知错误')
+                            self.logger.warning(f"Semgrep分析失败: {error_msg}")
+                            # 记录更多调试信息
+                            if 'stdout' in semgrep_result:
+                                self.logger.debug(f"Semgrep stdout: {semgrep_result.get('stdout', '')[:500]}")
+                            if 'stderr' in semgrep_result:
+                                self.logger.debug(f"Semgrep stderr: {semgrep_result.get('stderr', '')[:500]}")
+                    except Exception as e:
+                        self.logger.warning(f"Semgrep分析失败: {e}")
+                        import traceback
+                        self.logger.debug(traceback.format_exc())
+                else:
+                    self.logger.warning("Semgrep工具未初始化，跳过Semgrep检测（可能未安装）")
+            
+            # Ruff：对整个目录进行分析（替代flake8，更快且功能更强）
+            if options.get("enable_ruff", True):
+                if self.ruff_tool:
+                    self.logger.info("开始Ruff目录分析（快速代码质量检查）...")
+                    try:
+                        ruff_result = await self.ruff_tool.analyze_directory(project_path)
+                        if ruff_result.get('success') and ruff_result.get('issues'):
+                            for issue in ruff_result['issues']:
+                                # 转换为相对路径
+                                if 'file' in issue:
+                                    issue['file'] = os.path.relpath(issue['file'], project_path) if os.path.isabs(issue['file']) else issue['file']
+                                issue['tool'] = 'ruff'
+                                ruff_issues.append(issue)
+                            self.logger.info(f"Ruff检测到 {len(ruff_issues)} 个问题")
+                        elif not ruff_result.get('success'):
+                            self.logger.warning(f"Ruff分析失败: {ruff_result.get('error', '未知错误')}")
+                    except Exception as e:
+                        self.logger.warning(f"Ruff分析失败: {e}")
+                        import traceback
+                        self.logger.debug(traceback.format_exc())
+                else:
+                    self.logger.warning("Ruff工具未初始化，跳过Ruff检测（可能未安装）")
             
             # 执行AI多语言分析
             ai_issues = []
             if other_language_files and self.ai_analyzer:
-                self.logger.info(f"开始AI分析 {len(other_language_files)} 个其他语言文件...")
-                for other_file in other_language_files[:10]:  # 只对前10个文件执行AI分析
+                # AI分析可能需要更长时间，设置合理的上限
+                max_ai_files = options.get("max_files_for_ai_analysis", 20)
+                ai_files_to_analyze = other_language_files[:max_ai_files] if len(other_language_files) > max_ai_files else other_language_files
+                self.logger.info(f"开始AI分析 {len(ai_files_to_analyze)} 个其他语言文件（共 {len(other_language_files)} 个，已过滤核心文件）...")
+                for other_file in ai_files_to_analyze:
                     try:
+                        # other_file 已经是绝对路径
                         rel_path = os.path.relpath(other_file, project_path)
                         result = await self.ai_analyzer.analyze_file(other_file, project_path)
                         
@@ -2421,51 +2841,141 @@ class BugDetectionAgent(BaseAgent):
                         self.logger.warning(f"AI分析文件失败 {other_file}: {e}")
                         continue
             
-            # 合并所有问题
-            all_issues = pylint_issues + flake8_issues + ai_issues
+            # 合并所有问题（方案B标准工具集，Ruff替代Flake8）
+            all_issues = pylint_issues + mypy_issues + semgrep_issues + ruff_issues + bandit_issues + ai_issues
             
-            # 添加代码质量分析中的问题
-            if code_quality.get('file_analysis'):
-                for file_analysis in code_quality['file_analysis']:
-                    if file_analysis.get('issues'):
-                        for issue in file_analysis['issues']:
-                            issue['file'] = file_analysis['file_path']
-                            issue['tool'] = 'code_analyzer'
-                            all_issues.append(issue)
+            self.logger.info(f"=== 静态分析完成统计 ===")
+            self.logger.info(f"Pylint: {len(pylint_issues)} 个问题")
+            self.logger.info(f"Mypy: {len(mypy_issues)} 个问题")
+            self.logger.info(f"Semgrep: {len(semgrep_issues)} 个问题")
+            self.logger.info(f"Ruff: {len(ruff_issues)} 个问题")
+            self.logger.info(f"Bandit: {len(bandit_issues)} 个问题")
+            self.logger.info(f"AI分析: {len(ai_issues)} 个问题")
+            self.logger.info(f"总计: {len(all_issues)} 个问题")
             
-            # 生成AI分析摘要
+            # ========== 步骤3: LLM智能误报过滤 ==========
+            # 记录过滤前的原始问题数量（包括所有工具检测到的问题）
+            original_issue_count_before_filter = len(all_issues)
+            
+            if options.get("enable_llm_filter", True):
+                try:
+                    from tools.llm_filter import get_false_positive_filter
+                    from config import settings
+                    
+                    # 检查是否启用LLM过滤
+                    filter_config = getattr(settings, 'LLM_FILTER', {})
+                    if filter_config.get("enabled", True):
+                        self.logger.info(f"开始LLM智能误报过滤（原始问题数: {original_issue_count_before_filter}）...")
+                        
+                        # 初始化过滤器
+                        llm_filter = get_false_positive_filter(filter_config)
+                        
+                        # 限制过滤的问题数量（控制成本）
+                        max_issues_to_filter = filter_config.get("max_issues_to_filter", 100)
+                        issues_to_filter = all_issues[:max_issues_to_filter] if len(all_issues) > max_issues_to_filter else all_issues
+                        issues_not_filtered = all_issues[max_issues_to_filter:] if len(all_issues) > max_issues_to_filter else []
+                        
+                        if issues_to_filter:
+                            # 创建源码提供函数
+                            def get_source_code(file_path: str) -> str:
+                                """获取文件的源码"""
+                                try:
+                                    # file_path可能是相对路径，需要转换为绝对路径
+                                    abs_path = os.path.join(project_path, file_path) if not os.path.isabs(file_path) else file_path
+                                    if os.path.exists(abs_path):
+                                        with open(abs_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                            # 读取文件并提取相关行号附近的代码
+                                            lines = f.readlines()
+                                            # 对于每个问题，提取前后各10行作为上下文
+                                            relevant_lines = []
+                                            for issue in issues_to_filter:
+                                                if issue.get('file') == file_path:
+                                                    line_num = issue.get('line', 1)
+                                                    start = max(0, line_num - 10)
+                                                    end = min(len(lines), line_num + 10)
+                                                    relevant_lines.extend(range(start, end))
+                                            
+                                            # 去重并排序
+                                            relevant_lines = sorted(set(relevant_lines))
+                                            
+                                            # 如果相关行太多，只返回文件的前500行
+                                            if len(relevant_lines) > 500:
+                                                return ''.join(lines[:500])
+                                            else:
+                                                return ''.join([lines[i] if i < len(lines) else '' for i in relevant_lines])
+                                    return ""
+                                except Exception as e:
+                                    self.logger.warning(f"读取源码失败 {file_path}: {e}")
+                                    return ""
+                            
+                            # 执行批量过滤
+                            filtered_issues = await llm_filter.filter_issues_batch(
+                                issues_to_filter,
+                                get_source_code
+                            )
+                            
+                            # 合并过滤后的问题和未过滤的问题
+                            all_issues = filtered_issues + issues_not_filtered
+                            
+                            filtered_count = len(issues_to_filter) - len(filtered_issues)
+                            self.logger.info(f"LLM误报过滤完成: 原始问题 {len(issues_to_filter)} 个, "
+                                           f"过滤后保留 {len(filtered_issues)} 个, "
+                                           f"过滤掉 {filtered_count} 个误报")
+                        else:
+                            self.logger.info("无需过滤的问题")
+                    else:
+                        self.logger.info("LLM误报过滤已禁用（配置中disabled）")
+                        
+                except ImportError as e:
+                    self.logger.warning(f"LLM过滤器导入失败，跳过误报过滤: {e}")
+                except Exception as e:
+                    self.logger.warning(f"LLM误报过滤失败，保留所有原始问题: {e}")
+                    import traceback
+                    self.logger.debug(traceback.format_exc())
+            else:
+                self.logger.info("LLM误报过滤已禁用（options中enable_llm_filter=False）")
+            
+            # 代码质量分析功能已移除，不再添加代码质量分析中的问题
+            code_quality_issues = []
+            
+            # 生成AI分析摘要（如果有初步分析结果且启用AI分析）
             ai_summary = None
-            try:
-                # 检查是否有AI分析服务
-                if hasattr(self, 'ai_service') and self.ai_service:
-                    ai_summary = await self.ai_service.generate_project_summary({
+            if options.get("enable_ai_analysis", True) and preliminary_analysis:
+                try:
+                    from agents.code_analysis_agent.agent import CodeAnalysisAgent
+                    code_analysis_agent = CodeAnalysisAgent({
+                        "enable_ai_analysis": True,
+                        "analysis_depth": "comprehensive"
+                    })
+                    ai_summary = await code_analysis_agent.ai_service.generate_project_summary({
                         'project_structure': project_structure,
                         'code_quality': code_quality,
                         'dependencies': dependencies
                     })
-                else:
-                    # 创建简单的AI摘要
+                except Exception as e:
+                    self.logger.warning(f"AI分析失败: {e}")
                     ai_summary = {
-                        'success': True,
-                        'summary': f'项目包含 {len(project_structure.get("files", []))} 个文件，发现 {len(all_issues)} 个问题',
-                        'recommendations': [
-                            '建议定期进行代码审查',
-                            '考虑使用类型提示提高代码质量',
-                            '添加单元测试覆盖核心功能'
-                        ]
+                        'success': False,
+                        'error': str(e),
+                        'summary': 'AI分析服务暂时不可用'
                     }
-            except Exception as e:
-                self.logger.warning(f"AI分析失败: {e}")
-                ai_summary = {
-                    'success': False,
-                    'error': str(e),
-                    'summary': 'AI分析服务暂时不可用'
-                }
             
             # 计算统计信息
             issues_by_severity = {}
             issues_by_type = {}
             issues_by_tool = {}
+            
+            # 计算过滤后的统计（排除代码质量分析的问题，因为它们是在过滤后添加的）
+            filtered_issue_count = len(all_issues) - len(code_quality_issues)
+            original_issue_count_after_code_quality = original_issue_count_before_filter
+            
+            llm_filter_stats = {
+                "enabled": False,
+                "original_count": original_issue_count_before_filter,
+                "filtered_count": filtered_issue_count,  # 只统计过滤后的问题（不包括代码质量分析）
+                "removed_count": 0,
+                "code_quality_issues_count": len(code_quality_issues)  # 代码质量分析问题数量
+            }
             
             for issue in all_issues:
                 severity = issue.get('severity', 'info')
@@ -2476,6 +2986,14 @@ class BugDetectionAgent(BaseAgent):
                 issues_by_type[issue_type] = issues_by_type.get(issue_type, 0) + 1
                 issues_by_tool[tool] = issues_by_tool.get(tool, 0) + 1
             
+            # 更新LLM过滤统计（只考虑过滤前后的工具检测问题，不包括代码质量分析问题）
+            if original_issue_count_before_filter > filtered_issue_count:
+                llm_filter_stats["enabled"] = True
+                llm_filter_stats["removed_count"] = original_issue_count_before_filter - filtered_issue_count
+            
+            # 可配置的问题数量限制（用于性能优化，避免返回过多数据）
+            max_issues_to_return = options.get("max_issues_to_return", 1000)  # 默认1000，可根据需要调整
+            
             return {
                 "success": True,
                 "analysis_type": "enhanced_static_analysis",
@@ -2484,30 +3002,48 @@ class BugDetectionAgent(BaseAgent):
                 "python_files_analyzed": len(python_files),
                 "other_language_files_analyzed": len(other_language_files),
                 "issues_found": len(all_issues),
-                "issues": all_issues[:100],  # 限制问题数量
-                "project_structure": project_structure,
-                "code_quality": code_quality,
-                "dependencies": dependencies,
+                "issues": all_issues[:max_issues_to_return] if len(all_issues) > max_issues_to_return else all_issues,
+                "issues_truncated": len(all_issues) > max_issues_to_return,  # 标记是否截断
+                "total_issues_count": len(all_issues),  # 实际总问题数
+                "project_structure": project_structure,  # 来自初步分析
+                "code_quality": code_quality,  # 来自初步分析
+                "dependencies": dependencies,  # 来自初步分析
                 "ai_summary": ai_summary,
+                "file_filtering": {
+                    "core_files_count": len(core_files),
+                    "excluded_files_count": len(excluded_files),
+                    "filter_statistics": filter_statistics
+                },
                 "multi_language_analysis": {
-                    "python_issues": len(pylint_issues) + len(flake8_issues),
+                    "python_issues": len(pylint_issues) + len(mypy_issues),
+                    "semgrep_issues": len(semgrep_issues),
+                    "ruff_issues": len(ruff_issues),
                     "ai_issues": len(ai_issues),
                     "supported_languages": list(set([issue.get('language', 'unknown') for issue in ai_issues]))
+                },
+                "tool_coverage": {
+                    "pylint": len(pylint_issues),
+                    "mypy": len(mypy_issues),
+                    "semgrep": len(semgrep_issues),
+                    "ruff": len(ruff_issues),
+                    "bandit": len(bandit_issues),
+                    "ai_analyzer": len(ai_issues)
                 },
                 "statistics": {
                     "issues_by_severity": issues_by_severity,
                     "issues_by_type": issues_by_type,
                     "issues_by_tool": issues_by_tool,
-                    "total_files": project_structure.get('total_files', 0),
-                    "total_lines": project_structure.get('total_lines', 0),
-                    "average_complexity": code_quality.get('average_complexity', 0),
-                    "maintainability_score": code_quality.get('maintainability_score', 0)
+                    "total_files": project_structure.get('total_files', 0) if project_structure else 0,
+                    "total_lines": project_structure.get('total_lines', 0) if project_structure else 0,
+                    "average_complexity": code_quality.get('average_complexity', 0) if code_quality else 0,
+                    "maintainability_score": code_quality.get('maintainability_score', 0) if code_quality else 0
                 },
                 "summary": {
                     "error_count": issues_by_severity.get('error', 0),
                     "warning_count": issues_by_severity.get('warning', 0),
                     "info_count": issues_by_severity.get('info', 0)
-                }
+                },
+                "llm_filter": llm_filter_stats
             }
             
         except Exception as e:
@@ -3116,8 +3652,8 @@ class BugDetectionAgent(BaseAgent):
         issues_by_tool = statistics.get("issues_by_tool", {})
         if 'pylint' in issues_by_tool and issues_by_tool['pylint'] > 0:
             report += "- 🐍 **Pylint发现问题**，建议修复代码质量问题\n"
-        if 'flake8' in issues_by_tool and issues_by_tool['flake8'] > 0:
-            report += "- 📏 **Flake8发现问题**，建议改进代码风格\n"
+        if 'ruff' in issues_by_tool and issues_by_tool['ruff'] > 0:
+            report += "- 🚀 **Ruff发现问题**，建议改进代码风格和规范\n"
         
         report += "\n## 总结\n"
         if summary.get('error_count', 0) > 0:

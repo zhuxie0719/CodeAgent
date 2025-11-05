@@ -62,19 +62,40 @@ class Settings(BaseSettings):
         }
     }
     
-    # 工具配置
+    # 工具配置（方案B标准方案）
     TOOLS: Dict[str, Dict[str, Any]] = {
         "pylint": {
             "enabled": True,
-            "args": ["--disable=C0114,C0116"]
-        },
-        "flake8": {
-            "enabled": True,
-            "args": ["--max-line-length=88"]
+            "pylint_args": ["--disable=C0114,C0116", "--load-plugins=pylint_flask"]
         },
         "bandit": {
             "enabled": True,
             "args": ["-r", "-f", "json"]
+        },
+        "mypy": {
+            "enabled": True,
+            "strict_mode": False,  # 关闭严格模式，减少不必要的类型检查问题（Flask框架代码本身类型注解较少）
+            "mypy_args": [
+                "--ignore-missing-imports",  # 忽略缺失的导入（第三方库）
+                "--no-strict-optional",  # 不强制可选类型检查
+                "--allow-untyped-calls",  # 允许未注解的函数调用
+                "--allow-untyped-defs",  # 允许未注解的函数定义
+                "--allow-incomplete-defs",  # 允许不完整的类型定义
+            ]  # 减少误报的参数
+        },
+        "semgrep": {
+            "enabled": True,  # 方案B必需
+            "rules_configs": [],  # 不使用默认规则集，只使用自定义规则（避免配置错误）
+            "semgrep_args": ["--quiet"],
+            "custom_rules": [
+                "tools/static_analysis/semgrep_rules/flask_2_0_0_issues.yml"  # Flask特定规则
+            ]
+        },
+        "ruff": {
+            "enabled": True,  # 方案B推荐，替代flake8（更快且功能更强）
+            "ruff_args": ["--output-format=json"],
+            "select": ["E", "F", "W", "I"],  # 选择规则组：错误、pyflakes、警告、isort
+            "ignore": []  # 忽略特定规则
         },
         "black": {
             "enabled": True,
@@ -100,6 +121,16 @@ class Settings(BaseSettings):
             "max_tokens": 4000,
             "temperature": 0.1
         }
+    }
+    
+    # LLM误报过滤器配置
+    LLM_FILTER: Dict[str, Any] = {
+        "enabled": True,  # 是否启用智能误报过滤
+        "confidence_threshold": 0.7,  # 置信度阈值（0.0-1.0）
+        "batch_size": 20,  # 批量处理大小（减少API调用次数）
+        "model": "deepseek-chat",  # 使用的模型
+        "cache_enabled": True,  # 是否启用缓存（避免重复判断）
+        "max_issues_to_filter": 100  # 最多过滤的问题数（控制成本）
     }
     
     # 监控配置
