@@ -23,6 +23,16 @@ def check_dependencies():
 def start_api_server():
     """启动API服务器"""
     print("🚀 启动AI Agent API服务器...")
+    
+    # 检查Docker支持状态
+    use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+    if use_docker:
+        print("✅ Docker支持已启用")
+        print("   系统将使用Docker容器来安装依赖和运行测试")
+    else:
+        print("⚠️  Docker支持未启用（使用虚拟环境）")
+        print("   提示: 设置 USE_DOCKER=true 可启用Docker支持")
+    
     print("📍 API文档地址: http://localhost:8001/docs")
     print("📍 前端界面地址: file://" + str(Path("frontend/index.html").absolute()))
     print("📍 动态检测界面: file://" + str(Path("frontend/dynamic_detection.html").absolute()))

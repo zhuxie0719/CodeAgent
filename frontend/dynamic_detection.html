@@ -613,6 +613,23 @@
                         <!-- AI报告内容 -->
                     </div>
                 </div>
+
+                <div class="result-card" id="severeIssuesCard" style="display: none;">
+                    <h3>🚨 严重问题汇总文档</h3>
+                    <div style="margin-bottom: 15px;">
+                        <button onclick="generateSevereIssuesReport()" class="upload-button" style="padding: 8px 16px; font-size: 14px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                            📋 生成严重问题文档
+                        </button>
+                        <div id="severeIssuesFilePath" style="margin-top: 10px; padding: 8px 12px; background: #e8f5e8; border: 1px solid #28a745; border-radius: 6px; display: none;">
+                            <i class="fas fa-file-alt" style="color: #28a745; margin-right: 8px;"></i>
+                            <span style="color: #155724; font-size: 14px;">文档已保存到: </span>
+                            <code id="severeIssuesPathText" style="color: #0c5460; font-weight: bold;"></code>
+                        </div>
+                    </div>
+                    <div id="severeIssuesContent" style="background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px; padding: 20px; max-height: 400px; overflow-y: auto;">
+                        <p style="color: #742a2a; margin: 0;">点击"生成严重问题文档"按钮来创建包含文件路径和行号的详细问题汇总报告。</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -961,6 +978,9 @@
                 displayAIReport(data.ai_report);
                 document.getElementById('aiReportCard').style.display = 'block';
             }
+            
+            // 显示严重问题文档卡片
+            document.getElementById('severeIssuesCard').style.display = 'block';
         }
 
         // 显示问题列表
@@ -1165,6 +1185,147 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
+
+        // 生成严重问题文档
+        async function generateSevereIssuesReport() {
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+            
+            if (!files || files.length === 0) {
+                alert('请先选择文件或目录');
+                return;
+            }
+
+            // 获取检测选项
+            const options = {
+                static_analysis: document.getElementById('staticAnalysis').checked,
+                dynamic_monitoring: document.getElementById('dynamicMonitoring').checked,
+                runtime_analysis: document.getElementById('runtimeAnalysis').checked,
+                enable_web_app_test: document.getElementById('enableWebAppTest').checked,
+                enable_dynamic_detection: document.getElementById('enableDynamicDetection').checked,
+                enable_flask_specific_tests: document.getElementById('enableFlaskSpecificTests').checked,
+                enable_server_testing: document.getElementById('enableServerTesting').checked
+            };
+
+            // 先检查API状态
+            const apiStatus = await checkApiStatus();
+            if (!apiStatus) {
+                alert('无法连接到检测服务，请确保服务已启动\n\n启动命令: python start_api.py');
+                return;
+            }
+
+            // 显示加载状态
+            showSevereIssuesLoading();
+
+            try {
+                // 创建FormData
+                const formData = new FormData();
+                
+                // 根据上传类型处理文件
+                const uploadType = document.querySelector('input[name="uploadType"]:checked').value;
+                if (uploadType === 'file') {
+                    // 压缩包上传
+                    formData.append('file', files[0]);
+                } else {
+                    // 目录上传 - 添加所有文件
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append('files', files[i]);
+                    }
+                }
+                
+                formData.append('static_analysis', options.static_analysis.toString());
+                formData.append('dynamic_monitoring', options.dynamic_monitoring.toString());
+                formData.append('runtime_analysis', options.runtime_analysis.toString());
+                formData.append('enable_web_app_test', options.enable_web_app_test.toString());
+                formData.append('enable_dynamic_detection', options.enable_dynamic_detection.toString());
+                formData.append('enable_flask_specific_tests', options.enable_flask_specific_tests.toString());
+                formData.append('enable_server_testing', options.enable_server_testing.toString());
+                formData.append('upload_type', uploadType);
+
+                console.log('发送严重问题文档生成请求到:', `${API_BASE_URL}/generate-severe-issues-report`);
+
+                // 发送请求
+                const response = await fetch(`${API_BASE_URL}/generate-severe-issues-report`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displaySevereIssuesReport(result.data);
+                } else {
+                    showSevereIssuesError('生成失败: ' + result.error);
+                }
+
+            } catch (error) {
+                console.error('生成严重问题文档失败:', error);
+                showSevereIssuesError('生成失败: ' + error.message);
+            } finally {
+                hideSevereIssuesLoading();
+            }
+        }
+
+        // 显示严重问题文档加载状态
+        function showSevereIssuesLoading() {
+            const content = document.getElementById('severeIssuesContent');
+            content.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 15px;"></div>
+                    <h4 style="color: #dc3545; margin-bottom: 10px;">正在生成严重问题文档...</h4>
+                    <p style="color: #742a2a; margin: 0;">请稍候，正在分析检测结果并生成汇总报告</p>
+                </div>
+            `;
+        }
+
+        // 隐藏严重问题文档加载状态
+        function hideSevereIssuesLoading() {
+            // 加载状态会在displaySevereIssuesReport中处理
+        }
+
+        // 显示严重问题文档错误
+        function showSevereIssuesError(errorMessage) {
+            const content = document.getElementById('severeIssuesContent');
+            content.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <h4 style="color: #dc3545; margin-bottom: 15px;">❌ 生成失败</h4>
+                    <p style="color: #742a2a; margin-bottom: 20px;">${errorMessage}</p>
+                    <button onclick="generateSevereIssuesReport()" class="upload-button" style="padding: 8px 16px; font-size: 14px;">
+                        重试
+                    </button>
+                </div>
+            `;
+        }
+
+        // 显示严重问题文档
+        function displaySevereIssuesReport(data) {
+            const content = document.getElementById('severeIssuesContent');
+            const reportContent = data.severe_issues_report;
+            
+            // 转换Markdown为HTML显示
+            const htmlContent = convertMarkdownToHtml(reportContent);
+            
+            content.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h4 style="color: #dc3545; margin-bottom: 10px;">✅ 严重问题文档生成完成</h4>
+                    <p style="color: #742a2a; margin: 0; font-size: 14px;">
+                        文档包含 ${data.summary?.critical_issues || 0} 个严重问题，${data.summary?.warning_issues || 0} 个警告问题
+                    </p>
+                </div>
+                <div style="background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; max-height: 300px; overflow-y: auto;">
+                    ${htmlContent}
+                </div>
+            `;
+            
+            // 显示文件保存路径
+            if (data.report_path) {
+                const filePathDiv = document.getElementById('severeIssuesFilePath');
+                const pathText = document.getElementById('severeIssuesPathText');
+                pathText.textContent = data.report_path;
+                filePathDiv.style.display = 'block';
+            }
+        }
+
 
         // 获取状态文本
         function getStatusText(status) {

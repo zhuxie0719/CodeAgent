@@ -4,6 +4,7 @@ Agent 生命周期管理器
 """
 
 import sys
+import os
 from pathlib import Path
 
 # 添加项目根目录到 Python 路径
@@ -26,23 +27,26 @@ class AgentManager:
     async def start_all_agents(self):
         """启动所有可用的 Agent"""
         
+        # 检查是否启用Docker支持
+        use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+        
         # 定义要启动的 Agent（只包含可用的）
         agent_configs = [
-            ("bug_detection_agent", BugDetectionAgent, "📦", "缺陷检测"),
-            ("fix_execution_agent", FixExecutionAgent, "🔧", "自动修复"),
-            ("test_validation_agent", TestValidationAgent, "🧪", "测试验证"),
-            ("code_analysis_agent", CodeAnalysisAgent, "📊", "代码分析"),
-            ("code_quality_agent", CodeQualityAgent, "⭐", "代码质量"),
+            ("bug_detection_agent", BugDetectionAgent, "📦", "缺陷检测", {"use_docker": use_docker}),
+            ("fix_execution_agent", FixExecutionAgent, "🔧", "自动修复", {}),
+            ("test_validation_agent", TestValidationAgent, "🧪", "测试验证", {}),
+            ("code_analysis_agent", CodeAnalysisAgent, "📊", "代码分析", {}),
+            ("code_quality_agent", CodeQualityAgent, "⭐", "代码质量", {}),
         ]
         
         print("\n" + "="*60)
         print("🚀 启动所有 Agent...")
         print("="*60)
         
-        for agent_id, agent_class, icon, description in agent_configs:
+        for agent_id, agent_class, icon, description, config in agent_configs:
             try:
                 print(f"{icon} 初始化 {agent_id} ({description})...")
-                agent = agent_class(config={})
+                agent = agent_class(config=config)
                 await agent.start()
                 
                 # 注册到 Coordinator

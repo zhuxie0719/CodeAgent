@@ -1,0 +1,59 @@
+Flask 2.0.0 Bug测试包 - 使用说明
+========================================
+
+目录说明：
+----------
+- app.py: Flask应用主文件，包含复现32个bug的测试用例
+- setup.py: 自动设置Flask 2.0.0环境的脚本
+- run_test.py: 启动测试服务器
+- bug_test.py: 测试套件，验证bug复现
+- requirements.txt: 依赖包版本要求
+- flask-2.0.0.zip: Flask 2.0.0源码压缩包
+- BUG_CHECKLIST.md: Bug检测清单
+- README.md: 详细使用文档
+
+使用步骤：
+----------
+1. 直接上传本文件夹（或整个flask_simple_test文件夹）到前端
+2. 前端会自动进行静态和动态检测
+3. 查看检测报告，验证是否能识别32个已知bug
+
+注意：由于Flask 2.0.0需要特定版本的werkzeug，运行时可能需要：
+- Python 3.7+
+- werkzeug==2.0.0
+
+测试路由：
+----------
+访问以下路由可以触发相应bug：
+- http://localhost:5000/bug1_g_type
+- http://localhost:5000/bug4_send_file_type
+- http://localhost:5000/parent
+- http://localhost:5000/bug9_send_from_directory
+- http://localhost:5000/bug10_config_json
+- http://localhost:5000/parent/child
+- http://localhost:5000/bug19_static_folder
+- http://localhost:5000/bug20_jsonify_decimal
+- http://localhost:5000/bug24_async
+- http://localhost:5000/bug25_callback_order
+- http://localhost:5000/bug26_context
+- http://localhost:5000/unknown (404错误)
+
+本地测试（可选）：
+----------
+如果想在本地运行测试：
+
+1. 设置环境：
+   python setup.py
+
+2. 启动服务器：
+   python run_test.py
+
+3. 在另一个终端运行测试：
+   python bug_test.py
+
+联系人：
+----------
+如有问题，请参考 docs/Flask版本选择与Issue策略.md
+
+
+

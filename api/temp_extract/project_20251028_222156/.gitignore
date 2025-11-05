@@ -1,0 +1,24 @@
+# 虚拟环境
+venv/
+flask_env/
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 测试生成
+*.log
+test_results/
+coverage/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+
+

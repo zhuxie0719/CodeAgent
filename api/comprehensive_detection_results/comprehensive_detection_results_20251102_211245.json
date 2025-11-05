@@ -1,0 +1,799 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-11-02T21:11:07.935081",
+  "zip_file": "C:\\Users\\Ding\\AppData\\Local\\Temp\\tmp1owwhd9c.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true,
+    "enable_web_app_test": true
+  },
+  "extracted_path": "temp_extract\\project_20251102_211107",
+  "files": [
+    "flask_simple_test\\API_TEST_EXAMPLES.md",
+    "flask_simple_test\\app.py",
+    "flask_simple_test\\BUG_CHECKLIST.md",
+    "flask_simple_test\\flask-2.0.0.zip",
+    "flask_simple_test\\README.md",
+    "flask_simple_test\\requirements.txt",
+    "flask_simple_test\\START_HERE.md",
+    "flask_simple_test\\上传指南.md",
+    "flask_simple_test\\使用说明.txt"
+  ],
+  "static_analysis": {
+    "success": true,
+    "analysis_type": "enhanced_static_analysis",
+    "project_path": "temp_extract\\project_20251102_211107",
+    "files_analyzed": 1,
+    "python_files_analyzed": 1,
+    "other_language_files_analyzed": 0,
+    "issues_found": 0,
+    "issues": [],
+    "project_structure": {
+      "project_type": "flask",
+      "main_files": [
+        "flask_simple_test\\app.py"
+      ],
+      "config_files": [],
+      "test_files": [
+        "flask_simple_test\\API_TEST_EXAMPLES.md"
+      ],
+      "total_files": 11
+    },
+    "code_quality": {
+      "total_files": 1,
+      "total_lines": 182,
+      "python_files": 1,
+      "issues": [
+        {
+          "file": "flask_simple_test\\app.py",
+          "line": 18,
+          "type": "indentation",
+          "severity": "warning",
+          "message": "缩进不一致"
+        },
+        {
+          "file": "flask_simple_test\\app.py",
+          "line": 46,
+          "type": "indentation",
+          "severity": "warning",
+          "message": "缩进不一致"
+        }
+      ]
+    },
+    "dependencies": {
+      "requirements_files": [
+        "flask_simple_test\\requirements.txt"
+      ],
+      "imports": [
+        "from flask import Flask, g, jsonify, send_file, send_from_directory, Blueprint, request, session",
+        "import decimal",
+        "import functools",
+        "from typing import NamedTuple",
+        "from flask import after_this_request",
+        "import os"
+      ],
+      "external_packages": [
+        "flask",
+        "typing"
+      ]
+    },
+    "ai_summary": {
+      "success": true,
+      "summary": "项目包含 0 个文件，发现 0 个问题",
+      "recommendations": [
+        "建议定期进行代码审查",
+        "考虑使用类型提示提高代码质量",
+        "添加单元测试覆盖核心功能"
+      ]
+    },
+    "multi_language_analysis": {
+      "python_issues": 0,
+      "ai_issues": 0,
+      "supported_languages": []
+    },
+    "statistics": {
+      "issues_by_severity": {},
+      "issues_by_type": {},
+      "issues_by_tool": {},
+      "total_files": 11,
+      "total_lines": 0,
+      "average_complexity": 0,
+      "maintainability_score": 0
+    },
+    "summary": {
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0
+    }
+  },
+  "dynamic_monitoring": {
+    "success": true,
+    "duration": 60,
+    "metrics_count": 10,
+    "alerts_count": 0,
+    "report": {
+      "summary": {
+        "monitoring_duration": 60,
+        "total_metrics": 10,
+        "total_alerts": 0,
+        "alert_by_severity": {},
+        "alert_by_type": {},
+        "average_metrics": {
+          "avg_cpu": 12.8,
+          "max_cpu": 15.1,
+          "avg_memory": 81.82000000000001,
+          "max_memory": 82.4,
+          "avg_disk": 71.8,
+          "max_disk": 71.8
+        },
+        "monitoring_status": "completed"
+      },
+      "recommendations": [
+        "内存使用率较高，建议增加内存或优化内存使用"
+      ],
+      "detailed_metrics": [
+        {
+          "timestamp": "2025-11-02T21:11:07.972609",
+          "system": {
+            "cpu": {
+              "percent": 15.0,
+              "count": 32,
+              "frequency": 2200.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 2961027072,
+              "percent": 82.4,
+              "used": 13897445376,
+              "free": 2961027072
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 142684160,
+              "free": 10057863168,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470524928,
+              "free": 288400678912,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1055741,
+              "write_count": 788661,
+              "read_bytes": 36766302208,
+              "write_bytes": 18900061184
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:14.773129",
+          "system": {
+            "cpu": {
+              "percent": 15.1,
+              "count": 32,
+              "frequency": 2200.0,
+              "load_average": [
+                0.16,
+                0.03,
+                0.01
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3062489088,
+              "percent": 81.8,
+              "used": 13795983360,
+              "free": 3062489088
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 142684160,
+              "free": 10057863168,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470529024,
+              "free": 288400674816,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1055753,
+              "write_count": 789077,
+              "read_bytes": 36766937088,
+              "write_bytes": 18903477248
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:20.778832",
+          "system": {
+            "cpu": {
+              "percent": 13.7,
+              "count": 32,
+              "frequency": 1466.0,
+              "load_average": [
+                0.31,
+                0.07,
+                0.02
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3138650112,
+              "percent": 81.4,
+              "used": 13719822336,
+              "free": 3138650112
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 142684160,
+              "free": 10057863168,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470463488,
+              "free": 288400740352,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1055753,
+              "write_count": 789240,
+              "read_bytes": 36766937088,
+              "write_bytes": 18904361984
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:26.799467",
+          "system": {
+            "cpu": {
+              "percent": 12.6,
+              "count": 32,
+              "frequency": 2200.0,
+              "load_average": [
+                0.36,
+                0.08,
+                0.03
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3024027648,
+              "percent": 82.1,
+              "used": 13834444800,
+              "free": 3024027648
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 141398016,
+              "free": 10059149312,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470529024,
+              "free": 288400674816,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1055954,
+              "write_count": 789348,
+              "read_bytes": 36772725760,
+              "write_bytes": 18905046016
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:32.820250",
+          "system": {
+            "cpu": {
+              "percent": 11.0,
+              "count": 32,
+              "frequency": 2200.0,
+              "load_average": [
+                0.49,
+                0.11,
+                0.04
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3048628224,
+              "percent": 81.9,
+              "used": 13809844224,
+              "free": 3048628224
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 141398016,
+              "free": 10059149312,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470529024,
+              "free": 288400674816,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1055964,
+              "write_count": 789448,
+              "read_bytes": 36773094400,
+              "write_bytes": 18905881600
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:38.811559",
+          "system": {
+            "cpu": {
+              "percent": 12.5,
+              "count": 32,
+              "frequency": 2200.0,
+              "load_average": [
+                0.8,
+                0.19,
+                0.07
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3117207552,
+              "percent": 81.5,
+              "used": 13741264896,
+              "free": 3117207552
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 141398016,
+              "free": 10059149312,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470533120,
+              "free": 288400670720,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1056057,
+              "write_count": 789640,
+              "read_bytes": 36776768512,
+              "write_bytes": 18907433984
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:44.794446",
+          "system": {
+            "cpu": {
+              "percent": 12.6,
+              "count": 32,
+              "frequency": 2200.0,
+              "load_average": [
+                0.74,
+                0.19,
+                0.07
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3194925056,
+              "percent": 81.0,
+              "used": 13663547392,
+              "free": 3194925056
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 143142912,
+              "free": 10057404416,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470533120,
+              "free": 288400670720,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1056059,
+              "write_count": 789737,
+              "read_bytes": 36776801280,
+              "write_bytes": 18909776896
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:50.812820",
+          "system": {
+            "cpu": {
+              "percent": 12.0,
+              "count": 32,
+              "frequency": 1466.0,
+              "load_average": [
+                0.68,
+                0.18,
+                0.06
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3074674688,
+              "percent": 81.8,
+              "used": 13783797760,
+              "free": 3074674688
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 143142912,
+              "free": 10057404416,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470533120,
+              "free": 288400670720,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1056112,
+              "write_count": 790191,
+              "read_bytes": 36779484672,
+              "write_bytes": 18912357376
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:11:56.798815",
+          "system": {
+            "cpu": {
+              "percent": 15.0,
+              "count": 32,
+              "frequency": 2200.0,
+              "load_average": [
+                0.63,
+                0.18,
+                0.06
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 2991439872,
+              "percent": 82.3,
+              "used": 13867032576,
+              "free": 2991439872
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 143142912,
+              "free": 10057404416,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470635520,
+              "free": 288400568320,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1056231,
+              "write_count": 790500,
+              "read_bytes": 36781897216,
+              "write_bytes": 18914692096
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-02T21:12:02.797349",
+          "system": {
+            "cpu": {
+              "percent": 8.5,
+              "count": 32,
+              "frequency": 1466.0,
+              "load_average": [
+                0.58,
+                0.18,
+                0.06
+              ]
+            },
+            "memory": {
+              "total": 16858472448,
+              "available": 3027603456,
+              "percent": 82.0,
+              "used": 13830868992,
+              "free": 3027603456
+            },
+            "swap": {
+              "total": 10200547328,
+              "used": 143142912,
+              "free": 10057404416,
+              "percent": 1.4
+            },
+            "disk": {
+              "total": 1022871203840,
+              "used": 734470639616,
+              "free": 288400564224,
+              "percent": 71.8
+            },
+            "disk_io": {
+              "read_count": 1056232,
+              "write_count": 790561,
+              "read_bytes": 36781962752,
+              "write_bytes": 18915187712
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        }
+      ],
+      "recent_alerts": []
+    },
+    "timestamp": "2025-11-02T21:12:08.822550"
+  },
+  "runtime_analysis": {
+    "main_file": "flask_simple_test\\app.py",
+    "execution_successful": true,
+    "project_type": "web_application",
+    "web_test": {
+      "success": true,
+      "message": "Web应用在端口 8002 启动成功",
+      "startup_time": 2.9092018604278564,
+      "test_port": 8002,
+      "endpoint_test": {
+        "success": true,
+        "url": "http://localhost:8002/",
+        "status_code": 200,
+        "message": "Web端点在端口 8002 响应正常"
+      }
+    },
+    "dynamic_test_enabled": true
+  },
+  "dynamic_detection": {
+    "status": "completed",
+    "is_flask_project": true,
+    "enable_web_test": true,
+    "test_results": {
+      "import_analysis": {
+        "status": "success",
+        "tests": {
+          "import_check": {
+            "import_issues": []
+          }
+        }
+      },
+      "flask_functionality": {
+        "status": "success",
+        "tests": {
+          "flask_app_app.py": {
+            "status": "success",
+            "message": "Flask应用 temp_extract\\project_20251102_211107\\flask_simple_test\\app.py 导入成功",
+            "app_type": "Flask"
+          }
+        },
+        "summary": {
+          "success_rate": 100.0,
+          "total_tests": 1,
+          "successful_tests": 1
+        },
+        "flask_info": {
+          "flask_installed": true,
+          "flask_version": "2.0.0",
+          "werkzeug_installed": true,
+          "werkzeug_version": "2.0.0"
+        }
+      },
+      "combined_summary": {
+        "import_issues": [],
+        "flask_success_rate": 100.0
+      }
+    },
+    "issues": [
+      {
+        "type": "flask_d_class_issue",
+        "issue_id": "27",
+        "severity": "warning",
+        "message": "URL匹配顺序恢复为在session加载之后",
+        "details": "Flask 2.0.0中URL匹配顺序在session加载之后，可能导致路由匹配问题",
+        "flask_issue": "#4053"
+      },
+      {
+        "type": "flask_d_class_issue",
+        "issue_id": "28",
+        "severity": "warning",
+        "message": "View/MethodView支持async处理器",
+        "details": "Flask 2.0.0中View和MethodView对异步处理器的支持存在问题",
+        "flask_issue": "#4112"
+      },
+      {
+        "type": "flask_d_class_issue",
+        "issue_id": "29",
+        "severity": "warning",
+        "message": "回调触发顺序：before_request从app到最近的嵌套蓝图",
+        "details": "Flask 2.0.0中before_request回调的触发顺序存在问题",
+        "flask_issue": "#4229"
+      },
+      {
+        "type": "flask_d_class_issue",
+        "issue_id": "30",
+        "severity": "info",
+        "message": "after_this_request在非请求上下文下的报错信息改进",
+        "details": "Flask 2.0.0中after_this_request在非请求上下文下的错误信息不够清晰",
+        "flask_issue": "#4333"
+      },
+      {
+        "type": "flask_d_class_issue",
+        "issue_id": "31",
+        "severity": "warning",
+        "message": "嵌套蓝图合并URL前缀（复杂路由验证）",
+        "details": "Flask 2.0.0中嵌套蓝图的URL前缀合并存在复杂性问题",
+        "flask_issue": "#4037"
+      },
+      {
+        "type": "flask_d_class_issue",
+        "issue_id": "32",
+        "severity": "warning",
+        "message": "嵌套蓝图（复杂命名验证）",
+        "details": "Flask 2.0.0中嵌套蓝图的命名验证存在复杂性问题",
+        "flask_issue": "#4069"
+      }
+    ],
+    "recommendations": [
+      "动态测试表现良好",
+      "建议启用Web应用测试以获得更全面的检测",
+      "发现6个Flask D类问题，建议检查Flask版本兼容性"
+    ],
+    "tests_completed": true,
+    "success_rate": 100.0
+  },
+  "summary": {
+    "total_files": 9,
+    "analysis_completed": true,
+    "issues_summary": {
+      "static": {
+        "analysis_type": "enhanced_static_analysis",
+        "files_analyzed": 1,
+        "issues_found": 0,
+        "total_files": 11,
+        "total_lines": 0,
+        "average_complexity": 0,
+        "maintainability_score": 0,
+        "issues_by_severity": {},
+        "issues_by_type": {},
+        "issues_by_tool": {}
+      },
+      "dynamic": {
+        "monitoring_duration": 60,
+        "alerts_generated": 0
+      },
+      "runtime": {
+        "execution_successful": true,
+        "main_file": "flask_simple_test\\app.py"
+      },
+      "dynamic_detection": {
+        "status": "completed",
+        "is_flask_project": true,
+        "tests_completed": true,
+        "success_rate": 100.0
+      }
+    },
+    "total_issues": 6,
+    "critical_issues": 0,
+    "warning_issues": 5,
+    "info_issues": 1,
+    "overall_status": "warning",
+    "recommendations": [
+      "发现警告问题，建议及时处理"
+    ]
+  }
+}

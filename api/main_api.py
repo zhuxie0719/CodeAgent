@@ -64,6 +64,15 @@ async def startup_event():
     print("🚀 AI Agent 系统启动中...")
     print("="*60)
     
+    # 显示Docker支持状态
+    import os
+    use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+    if use_docker:
+        print("✅ Docker支持已启用")
+    else:
+        print("⚠️  Docker支持未启用（使用虚拟环境）")
+    print("="*60)
+    
     # 1. 启动 Coordinator
     try:
         coordinator_manager = CoordinatorManager()

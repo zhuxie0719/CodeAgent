@@ -1,0 +1,9 @@
+# Flask 2.0.0 Test Environment Dependencies
+# Ensure compatible Werkzeug version
+Flask==2.0.0
+Werkzeug==2.0.0
+click>=8.0
+itsdangerous>=2.0
+Jinja2>=3.0
+MarkupSafe>=2.0
+

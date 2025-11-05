@@ -17,6 +17,8 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from pathlib import Path
 import sys
+import socket
+import time
 
 # 添加项目根目录到Python路径
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -557,45 +559,38 @@ class DynamicDetectionAgent(BaseAgent):
             # 根据选项决定是否启用Web应用测试
             enable_web_test = enable_server_tests and enable_flask_tests
             
-            # 运行动态测试 - 先运行导入和环境检测
+            # 运行动态测试 - 使用修复版检测包
             try:
-                from flask_simple_test.no_flask_dynamic_test import NoFlaskDynamicTest
-                
-                no_flask_tester = NoFlaskDynamicTest()
-                import_test_results = no_flask_tester.run_no_flask_tests()
-                
-                # 然后运行Flask功能测试
-                try:
-                    from flask_simple_test.dynamic_test_runner import FlaskDynamicTestRunner
+                # 首先尝试使用修复版检测包
+                fixed_detection_path = os.path.join(project_path, "fixed_detection.py")
+                if os.path.exists(fixed_detection_path):
+                    self.logger.info("使用修复版检测包进行检测...")
+                    try:
+                        # 导入修复版检测脚本
+                        import sys, importlib
+                        sys.path.insert(0, project_path)
+                        fixed_module = importlib.import_module('fixed_detection')
+                        run_fixed_detection = getattr(fixed_module, 'run_fixed_detection')
+                        
+                        # 运行修复版检测
+                        fixed_results = run_fixed_detection(enable_web_app_test=enable_web_test)
+                        
+                        # 转换修复版检测结果格式
+                        test_results = self._convert_fixed_detection_results(fixed_results)
+                        
+                        self.logger.info("修复版检测包执行成功")
+                        
+                    except Exception as e:
+                        self.logger.warning(f"修复版检测包执行失败: {e}")
+                        # 回退到原始检测逻辑
+                        test_results = await self._run_original_detection_logic(project_path, enable_web_test)
+                else:
+                    self.logger.info("未找到修复版检测包，使用原始检测逻辑...")
+                    # 使用原始检测逻辑
+                    test_results = await self._run_original_detection_logic(project_path, enable_web_test)
                     
-                    runner = FlaskDynamicTestRunner()
-                    # 使用完整的Flask 2.0.0动态测试流程
-                    flask_test_results = runner.run_dynamic_tests(enable_web_app_test=enable_web_test)
-                    
-                    # 转换Flask测试结果格式以匹配动态检测Agent的期望
-                    converted_flask_results = self._convert_flask_test_results(flask_test_results)
-                    
-                    # 合并测试结果
-                    test_results = {
-                        "import_analysis": import_test_results,
-                        "flask_functionality": converted_flask_results,
-                        "combined_summary": {
-                            "import_issues": import_test_results.get("tests", {}).get("import_check", {}).get("import_issues", []),
-                            "flask_success_rate": converted_flask_results.get("summary", {}).get("success_rate", 0)
-                        }
-                    }
-                except Exception as e:
-                    self.logger.warning(f"Flask功能测试失败，仅使用导入检测结果: {e}")
-                    test_results = {
-                        "import_analysis": import_test_results,
-                        "flask_functionality": {"status": "failed", "error": str(e)},
-                        "combined_summary": {
-                            "import_issues": import_test_results.get("tests", {}).get("import_check", {}).get("import_issues", []),
-                            "flask_success_rate": 0
-                        }
-                    }
             except Exception as e:
-                self.logger.error(f"导入检测也失败: {e}")
+                self.logger.error(f"动态检测失败: {e}")
                 test_results = {
                     "import_analysis": {"status": "failed", "error": str(e)},
                     "flask_functionality": {"status": "failed", "error": str(e)},
@@ -696,10 +691,19 @@ class DynamicDetectionAgent(BaseAgent):
                     "details": import_analysis.get("error", "无法分析项目导入")
                 })
             
-            # 检查测试覆盖率
+            # 检查测试覆盖率和测试执行状态
             flask_summary = flask_functionality.get("summary", {})
             total_tests = flask_summary.get("total_tests", 0)
             passed_tests = flask_summary.get("passed_tests", 0)
+            
+            # 只有真正的测试执行失败时才报告，而不是因为发现D类问题
+            # 检查是否有实际的测试执行失败（status == "failed"表示测试执行失败）
+            flask_tests = flask_functionality.get("tests", {})
+            actual_failed_tests = []
+            for test_name, test_result in flask_tests.items():
+                # 只有status明确为"failed"的测试才算失败
+                if test_result.get("status") == "failed":
+                    actual_failed_tests.append(test_name)
             
             if total_tests == 0 and flask_functionality.get("status") != "failed":
                 issues.append({
@@ -708,13 +712,13 @@ class DynamicDetectionAgent(BaseAgent):
                     "message": "没有执行任何Flask功能测试",
                     "details": "Flask功能测试未执行，可能存在问题"
                 })
-            elif total_tests > 0 and passed_tests < total_tests:
-                failed_tests = total_tests - passed_tests
+            elif len(actual_failed_tests) > 0:
+                # 只有真正的测试执行失败时才报告
                 issues.append({
                     "type": "flask_test_failure",
                     "severity": "warning",
-                    "message": f"{failed_tests}/{total_tests}个Flask测试失败",
-                    "details": f"总共{total_tests}个Flask测试，{failed_tests}个失败"
+                    "message": f"{len(actual_failed_tests)}/{total_tests}个Flask测试失败",
+                    "details": f"总共{total_tests}个Flask测试，{len(actual_failed_tests)}个失败: {', '.join(actual_failed_tests)}"
                 })
             
             # 检测Flask D类问题（动态验证问题）
@@ -858,7 +862,14 @@ class DynamicDetectionAgent(BaseAgent):
                 # 检查是否是Web应用
                 is_web_app = await self._detect_web_app(main_file)
                 if is_web_app:
-                    if self.enable_web_app_test:
+                    # 检查是否启用了任何形式的Web测试（包括Flask测试或服务器测试）
+                    web_test_enabled = (
+                        getattr(self, 'enable_web_app_test', False) or
+                        getattr(self, 'enable_flask_specific_tests', False) or
+                        getattr(self, 'enable_server_testing', False)
+                    )
+                    
+                    if web_test_enabled:
                         self.logger.info("✅ 检测到Web应用，开始动态测试...")
                         # 尝试启动Web应用进行测试
                         web_test_result = await self._test_web_app(main_file, project_path)
@@ -870,13 +881,23 @@ class DynamicDetectionAgent(BaseAgent):
                             "dynamic_test_enabled": True
                         }
                     else:
-                        self.logger.info("⚠️ 检测到Web应用，但未启用Web应用测试，继续基础测试")
-                        # 不返回错误，继续执行基础测试
+                        self.logger.info("⚠️ 检测到Web应用，但未启用Web应用测试，跳过直接运行（避免超时）")
+                        # 对于Web应用，如果未启用Web测试，不应该直接运行（会超时），而是返回一个合理的提示
+                        return {
+                            "main_file": os.path.relpath(main_file, project_path),
+                            "execution_successful": True,  # 改为True，因为这不是真正的错误，而是正常的跳过行为
+                            "project_type": "web_application",
+                            "message": "检测到Web应用，跳过直接运行（避免超时）",
+                            "suggestion": "Web应用将通过动态检测进行测试。如需完整的运行时测试，请启用'Web应用测试'、'Flask特定测试'或'服务器测试'选项。"
+                        }
                 
-                # 尝试运行项目（添加超时）
+                # 尝试运行项目（使用虚拟环境）- 仅对非Web应用执行
                 try:
+                    # 获取虚拟环境Python路径
+                    python_executable = await self._get_virtual_env_python(project_path)
+                    
                     result = subprocess.run([
-                        sys.executable, main_file
+                        python_executable, main_file
                     ], capture_output=True, text=True, timeout=30)
                     
                     return {
@@ -884,7 +905,8 @@ class DynamicDetectionAgent(BaseAgent):
                         "execution_successful": result.returncode == 0,
                         "stdout": result.stdout[:1000],  # 限制输出长度
                         "stderr": result.stderr[:1000],  # 限制错误长度
-                        "return_code": result.returncode
+                        "return_code": result.returncode,
+                        "python_executable": python_executable
                     }
                 except subprocess.TimeoutExpired:
                     return {
@@ -909,6 +931,164 @@ class DynamicDetectionAgent(BaseAgent):
                 
         except Exception as e:
             return {"error": f"运行时分析失败: {str(e)[:500]}"}
+    
+    async def _get_virtual_env_python(self, project_path: str) -> str:
+        """获取虚拟环境中的Python可执行文件路径"""
+        try:
+            # 特判：flask_simple_test 项目使用预置缓存虚拟环境
+            try:
+                if self._is_flask_simple_test_project(project_path):
+                    cached_python = self._ensure_cached_flask_simple_test_venv()
+                    if cached_python and Path(cached_python).exists():
+                        # 将缓存解释器路径写入项目的 .venv_info，便于后续复用
+                        try:
+                            venv_info_file = Path(project_path) / ".venv_info"
+                            venv_info_file.write_text(str(cached_python), encoding="utf-8")
+                        except Exception:
+                            pass
+                        self.logger.info(f"使用预置flask_simple_test虚拟环境: {cached_python}")
+                        return str(cached_python)
+            except Exception as e:
+                self.logger.warning(f"预置flask_simple_test虚拟环境处理失败，回退常规逻辑: {e}")
+
+            # 首先检查是否有.venv_info文件
+            venv_info_file = Path(project_path) / ".venv_info"
+            if venv_info_file.exists():
+                with open(venv_info_file, 'r') as f:
+                    python_path = f.read().strip()
+                    if Path(python_path).exists():
+                        self.logger.info(f"使用虚拟环境Python: {python_path}")
+                        return python_path
+            
+            # 如果没有.venv_info文件，尝试查找venv目录
+            venv_path = Path(project_path) / "venv"
+            if venv_path.exists():
+                if os.name == 'nt':  # Windows
+                    python_path = venv_path / "Scripts" / "python.exe"
+                else:  # Unix/Linux
+                    python_path = venv_path / "bin" / "python"
+                
+                if python_path.exists():
+                    self.logger.info(f"找到虚拟环境Python: {python_path}")
+                    return str(python_path)
+            
+            # 如果没有虚拟环境，使用系统Python
+            self.logger.info("未找到虚拟环境，使用系统Python")
+            return sys.executable
+            
+        except Exception as e:
+            self.logger.warning(f"获取虚拟环境Python失败: {e}，使用系统Python")
+            return sys.executable
+
+    def _is_flask_simple_test_project(self, project_path: str) -> bool:
+        """判断是否为我们的 flask_simple_test 测试项目"""
+        try:
+            p = Path(project_path)
+            # 判定1：包含目录 flask_simple_test 且其中有 app.py
+            if (p / "flask_simple_test" / "app.py").exists():
+                return True
+            # 判定2：requirements.txt 中明确包含 Flask==2.0.0（典型测试配置）
+            req = p / "requirements.txt"
+            if req.exists():
+                content = req.read_text(encoding="utf-8", errors="ignore").lower()
+                if "flask==2.0.0" in content:
+                    return True
+            return False
+        except Exception:
+            return False
+
+    def _ensure_cached_flask_simple_test_venv(self) -> Optional[str]:
+        """确保并返回预置的 flask_simple_test 缓存虚拟环境的 python 路径
+
+        注意：缓存目录放在用户级缓存目录，避免被项目热重载器监控导致 Windows 下文件占用。
+        """
+        try:
+            # 选择用户级缓存目录
+            if os.name == 'nt':
+                local_app_data = os.getenv('LOCALAPPDATA')
+                if local_app_data:
+                    cache_base = Path(local_app_data) / 'CodeAgent' / 'prebuilt_venvs'
+                else:
+                    cache_base = Path.home() / 'AppData' / 'Local' / 'CodeAgent' / 'prebuilt_venvs'
+            else:
+                xdg_cache = os.getenv('XDG_CACHE_HOME')
+                if xdg_cache:
+                    cache_base = Path(xdg_cache) / 'codeagent' / 'prebuilt_venvs'
+                else:
+                    cache_base = Path.home() / '.cache' / 'codeagent' / 'prebuilt_venvs'
+
+            cache_dir = cache_base / 'flask_simple_test_venv'
+            python_path = cache_dir / ("Scripts/python.exe" if os.name == 'nt' else "bin/python")
+            pip_exe = cache_dir / ("Scripts/pip.exe" if os.name == 'nt' else "bin/pip")
+            lock_file = cache_dir.with_suffix('.lock')
+
+            # 已存在可执行文件则直接返回
+            if python_path.exists():
+                return str(python_path)
+
+            cache_base.mkdir(parents=True, exist_ok=True)
+
+            # 简单锁文件，避免并发创建
+            max_wait_seconds = 60
+            wait_interval = 1
+            waited = 0
+            while lock_file.exists() and waited < max_wait_seconds:
+                time.sleep(wait_interval)
+                waited += wait_interval
+            if lock_file.exists() and waited >= max_wait_seconds:
+                # 锁文件可能是陈旧锁，尝试删除
+                try:
+                    lock_file.unlink(missing_ok=True)
+                except Exception:
+                    pass
+
+            # 创建锁
+            try:
+                lock_file.parent.mkdir(parents=True, exist_ok=True)
+                with open(lock_file, 'x'):
+                    pass
+            except FileExistsError:
+                # 竞争条件下再次等待
+                waited = 0
+                while lock_file.exists() and waited < max_wait_seconds:
+                    time.sleep(wait_interval)
+                    waited += wait_interval
+
+            # 双重检查
+            if python_path.exists():
+                try:
+                    lock_file.unlink(missing_ok=True)
+                except Exception:
+                    pass
+                return str(python_path)
+
+            # 创建 venv，加入 Windows 下文件占用的重试
+            retries = 3
+            for attempt in range(1, retries + 1):
+                try:
+                    subprocess.run([sys.executable, '-m', 'venv', str(cache_dir)],
+                                   check=True, capture_output=True, text=True)
+                    break
+                except subprocess.CalledProcessError as e:
+                    if os.name == 'nt' and 'WinError 32' in (e.stderr or ''):
+                        time.sleep(2 * attempt)
+                        continue
+                    raise
+
+            # 安装固定依赖
+            install_cmd = [str(pip_exe), 'install', '--disable-pip-version-check', '--prefer-binary',
+                           'Flask==2.0.0', 'Werkzeug==2.0.0', 'httpx>=0.27,<0.28']
+            subprocess.run(install_cmd, check=True, capture_output=True, text=True, timeout=900)
+
+            return str(python_path)
+        except Exception as e:
+            self.logger.warning(f"创建/获取预置flask_simple_test虚拟环境失败: {e}")
+            return None
+        finally:
+            try:
+                lock_file.unlink(missing_ok=True)  # 释放锁
+            except Exception:
+                pass
     
     async def _detect_web_app(self, file_path: str) -> bool:
         """检测是否是Web应用"""
@@ -939,30 +1119,88 @@ class DynamicDetectionAgent(BaseAgent):
             
             self.logger.info(f"开始测试Web应用: {main_file}")
             
-            # 创建环境变量，设置测试端口
+            # 创建环境变量，设置测试端口，并尽可能关闭重载/文件写入
             env = os.environ.copy()
             test_port = 8002  # 使用不同的端口避免冲突
             env['FLASK_PORT'] = str(test_port)
             env['PORT'] = str(test_port)
+            # 明确指定 Flask 的运行端口与主机，提升兼容性
+            env['FLASK_RUN_PORT'] = str(test_port)
+            env['FLASK_RUN_HOST'] = '127.0.0.1'
+            # 尽可能关闭调试与重载（如果用户代码开启了debug，这里也能降低触发概率）
+            env['FLASK_ENV'] = 'production'
+            env['FLASK_DEBUG'] = '0'
+            env['PYTHONDONTWRITEBYTECODE'] = '1'
+            env['FLASK_SKIP_DOTENV'] = '1'
+            # 禁止常见的自动重载路径变量影响
+            env['WERKZEUG_RUN_MAIN'] = 'true'
             
             # 尝试启动Web应用
             process = None
             try:
-                # 构建启动命令
-                cmd = [sys.executable, main_file]
+                # 获取虚拟环境Python路径
+                python_executable = await self._get_virtual_env_python(project_path)
                 
-                # 启动进程
-                process = subprocess.Popen(
-                    cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    cwd=project_path,
-                    env=env
+                # 优先尝试：对于Flask项目，直接以不启用重载器的方式运行应用
+                # 方案：导入模块并调用 app.run(host, port, debug=False, use_reloader=False)
+                # 处理子目录情况：正确构建模块路径
+                main_file_abs = os.path.abspath(main_file) if not os.path.isabs(main_file) else main_file
+                project_path_abs = os.path.abspath(project_path)
+                relative_path = os.path.relpath(main_file_abs, project_path_abs)
+                
+                # 如果文件在子目录中，需要构建正确的模块路径
+                if os.sep in relative_path or (os.altsep and os.altsep in relative_path):
+                    # 文件在子目录中，需要构建正确的模块路径
+                    module_parts = relative_path.replace(os.sep, '.').replace(os.altsep or '', '.').replace('.py', '')
+                    module_name = module_parts
+                    # 需要添加包含目录到sys.path
+                    main_file_dir = os.path.dirname(main_file_abs)
+                    sys_path_insert = f"sys.path.insert(0, r'{main_file_dir}'); sys.path.insert(0, r'{project_path_abs}'); "
+                else:
+                    # 文件在根目录
+                    module_name = os.path.splitext(os.path.basename(main_file))[0]
+                    sys_path_insert = f"sys.path.insert(0, r'{project_path_abs}'); "
+                
+                run_code = (
+                    "import sys, importlib; "
+                    + sys_path_insert
+                    + f"m = importlib.import_module('{module_name}'); "
+                    # 1) 优先直接拿到 app/application
+                    "app = getattr(m, 'app', getattr(m, 'application', None)); "
+                    # 2) 其次尝试 create_app()/make_app() 工厂
+                    "factory = None\n"
+                    "if app is None:\n"
+                    "    factory = getattr(m, 'create_app', getattr(m, 'make_app', None))\n"
+                    "    if callable(factory):\n"
+                    "        app = factory()\n"
+                    # 3) 校验
+                    "assert app is not None, '未找到Flask应用实例或工厂(create_app/make_app)'\n"
+                    # 4) 运行（明确禁用重载）
+                    f"app.run(host='127.0.0.1', port={test_port}, debug=False, use_reloader=False)"
                 )
+                try:
+                    process = subprocess.Popen(
+                        [python_executable, "-c", run_code],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        cwd=project_path,
+                        env=env
+                    )
+                except Exception:
+                    # 回退：直接执行主脚本（可能触发重载器，但作为兜底）
+                    cmd = [python_executable, main_file]
+                    process = subprocess.Popen(
+                        cmd,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        cwd=project_path,
+                        env=env
+                    )
                 
                 # 等待启动
-                startup_timeout = 30  # 30秒启动超时
+                startup_timeout = 90  # 增加到 90 秒启动超时
                 start_time = time.time()
                 
                 while time.time() - start_time < startup_timeout:
@@ -977,8 +1215,8 @@ class DynamicDetectionAgent(BaseAgent):
                             "return_code": process.returncode
                         }
                     
-                    # 检查端口是否可用
-                    if self._is_port_available(test_port):
+                    # 检查端口是否已被服务占用（表示服务已启动并在监听）
+                    if self._is_port_open(test_port):
                         self.logger.info(f"Web应用已在端口 {test_port} 启动")
                         break
                     
@@ -1000,8 +1238,8 @@ class DynamicDetectionAgent(BaseAgent):
                             pass
                     
                     return {
-                        "success": True,
-                        "message": f"Web应用在端口 {test_port} 启动成功",
+                        "success": bool(test_result.get("success")),
+                        "message": (f"Web应用在端口 {test_port} 启动成功" if test_result.get("success") else "Web应用启动但端点不可达"),
                         "startup_time": time.time() - start_time,
                         "test_port": test_port,
                         "endpoint_test": test_result
@@ -1032,13 +1270,13 @@ class DynamicDetectionAgent(BaseAgent):
                 "error": f"Web应用测试异常: {str(e)}"
             }
     
-    def _is_port_available(self, port: int) -> bool:
-        """检查端口是否可用"""
+    def _is_port_open(self, port: int) -> bool:
+        """检查端口是否已被监听（服务已启动）"""
         try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.bind(('localhost', port))
-                return True
-        except OSError:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.settimeout(0.5)
+                return sock.connect_ex(("127.0.0.1", port)) == 0
+        except Exception:
             return False
     
     async def _test_web_endpoint(self, port: int = 8002) -> Dict[str, Any]:
@@ -1168,12 +1406,12 @@ class DynamicDetectionAgent(BaseAgent):
         """转换Flask测试结果格式以匹配动态检测Agent的期望"""
         try:
             # 提取Flask信息
-            flask_info = {
+            flask_info = flask_test_results.get("flask_info", {
                 "flask_installed": True,
                 "flask_version": "2.0.0",  # 从测试结果中提取
                 "werkzeug_installed": True,
                 "werkzeug_version": "2.0.0"  # 从测试结果中提取
-            }
+            })
             
             # 转换测试结果格式
             converted_tests = {}
@@ -1223,4 +1461,320 @@ class DynamicDetectionAgent(BaseAgent):
                 "flask_info": {},
                 "tests": {},
                 "summary": {"success_rate": 0}
+            }
+    
+    async def _run_original_detection_logic(self, project_path: str, enable_web_test: bool) -> Dict[str, Any]:
+        """运行原始检测逻辑（作为回退方案）"""
+        try:
+            # 简化的导入检测逻辑，不依赖不存在的模块
+            import_test_results = await self._run_simple_import_check(project_path)
+            
+            # 然后运行Flask功能测试 - 使用简化的测试逻辑
+            try:
+                # 使用简化的Flask测试逻辑，不依赖外部模块
+                flask_test_results = await self._run_simple_flask_tests(project_path, enable_web_test)
+                
+                # 合并测试结果
+                test_results = {
+                    "import_analysis": import_test_results,
+                    "flask_functionality": flask_test_results,
+                    "combined_summary": {
+                        "import_issues": import_test_results.get("tests", {}).get("import_check", {}).get("import_issues", []),
+                        "flask_success_rate": flask_test_results.get("summary", {}).get("success_rate", 0)
+                    }
+                }
+            except Exception as e:
+                self.logger.warning(f"Flask功能测试失败，仅使用导入检测结果: {e}")
+                test_results = {
+                    "import_analysis": import_test_results,
+                    "flask_functionality": {"status": "failed", "error": str(e)},
+                    "combined_summary": {
+                        "import_issues": import_test_results.get("tests", {}).get("import_check", {}).get("import_issues", []),
+                        "flask_success_rate": 0
+                    }
+                }
+        except Exception as e:
+            self.logger.error(f"导入检测也失败: {e}")
+            test_results = {
+                "import_analysis": {"status": "failed", "error": str(e)},
+                "flask_functionality": {"status": "failed", "error": str(e)},
+                "combined_summary": {
+                    "import_issues": [],
+                    "flask_success_rate": 0
+                }
+            }
+        
+        return test_results
+    
+    async def _run_simple_flask_tests(self, project_path: str, enable_web_test: bool) -> Dict[str, Any]:
+        """运行简化的Flask测试"""
+        try:
+            self.logger.info("开始简化Flask测试...")
+            
+            # 首先检查Flask和Werkzeug是否已安装
+            flask_info = await self._check_flask_installation(project_path)
+            
+            # 查找Flask应用文件
+            flask_files = []
+            for root, dirs, files in os.walk(project_path):
+                for file in files:
+                    if file.endswith('.py') and file in ['app.py', 'main.py', 'application.py']:
+                        flask_files.append(os.path.join(root, file))
+            
+            if not flask_files:
+                return {
+                    "status": "failed",
+                    "error": "未找到Flask应用文件",
+                    "tests": {},
+                    "summary": {"success_rate": 0},
+                    "flask_info": flask_info
+                }
+            
+            # 测试Flask应用基本功能
+            tests = {}
+            success_count = 0
+            total_tests = 0
+            
+            for flask_file in flask_files:
+                test_name = f"flask_app_{os.path.basename(flask_file)}"
+                total_tests += 1
+                
+                try:
+                    # 检查Flask应用是否可以导入
+                    import sys
+                    import importlib.util
+                    import importlib
+                    
+                    # 将项目路径添加到sys.path
+                    flask_dir = os.path.dirname(flask_file)
+                    if flask_dir not in sys.path:
+                        sys.path.insert(0, flask_dir)
+                    
+                    # 如果文件在子目录中，需要处理模块路径
+                    relative_path = os.path.relpath(flask_file, project_path)
+                    if os.sep in relative_path or os.altsep and os.altsep in relative_path:
+                        # 文件在子目录中，需要构建正确的模块路径
+                        module_parts = relative_path.replace(os.sep, '.').replace(os.altsep or '', '.').replace('.py', '')
+                        module_name = module_parts
+                    else:
+                        # 文件在根目录
+                        module_name = os.path.splitext(os.path.basename(flask_file))[0]
+                    
+                    # 使用importlib动态导入
+                    spec = importlib.util.spec_from_file_location(module_name, flask_file)
+                    if spec and spec.loader:
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+                    else:
+                        # 回退到常规导入
+                        module = __import__(module_name)
+                    
+                    # 检查是否有Flask应用实例
+                    app = None
+                    for attr_name in ['app', 'application', 'flask_app']:
+                        if hasattr(module, attr_name):
+                            app = getattr(module, attr_name)
+                            break
+                    
+                    if app and hasattr(app, 'route'):
+                        tests[test_name] = {
+                            "status": "success",
+                            "message": f"Flask应用 {flask_file} 导入成功",
+                            "app_type": type(app).__name__
+                        }
+                        success_count += 1
+                    else:
+                        tests[test_name] = {
+                            "status": "partial",
+                            "message": f"Flask应用 {flask_file} 导入成功但未找到应用实例",
+                            "error": "未找到Flask应用实例"
+                        }
+                        
+                except Exception as e:
+                    tests[test_name] = {
+                        "status": "failed",
+                        "error": str(e),
+                        "message": f"Flask应用 {flask_file} 导入失败"
+                    }
+            
+            # 计算成功率
+            success_rate = (success_count / total_tests * 100) if total_tests > 0 else 0
+            
+            return {
+                "status": "success" if success_rate > 0 else "failed",
+                "tests": tests,
+                "summary": {
+                    "success_rate": success_rate,
+                    "total_tests": total_tests,
+                    "successful_tests": success_count
+                },
+                "flask_info": flask_info
+            }
+            
+        except Exception as e:
+            self.logger.error(f"简化Flask测试失败: {e}")
+            return {
+                "status": "failed",
+                "error": str(e),
+                "tests": {},
+                "summary": {"success_rate": 0},
+                "flask_info": {"flask_installed": False, "werkzeug_installed": False}
+            }
+    
+    async def _check_flask_installation(self, project_path: str) -> Dict[str, Any]:
+        """检查Flask和Werkzeug的安装状态"""
+        try:
+            # 获取虚拟环境Python路径
+            python_executable = await self._get_virtual_env_python(project_path)
+            
+            flask_info = {
+                "flask_installed": False,
+                "flask_version": "unknown",
+                "werkzeug_installed": False,
+                "werkzeug_version": "unknown"
+            }
+            
+            # 检查Flask是否安装
+            try:
+                result = subprocess.run([
+                    python_executable, "-c", "import flask; print(flask.__version__)"
+                ], capture_output=True, text=True, timeout=30)
+                
+                if result.returncode == 0:
+                    flask_info["flask_installed"] = True
+                    flask_info["flask_version"] = result.stdout.strip()
+                    self.logger.info(f"Flask已安装，版本: {flask_info['flask_version']}")
+                else:
+                    self.logger.warning(f"Flask未安装: {result.stderr}")
+            except Exception as e:
+                self.logger.warning(f"检查Flask安装失败: {e}")
+            
+            # 检查Werkzeug是否安装
+            try:
+                result = subprocess.run([
+                    python_executable, "-c", "import werkzeug; print(werkzeug.__version__)"
+                ], capture_output=True, text=True, timeout=30)
+                
+                if result.returncode == 0:
+                    flask_info["werkzeug_installed"] = True
+                    flask_info["werkzeug_version"] = result.stdout.strip()
+                    self.logger.info(f"Werkzeug已安装，版本: {flask_info['werkzeug_version']}")
+                else:
+                    self.logger.warning(f"Werkzeug未安装: {result.stderr}")
+            except Exception as e:
+                self.logger.warning(f"检查Werkzeug安装失败: {e}")
+            
+            return flask_info
+            
+        except Exception as e:
+            self.logger.error(f"检查Flask安装状态失败: {e}")
+            return {
+                "flask_installed": False,
+                "flask_version": "unknown",
+                "werkzeug_installed": False,
+                "werkzeug_version": "unknown"
+            }
+    
+    async def _run_simple_import_check(self, project_path: str) -> Dict[str, Any]:
+        """运行简化的导入检测"""
+        try:
+            import_issues = []
+            
+            # 查找项目中的Python文件
+            python_files = list(Path(project_path).rglob("*.py"))
+            
+            for py_file in python_files:
+                try:
+                    with open(py_file, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                    
+                    # 简单的导入检测
+                    lines = content.split('\n')
+                    for i, line in enumerate(lines, 1):
+                        line = line.strip()
+                        if line.startswith('import ') or line.startswith('from '):
+                            # 提取导入的模块名
+                            if line.startswith('import '):
+                                modules = line[7:].split(',')
+                            else:  # from ... import ...
+                                parts = line.split(' import ')
+                                if len(parts) == 2:
+                                    modules = parts[1].split(',')
+                                else:
+                                    continue
+                            
+                            for module in modules:
+                                module = module.strip().split(' as ')[0].split('.')[0]
+                                if module and not module.startswith('_'):
+                                    # 检查是否是常见的问题模块
+                                    if module in ['flask', 'requests', 'numpy', 'pandas']:
+                                        # 这些是常见的外部依赖，标记为需要检查
+                                        import_issues.append({
+                                            "file": str(py_file.relative_to(project_path)),
+                                            "line": i,
+                                            "import": module,
+                                            "error": f"外部依赖 {module} 需要安装"
+                                        })
+                
+                except Exception as e:
+                    import_issues.append({
+                        "file": str(py_file.relative_to(project_path)),
+                        "line": 0,
+                        "import": "unknown",
+                        "error": f"文件读取错误: {e}"
+                    })
+            
+            return {
+                "status": "success",
+                "tests": {
+                    "import_check": {
+                        "import_issues": import_issues
+                    }
+                }
+            }
+            
+        except Exception as e:
+            return {
+                "status": "failed",
+                "error": str(e),
+                "tests": {
+                    "import_check": {
+                        "import_issues": []
+                    }
+                }
+            }
+    
+    def _convert_fixed_detection_results(self, fixed_results: Dict[str, Any]) -> Dict[str, Any]:
+        """转换修复版检测结果格式"""
+        try:
+            # 修复版检测结果已经是正确的格式，直接返回
+            return {
+                "import_analysis": {
+                    "status": "success",
+                    "tests": {
+                        "import_check": {
+                            "import_issues": fixed_results.get("import_issues", [])
+                        }
+                    }
+                },
+                "flask_functionality": {
+                    "status": "success",
+                    "flask_info": fixed_results.get("flask_info", {}),
+                    "tests": fixed_results.get("tests", {}),
+                    "summary": fixed_results.get("summary", {})
+                },
+                "combined_summary": {
+                    "import_issues": fixed_results.get("import_issues", []),
+                    "flask_success_rate": fixed_results.get("summary", {}).get("success_rate", 0)
+                }
+            }
+        except Exception as e:
+            self.logger.error(f"转换修复版检测结果失败: {e}")
+            return {
+                "import_analysis": {"status": "failed", "error": str(e)},
+                "flask_functionality": {"status": "failed", "error": str(e)},
+                "combined_summary": {
+                    "import_issues": [],
+                    "flask_success_rate": 0
+                }
             }
