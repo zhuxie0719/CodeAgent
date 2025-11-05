@@ -404,19 +404,23 @@ class DockerRunner:
                 logger.info(f"使用requirements.txt: {requirements_file}")
                 logger.info(f"容器内路径: {container_req_path}")
                 logger.info(f"容器内工作目录: {container_req_dir}")
+                
+                # 直接安装requirements.txt中的依赖，让pip根据requirements.txt中的版本要求处理
+                install_cmd = [
+                    "sh", "-c",
+                    f"cd {container_req_dir} && "
+                    f"pip install -r {container_req_path} --no-cache-dir 2>&1"
+                ]
             else:
-                logger.warning(f"未找到requirements.txt，尝试默认安装")
-                container_req_dir = "/app/test_project"
-                container_req_path = "/app/test_project/requirements.txt"
-            
-            # 构建安装命令
-            # 先安装Flask 2.0.0和Werkzeug 2.0.0，然后安装requirements.txt
-            install_cmd = [
-                "sh", "-c",
-                f"cd {container_req_dir} && "
-                f"pip install Flask==2.0.0 Werkzeug==2.0.0 --force-reinstall --no-cache-dir && "
-                f"pip install -r {container_req_path} --no-cache-dir 2>&1 || echo 'requirements.txt安装失败，但Flask已安装'"
-            ]
+                # 没有requirements.txt，不安装任何依赖
+                logger.warning("未找到requirements.txt，跳过依赖安装")
+                return {
+                    "success": True,
+                    "message": "未找到requirements.txt，跳过依赖安装",
+                    "stdout": "",
+                    "stderr": "",
+                    "returncode": 0
+                }
             
             result = await self.run_command(
                 project_path=project_path,

@@ -3232,3 +3232,786 @@ class BugDetectionAgent(BaseAgent):
             return dependencies
         except Exception as e:
             return {"error": str(e)}
+    
+    # ========== 依赖库源码 Bug 检测通用方法 ==========
+    
+    async def detect_library_source_bugs(
+        self,
+        project_path: str,
+        options: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        通用方法：检测依赖库源码中的 Bug
+        
+        核心思路：
+        1. 检测阶段：对测试代码进行静态分析（mypy、pylint、AI分析）
+        2. 识别阶段：判断问题是否来自依赖库（当错误涉及 import 的第三方库API时）
+        3. 定位阶段：在Docker容器中定位依赖库源码位置（site-packages）
+        4. 分析阶段：对依赖库源码进行静态分析（mypy、pylint）
+        5. 关联阶段：将测试代码中的问题与依赖库源码中的bug关联起来
+        
+        适用于任何依赖库（Flask、Django、requests 等），不限于 Flask。
+        
+        Args:
+            project_path: 项目路径（包含测试代码）
+            options: 检测选项
+            
+        Returns:
+            包含检测结果的字典
+        """
+        if options is None:
+            options = {}
+        
+        try:
+            self.logger.info(f"开始检测依赖库源码 Bug: {project_path}")
+            
+            # 检查Docker是否可用
+            if not self.use_docker or not self.docker_runner:
+                return {
+                    "success": False,
+                    "error": "Docker未启用，无法检测依赖库源码。请启用Docker支持。",
+                    "detection_results": {}
+                }
+            
+            project_path_obj = Path(project_path)
+            if not project_path_obj.exists():
+                return {
+                    "success": False,
+                    "error": f"项目路径不存在: {project_path}",
+                    "detection_results": {}
+                }
+            
+            # 阶段1：检测阶段 - 对测试代码进行静态分析
+            self.logger.info("阶段1: 检测测试代码中的问题...")
+            test_code_issues = await self._detect_test_code_issues(project_path_obj, options)
+            
+            # 阶段2：识别阶段 - 判断问题是否来自依赖库
+            self.logger.info("阶段2: 识别来自依赖库的问题...")
+            library_related_issues = await self._identify_library_related_issues(
+                test_code_issues,
+                project_path_obj
+            )
+            
+            if not library_related_issues:
+                self.logger.info("未发现与依赖库相关的问题")
+                return {
+                    "success": True,
+                    "detection_results": {
+                        "test_code_issues": test_code_issues,
+                        "library_related_issues": [],
+                        "library_source_issues": [],
+                        "correlations": []
+                    },
+                    "summary": {
+                        "total_test_issues": len(test_code_issues),
+                        "library_related_count": 0,
+                        "library_source_issues_count": 0
+                    }
+                }
+            
+            # 阶段3：定位阶段 - 在Docker容器中定位依赖库源码位置
+            self.logger.info("阶段3: 定位依赖库源码位置...")
+            library_locations = await self._locate_library_sources(
+                library_related_issues,
+                project_path_obj
+            )
+            
+            if not library_locations:
+                self.logger.warning("无法定位依赖库源码位置")
+                return {
+                    "success": True,
+                    "detection_results": {
+                        "test_code_issues": test_code_issues,
+                        "library_related_issues": library_related_issues,
+                        "library_source_issues": [],
+                        "correlations": []
+                    },
+                    "summary": {
+                        "total_test_issues": len(test_code_issues),
+                        "library_related_count": len(library_related_issues),
+                        "library_source_issues_count": 0
+                    }
+                }
+            
+            # 阶段4：分析阶段 - 对依赖库源码进行静态分析
+            self.logger.info("阶段4: 分析依赖库源码...")
+            library_source_issues = await self._analyze_library_sources(
+                library_locations,
+                options
+            )
+            
+            # 阶段5：关联阶段 - 将测试代码中的问题与依赖库源码中的bug关联起来
+            self.logger.info("阶段5: 关联测试代码问题与依赖库源码bug...")
+            correlations = await self._correlate_issues(
+                library_related_issues,
+                library_source_issues,
+                library_locations
+            )
+            
+            # 生成报告
+            result = {
+                "success": True,
+                "detection_results": {
+                    "test_code_issues": test_code_issues,
+                    "library_related_issues": library_related_issues,
+                    "library_source_issues": library_source_issues,
+                    "library_locations": library_locations,
+                    "correlations": correlations
+                },
+                "summary": {
+                    "total_test_issues": len(test_code_issues),
+                    "library_related_count": len(library_related_issues),
+                    "library_source_issues_count": len(library_source_issues),
+                    "correlations_count": len(correlations)
+                },
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            self.logger.info(f"依赖库源码 Bug 检测完成: {result['summary']}")
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"检测依赖库源码 Bug 失败: {e}")
+            import traceback
+            self.logger.error(traceback.format_exc())
+            return {
+                "success": False,
+                "error": str(e),
+                "detection_results": {}
+            }
+    
+    async def _detect_test_code_issues(
+        self,
+        project_path: Path,
+        options: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """
+        阶段1：检测阶段 - 对测试代码进行静态分析
+        
+        使用 mypy、pylint 等工具对测试代码进行静态分析
+        """
+        issues = []
+        
+        try:
+            # 查找所有 Python 文件
+            py_files = list(project_path.rglob("*.py"))
+            
+            # 排除测试目录（如果存在）
+            test_dirs = ["tests", "test", "__pycache__", ".venv", "venv"]
+            py_files = [
+                f for f in py_files
+                if not any(test_dir in str(f) for test_dir in test_dirs)
+            ]
+            
+            self.logger.info(f"找到 {len(py_files)} 个 Python 文件进行分析")
+            
+            # 使用 mypy 进行类型检查
+            if self.mypy_tool and options.get("use_mypy", True):
+                for py_file in py_files:
+                    try:
+                        mypy_result = await self.mypy_tool.analyze(str(py_file))
+                        if mypy_result.get("success"):
+                            for issue in mypy_result.get("issues", []):
+                                issue["tool"] = "mypy"
+                                issue["file"] = str(py_file)
+                                issues.append(issue)
+                    except Exception as e:
+                        self.logger.warning(f"mypy 分析失败 {py_file}: {e}")
+            
+            # 使用 pylint 进行代码质量检查
+            if self.pylint_tool and options.get("use_pylint", True):
+                for py_file in py_files:
+                    try:
+                        pylint_result = await self.pylint_tool.analyze(str(py_file))
+                        if pylint_result.get("success"):
+                            for issue in pylint_result.get("issues", []):
+                                issue["tool"] = "pylint"
+                                issue["file"] = str(py_file)
+                                issues.append(issue)
+                    except Exception as e:
+                        self.logger.warning(f"pylint 分析失败 {py_file}: {e}")
+            
+            # 使用 AI 分析（如果启用）
+            if options.get("use_ai_analysis", False):
+                for py_file in py_files:
+                    try:
+                        ai_issues = await self._ai_analyze_file(str(py_file))
+                        issues.extend(ai_issues)
+                    except Exception as e:
+                        self.logger.warning(f"AI 分析失败 {py_file}: {e}")
+            
+            self.logger.info(f"检测到 {len(issues)} 个测试代码问题")
+            
+        except Exception as e:
+            self.logger.error(f"检测测试代码问题失败: {e}")
+        
+        return issues
+    
+    async def _identify_library_related_issues(
+        self,
+        test_code_issues: List[Dict[str, Any]],
+        project_path: Path
+    ) -> List[Dict[str, Any]]:
+        """
+        阶段2：识别阶段 - 判断问题是否来自依赖库
+        
+        通过分析错误信息、文件路径、import 语句等，判断问题是否与依赖库相关
+        """
+        library_related = []
+        
+        try:
+            # 提取项目中使用的第三方库
+            third_party_libraries = await self._extract_third_party_libraries(project_path)
+            
+            self.logger.info(f"发现 {len(third_party_libraries)} 个第三方库: {third_party_libraries}")
+            
+            # 分析每个问题，判断是否与依赖库相关
+            for issue in test_code_issues:
+                # 检查错误消息中是否包含库名
+                message = issue.get("message", "").lower()
+                file_path = issue.get("file", "")
+                
+                # 检查错误是否涉及第三方库的 API
+                for library in third_party_libraries:
+                    library_lower = library.lower()
+                    
+                    # 方法1: 检查错误消息中是否包含库名
+                    if library_lower in message:
+                        issue["library"] = library
+                        issue["relation_type"] = "error_message"
+                        library_related.append(issue)
+                        break
+                    
+                    # 方法2: 检查是否使用了库的 API（通过解析代码）
+                    if await self._check_uses_library_api(file_path, library):
+                        issue["library"] = library
+                        issue["relation_type"] = "api_usage"
+                        library_related.append(issue)
+                        break
+                    
+                    # 方法3: 检查错误是否指向库的模块
+                    if library_lower in file_path.lower():
+                        issue["library"] = library
+                        issue["relation_type"] = "file_path"
+                        library_related.append(issue)
+                        break
+            
+            self.logger.info(f"识别出 {len(library_related)} 个与依赖库相关的问题")
+            
+        except Exception as e:
+            self.logger.error(f"识别依赖库相关问题失败: {e}")
+        
+        return library_related
+    
+    async def _extract_third_party_libraries(self, project_path: Path) -> List[str]:
+        """提取项目中使用的第三方库"""
+        libraries = set()
+        
+        try:
+            # 扫描所有 Python 文件中的 import 语句
+            for py_file in project_path.rglob("*.py"):
+                try:
+                    with open(py_file, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                        
+                        # 简单的 import 语句解析
+                        import re
+                        # 匹配 from package import ... 或 import package
+                        import_pattern = r'(?:from\s+(\w+)|import\s+(\w+))'
+                        matches = re.findall(import_pattern, content)
+                        
+                        for match in matches:
+                            package = match[0] if match[0] else match[1]
+                            if package:
+                                # 排除标准库
+                                if package not in [
+                                    'os', 'sys', 'json', 'time', 'datetime', 'pathlib',
+                                    'collections', 'itertools', 'functools', 'typing',
+                                    'abc', 'enum', 'dataclasses', 'asyncio', 'threading',
+                                    'multiprocessing', 'subprocess', 'logging', 'hashlib',
+                                    'base64', 'urllib', 'http', 'email', 'html', 'xml',
+                                    'sqlite3', 'pickle', 'copy', 'math', 'random', 'string',
+                                    're', 'struct', 'array', 'io', 'csv', 'configparser',
+                                    'unittest', 'doctest', 'pdb', 'traceback', 'warnings',
+                                    'ctypes', 'mmap', 'socket', 'select', 'ssl', 'gzip',
+                                    'zipfile', 'tarfile', 'shutil', 'tempfile', 'glob',
+                                    'fnmatch', 'linecache', 'codecs', 'locale', 'gettext'
+                                ]:
+                                    libraries.add(package)
+                
+                except Exception as e:
+                    continue
+            
+        except Exception as e:
+            self.logger.error(f"提取第三方库失败: {e}")
+        
+        return list(libraries)
+    
+    async def _check_uses_library_api(self, file_path: str, library: str) -> bool:
+        """检查文件是否使用了指定库的 API"""
+        try:
+            if not Path(file_path).exists():
+                return False
+            
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
+            # 检查是否导入了该库
+            import_patterns = [
+                f'from {library}',
+                f'import {library}',
+                f'{library}.'
+            ]
+            
+            for pattern in import_patterns:
+                if pattern in content:
+                    return True
+            
+            return False
+            
+        except Exception:
+            return False
+    
+    async def _locate_library_sources(
+        self,
+        library_related_issues: List[Dict[str, Any]],
+        project_path: Path
+    ) -> Dict[str, str]:
+        """
+        阶段3：定位阶段 - 在Docker容器中定位依赖库源码位置
+        
+        在 Docker 容器的 site-packages 中查找依赖库的源码位置
+        """
+        library_locations = {}
+        
+        try:
+            # 提取所有涉及的库
+            libraries = set()
+            for issue in library_related_issues:
+                library = issue.get("library")
+                if library:
+                    libraries.add(library)
+            
+            self.logger.info(f"需要定位 {len(libraries)} 个依赖库的源码位置")
+            
+            # 在 Docker 容器中定位每个库的源码位置
+            for library in libraries:
+                try:
+                    location = await self._find_library_source_in_docker(
+                        project_path,
+                        library
+                    )
+                    if location:
+                        library_locations[library] = location
+                        self.logger.info(f"定位到 {library} 源码位置: {location}")
+                    else:
+                        self.logger.warning(f"无法定位 {library} 源码位置")
+                
+                except Exception as e:
+                    self.logger.warning(f"定位 {library} 源码位置失败: {e}")
+            
+        except Exception as e:
+            self.logger.error(f"定位依赖库源码位置失败: {e}")
+        
+        return library_locations
+    
+    async def _find_library_source_in_docker(
+        self,
+        project_path: Path,
+        library_name: str
+    ) -> Optional[str]:
+        """在 Docker 容器中查找依赖库源码位置"""
+        
+        try:
+            # 方法1: 使用 Python 代码查找
+            find_cmd = [
+                "python", "-c",
+                f"import {library_name}; import os; print(os.path.dirname({library_name}.__file__))"
+            ]
+            
+            result = await self.docker_runner.run_command(
+                project_path=project_path,
+                command=find_cmd,
+                timeout=60
+            )
+            
+            if result.get("success") and result.get("stdout"):
+                library_path = result["stdout"].strip()
+                if library_path and "site-packages" in library_path:
+                    return library_path
+            
+            # 方法2: 使用 pip show
+            pip_cmd = ["pip", "show", library_name]
+            result = await self.docker_runner.run_command(
+                project_path=project_path,
+                command=pip_cmd,
+                timeout=60
+            )
+            
+            if result.get("success") and result.get("stdout"):
+                for line in result["stdout"].split('\n'):
+                    if line.startswith('Location:'):
+                        location = line.split(':', 1)[1].strip()
+                        library_path = f"{location}/{library_name}"
+                        return library_path
+            
+            # 方法3: 使用 sysconfig
+            sysconfig_cmd = [
+                "python", "-c",
+                f"import sysconfig; import {library_name}; import os; "
+                f"site_packages = sysconfig.get_path('purelib'); "
+                f"print(os.path.join(site_packages, '{library_name}'))"
+            ]
+            
+            result = await self.docker_runner.run_command(
+                project_path=project_path,
+                command=sysconfig_cmd,
+                timeout=60
+            )
+            
+            if result.get("success") and result.get("stdout"):
+                library_path = result["stdout"].strip()
+                if library_path:
+                    return library_path
+            
+        except Exception as e:
+            self.logger.error(f"在 Docker 中查找 {library_name} 源码位置失败: {e}")
+        
+        return None
+    
+    async def _analyze_library_sources(
+        self,
+        library_locations: Dict[str, str],
+        options: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """
+        阶段4：分析阶段 - 对依赖库源码进行静态分析
+        
+        使用 mypy、pylint 等工具对依赖库源码进行静态分析
+        """
+        all_issues = []
+        
+        try:
+            for library_name, library_path in library_locations.items():
+                self.logger.info(f"分析 {library_name} 源码: {library_path}")
+                
+                # 注意：library_path 是容器内的路径，我们需要在容器中运行分析
+                library_issues = await self._analyze_library_source_in_docker(
+                    library_name,
+                    library_path,
+                    options
+                )
+                
+                for issue in library_issues:
+                    issue["library"] = library_name
+                    issue["library_source_path"] = library_path
+                    all_issues.append(issue)
+            
+            self.logger.info(f"在依赖库源码中发现 {len(all_issues)} 个问题")
+            
+        except Exception as e:
+            self.logger.error(f"分析依赖库源码失败: {e}")
+        
+        return all_issues
+    
+    async def _analyze_library_source_in_docker(
+        self,
+        library_name: str,
+        library_path: str,
+        options: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """在 Docker 容器中分析依赖库源码"""
+        issues = []
+        
+        try:
+            # 创建一个临时的项目目录来挂载（实际上我们只需要在容器中运行命令）
+            # 使用一个空的项目路径作为挂载点
+            temp_project = Path("temp_docker_analysis")
+            temp_project.mkdir(exist_ok=True)
+            
+            try:
+                # 方法1: 使用 mypy 分析库源码
+                if options.get("use_mypy", True):
+                    mypy_cmd = [
+                        "sh", "-c",
+                        f"cd /usr/local/lib/python*/site-packages && "
+                        f"python -m mypy {library_name} --no-error-summary --show-error-codes 2>&1 || true"
+                    ]
+                    
+                    result = await self.docker_runner.run_command(
+                        project_path=temp_project,
+                        command=mypy_cmd,
+                        timeout=300
+                    )
+                    
+                    if result.get("success") or result.get("stdout"):
+                        # 解析 mypy 输出
+                        mypy_issues = self._parse_mypy_output(
+                            result.get("stdout", ""),
+                            library_name,
+                            library_path
+                        )
+                        issues.extend(mypy_issues)
+                
+                # 方法2: 使用 pylint 分析库源码
+                if options.get("use_pylint", True):
+                    pylint_cmd = [
+                        "sh", "-c",
+                        f"cd /usr/local/lib/python*/site-packages && "
+                        f"python -m pylint {library_name} --disable=all --enable=E,F 2>&1 || true"
+                    ]
+                    
+                    result = await self.docker_runner.run_command(
+                        project_path=temp_project,
+                        command=pylint_cmd,
+                        timeout=300
+                    )
+                    
+                    if result.get("success") or result.get("stdout"):
+                        # 解析 pylint 输出
+                        pylint_issues = self._parse_pylint_output(
+                            result.get("stdout", ""),
+                            library_name,
+                            library_path
+                        )
+                        issues.extend(pylint_issues)
+            
+            finally:
+                # 清理临时目录
+                if temp_project.exists():
+                    try:
+                        shutil.rmtree(temp_project)
+                    except Exception:
+                        pass
+        
+        except Exception as e:
+            self.logger.error(f"在 Docker 中分析 {library_name} 源码失败: {e}")
+        
+        return issues
+    
+    def _parse_mypy_output(
+        self,
+        output: str,
+        library_name: str,
+        library_path: str
+    ) -> List[Dict[str, Any]]:
+        """解析 mypy 输出"""
+        issues = []
+        
+        try:
+            for line in output.split('\n'):
+                line = line.strip()
+                if not line or 'error:' not in line:
+                    continue
+                
+                # 解析 mypy 输出格式: file:line: error: message [error_code]
+                parts = line.split(':', 3)
+                if len(parts) >= 4:
+                    file_path = parts[0]
+                    line_num = parts[1]
+                    error_msg = parts[3].strip()
+                    
+                    # 提取错误代码
+                    error_code = ""
+                    if '[' in error_msg and ']' in error_msg:
+                        code_start = error_msg.rfind('[')
+                        code_end = error_msg.rfind(']')
+                        error_code = error_msg[code_start+1:code_end]
+                        error_msg = error_msg[:code_start].strip()
+                    
+                    issues.append({
+                        "type": "mypy",
+                        "severity": "error",
+                        "message": error_msg,
+                        "file": file_path,
+                        "line": int(line_num) if line_num.isdigit() else 0,
+                        "column": 0,
+                        "error_code": error_code,
+                        "library": library_name,
+                        "library_source_path": library_path
+                    })
+        
+        except Exception as e:
+            self.logger.warning(f"解析 mypy 输出失败: {e}")
+        
+        return issues
+    
+    def _parse_pylint_output(
+        self,
+        output: str,
+        library_name: str,
+        library_path: str
+    ) -> List[Dict[str, Any]]:
+        """解析 pylint 输出"""
+        issues = []
+        
+        try:
+            for line in output.split('\n'):
+                line = line.strip()
+                if not line or ':' not in line:
+                    continue
+                
+                # 解析 pylint 输出格式: file:line:column: message (code)
+                parts = line.split(':', 3)
+                if len(parts) >= 4:
+                    file_path = parts[0]
+                    line_num = parts[1]
+                    col_num = parts[2]
+                    msg_part = parts[3].strip()
+                    
+                    # 提取消息和代码
+                    message = msg_part
+                    code = ""
+                    if '(' in msg_part and ')' in msg_part:
+                        code_start = msg_part.rfind('(')
+                        code_end = msg_part.rfind(')')
+                        code = msg_part[code_start+1:code_end]
+                        message = msg_part[:code_start].strip()
+                    
+                    # 确定严重程度
+                    severity = "warning"
+                    if code.startswith('E'):
+                        severity = "error"
+                    elif code.startswith('F'):
+                        severity = "error"
+                    
+                    issues.append({
+                        "type": "pylint",
+                        "severity": severity,
+                        "message": message,
+                        "file": file_path,
+                        "line": int(line_num) if line_num.isdigit() else 0,
+                        "column": int(col_num) if col_num.isdigit() else 0,
+                        "error_code": code,
+                        "library": library_name,
+                        "library_source_path": library_path
+                    })
+        
+        except Exception as e:
+            self.logger.warning(f"解析 pylint 输出失败: {e}")
+        
+        return issues
+    
+    async def _correlate_issues(
+        self,
+        library_related_issues: List[Dict[str, Any]],
+        library_source_issues: List[Dict[str, Any]],
+        library_locations: Dict[str, str]
+    ) -> List[Dict[str, Any]]:
+        """
+        阶段5：关联阶段 - 将测试代码中的问题与依赖库源码中的bug关联起来
+        
+        通过分析错误类型、API 使用、文件路径等，建立测试代码问题与依赖库源码bug的关联
+        """
+        correlations = []
+        
+        try:
+            # 按库分组
+            library_issues_map = {}
+            for issue in library_related_issues:
+                library = issue.get("library")
+                if library:
+                    if library not in library_issues_map:
+                        library_issues_map[library] = []
+                    library_issues_map[library].append(issue)
+            
+            library_source_issues_map = {}
+            for issue in library_source_issues:
+                library = issue.get("library")
+                if library:
+                    if library not in library_source_issues_map:
+                        library_source_issues_map[library] = []
+                    library_source_issues_map[library].append(issue)
+            
+            # 为每个库建立关联
+            for library in library_issues_map.keys():
+                test_issues = library_issues_map.get(library, [])
+                source_issues = library_source_issues_map.get(library, [])
+                
+                if not test_issues or not source_issues:
+                    continue
+                
+                # 尝试关联每个测试代码问题
+                for test_issue in test_issues:
+                    # 查找相关的源码问题
+                    related_source_issues = []
+                    
+                    # 方法1: 通过错误类型匹配
+                    test_message = test_issue.get("message", "").lower()
+                    for source_issue in source_issues:
+                        source_message = source_issue.get("message", "").lower()
+                        # 检查是否有共同的关键词
+                        common_keywords = self._extract_keywords(test_message) & self._extract_keywords(source_message)
+                        if common_keywords:
+                            related_source_issues.append(source_issue)
+                    
+                    # 方法2: 通过 API 使用匹配
+                    # 如果测试代码使用了特定的 API，查找该 API 相关的源码问题
+                    test_file = test_issue.get("file", "")
+                    api_usage = await self._extract_api_usage(test_file, library)
+                    if api_usage:
+                        for source_issue in source_issues:
+                            source_file = source_issue.get("file", "")
+                            if any(api in source_file for api in api_usage):
+                                if source_issue not in related_source_issues:
+                                    related_source_issues.append(source_issue)
+                    
+                    # 如果找到相关源码问题，建立关联
+                    if related_source_issues:
+                        correlations.append({
+                            "test_issue": test_issue,
+                            "library": library,
+                            "related_source_issues": related_source_issues,
+                            "correlation_type": "error_type_match",
+                            "confidence": "medium"
+                        })
+            
+            self.logger.info(f"建立了 {len(correlations)} 个关联关系")
+            
+        except Exception as e:
+            self.logger.error(f"关联问题失败: {e}")
+        
+        return correlations
+    
+    def _extract_keywords(self, text: str) -> Set[str]:
+        """从文本中提取关键词"""
+        import re
+        # 提取单词（排除常见停用词）
+        words = re.findall(r'\b[a-z]{3,}\b', text.lower())
+        stop_words = {'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'}
+        keywords = {w for w in words if w not in stop_words and len(w) > 3}
+        return keywords
+    
+    async def _extract_api_usage(self, file_path: str, library: str) -> List[str]:
+        """从文件中提取对指定库的 API 使用"""
+        apis = []
+        
+        try:
+            if not Path(file_path).exists():
+                return apis
+            
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
+            # 提取 library.xxx 或 from library import xxx 中的 xxx
+            import re
+            patterns = [
+                rf'{library}\.(\w+)',  # library.xxx
+                rf'from {library} import (\w+)',  # from library import xxx
+                rf'from {library}\.(\w+) import'  # from library.xxx import
+            ]
+            
+            for pattern in patterns:
+                matches = re.findall(pattern, content)
+                apis.extend(matches)
+            
+            return list(set(apis))
+            
+        except Exception:
+            return apis
+    
+    async def _ai_analyze_file(self, file_path: str) -> List[Dict[str, Any]]:
+        """使用 AI 分析文件（如果启用）"""
+        # 这里可以集成 AI 分析功能
+        # 目前返回空列表
+        return []

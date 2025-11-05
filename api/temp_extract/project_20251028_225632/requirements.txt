@@ -1,9 +1,0 @@
-# Flask 2.0.0 测试环境依赖
-# 确保使用兼容的Werkzeug版本
-Flask==2.0.0
-werkzeug==2.0.0
-click>=8.0
-itsdangerous>=2.0
-Jinja2>=3.0
-MarkupSafe>=2.0
-
