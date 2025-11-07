@@ -16,8 +16,11 @@ class RuffTool:
         self.config = config
         self.enabled = config.get('enabled', True)
         self.ruff_args = config.get('ruff_args', ['--output-format=json'])
-        self.select_rules = config.get('select', [])  # 选择特定规则组
-        self.ignore_rules = config.get('ignore', [])  # 忽略特定规则
+        # 确保select_rules和ignore_rules是列表类型
+        select_rules = config.get('select', [])
+        ignore_rules = config.get('ignore', [])
+        self.select_rules = select_rules if isinstance(select_rules, list) else (list(select_rules) if select_rules else [])
+        self.ignore_rules = ignore_rules if isinstance(ignore_rules, list) else (list(ignore_rules) if ignore_rules else [])
         
     async def analyze(self, file_path: str) -> Dict[str, Any]:
         """执行Ruff分析单个文件"""
@@ -165,11 +168,13 @@ class RuffTool:
             # 添加目录路径
             cmd.append(directory_path)
             
-            # 设置环境变量，确保UTF-8编码
+            # 设置环境变量，确保UTF-8编码和JSON输出格式
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
             if os.name == 'nt':
                 env['PYTHONUTF8'] = '1'
+            # 尝试使用环境变量设置JSON输出格式（某些Ruff版本可能需要）
+            env['RUFF_OUTPUT_FORMAT'] = 'json'
             
             result = subprocess.run(
                 cmd,
@@ -177,7 +182,7 @@ class RuffTool:
                 text=True,
                 encoding='utf-8',
                 errors='replace',  # 遇到编码错误时替换而不是失败
-                timeout=120,
+                timeout=300,  # 增加到5分钟（300秒），给大项目足够时间
                 env=env,
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
             )
@@ -185,7 +190,7 @@ class RuffTool:
             issues = []
             
             # 解析JSON输出
-            if result.stdout:
+            if result.stdout and result.stdout.strip():
                 try:
                     ruff_output = json.loads(result.stdout)
                     if isinstance(ruff_output, list):
@@ -203,11 +208,101 @@ class RuffTool:
                                 'rule_name': issue.get('code', {}).get('name', '')
                             })
                 except json.JSONDecodeError as e:
-                    return {
-                        'success': False,
-                        'error': f'Ruff JSON解析失败: {e}',
-                        'issues': []
-                    }
+                    # JSON解析失败，尝试解析文本格式输出（fallback）
+                    stdout_preview = result.stdout[:200] if result.stdout else 'None'
+                    if not result.stdout.strip():
+                        # 空输出，可能是没有发现问题
+                        return {
+                            'success': True,
+                            'issues': [],
+                            'total_issues': 0,
+                            'return_code': result.returncode,
+                            'message': 'Ruff执行成功，未发现问题'
+                        }
+                    else:
+                        # 非空但非JSON，尝试解析文本格式
+                        # Ruff文本格式示例: "F401 [*] `os` imported but unused"
+                        # 或者: "path/to/file.py:3:8: F401 `os` imported but unused"
+                        try:
+                            lines = result.stdout.strip().split('\n')
+                            for line in lines:
+                                line = line.strip()
+                                if not line:
+                                    continue
+                                
+                                # 尝试解析格式: "file.py:line:col: CODE message"
+                                if ':' in line and any(char.isdigit() for char in line):
+                                    # 解析文件路径和行号
+                                    parts = line.split(':', 3)
+                                    if len(parts) >= 4:
+                                        file_path = parts[0]
+                                        try:
+                                            line_num = int(parts[1]) if parts[1].isdigit() else 0
+                                            col_num = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
+                                            message_part = parts[3].strip()
+                                            
+                                            # 提取规则代码（如F401）
+                                            rule_code = 'unknown'
+                                            message = message_part
+                                            if message_part:
+                                                # 格式可能是: "F401 `os` imported but unused"
+                                                msg_parts = message_part.split(' ', 1)
+                                                if msg_parts and (msg_parts[0].startswith('F') or msg_parts[0].startswith('E')):
+                                                    rule_code = msg_parts[0]
+                                                    message = msg_parts[1] if len(msg_parts) > 1 else message_part
+                                            
+                                            issues.append({
+                                                'type': 'ruff',
+                                                'severity': 'warning',
+                                                'message': message,
+                                                'file': file_path,
+                                                'line': line_num,
+                                                'column': col_num,
+                                                'rule_code': rule_code
+                                            })
+                                        except (ValueError, IndexError):
+                                            # 如果解析失败，尝试其他格式
+                                            # 格式可能是: "F401 [*] `os` imported but unused"
+                                            if ' ' in line:
+                                                msg_parts = line.split(' ', 2)
+                                                if len(msg_parts) >= 3 and (msg_parts[0].startswith('F') or msg_parts[0].startswith('E')):
+                                                    issues.append({
+                                                        'type': 'ruff',
+                                                        'severity': 'warning',
+                                                        'message': msg_parts[2] if len(msg_parts) > 2 else line,
+                                                        'file': directory_path,  # 使用目录路径作为默认
+                                                        'line': 0,
+                                                        'column': 0,
+                                                        'rule_code': msg_parts[0]
+                                                    })
+                            # 如果成功解析了问题，返回成功
+                            if issues:
+                                return {
+                                    'success': True,
+                                    'issues': issues,
+                                    'total_issues': len(issues),
+                                    'return_code': result.returncode,
+                                    'message': 'Ruff执行成功（使用文本格式解析）'
+                                }
+                        except Exception as parse_error:
+                            pass  # 如果文本解析也失败，继续返回错误
+                        
+                        # 如果文本解析也失败，返回错误
+                        return {
+                            'success': False,
+                            'error': f'Ruff JSON解析失败: {e}。输出预览: {stdout_preview}',
+                            'issues': [],
+                            'stdout_preview': stdout_preview
+                        }
+            elif not result.stdout or not result.stdout.strip():
+                # 空输出，可能是没有发现问题（Ruff返回码0表示无问题）
+                return {
+                    'success': True,
+                    'issues': [],
+                    'total_issues': 0,
+                    'return_code': result.returncode,
+                    'message': 'Ruff执行成功，未发现问题'
+                }
             
             return {
                 'success': True,

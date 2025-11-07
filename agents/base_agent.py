@@ -214,13 +214,14 @@ class BaseAgent(ABC):
             # 更新任务状态
             task["status"] = TaskStatus.PROCESSING
             task["started_at"] = datetime.now()
+            self.logger.info(f"📋 任务开始处理: {task_id}")
             
             # 处理任务
             start_time = datetime.now()
             result = await self.process_task(task_id, task["data"])
             end_time = datetime.now()
             
-            # 更新任务结果
+            # 立即更新任务结果和状态（在返回结果后立即更新，确保Coordinator能快速检测到）
             task["status"] = TaskStatus.COMPLETED
             task["completed_at"] = end_time
             task["result"] = result
@@ -231,7 +232,8 @@ class BaseAgent(ABC):
             self.metrics["total_processing_time"] += processing_time
             self.metrics["last_activity"] = end_time
             
-            self.logger.info(f"任务完成: {task_id}, 耗时: {processing_time:.2f}秒")
+            self.logger.info(f"✅ 任务完成: {task_id}, 耗时: {processing_time:.2f}秒")
+            self.logger.info(f"📤 任务状态已更新为COMPLETED，等待Coordinator轮询...")
             
         except Exception as e:
             # 更新任务错误状态
@@ -243,7 +245,7 @@ class BaseAgent(ABC):
             self.metrics["tasks_failed"] += 1
             self.metrics["last_activity"] = datetime.now()
             
-            self.logger.error(f"任务失败: {task_id}, 错误: {e}")
+            self.logger.error(f"❌ 任务失败: {task_id}, 错误: {e}")
     
     def get_status(self) -> Dict[str, Any]:
         """获取Agent状态"""

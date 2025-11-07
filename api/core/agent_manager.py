@@ -15,6 +15,7 @@ from agents.fix_execution_agent.agent import FixExecutionAgent
 from agents.code_analysis_agent.agent import CodeAnalysisAgent
 from agents.code_quality_agent.agent import CodeQualityAgent
 from agents.test_validation_agent.agent import TestValidationAgent
+from agents.dynamic_detection_agent.agent import DynamicDetectionAgent
 
 
 class AgentManager:
@@ -34,6 +35,7 @@ class AgentManager:
         agent_configs = [
             ("bug_detection_agent", BugDetectionAgent, "📦", "缺陷检测", {"use_docker": use_docker}),
             ("fix_execution_agent", FixExecutionAgent, "🔧", "自动修复", {}),
+            ("dynamic_detection_agent", DynamicDetectionAgent, "⚡", "动态检测", {}),
             ("test_validation_agent", TestValidationAgent, "🧪", "测试验证", {}),
             ("code_analysis_agent", CodeAnalysisAgent, "📊", "代码分析", {}),
             ("code_quality_agent", CodeQualityAgent, "⭐", "代码质量", {}),

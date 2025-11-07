@@ -1,0 +1,112 @@
+You are an expert Python code refactoring assistant.
+Your task is to fix all issues listed below without changing functionality.
+请基于以下py完整文件内容，修复下述所有问题：
+
+===== 源代码 BEGIN =====
+from flask import Flask, request, send_file, jsonify
+import os
+import sys
+import subprocess
+import pickle
+
+app = Flask(__name__)
+
+# 缺陷1: 路径遍历漏洞 - 允许访问任意文件
+@app.route('/file', methods=['GET'])
+def read_file():
+    filename = request.args.get('name', '')
+    
+    # 危险：直接使用用户输入构建文件路径，未进行路径验证
+    file_path = os.path.join('uploads', filename)
+    
+    if os.path.exists(file_path):
+        return send_file(file_path)
+    else:
+        return jsonify({'error': '文件不存在'}), 404
+
+# 缺陷2: 命令注入漏洞 - 允许执行系统命令
+@app.route('/ping', methods=['GET'])
+def ping():
+    host = request.args.get('host', '127.0.0.1')
+    
+    # 危险：直接拼接用户输入到系统命令中
+    command = f"ping -n 4 {host}"
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    
+    return jsonify({
+        'command': command,
+        'output': result.stdout,
+        'error': result.stderr
+    })
+
+# 缺陷3: 不安全的反序列化漏洞 - 允许执行任意代码
+@app.route('/data', methods=['POST'])
+def process_data():
+    data = request.form.get('data', '')
+    
+    # 危险：直接反序列化用户提供的数据
+    try:
+        # 使用base64编码的数据（实际应用中可能更隐蔽）
+        import base64
+        decoded_data = base64.b64decode(data)
+        obj = pickle.loads(decoded_data)
+        return jsonify({'message': '数据已处理', 'type': str(type(obj))})
+    except Exception as e:
+        return jsonify({'error': f'处理失败: {str(e)}'}), 400
+
+# 缺陷4: 敏感信息泄露 - 在错误信息中暴露系统信息
+@app.route('/admin', methods=['GET'])
+def admin():
+    username = request.args.get('username', '')
+    password = request.args.get('password', '')
+    
+    # 危险：错误信息泄露了系统路径和配置信息
+    if username == 'admin' and password == 'admin123':
+        return jsonify({'message': '登录成功'})
+    else:
+        # 泄露敏感信息：数据库路径、配置文件位置等
+        error_msg = f"""
+        登录失败！
+        数据库路径: {os.path.abspath('database.db')}
+        Flask配置: {app.config}
+        工作目录: {os.getcwd()}
+        Python版本: {sys.version}
+        """
+        return jsonify({'error': error_msg}), 401
+
+@app.route('/')
+def index():
+    return '''
+    <html>
+    <head><title>漏洞测试页面</title></head>
+    <body>
+        <h1>漏洞测试功能</h1>
+        <ul>
+            <li><a href="/file?name=test.txt">缺陷1: 路径遍历漏洞 (/file)</a></li>
+            <li><a href="/ping?host=127.0.0.1">缺陷2: 命令注入漏洞 (/ping)</a></li>
+            <li><a href="/data">缺陷3: 不安全的反序列化 (/data)</a></li>
+            <li><a href="/admin?username=test&password=test">缺陷4: 敏感信息泄露 (/admin)</a></li>
+        </ul>
+        <h2>测试说明：</h2>
+        <p><strong>缺陷1 - 路径遍历：</strong> 尝试 <code>/file?name=../../etc/passwd</code> 或 <code>/file?name=../../windows/win.ini</code></p>
+        <p><strong>缺陷2 - 命令注入：</strong> 尝试 <code>/ping?host=127.0.0.1 && whoami</code> 或 <code>/ping?host=127.0.0.1 | dir</code></p>
+        <p><strong>缺陷3 - 反序列化：</strong> 使用pickle序列化恶意对象进行攻击</p>
+        <p><strong>缺陷4 - 信息泄露：</strong> 查看错误响应中的敏感信息</p>
+    </body>
+    </html>
+    '''
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5001)
+
+
+===== 源代码 END =====
+
+===== 问题列表 BEGIN =====
+1. line=49, type=broad-exception-caught, message=Catching too general exception Exception
+===== 问题列表 END =====
+
+要求：
+1) 保持原有功能不变；
+2) 一次性修复所有问题；
+3) 只输出修复后的完整代码，不要任何解释、注释或 markdown。

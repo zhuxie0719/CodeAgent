@@ -117,22 +117,87 @@ class Coordinator:
                     # 仅处理指向该Agent的任务
                     if isinstance(message, TaskMessage):
                         await agent.submit_task(message.task_id, message.payload)
-                        # 轮询等待Agent完成
+                        # 轮询等待Agent完成（添加超时保护，最多30分钟）
+                        import time
+                        start_time = time.time()
+                        max_wait_time = 1800.0  # 30分钟
+                        poll_interval = 0.1  # 优化：每0.1秒检查一次，提高响应速度
+                        status = None
+                        last_status = None
+                        consecutive_same_status = 0
+                        
+                        self.logger.info(f"🔄 开始轮询等待Agent {agent_id} 任务 {message.task_id} 完成...")
+                        
                         while True:
-                            status = await agent.get_task_status(message.task_id)
-                            if status and status.get('status') in ["completed", "failed"]:
+                            # 检查超时
+                            elapsed = time.time() - start_time
+                            if elapsed > max_wait_time:
+                                self.logger.warning(f"Agent {agent_id} 任务 {message.task_id} 等待超时（30分钟）")
+                                result = {
+                                    'error': f'任务执行超时（30分钟）',
+                                    'success': False,
+                                    'task_id': message.task_id
+                                }
+                                await self.event_bus.send_result_message(
+                                    source_agent=agent_id,
+                                    target_agent='coordinator',
+                                    task_id=message.task_id,
+                                    result=result,
+                                    success=False,
+                                    error='任务执行超时（30分钟）'
+                                )
                                 break
-                            await asyncio.sleep(0.2)
-                        success = status.get('status') == 'completed'
-                        result = status.get('result') if success else { 'error': status.get('error', 'Unknown error') }
-                        await self.event_bus.send_result_message(
-                            source_agent=agent_id,
-                            target_agent='coordinator',
-                            task_id=message.task_id,
-                            result=result,
-                            success=success,
-                            error=None if success else status.get('error')
-                        )
+                            
+                            try:
+                                status = await agent.get_task_status(message.task_id)
+                                if status:
+                                    task_status = status.get('status')
+                                    
+                                    # 记录状态变化
+                                    if task_status != last_status:
+                                        self.logger.debug(f"Agent {agent_id} 任务 {message.task_id} 状态变化: {last_status} -> {task_status}")
+                                        last_status = task_status
+                                        consecutive_same_status = 0
+                                    else:
+                                        consecutive_same_status += 1
+                                    
+                                    if task_status in ["completed", "failed"]:
+                                        success = task_status == 'completed'
+                                        result = status.get('result') if success else { 'error': status.get('error', 'Unknown error') }
+                                        
+                                        elapsed_time = time.time() - start_time
+                                        self.logger.info(f"✅ Agent {agent_id} 任务 {message.task_id} 完成，耗时: {elapsed_time:.2f}秒")
+                                        
+                                        await self.event_bus.send_result_message(
+                                            source_agent=agent_id,
+                                            target_agent='coordinator',
+                                            task_id=message.task_id,
+                                            result=result,
+                                            success=success,
+                                            error=None if success else status.get('error')
+                                        )
+                                        break
+                                    # 如果状态是running或processing，继续等待
+                                    elif task_status in ["running", "processing"]:
+                                        # 正常情况，继续等待
+                                        # 每10次检查（约1秒）记录一次日志，避免日志过多
+                                        if consecutive_same_status % 10 == 0:
+                                            self.logger.debug(f"Agent {agent_id} 任务 {message.task_id} 执行中... (已等待 {elapsed:.1f}秒)")
+                                    else:
+                                        # 其他状态，记录日志但继续等待
+                                        self.logger.debug(f"Agent {agent_id} 任务 {message.task_id} 状态: {task_status}")
+                                else:
+                                    # status为None，可能是任务还未创建，继续等待
+                                    if consecutive_same_status % 10 == 0:  # 每1秒记录一次
+                                        self.logger.debug(f"Agent {agent_id} 任务 {message.task_id} 状态为None，继续等待...")
+                                    consecutive_same_status += 1
+                            except Exception as status_error:
+                                self.logger.warning(f"获取Agent {agent_id} 任务状态失败: {status_error}")
+                                import traceback
+                                self.logger.debug(traceback.format_exc())
+                                # 继续等待，不中断循环
+                            
+                            await asyncio.sleep(poll_interval)
             except Exception as e:
                 self.logger.error(f"Agent任务处理失败: {agent_id} - {e}")
         await self.event_bus.subscribe("agent_message", agent_id, agent_handler)

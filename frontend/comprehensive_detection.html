@@ -908,18 +908,25 @@
                 progress += Math.random() * 10;
                 if (progress > 90) progress = 90;
                 
-                document.getElementById('progressFill').style.width = progress + '%';
+                const progressFill = document.getElementById('progressFill');
+                const progressText = document.getElementById('progressText');
                 
-                if (progress < 20) {
-                    document.getElementById('progressText').textContent = '解压项目中...';
-                } else if (progress < 40) {
-                    document.getElementById('progressText').textContent = '执行静态分析...';
-                } else if (progress < 60) {
-                    document.getElementById('progressText').textContent = '执行动态检测...';
-                } else if (progress < 80) {
-                    document.getElementById('progressText').textContent = '运行项目分析...';
-                } else {
-                    document.getElementById('progressText').textContent = '生成综合报告...';
+                if (progressFill) {
+                    progressFill.style.width = progress + '%';
+                }
+                
+                if (progressText) {
+                    if (progress < 20) {
+                        progressText.textContent = '解压项目中...';
+                    } else if (progress < 40) {
+                        progressText.textContent = '执行静态分析...';
+                    } else if (progress < 60) {
+                        progressText.textContent = '执行动态检测...';
+                    } else if (progress < 80) {
+                        progressText.textContent = '运行项目分析...';
+                    } else {
+                        progressText.textContent = '生成综合报告...';
+                    }
                 }
             }, 500);
 
@@ -929,12 +936,21 @@
 
         // 隐藏加载状态
         function hideLoading() {
-            document.getElementById('loading').classList.remove('show');
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.classList.remove('show');
+            }
             if (window.progressInterval) {
                 clearInterval(window.progressInterval);
             }
-            document.getElementById('progressFill').style.width = '100%';
-            document.getElementById('progressText').textContent = '检测完成！';
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            if (progressFill) {
+                progressFill.style.width = '100%';
+            }
+            if (progressText) {
+                progressText.textContent = '检测完成！';
+            }
         }
 
         // 显示错误信息
@@ -976,8 +992,10 @@
 
             // 更新整体状态
             const overallStatus = document.getElementById('overallStatus');
-            overallStatus.textContent = getStatusText(summary.overall_status);
-            overallStatus.className = 'status-badge status-' + summary.overall_status;
+            if (overallStatus) {
+                overallStatus.textContent = getStatusText(summary.overall_status);
+                overallStatus.className = 'status-badge status-' + summary.overall_status;
+            }
 
             // 更新摘要
             const summaryGrid = document.getElementById('summaryGrid');
@@ -1446,7 +1464,11 @@
         // 下载AI报告
         function downloadAIReport() {
             const aiReportContent = document.getElementById('aiReportContent');
-            const content = aiReportContent.textContent || aiReportContent.innerText;
+            if (!aiReportContent) {
+                alert('报告内容不存在');
+                return;
+            }
+            const content = aiReportContent.textContent || aiReportContent.innerText || '';
             const blob = new Blob([content], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');

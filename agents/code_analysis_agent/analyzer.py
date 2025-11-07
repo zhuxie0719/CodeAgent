@@ -370,15 +370,43 @@ class CodeAnalyzer:
         }
         
         # 分析所有代码文件
+        # 跳过虚拟环境和缓存目录
+        ignored_dirs = {'venv', '__pycache__', '.git', 'node_modules', '.pytest_cache', '.mypy_cache', 'site-packages', 'dist', 'build', '.eggs'}
+        
+        file_count = 0
         for root, dirs, files in os.walk(project_path):
+            # 过滤忽略的目录
+            dirs[:] = [d for d in dirs if d not in ignored_dirs]
+            
+            # 跳过虚拟环境目录
+            if any(ignored in root for ignored in ignored_dirs):
+                continue
+                
             for file in files:
                 if any(file.endswith(ext) for ext in self.supported_extensions):
                     file_path = os.path.join(root, file)
                     rel_path = os.path.relpath(file_path, project_path)
                     
-                    # 分析单个文件
-                    file_analysis = await self._analyze_code_file(file_path, rel_path)
-                    quality_metrics['file_analysis'].append(file_analysis)
+                    file_count += 1
+                    # 每处理10个文件输出一次进度
+                    if file_count % 10 == 0:
+                        print(f"     已分析 {file_count} 个文件...")
+                    
+                    try:
+                        # 分析单个文件（添加超时保护，每个文件最多5秒）
+                        file_analysis = await asyncio.wait_for(
+                            self._analyze_code_file(file_path, rel_path),
+                            timeout=5.0
+                        )
+                        quality_metrics['file_analysis'].append(file_analysis)
+                    except asyncio.TimeoutError:
+                        # 文件分析超时，跳过该文件
+                        print(f"     ⚠️ 文件分析超时，跳过: {rel_path}")
+                        continue
+                    except Exception as e:
+                        # 文件分析失败，跳过该文件
+                        print(f"     ⚠️ 文件分析失败，跳过: {rel_path} ({e})")
+                        continue
                     
                     # 更新统计信息
                     quality_metrics['total_files'] += 1

@@ -46,7 +46,17 @@ class DetectionRequest(BaseModel):
 # 创建APIRouter
 router = APIRouter()
 
-# 全局检测器
+# 全局管理器引用（在 main_api.py 中设置）
+_coordinator_manager = None
+_agent_manager = None
+
+def set_managers(coord_mgr, agent_mgr):
+    """设置全局管理器引用"""
+    global _coordinator_manager, _agent_manager
+    _coordinator_manager = coord_mgr
+    _agent_manager = agent_mgr
+
+# 全局检测器（保留用于直接调用，作为备用方案）
 dynamic_agent = DynamicDetectionAgent({
     "monitor_interval": 5,
     "alert_thresholds": {
@@ -87,6 +97,7 @@ class ComprehensiveDetector:
                            static_analysis: bool = True,
                            dynamic_monitoring: bool = True,
                            runtime_analysis: bool = True,
+                           enable_web_app_test: bool = False,
                            enable_dynamic_detection: bool = True,
                            enable_flask_specific_tests: bool = True,
                            enable_server_testing: bool = True,
@@ -111,6 +122,7 @@ class ComprehensiveDetector:
                 "static_analysis": static_analysis,
                 "dynamic_monitoring": dynamic_monitoring,
                 "runtime_analysis": runtime_analysis,
+                "enable_web_app_test": enable_web_app_test,
                 "enable_dynamic_detection": enable_dynamic_detection,
                 "enable_flask_specific_tests": enable_flask_specific_tests,
                 "enable_server_testing": enable_server_testing,
@@ -135,28 +147,53 @@ class ComprehensiveDetector:
             
             # 使用BugDetectionAgent的extract_project方法来解压项目并创建虚拟环境
             print(f"🔧 开始解压项目并创建虚拟环境: {zip_file_path}")
+            print(f"⏱️  注意：虚拟环境创建和依赖安装可能需要较长时间（最多5分钟）...")
+            extract_dir = None  # 初始化为None，确保在所有情况下都有值
             try:
-                # 设置较长的超时时间，给虚拟环境创建足够时间
+                # 设置更长的超时时间，给虚拟环境创建和依赖安装足够时间
+                # 虚拟环境创建可能需要30-180秒，依赖安装可能需要1-5分钟
                 extract_dir = await asyncio.wait_for(
                     self.static_agent.extract_project(zip_file_path),
-                    timeout=120.0  # 增加到120秒
+                    timeout=300.0  # 增加到5分钟（300秒）
                 )
                 print(f"✅ 项目解压完成，虚拟环境已创建: {extract_dir}")
             except asyncio.TimeoutError:
-                print("⚠️ 虚拟环境创建超时（120秒），使用简单解压模式")
-                extract_dir = await self._simple_extract_project(zip_file_path)
-                results["warning"] = "虚拟环境创建超时，使用简单解压模式"
+                print("⚠️ 虚拟环境创建超时（5分钟），使用简单解压模式")
+                print("   提示：如果项目依赖较多，建议启用Docker或增加超时时间")
+                try:
+                    extract_dir = await self._simple_extract_project(zip_file_path)
+                    results["warning"] = "虚拟环境创建超时（5分钟），使用简单解压模式。如需完整功能，建议启用Docker或增加超时时间"
+                except Exception as e2:
+                    print(f"❌ 简单解压也失败: {e2}")
+                    extract_dir = None
+                    results["error"] = f"项目解压失败: {e2}"
             except KeyboardInterrupt:
                 print("⚠️ 虚拟环境创建被中断，使用简单解压模式")
-                extract_dir = await self._simple_extract_project(zip_file_path)
-                results["warning"] = "虚拟环境创建被中断，使用简单解压模式"
+                try:
+                    extract_dir = await self._simple_extract_project(zip_file_path)
+                    results["warning"] = "虚拟环境创建被中断，使用简单解压模式"
+                except Exception as e2:
+                    print(f"❌ 简单解压也失败: {e2}")
+                    extract_dir = None
+                    results["error"] = f"项目解压失败: {e2}"
             except Exception as e:
                 print(f"❌ 项目解压失败: {e}")
+                import traceback
+                print(f"错误详情:\n{traceback.format_exc()}")
                 # 如果虚拟环境创建失败，尝试简单的文件解压
-                extract_dir = await self._simple_extract_project(zip_file_path)
-                    
-                # 设置警告信息
-                results["warning"] = f"虚拟环境创建失败，使用简单解压模式: {e}"
+                try:
+                    extract_dir = await self._simple_extract_project(zip_file_path)
+                    results["warning"] = f"虚拟环境创建失败，使用简单解压模式: {e}"
+                except Exception as e2:
+                    print(f"❌ 简单解压也失败: {e2}")
+                    extract_dir = None
+                    results["error"] = f"项目解压失败: {e2}"
+            
+            # 检查extract_dir是否有效
+            if not extract_dir:
+                print("❌ 无法获取有效的解压目录，终止检测")
+                results["error"] = "无法解压项目文件"
+                return results
             
             results["extracted_path"] = extract_dir
             results["files"] = self._list_files(extract_dir)
@@ -209,14 +246,16 @@ class ComprehensiveDetector:
             
             # 等待所有任务完成（添加超时机制）
             if tasks:
+                print(f"🔄 [DEBUG] 开始等待 {len(tasks)} 个检测任务完成...")
                 try:
-                    # 设置120秒超时，给检测更多时间
+                    # 设置30分钟超时，给检测足够时间
                     task_results = await asyncio.wait_for(
                         asyncio.gather(*tasks, return_exceptions=True),
-                        timeout=120.0
+                        timeout=1800.0  # 30分钟（1800秒）
                     )
+                    print(f"✅ [DEBUG] 所有检测任务完成，开始处理结果...")
                 except asyncio.TimeoutError:
-                    print("⚠️ 检测任务超时（120秒），使用默认结果")
+                    print("⚠️ 检测任务超时（30分钟），使用默认结果")
                     results["warning"] = "检测任务超时，部分功能可能未完成"
                     # 创建默认的失败结果
                     task_results = []
@@ -229,52 +268,98 @@ class ComprehensiveDetector:
                             task_results.append({"error": "检测超时", "execution_successful": False})
                         elif i == 3 and enable_dynamic_detection:
                             task_results.append({"error": "检测超时", "tests_completed": False})
+                except Exception as gather_error:
+                    print(f"❌ [DEBUG] asyncio.gather执行异常: {gather_error}")
+                    import traceback
+                    traceback.print_exc()
+                    # 创建默认的失败结果
+                    task_results = []
+                    for i, task in enumerate(tasks):
+                        if i == 0 and static_analysis:
+                            task_results.append({"error": f"任务执行异常: {gather_error}", "issues": []})
+                        elif i == 1 and dynamic_monitoring:
+                            task_results.append({"error": f"任务执行异常: {gather_error}", "alerts": []})
+                        elif i == 2 and runtime_analysis:
+                            task_results.append({"error": f"任务执行异常: {gather_error}", "execution_successful": False})
+                        elif i == 3 and enable_dynamic_detection:
+                            task_results.append({"error": f"任务执行异常: {gather_error}", "tests_completed": False})
                 
                 # 处理结果
+                print(f"📊 [DEBUG] 开始处理任务结果，task_results数量: {len(task_results) if task_results else 0}")
                 task_index = 0
                 if static_analysis:
+                    print(f"📊 [DEBUG] 处理静态分析结果，索引: {task_index}")
                     if isinstance(task_results[task_index], Exception):
+                        print(f"⚠️ [DEBUG] 静态分析任务异常: {task_results[task_index]}")
                         results["static_analysis"] = {"error": str(task_results[task_index]), "issues": []}
                     else:
+                        print(f"✅ [DEBUG] 静态分析任务完成，结果类型: {type(task_results[task_index])}")
                         results["static_analysis"] = task_results[task_index]
                     task_index += 1
                 
                 if dynamic_monitoring:
+                    print(f"📊 [DEBUG] 处理动态监控结果，索引: {task_index}")
                     if isinstance(task_results[task_index], Exception):
+                        print(f"⚠️ [DEBUG] 动态监控任务异常: {task_results[task_index]}")
                         results["dynamic_monitoring"] = {"error": str(task_results[task_index]), "alerts": []}
                     else:
                         results["dynamic_monitoring"] = task_results[task_index]
                     task_index += 1
                 
                 if runtime_analysis:
+                    print(f"📊 [DEBUG] 处理运行时分析结果，索引: {task_index}")
                     if isinstance(task_results[task_index], Exception):
+                        print(f"⚠️ [DEBUG] 运行时分析任务异常: {task_results[task_index]}")
                         results["runtime_analysis"] = {"error": str(task_results[task_index]), "execution_successful": False}
                     else:
                         results["runtime_analysis"] = task_results[task_index]
                     task_index += 1
                 
                 if enable_dynamic_detection:
+                    print(f"📊 [DEBUG] 处理动态检测结果，索引: {task_index}")
                     if isinstance(task_results[task_index], Exception):
+                        print(f"⚠️ [DEBUG] 动态检测任务异常: {task_results[task_index]}")
                         results["dynamic_detection"] = {"error": str(task_results[task_index]), "tests_completed": False}
                     else:
                         results["dynamic_detection"] = task_results[task_index]
             
             # 生成综合摘要
+            print("📝 [DEBUG] 开始生成综合摘要...")
             results["summary"] = self._generate_summary(results)
+            print("✅ [DEBUG] 综合摘要生成完成")
             
             # 清理临时目录和虚拟环境
             try:
-                await self.static_agent.cleanup_project_environment(extract_dir)
-                print(f"✅ 项目环境清理完成: {extract_dir}")
+                if extract_dir and os.path.exists(extract_dir):
+                    await self.static_agent.cleanup_project_environment(extract_dir)
+                    print(f"✅ 项目环境清理完成: {extract_dir}")
+                else:
+                    print(f"⚠️ 跳过环境清理（路径无效）: {extract_dir}")
             except Exception as cleanup_error:
                 print(f"⚠️ 环境清理失败: {cleanup_error}")
+                import traceback
+                traceback.print_exc()
                 # 回退到手动清理
-                shutil.rmtree(extract_dir, ignore_errors=True)
+                if extract_dir and os.path.exists(extract_dir):
+                    try:
+                        shutil.rmtree(extract_dir, ignore_errors=True)
+                    except Exception as e:
+                        print(f"⚠️ 手动清理也失败: {e}")
             # 合并静态和动态检测缺陷清单，生成统一格式
             print("📋 [DEBUG] 开始合并缺陷清单...")
-            merged_defects = self._merge_defects_list(results, extract_dir)
-            results["merged_defects"] = merged_defects
-            print(f"📋 [DEBUG] 合并后的缺陷数量: {len(merged_defects)}")
+            merged_defects = []
+            try:
+                merged_defects = self._merge_defects_list(results, extract_dir)
+                results["merged_defects"] = merged_defects
+                print(f"📋 [DEBUG] 合并后的缺陷数量: {len(merged_defects)}")
+            except Exception as merge_error:
+                print(f"❌ [DEBUG] 合并缺陷清单失败: {merge_error}")
+                import traceback
+                traceback.print_exc()
+                results["merged_defects"] = []
+                merged_defects = []
+                results["warning"] = results.get("warning", "") + f" 合并缺陷清单失败: {merge_error}"
+            
             if merged_defects:
                 print(f"📋 [DEBUG] 前3个缺陷示例:")
                 for i, defect in enumerate(merged_defects[:3], 1):
@@ -284,8 +369,15 @@ class ComprehensiveDetector:
             
             # 生成任务信息JSON文件供修复工作流使用（保存到永久位置）
             print("📝 [DEBUG] 开始生成任务信息JSON...")
-            task_info_path = self._generate_task_info_json(merged_defects, extract_dir)
-            print(f"📝 [DEBUG] task_info_path = {task_info_path}")
+            try:
+                task_info_path = self._generate_task_info_json(merged_defects, extract_dir)
+                print(f"📝 [DEBUG] task_info_path = {task_info_path}")
+            except Exception as task_info_error:
+                print(f"❌ [DEBUG] 生成任务信息JSON失败: {task_info_error}")
+                import traceback
+                traceback.print_exc()
+                task_info_path = None
+                results["warning"] = results.get("warning", "") + f" 生成任务信息JSON失败: {task_info_error}"
             if task_info_path:
                 print(f"📝 [DEBUG] 检查文件是否存在: {os.path.exists(task_info_path)}")
             else:
@@ -386,10 +478,51 @@ class ComprehensiveDetector:
             project_structure = await code_analysis_agent.project_analyzer.analyze_project_structure(project_path)
             
             print("  📈 执行代码质量分析...")
-            code_quality = await code_analysis_agent.code_analyzer.analyze_code_quality(project_path)
+            print("     ⏳ 这可能需要几分钟，请耐心等待...")
+            try:
+                # 为代码质量分析添加超时保护（最多3分钟）
+                code_quality = await asyncio.wait_for(
+                    code_analysis_agent.code_analyzer.analyze_code_quality(project_path),
+                    timeout=180.0  # 3分钟超时
+                )
+                print("     ✅ 代码质量分析完成")
+            except asyncio.TimeoutError:
+                print("     ⚠️ 代码质量分析超时（3分钟），使用简化结果")
+                code_quality = {
+                    'total_files': 0,
+                    'analyzed_files': 0,
+                    'error': '分析超时',
+                    'file_analysis': []
+                }
+            except Exception as e:
+                print(f"     ⚠️ 代码质量分析失败: {e}，使用简化结果")
+                code_quality = {
+                    'total_files': 0,
+                    'analyzed_files': 0,
+                    'error': str(e),
+                    'file_analysis': []
+                }
             
             print("  🔗 执行依赖关系分析...")
-            dependencies = await code_analysis_agent.dependency_analyzer.analyze_dependencies(project_path)
+            try:
+                # 为依赖分析添加超时保护（最多1分钟）
+                dependencies = await asyncio.wait_for(
+                    code_analysis_agent.dependency_analyzer.analyze_dependencies(project_path),
+                    timeout=60.0  # 1分钟超时
+                )
+                print("     ✅ 依赖关系分析完成")
+            except asyncio.TimeoutError:
+                print("     ⚠️ 依赖关系分析超时（1分钟），使用简化结果")
+                dependencies = {
+                    'error': '分析超时',
+                    'dependencies': []
+                }
+            except Exception as e:
+                print(f"     ⚠️ 依赖关系分析失败: {e}，使用简化结果")
+                dependencies = {
+                    'error': str(e),
+                    'dependencies': []
+                }
             
             print("✅ 初步代码分析完成")
             
@@ -452,8 +585,85 @@ class ComprehensiveDetector:
                                              enable_ruff: bool = True,
                                              enable_bandit: bool = True,
                                              enable_llm_filter: bool = True) -> Dict[str, Any]:
-        """异步执行静态分析"""
+        """异步执行静态分析 - 优先使用Coordinator，否则直接调用Agent"""
         try:
+            # 优先使用Coordinator（如果可用）
+            if _coordinator_manager and _coordinator_manager.coordinator:
+                coordinator = _coordinator_manager.coordinator
+                
+                try:
+                    # 获取初步分析结果（如果已执行）
+                    preliminary_analysis = None
+                    if hasattr(self, '_current_preliminary_analysis'):
+                        preliminary_analysis = self._current_preliminary_analysis
+                    
+                    print(f"🚀 [Coordinator] 通过Coordinator创建静态检测任务: {project_path}")
+                    print(f"   工具选择: pylint={enable_pylint}, mypy={enable_mypy}, semgrep={enable_semgrep}, ruff={enable_ruff}, bandit={enable_bandit}")
+                    
+                    # 创建任务数据
+                    # 注意：project_path 已经是解压后的目录，不是zip文件
+                    # 应该使用 project_path 而不是 file_path，避免再次解压
+                    task_data = {
+                        "project_path": project_path,  # 使用 project_path 而不是 file_path
+                        "analysis_type": "project",
+                        "options": {
+                            "enable_static": True,
+                            "enable_pylint": enable_pylint,
+                            "enable_mypy": enable_mypy,
+                            "enable_semgrep": enable_semgrep,
+                            "enable_ruff": enable_ruff,
+                            "enable_bandit": enable_bandit,
+                            "enable_llm_filter": enable_llm_filter,
+                            "enable_ai_analysis": True,
+                            "preliminary_analysis": preliminary_analysis,
+                            "pylint_directory_mode": False,
+                            "max_parallel_files": 10,
+                            "max_issues_to_return": 1000
+                        }
+                    }
+                    
+                    # 通过Coordinator创建任务并分配
+                    task_id = await coordinator.create_task('detect_bugs', task_data)
+                    await coordinator.assign_task(task_id, 'bug_detection_agent')
+                    
+                    print(f"✅ [Coordinator] 静态检测任务已创建并分配: {task_id}")
+                    
+                    # 等待任务完成（最多30分钟）
+                    try:
+                        analysis_result = await coordinator.task_manager.get_task_result(task_id, timeout=1800.0)
+                        print(f"✅ [Coordinator] 静态检测任务完成")
+                        
+                        if analysis_result and analysis_result.get("success", False):
+                            detection_results = analysis_result.get("detection_results", {})
+                            if preliminary_analysis and preliminary_analysis.get("success"):
+                                detection_results["preliminary_analysis"] = preliminary_analysis
+                            return detection_results
+                        else:
+                            return {
+                                "error": analysis_result.get("error", "静态分析失败") if analysis_result else "任务执行失败",
+                                "issues": [],
+                                "statistics": {
+                                    "total_files": 0,
+                                    "total_lines": 0,
+                                    "average_complexity": 0,
+                                    "maintainability_score": 0
+                                },
+                                "files_analyzed": 0
+                            }
+                    except Exception as e:
+                        print(f"⚠️ [Coordinator] 获取静态检测结果失败: {e}，回退到直接调用")
+                        import traceback
+                        traceback.print_exc()
+                        # 回退到直接调用方式
+                except Exception as e:
+                    print(f"⚠️ [Coordinator] Coordinator调用异常: {e}，回退到直接调用")
+                    import traceback
+                    traceback.print_exc()
+                    # 回退到直接调用方式
+            
+            # 备用方案：直接调用Agent（如果Coordinator不可用）
+            print(f"⚠️ [Direct] Coordinator不可用，直接调用静态检测Agent")
+            
             # 确保静态检测agent已初始化（工具初始化）
             if not hasattr(self.static_agent, '_tools_initialized') or not self.static_agent._tools_initialized:
                 print("🔧 初始化静态检测工具...")
@@ -498,11 +708,11 @@ class ComprehensiveDetector:
                         "max_parallel_files": 10,  # 并行文件数限制
                         "max_issues_to_return": 1000  # 限制返回的问题数量，避免数据过大
                     }),
-                    timeout=300.0  # 5分钟超时
+                    timeout=1800.0  # 30分钟超时
                 )
                 print(f"✅ 静态检测分析完成")
             except asyncio.TimeoutError:
-                print(f"⚠️ 静态检测分析超时（5分钟），返回部分结果")
+                print(f"⚠️ 静态检测分析超时（30分钟），返回部分结果")
                 analysis_result = {
                     "success": False,
                     "error": "静态检测分析超时",
@@ -581,8 +791,54 @@ class ComprehensiveDetector:
             return {"error": str(e), "execution_successful": False}
     
     async def _perform_dynamic_detection_async(self, project_path: str, enable_flask_tests: bool = True, enable_server_tests: bool = True) -> Dict[str, Any]:
-        """异步执行动态缺陷检测"""
+        """异步执行动态缺陷检测 - 优先使用Coordinator，否则直接调用Agent"""
         try:
+            # 优先使用Coordinator（如果可用且dynamic_detection_agent已注册）
+            if _coordinator_manager and _coordinator_manager.coordinator:
+                coordinator = _coordinator_manager.coordinator
+                
+                try:
+                    # 检查是否有dynamic_detection_agent（可能未注册）
+                    if 'dynamic_detection_agent' in coordinator.agents:
+                        print(f"🚀 [Coordinator] 通过Coordinator创建动态检测任务: {project_path}")
+                        
+                        # 创建任务数据
+                        task_data = {
+                            "project_path": project_path,
+                            "enable_flask_tests": enable_flask_tests,
+                            "enable_server_tests": enable_server_tests,
+                            "enable_web_app_test": self.enable_web_app_test,
+                            "enable_dynamic_detection": self.enable_dynamic_detection,
+                            "enable_flask_specific_tests": self.enable_flask_specific_tests,
+                            "enable_server_testing": self.enable_server_testing
+                        }
+                        
+                        # 通过Coordinator创建任务并分配
+                        task_id = await coordinator.create_task('dynamic_detect', task_data)
+                        await coordinator.assign_task(task_id, 'dynamic_detection_agent')
+                        
+                        print(f"✅ [Coordinator] 动态检测任务已创建并分配: {task_id}")
+                        
+                        # 等待任务完成（最多30分钟）
+                        try:
+                            result = await coordinator.task_manager.get_task_result(task_id, timeout=1800.0)
+                            print(f"✅ [Coordinator] 动态检测任务完成")
+                            return result if result else {"error": "任务执行失败", "tests_completed": False}
+                        except Exception as e:
+                            print(f"⚠️ [Coordinator] 获取动态检测结果失败: {e}，回退到直接调用")
+                            import traceback
+                            traceback.print_exc()
+                            # 回退到直接调用方式
+                    else:
+                        print(f"⚠️ [Coordinator] dynamic_detection_agent未注册，使用直接调用")
+                except Exception as e:
+                    print(f"⚠️ [Coordinator] Coordinator调用异常: {e}，回退到直接调用")
+                    import traceback
+                    traceback.print_exc()
+                    # 回退到直接调用方式
+            
+            # 备用方案：直接调用Agent
+            print(f"⚠️ [Direct] 直接调用动态检测Agent")
             return await self.dynamic_agent.perform_dynamic_detection(project_path, enable_flask_tests, enable_server_tests)
         except Exception as e:
             return {"error": str(e), "tests_completed": False}
@@ -945,13 +1201,56 @@ class ComprehensiveDetector:
                     print(f"  ⚠️ [DEBUG] 跳过无效文件路径的缺陷: {file_path}")
                     continue
                 
-                # 转换为绝对路径
-                abs_file_path = os.path.join(project_path, file_path)
+                # 规范化文件路径：如果已经是绝对路径，直接使用；否则拼接项目路径
+                if os.path.isabs(file_path):
+                    # 已经是绝对路径
+                    abs_file_path = os.path.normpath(file_path)
+                    
+                    # 检查路径是否包含project_path（避免重复嵌套）
+                    # 使用规范化后的路径进行比较
+                    norm_project_path = os.path.normpath(project_path)
+                    if norm_project_path in abs_file_path:
+                        # 路径已经包含项目路径，直接使用
+                        # 但需要检查是否有重复嵌套
+                        # 例如：project_path/temp_extract/project_xxx/temp_extract/project_xxx/file.py
+                        # 应该变成：project_path/temp_extract/project_xxx/file.py
+                        path_parts = abs_file_path.split(os.sep)
+                        project_parts = norm_project_path.split(os.sep)
+                        
+                        # 查找重复的路径段序列
+                        if len(path_parts) > len(project_parts) + 2:
+                            max_pattern_len = min((len(path_parts) - len(project_parts)) // 2, 10)
+                            for pattern_len in range(max_pattern_len, 0, -1):
+                                start_idx = len(project_parts)
+                                if len(path_parts) >= start_idx + pattern_len * 2:
+                                    pattern = path_parts[start_idx:start_idx + pattern_len]
+                                    next_pattern = path_parts[start_idx + pattern_len:start_idx + pattern_len * 2]
+                                    if pattern == next_pattern:
+                                        # 找到重复模式，移除重复的部分
+                                        print(f"  🔧 [DEBUG] 检测到路径重复嵌套，移除重复段: {os.sep.join(pattern)}")
+                                        abs_file_path = os.sep.join(project_parts + path_parts[start_idx + pattern_len:])
+                                        abs_file_path = os.path.normpath(abs_file_path)
+                                        break
+                    else:
+                        # 路径不包含项目路径，但已经是绝对路径，直接使用
+                        # 这种情况可能发生在Docker环境下，路径映射不同
+                        print(f"  ⚠️ [DEBUG] 绝对路径不包含项目路径，直接使用: {abs_file_path}")
+                else:
+                    # 相对路径，拼接项目路径
+                    # 先规范化相对路径，移除开头的./或../
+                    file_path = file_path.lstrip('./').lstrip('../')
+                    abs_file_path = os.path.normpath(os.path.join(project_path, file_path))
+                
+                # 最终规范化路径
+                abs_file_path = os.path.normpath(abs_file_path)
+                
+                # 检查文件是否存在
                 if not os.path.exists(abs_file_path):
                     not_exist_count += 1
                     print(f"  ⚠️ [DEBUG] 文件不存在: {abs_file_path}")
+                    print(f"     project_path: {project_path}")
+                    print(f"     file_path: {file_path}")
                     # 注意：即使文件不存在，也创建任务（文件可能在后续步骤中创建）
-                    # 使用相对路径作为problem_file，在修复时再转换为绝对路径
                 
                 # 获取缺陷描述作为任务描述
                 task_description = defect.get("description", "")
@@ -963,8 +1262,7 @@ class ComprehensiveDetector:
                     file_name = os.path.basename(file_path)
                     task_description = f"修复 {file_name} 第 {line} 行的 {tool} {severity} 级别问题"
                 
-                # 转换为绝对路径并统一使用正斜杠
-                abs_file_path = os.path.join(project_path, file_path)
+                # 统一使用正斜杠（跨平台兼容）
                 problem_file = abs_file_path.replace("\\", "/")
                 
                 task = {
@@ -1626,6 +1924,7 @@ async def comprehensive_detect(
                     static_analysis=static_analysis,
                     dynamic_monitoring=dynamic_monitoring,
                     runtime_analysis=runtime_analysis,
+                    enable_web_app_test=enable_web_app_test,
                     enable_dynamic_detection=enable_dynamic_detection,
                     enable_flask_specific_tests=enable_flask_specific_tests,
                     enable_server_testing=enable_server_testing,
@@ -1637,8 +1936,24 @@ async def comprehensive_detect(
                     enable_bandit=enable_bandit,
                     enable_llm_filter=enable_llm_filter
                 ),
-                timeout=600  # 10分钟超时
+                timeout=1800  # 30分钟超时（1800秒）
             )
+        except asyncio.TimeoutError:
+            return BaseResponse(
+                success=False,
+                error="检测超时（30分钟）",
+                message="检测过程超时，请尝试上传较小的项目"
+            )
+        except Exception as e:
+            print(f"❌ [API] 检测过程发生异常: {e}")
+            import traceback
+            traceback.print_exc()
+            return BaseResponse(
+                success=False,
+                error=f"检测过程发生异常: {str(e)}",
+                message="检测失败，请查看错误信息"
+            )
+        
             print("=" * 60)
             print("✅ [API] 检测完成")
             print(f"📊 [API] 检测结果摘要:")
@@ -1655,12 +1970,6 @@ async def comprehensive_detect(
             if results.get("task_info"):
                 print(f"   - 任务数量: {len(results['task_info'])}")
             print("=" * 60)
-        except asyncio.TimeoutError:
-            return BaseResponse(
-                success=False,
-                error="检测超时（10分钟）",
-                message="检测过程超时，请尝试上传较小的项目"
-            )
         
         print("\n📝 [API] 检测完成，生成报告...")
         
@@ -1893,12 +2202,12 @@ async def generate_severe_issues_report(
                     enable_server_testing=enable_server_testing,
                     enable_web_app_test=enable_web_app_test
                 ),
-                timeout=600  # 10分钟超时
+                timeout=1800  # 30分钟超时（1800秒）
             )
         except asyncio.TimeoutError:
             return BaseResponse(
                 success=False,
-                error="检测超时（10分钟）",
+                error="检测超时（30分钟）",
                 message="检测过程超时，请尝试上传较小的项目"
             )
         

@@ -145,6 +145,7 @@ async def startup_event():
     # 挂载综合检测 API
     try:
         import comprehensive_detection_api
+        comprehensive_detection_api.set_managers(coordinator_manager, agent_manager)
         app.include_router(comprehensive_detection_api.router, prefix="/api/comprehensive")
         print("✅ Comprehensive Detection API 路由已挂载")
     except Exception as e:

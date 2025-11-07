@@ -200,9 +200,22 @@ class BugDetectionAgent(BaseAgent):
                 raise ValueError("缺少文件路径或项目路径")
             
             # 执行缺陷检测
-            if analysis_type == "project" and file_path:
-                # 项目分析
-                project_path = await self.extract_project(file_path)
+            # 如果提供了 file_path 且是 zip/tar 文件，需要先解压
+            # 如果提供了 project_path（已解压的目录），直接使用
+            if analysis_type == "project":
+                if file_path and os.path.isfile(file_path) and any(file_path.endswith(ext) for ext in ['.zip', '.tar', '.tar.gz']):
+                    # file_path 是压缩文件，需要解压
+                    self.logger.info(f"检测到压缩文件，开始解压: {file_path}")
+                    project_path = await self.extract_project(file_path)
+                elif not project_path:
+                    # 只有 file_path 但不是压缩文件，当作项目路径使用
+                    project_path = file_path
+                
+                # 现在 project_path 应该是已解压的目录
+                if not project_path or not os.path.exists(project_path):
+                    raise ValueError(f"项目路径无效: {project_path}")
+                
+                self.logger.info(f"开始分析项目: {project_path}")
                 project_result = await self.analyze_project(project_path, options)
                 if project_result.get("success"):
                     detection_results = project_result.get("detection_results", {})
@@ -224,13 +237,34 @@ class BugDetectionAgent(BaseAgent):
             report = await self._generate_report(detection_results)
             
             self.logger.info(f"缺陷检测任务完成: {task_id}")
-            return {
+            result = {
                 "success": True,
                 "task_id": task_id,
                 "detection_results": detection_results,
                 "report": report,
                 "timestamp": datetime.now().isoformat()
             }
+            
+            # 在返回结果前，先记录需要清理的信息（但不阻塞返回）
+            cleanup_needed = False
+            cleanup_path = None
+            if analysis_type == "project" and 'project_path' in locals() and project_path:
+                if "temp_extract" in str(project_path) and os.path.exists(project_path):
+                    if file_path and os.path.isfile(file_path):
+                        cleanup_needed = True
+                        cleanup_path = project_path
+            
+            # 立即返回结果，让Coordinator能够快速收到完成通知
+            # 清理操作在后台异步执行，不阻塞任务完成通知
+            if cleanup_needed:
+                # 在后台任务中执行清理，不阻塞主流程
+                import asyncio
+                asyncio.create_task(self._cleanup_project_environment_async(cleanup_path))
+            
+            # 添加日志，确保任务完成状态已更新
+            self.logger.info(f"✅ 任务结果已准备，即将返回: {task_id}")
+            
+            return result
             
         except Exception as e:
             self.logger.error(f"处理缺陷检测任务失败: {e}")
@@ -240,13 +274,6 @@ class BugDetectionAgent(BaseAgent):
                 "error": str(e),
                 "timestamp": datetime.now().isoformat()
             }
-        finally:
-            # 清理项目环境（如果是项目分析）
-            if analysis_type == "project" and file_path and 'project_path' in locals():
-                try:
-                    await self.cleanup_project_environment(project_path)
-                except Exception as cleanup_error:
-                    self.logger.warning(f"清理项目环境失败: {cleanup_error}")
     
     async def submit_task(self, task_id: str, task_data: Dict[str, Any]) -> str:
         """提交任务"""
@@ -1644,8 +1671,58 @@ class BugDetectionAgent(BaseAgent):
         """
         try:
             file_path = Path(file_path)
-            extract_dir = Path("temp_extract") / f"project_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            extract_dir.mkdir(parents=True, exist_ok=True)
+            # 使用更精确的时间戳（包含微秒）和UUID，避免目录冲突
+            import uuid
+            import time
+            max_retries = 5
+            extract_dir = None
+            
+            for attempt in range(max_retries):
+                try:
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+                    unique_id = uuid.uuid4().hex[:8]
+                    extract_dir = Path("temp_extract") / f"project_{timestamp}_{unique_id}"
+                    
+                    # 如果目录已存在，强制删除它
+                    if extract_dir.exists():
+                        self.logger.warning(f"临时目录已存在，删除旧目录: {extract_dir}")
+                        # 尝试多次删除，确保成功
+                        for delete_attempt in range(3):
+                            try:
+                                shutil.rmtree(extract_dir, ignore_errors=False)
+                                break
+                            except Exception as e:
+                                if delete_attempt < 2:
+                                    time.sleep(0.5)  # 等待0.5秒后重试
+                                    continue
+                                else:
+                                    self.logger.warning(f"无法删除旧目录，尝试使用新路径: {e}")
+                                    # 如果删除失败，使用新的UUID
+                                    unique_id = uuid.uuid4().hex[:8]
+                                    extract_dir = Path("temp_extract") / f"project_{timestamp}_{unique_id}"
+                    
+                    # 创建新目录
+                    extract_dir.mkdir(parents=True, exist_ok=False)  # 使用exist_ok=False确保目录不存在
+                    break  # 成功创建，退出重试循环
+                    
+                except FileExistsError:
+                    # 目录仍然存在（可能是并发创建），重试
+                    if attempt < max_retries - 1:
+                        self.logger.warning(f"目录创建冲突，重试 {attempt + 1}/{max_retries}")
+                        time.sleep(0.1 * (attempt + 1))  # 递增等待时间
+                        continue
+                    else:
+                        raise Exception(f"无法创建临时目录，已重试{max_retries}次")
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        self.logger.warning(f"创建临时目录失败，重试 {attempt + 1}/{max_retries}: {e}")
+                        time.sleep(0.1 * (attempt + 1))
+                        continue
+                    else:
+                        raise
+            
+            if extract_dir is None or not extract_dir.exists():
+                raise Exception("无法创建临时解压目录")
             
             if file_path.suffix.lower() == '.zip':
                 with zipfile.ZipFile(file_path, 'r') as zip_ref:
@@ -1681,11 +1758,17 @@ class BugDetectionAgent(BaseAgent):
 
                 # 如果检测到 flask_simple_test 且未启用 Docker，则跳过虚拟环境创建
                 if is_flask_simple and not (self.use_docker and self.docker_runner):
+                    print("✅ 检测到 flask_simple_test 项目，跳过项目内虚拟环境创建")
                     self.logger.info("检测到 flask_simple_test 项目，且Docker未启用，跳过项目内虚拟环境创建，改由运行时使用预置缓存 venv。")
                     return str(extract_dir)
             except Exception:
                 # 安全降级到常规逻辑
                 pass
+            
+            # 添加进度提示
+            if not (self.use_docker and self.docker_runner):
+                print("⏳ 开始创建虚拟环境（这可能需要1-3分钟）...")
+                self.logger.info("开始创建虚拟环境")
             
             if self.use_docker and self.docker_runner:
                 try:
@@ -1718,8 +1801,14 @@ class BugDetectionAgent(BaseAgent):
                 elif not self.docker_runner:
                     print("⚠️ Docker运行器未初始化，使用本地虚拟环境")
                     self.logger.warning("Docker运行器未初始化，使用本地虚拟环境")
+                
+                print("📦 步骤1/2: 创建虚拟环境...")
                 venv_path = await self._create_virtual_environment(extract_dir)
+                print("✅ 虚拟环境创建完成")
+                
+                print("📦 步骤2/2: 安装项目依赖（这可能需要几分钟）...")
                 await self._install_dependencies(extract_dir, venv_path)
+                print("✅ 依赖安装完成")
 
             return str(extract_dir)
             
@@ -1942,6 +2031,7 @@ class BugDetectionAgent(BaseAgent):
             # 安装requirements.txt
             for req_file in requirements_files[:3]:  # requirements*.txt
                 if req_file.exists():
+                    print(f"📦 正在安装依赖文件: {req_file.name}")
                     self.logger.info(f"安装依赖文件: {req_file}")
                     
                     # 修复文件编码问题
@@ -1989,6 +2079,7 @@ class BugDetectionAgent(BaseAgent):
                                 self.logger.warning(f"Flask 2.0.0安装失败: {flask_result.stderr}")
                         
                         # 安装其他依赖
+                        print(f"⏳ 正在安装依赖（最多5分钟）...")
                         result = subprocess.run(
                             pip_cmd + ["install", "-r", str(req_file)],
                             capture_output=True, text=True, timeout=300,
@@ -1996,9 +2087,11 @@ class BugDetectionAgent(BaseAgent):
                         )
                         
                         if result.returncode == 0:
+                            print(f"✅ 依赖安装成功: {req_file.name}")
                             self.logger.info(f"依赖安装成功: {req_file}")
                             installed_any = True
                         else:
+                            print(f"⚠️ 依赖安装失败: {req_file.name}")
                             self.logger.warning(f"依赖安装失败: {req_file}, 错误: {result.stderr}")
                             # 尝试使用--user参数
                             try:
@@ -2159,10 +2252,29 @@ class BugDetectionAgent(BaseAgent):
             self.logger.error(f"Docker安装依赖错误详情: {traceback.format_exc()}")
             return False
     
+    async def _cleanup_project_environment_async(self, project_path: str):
+        """后台异步清理项目环境（不阻塞主流程）"""
+        try:
+            self.logger.info(f"🧹 开始后台清理项目环境: {project_path}")
+            await self.cleanup_project_environment(project_path)
+            self.logger.info(f"✅ 后台清理完成: {project_path}")
+        except Exception as e:
+            self.logger.warning(f"⚠️ 后台清理失败: {project_path}, 错误: {e}")
+    
     async def cleanup_project_environment(self, project_path: str) -> bool:
         """清理项目环境（删除临时文件和虚拟环境）"""
         try:
+            # 检查project_path是否为None或空
+            if not project_path:
+                self.logger.warning("cleanup_project_environment: project_path为空，跳过清理")
+                return False
+            
             project_path = Path(project_path)
+            
+            # 检查路径是否存在
+            if not project_path.exists():
+                self.logger.warning(f"cleanup_project_environment: 路径不存在，跳过清理: {project_path}")
+                return False
             
             # 删除虚拟环境
             venv_path = project_path / "venv"
@@ -2686,8 +2798,38 @@ class BugDetectionAgent(BaseAgent):
                 self.logger.info("开始Bandit安全检测...")
                 try:
                     # Bandit优先使用目录模式，更高效
+                    # 添加超时保护（最多5分钟）
                     if hasattr(self.bandit_tool, 'analyze_directory'):
-                        bandit_result = await self.bandit_tool.analyze_directory(project_path)
+                        try:
+                            bandit_result = await asyncio.wait_for(
+                                self.bandit_tool.analyze_directory(project_path),
+                                timeout=300.0  # 5分钟超时
+                            )
+                        except asyncio.TimeoutError:
+                            self.logger.warning("Bandit目录分析超时（5分钟），跳过Bandit检测")
+                            bandit_result = {
+                                'success': False,
+                                'error': 'Bandit执行超时（5分钟）',
+                                'issues': []
+                            }
+                        except Exception as e:
+                            # 捕获其他异常（包括subprocess.TimeoutExpired）
+                            error_msg = str(e)
+                            if 'timeout' in error_msg.lower() or 'TimeoutExpired' in str(type(e)):
+                                self.logger.warning(f"Bandit目录分析超时: {e}")
+                                bandit_result = {
+                                    'success': False,
+                                    'error': f'Bandit执行超时: {error_msg}',
+                                    'issues': []
+                                }
+                            else:
+                                # 其他异常，重新抛出或记录
+                                self.logger.warning(f"Bandit目录分析异常: {e}")
+                                bandit_result = {
+                                    'success': False,
+                                    'error': f'Bandit执行异常: {error_msg}',
+                                    'issues': []
+                                }
                         
                         if bandit_result.get('success') and bandit_result.get('issues'):
                             # 只保留核心文件的问题
@@ -2816,7 +2958,28 @@ class BugDetectionAgent(BaseAgent):
                 if self.ruff_tool:
                     self.logger.info("开始Ruff目录分析（快速代码质量检查）...")
                     try:
-                        ruff_result = await self.ruff_tool.analyze_directory(project_path)
+                        # 添加超时保护（最多5分钟）
+                        try:
+                            ruff_result = await asyncio.wait_for(
+                                self.ruff_tool.analyze_directory(project_path),
+                                timeout=300.0  # 5分钟超时
+                            )
+                        except asyncio.TimeoutError:
+                            self.logger.warning("Ruff目录分析超时（5分钟），跳过Ruff检测")
+                            ruff_result = {
+                                'success': False,
+                                'error': 'Ruff执行超时（5分钟）',
+                                'issues': []
+                            }
+                        # 检查ruff_result是否为字典类型
+                        if not isinstance(ruff_result, dict):
+                            self.logger.warning(f"Ruff分析失败: 返回结果类型错误，期望dict，实际为{type(ruff_result).__name__}: {ruff_result}")
+                            ruff_result = {
+                                'success': False,
+                                'error': f'返回结果类型错误: {type(ruff_result).__name__}',
+                                'issues': []
+                            }
+                        
                         if ruff_result.get('success') and ruff_result.get('issues'):
                             for issue in ruff_result['issues']:
                                 # 转换为相对路径
@@ -2826,7 +2989,8 @@ class BugDetectionAgent(BaseAgent):
                                 ruff_issues.append(issue)
                             self.logger.info(f"Ruff检测到 {len(ruff_issues)} 个问题")
                         elif not ruff_result.get('success'):
-                            self.logger.warning(f"Ruff分析失败: {ruff_result.get('error', '未知错误')}")
+                            error_msg = ruff_result.get('error', '未知错误') if isinstance(ruff_result, dict) else str(ruff_result)
+                            self.logger.warning(f"Ruff分析失败: {error_msg}")
                     except Exception as e:
                         self.logger.warning(f"Ruff分析失败: {e}")
                         import traceback
@@ -3044,7 +3208,7 @@ class BugDetectionAgent(BaseAgent):
                     "semgrep_issues": len(semgrep_issues),
                     "ruff_issues": len(ruff_issues),
                     "ai_issues": len(ai_issues),
-                    "supported_languages": list(set([issue.get('language', 'unknown') for issue in ai_issues]))
+                    "supported_languages": sorted(list(set([issue.get('language', 'unknown') for issue in ai_issues])))  # 转换为list并排序
                 },
                 "tool_coverage": {
                     "pylint": len(pylint_issues),
@@ -3481,11 +3645,33 @@ class BugDetectionAgent(BaseAgent):
             # 确保目录存在
             self.tasks_file.parent.mkdir(parents=True, exist_ok=True)
             
+            # 将任务数据中的set对象转换为list，确保JSON可序列化
+            serializable_tasks = self._make_json_serializable(self.tasks)
+            
             with open(self.tasks_file, 'w', encoding='utf-8') as f:
-                json.dump(self.tasks, f, ensure_ascii=False, indent=2)
+                json.dump(serializable_tasks, f, ensure_ascii=False, indent=2)
             self.logger.debug(f"保存了 {len(self.tasks)} 个任务状态")
         except Exception as e:
             self.logger.error(f"保存任务状态失败: {e}")
+            import traceback
+            self.logger.debug(traceback.format_exc())
+    
+    def _make_json_serializable(self, obj: Any) -> Any:
+        """递归地将对象中的set转换为list，确保JSON可序列化"""
+        if isinstance(obj, dict):
+            return {key: self._make_json_serializable(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._make_json_serializable(item) for item in obj]
+        elif isinstance(obj, set):
+            return sorted(list(obj))  # 转换为list并排序
+        elif isinstance(obj, (str, int, float, bool, type(None))):
+            return obj
+        else:
+            # 对于其他类型，尝试转换为字符串
+            try:
+                return str(obj)
+            except:
+                return None
     
     async def generate_ai_report(self, detection_results: Dict[str, Any], filename: str) -> str:
         """生成AI静态检测报告"""

@@ -92,7 +92,7 @@ class BanditTool:
                 text=True,
                 encoding='utf-8',
                 errors='replace',
-                timeout=120,
+                timeout=300,  # 增加到5分钟（300秒），给大项目足够时间
                 env=env,
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
             )

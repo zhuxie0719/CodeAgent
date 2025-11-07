@@ -88,36 +88,98 @@ class FixExecutionAgent(BaseAgent):
                 "message": f"修复失败：无法创建输出目录"
             }
 
-        # 将问题按文件聚合
+        # 将问题按文件聚合，并追踪被跳过的问题
         issues_by_file: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        skipped_issues: List[Dict[str, Any]] = []  # 追踪被跳过的问题及其原因
+        
         for issue in issues:
             # 获取问题所在的文件路径
             issue_file_path = issue.get("file_path") or issue.get("file")
             
-            if issue_file_path:
-                # 如果是绝对路径，直接使用
-                if os.path.isabs(issue_file_path):
-                    file_name = issue_file_path
-                else:
-                    # 如果是相对路径，相对于项目根目录
-                    file_name = os.path.join(project_root, issue_file_path)
-            else:
+            if not issue_file_path:
                 # 如果没有文件路径信息，跳过这个问题
+                skip_reason = "缺少文件路径信息"
                 self.logger.warning(f"⚠️ 问题缺少文件路径信息，跳过: {issue.get('message', 'unknown')[:50]}")
+                skipped_issues.append({
+                    "issue": issue,
+                    "reason": skip_reason,
+                    "file_path": None
+                })
                 continue
             
-            # 规范化路径（处理Windows路径分隔符）
+            # 规范化路径处理
+            if os.path.isabs(issue_file_path):
+                # 已经是绝对路径
+                file_name = os.path.normpath(issue_file_path)
+                # 检查路径是否包含project_root（避免重复嵌套）
+                # 如果路径已经包含项目根目录，直接使用
+                if project_root in file_name:
+                    # 路径已经包含项目路径，直接使用
+                    pass
+                else:
+                    # 路径不包含项目路径，但已经是绝对路径，直接使用
+                    # 这种情况可能发生在Docker环境下，路径映射不同
+                    self.logger.info(f"🔧 绝对路径不包含项目根目录，直接使用: {file_name}")
+            else:
+                # 相对路径，需要拼接项目根目录
+                # 先规范化相对路径，移除开头的./或../
+                issue_file_path = issue_file_path.lstrip('./').lstrip('../')
+                file_name = os.path.normpath(os.path.join(project_root, issue_file_path))
+            
+            # 再次规范化路径
             file_name = os.path.normpath(file_name)
+            
+            # 处理路径重复嵌套问题（如 temp_extract/project_xxx/temp_extract/project_xxx/file.py）
+            # 检测并移除重复的路径段序列
+            path_parts = file_name.split(os.sep)
+            
+            # 查找重复的路径段序列
+            # 例如：['temp_extract', 'project_xxx', 'temp_extract', 'project_xxx', 'file.py']
+            # 应该变成：['temp_extract', 'project_xxx', 'file.py']
+            if len(path_parts) > 2:
+                # 从最大可能的模式长度开始检查（最多检查到路径长度的一半）
+                max_pattern_len = min(len(path_parts) // 2, 10)  # 限制最大模式长度为10，避免性能问题
+                found_duplicate = False
+                
+                for pattern_len in range(max_pattern_len, 0, -1):  # 从大到小检查，优先处理长的重复模式
+                    if len(path_parts) < pattern_len * 2:
+                        continue
+                    
+                    # 检查前pattern_len个段是否与接下来的pattern_len个段相同
+                    pattern = path_parts[:pattern_len]
+                    next_pattern = path_parts[pattern_len:pattern_len * 2]
+                    
+                    if pattern == next_pattern:
+                        # 找到重复模式，移除重复的部分
+                        self.logger.info(f"🔧 检测到路径重复嵌套，移除重复段: {os.sep.join(pattern)}")
+                        file_name = os.sep.join(path_parts[pattern_len:])
+                        file_name = os.path.normpath(file_name)
+                        found_duplicate = True
+                        break
+                
+                # 如果没找到重复模式，但路径看起来异常长，记录日志
+                if not found_duplicate and len(path_parts) > 10:
+                    self.logger.warning(f"⚠️ 路径异常长 ({len(path_parts)} 段)，可能存在路径问题: {file_name[:200]}")
             
             # 验证文件是否存在
             if not os.path.exists(file_name):
+                skip_reason = f"文件不存在: {file_name}"
                 self.logger.warning(f"⚠️ 文件不存在，跳过: {file_name}")
+                self.logger.warning(f"   项目根目录: {project_root}")
+                self.logger.warning(f"   原始路径: {issue_file_path}")
+                skipped_issues.append({
+                    "issue": issue,
+                    "reason": skip_reason,
+                    "file_path": file_name,
+                    "original_path": issue_file_path
+                })
                 continue
                 
             issues_by_file[file_name].append(issue)
 
         fix_results: List[Dict[str, Any]] = []
         errors: List[str] = []
+        failed_issues_details: List[Dict[str, Any]] = []  # 追踪修复失败的问题详情
         total_files = len(issues_by_file)
         processed_files = 0
 
@@ -143,7 +205,16 @@ class FixExecutionAgent(BaseAgent):
 
                 if not os.path.exists(abs_path):
                     self.logger.error(f"❌ 文件未找到: {abs_path}")
-                    errors.append(f"文件未找到: {abs_path}")
+                    error_msg = f"文件未找到: {abs_path}"
+                    errors.append(error_msg)
+                    # 记录该文件的所有问题为失败
+                    for issue in file_issues:
+                        failed_issues_details.append({
+                            "issue": issue,
+                            "file": abs_path,
+                            "reason": error_msg,
+                            "status": "file_not_found"
+                        })
                     continue
 
                 self.logger.info(f"🔧 读取文件内容: {abs_path}")
@@ -215,8 +286,19 @@ class FixExecutionAgent(BaseAgent):
                     self.logger.error(f"❌ LLM修复失败: {abs_path}")
                     self.logger.error(f"   错误信息: {str(e)}")
                     import traceback
-                    self.logger.error(f"   错误详情: {traceback.format_exc()}")
-                    errors.append(f"修复失败: {e}")
+                    error_trace = traceback.format_exc()
+                    self.logger.error(f"   错误详情: {error_trace}")
+                    error_msg = f"LLM修复失败: {str(e)}"
+                    errors.append(error_msg)
+                    # 记录该文件的所有问题为失败
+                    for issue in file_issues:
+                        failed_issues_details.append({
+                            "issue": issue,
+                            "file": abs_path,
+                            "reason": error_msg,
+                            "error_detail": error_trace,
+                            "status": "llm_failed"
+                        })
                     continue
 
                 # 输出文件路径
@@ -275,11 +357,22 @@ class FixExecutionAgent(BaseAgent):
                     "fixed_issues_details": fixed_issues_details  # 添加修复的问题详情
                 })
             except Exception as e:
-                errors.append(f"处理 {file_key} 失败: {e}")
+                error_msg = f"处理 {file_key} 失败: {e}"
+                errors.append(error_msg)
+                # 记录该文件的所有问题为失败
+                for issue in file_issues:
+                    failed_issues_details.append({
+                        "issue": issue,
+                        "file": file_key,
+                        "reason": error_msg,
+                        "status": "processing_failed"
+                    })
 
         total_issues = len(issues)
         fixed_files = len(fix_results)
         total_fixed_issues = sum(r.get("issues_fixed", 0) for r in fix_results)
+        skipped_count = len(skipped_issues)
+        failed_count = len(failed_issues_details)
         
         # 生成修复结果摘要
         self.logger.info(f"\n{'='*60}")
@@ -288,7 +381,8 @@ class FixExecutionAgent(BaseAgent):
         self.logger.info(f"   总问题数: {total_issues}")
         self.logger.info(f"   成功修复文件数: {fixed_files}/{total_files}")
         self.logger.info(f"   成功修复问题数: {total_fixed_issues}")
-        self.logger.info(f"   失败问题数: {len(errors)}")
+        self.logger.info(f"   跳过问题数: {skipped_count}")
+        self.logger.info(f"   失败问题数: {failed_count}")
         self.logger.info(f"   输出目录: {output_dir}")
         
         if fix_results:
@@ -298,6 +392,41 @@ class FixExecutionAgent(BaseAgent):
                 self.logger.info(f"      修复前: {result.get('before', 'N/A')}")
                 self.logger.info(f"      修复后: {result.get('after', 'N/A')}")
         
+        if skipped_issues:
+            self.logger.warning(f"\n⚠️ 被跳过的问题 ({skipped_count} 个):")
+            for idx, skipped in enumerate(skipped_issues[:10], 1):  # 只显示前10个
+                issue = skipped.get("issue", {})
+                reason = skipped.get("reason", "未知原因")
+                file_path = skipped.get("file_path", "N/A")
+                line = issue.get("line", "N/A")
+                msg = issue.get("message", "")[:50]
+                self.logger.warning(f"   {idx}. [{file_path}:{line}] {msg}")
+                self.logger.warning(f"      原因: {reason}")
+            if len(skipped_issues) > 10:
+                self.logger.warning(f"   ... 还有 {len(skipped_issues) - 10} 个被跳过的问题")
+        
+        if failed_issues_details:
+            self.logger.warning(f"\n❌ 修复失败的问题 ({failed_count} 个):")
+            # 按失败原因分组统计
+            failure_reasons = {}
+            for failed in failed_issues_details:
+                reason = failed.get("reason", "未知原因")
+                if reason not in failure_reasons:
+                    failure_reasons[reason] = []
+                failure_reasons[reason].append(failed)
+            
+            for reason, failed_list in failure_reasons.items():
+                self.logger.warning(f"   {reason}: {len(failed_list)} 个问题")
+                # 显示前5个失败问题的详情
+                for idx, failed in enumerate(failed_list[:5], 1):
+                    issue = failed.get("issue", {})
+                    file_path = failed.get("file", "N/A")
+                    line = issue.get("line", "N/A")
+                    msg = issue.get("message", "")[:50]
+                    self.logger.warning(f"      {idx}. [{file_path}:{line}] {msg}")
+                if len(failed_list) > 5:
+                    self.logger.warning(f"      ... 还有 {len(failed_list) - 5} 个类似问题")
+        
         if errors:
             self.logger.warning(f"\n⚠️ 修复过程中的错误:")
             for idx, error in enumerate(errors, 1):
@@ -306,17 +435,19 @@ class FixExecutionAgent(BaseAgent):
         self.logger.info(f"{'='*60}\n")
         
         return {
-            "success": len(errors) == 0,
+            "success": len(errors) == 0 and failed_count == 0,
             "task_id": task_id,
             "fix_results": fix_results,
             "total_issues": total_issues,
             "total_files": total_files,
             "fixed_files": fixed_files,
             "fixed_issues": total_fixed_issues,
-            "failed_issues": total_issues - total_fixed_issues,
-            "skipped_issues": 0,
+            "failed_issues": failed_count,
+            "skipped_issues": skipped_count,
             "errors": errors,
+            "skipped_issues_details": skipped_issues,  # 添加被跳过的问题详情
+            "failed_issues_details": failed_issues_details,  # 添加失败问题的详情
             "output_dir": output_dir,
             "timestamp": asyncio.get_event_loop().time(),
-            "message": f"修复完成: {fixed_files}/{total_files} 个文件, {total_fixed_issues}/{total_issues} 个问题" if not errors else f"修复完成但有错误: {fixed_files}/{total_files} 个文件, {total_fixed_issues}/{total_issues} 个问题",
+            "message": f"修复完成: {fixed_files}/{total_files} 个文件, {total_fixed_issues}/{total_issues} 个问题 (跳过: {skipped_count}, 失败: {failed_count})" if not errors else f"修复完成但有错误: {fixed_files}/{total_files} 个文件, {total_fixed_issues}/{total_issues} 个问题 (跳过: {skipped_count}, 失败: {failed_count})",
         }
