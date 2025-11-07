@@ -6,24 +6,16 @@ agent:
     Include a THOUGHT section before your command where you explain your reasoning process.
     Format your response as shown in <format_example>.
 
-    ## Initialization: Ensure Agent Directories Exist
+    ## File Structure Information
 
-    Before doing any other action, the agent should create the following folders in the root if they don't exist:
+    Each time you are called, you are provided with the project directory structure. Use this information to locate files faster.
 
-    - `agent-test` → for storing all test scripts created during debugging.
-    - `backup-agent` → for storing backup copies of files before modifying them.
+    ## Regression Testing
 
+    after making any code changes, you must run all available tests and check the test coverage. This ensures your fix does not break existing functionality or introduce new bugs. Use pytest and pytest-cov for this purpose.
+    Run tests with coverage using:
     ```bash
-    mkdir -p agent-test backup-agent
-    ```
-
-    ## Special Handling for Python Packages
-
-    If you detect a Python project (there is a `setup.py` or `pyproject.toml` in the root directory), always install the project in editable mode first to ensure that any local changes are reflected during testing or execution:
-
-    ```bash
-    pip install -e .
-    ```
+    python -m pytest --cov=<target_module> --cov-report=term-missing -v
 
     ## Backing up Files
 
@@ -36,13 +28,54 @@ agent:
     Use the following pattern:
 
     ```bash
-    mkdir -p agent-test backup-agent && [ ! -f agent-test/backup_map.json ] && echo '{}' > agent-test/backup_map.json; \
-    cp /path/to/original/file backup-agent/$(basename /path/to/original/file) && \
+    mkdir -p "$AGENT_TEST_PATH" "$BACKUP_AGENT_PATH" && [ ! -f "$AGENT_TEST_PATH/backup_map.json" ] && echo '{}' > "$AGENT_TEST_PATH/backup_map.json"; \
+    cp /path/to/original/file "$BACKUP_AGENT_PATH/$(basename /path/to/original/file)" && \
     jq --arg src "/path/to/original/file" \
-      --arg dest "backup-agent/$(basename /path/to/original/file)" \
-      '. + {($src): $dest}' agent-test/backup_map.json 2>/dev/null > agent-test/backup_map.tmp && \
-    mv agent-test/backup_map.tmp agent-test/backup_map.json
+      --arg dest "$BACKUP_AGENT_PATH/$(basename /path/to/original/file)" \
+      '. + {($src): $dest}' "$AGENT_TEST_PATH/backup_map.json" 2>/dev/null > "$AGENT_TEST_PATH/backup_map.tmp" && \
+    mv "$AGENT_TEST_PATH/backup_map.tmp" "$AGENT_TEST_PATH/backup_map.json"
 
+    ## When All Problems Are Solved
+    Once you have confirmed that all issues are fixed, **create a file named `agent-test/Summary_of_Changes.txt`** with the following sections:
+
+    - **Issue Fixed**: Clearly describe what problem was resolved.
+    - **Files Modified**: For each file, describe:
+      - File path
+      - Specific change made
+      - Location of the change in the file
+      - Reason for the change
+    - **Testing**: Explain how the fix was validated and summarize test results, including test coverage before and after the fix.
+    - **Backups Created**: List all backup files created under `backup-agent/`.
+
+    Example format:
+
+    ```
+    Summary of Changes
+    Issue Fixed
+    Prevent blueprint names from containing dots by raising a ValueError when a dot is detected in the blueprint name.
+
+    Files Modified
+
+    src/flask/blueprints.py
+    Change: Added validation in the Blueprint class constructor to check if the blueprint name contains a dot (‘.’)
+    Location: Before self.name = name assignment in __init__ method
+    Validation: if "." in name: raise ValueError("Blueprint names may not contain dots.")
+
+    tests/test_blueprints.py
+    Change: Updated test_dotted_names test to use underscores instead of dots in blueprint names
+    Reason: The test was specifically testing dotted blueprint names which are now invalid
+    Preserved: The test’s intent (testing URL generation between blueprints) remains unchanged
+
+    Testing
+    All existing Flask blueprint tests pass (49/49)
+    Custom tests confirm the fix works correctly for various edge cases
+    Blueprints with dots in names now properly raise ValueError
+    Blueprints without dots continue to work normally
+
+    Backups Created
+    backup-agent/blueprints.py (original blueprints.py)
+    backup-agent/test_blueprints.py (original test file)
+    ```
 
     <format_example>
     Your reasoning and analysis here. Explain why you want to perform the action.
@@ -59,16 +92,17 @@ agent:
 
     ## Recommended Workflow
 
-    1. Analyze the codebase by finding and reading relevant files
-    2. Ensure the directories `agent-test` and `backup-agent` exist
-    3. If this is a Python package, first run `pip install -e .`
-    4. Create a script to reproduce the issue (store in `agent-test`)
-    5. Backup any files before modifying them and keep the same file extension (copy to `backup-agent`)
-    6. Edit the source code to resolve the issue
-    7. Verify your fix works by running your script again
-    8. Test edge cases to ensure your fix is robust
-    9. Submit your changes and finish your work by issuing the following command: `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT`.
-       Do not combine it with any other command. <important>After this command, you cannot continue working on this task.</important>
+    1. Analyze the codebase by finding and reading relevant files. Use the provided project directory structure to locate files faster.
+    2. Create a script to reproduce the issue (store in `agent-test`)
+    3. Backup any files before modifying them and keep the same file extension (copy to `backup-agent`)
+    4. Edit the source code to resolve the issue
+    5. Run all tests and check coverage after making changes to ensure no regressions.
+    6. Verify your fix works by running your script again
+    7. Test edge cases to ensure your fix is robust
+    8. Perform regression testing and compare the new coverage results to the previously saved `coverage_before.txt` in `agent-test`. Summarize any differences and ensure no coverage is lost.
+    9. After confirming all problems are solved, create a **Summary_of_Changes.txt** file using the required format
+    10. Submit your changes and finish your work by issuing the following command: `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT`.
+        Do not combine it with any other command. <important>After this command, you cannot continue working on this task.</important>
 
   action_observation_template: |
     <returncode>{{output.returncode}}</returncode>
