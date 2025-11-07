@@ -1,0 +1,93 @@
+[
+  {
+    "task": "在 run_tests.py 的第 0 行，动态检测发现导入错误：无法导入模块 'test_flask_simple'",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/run_tests.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 run_tests.py 的第 0 行，动态检测发现导入错误：无法导入模块 'dynamic_test_runner.FlaskDynamicTestRunner'",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/run_tests.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 3 行，存在未使用的变量或参数：Unused import os",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/backup-agent",
+    "defect_info": {
+      "line": 3,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 22 行，发现安全问题（检测项：）：Possible SQL injection vector through string-based query construction.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/backup-agent",
+    "defect_info": {
+      "line": 22,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/backup-agent",
+    "defect_info": {
+      "line": 91,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 131 行，发现安全问题（检测项：）：A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/backup-agent",
+    "defect_info": {
+      "line": 131,
+      "severity": "high",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 131 行，发现安全问题（检测项：）：Possible binding to all interfaces.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmputb_fe2v/backup-agent",
+    "defect_info": {
+      "line": 131,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  }
+]

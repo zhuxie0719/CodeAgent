@@ -79,13 +79,29 @@ class Coordinator:
     
     async def stop(self):
         """停止协调中心"""
+        import asyncio
+        
         self.logger.info("协调中心停止中...")
         self.is_running = False
         
-        # 停止核心组件
-        await self.task_manager.stop()
-        await self.event_bus.stop()
-        await self.decision_engine.stop()
+        # 停止核心组件（添加超时和异常处理）
+        components = [
+            ("任务管理器", self.task_manager),
+            ("事件总线", self.event_bus),
+            ("决策引擎", self.decision_engine)
+        ]
+        
+        for name, component in components:
+            try:
+                await asyncio.wait_for(
+                    component.stop(),
+                    timeout=2.0  # 每个组件最多等待2秒
+                )
+                self.logger.info(f"{name}已停止")
+            except asyncio.TimeoutError:
+                self.logger.warning(f"{name}停止超时，跳过")
+            except Exception as e:
+                self.logger.warning(f"{name}停止异常: {e}")
         
         self.logger.info("协调中心已停止")
     

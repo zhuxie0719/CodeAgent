@@ -889,7 +889,12 @@
     <div class="issues-section">
       <div class="issues-header">
         <div class="issues-title">检测到的问题</div>
+        <div style="display: flex; align-items: center; gap: 15px;">
         <div class="issues-count">0 个问题</div>
+          <button class="btn btn-primary" onclick="goToFixPage()" id="fixButton" style="display: none;">
+            <i class="fas fa-tools"></i> 修复问题
+          </button>
+        </div>
       </div>
       <div id="issuesList">
         <!-- Issues will be populated by JavaScript -->
@@ -1212,6 +1217,14 @@
 
     function renderIssues(issues) {
       const issuesList = document.getElementById('issuesList');
+      const fixButton = document.getElementById('fixButton');
+      
+      // 如果有问题，显示修复按钮
+      if (issues && issues.length > 0) {
+        fixButton.style.display = 'inline-block';
+      } else {
+        fixButton.style.display = 'none';
+      }
       
       // 按严重程度排序：error > warning > info
       const severityOrder = { 'error': 0, 'warning': 1, 'info': 2 };
@@ -1660,6 +1673,18 @@ ${report.summary ? `总体评价:\n${report.summary}` : ''}
       modal.onclick = (e) => {
         if (e.target === modal) modal.remove();
       };
+    }
+
+    // 跳转到修复页面
+    function goToFixPage() {
+      // 保存问题数据到localStorage
+      if (analysisResult && analysisResult.detection_results) {
+        const issues = analysisResult.detection_results.issues || [];
+        localStorage.setItem('fixIssues', JSON.stringify(issues));
+        localStorage.setItem('analysisResult', JSON.stringify(analysisResult));
+      }
+      // 跳转到修复页面
+      window.location.href = 'fix_execution.html';
     }
 
     // Initialize

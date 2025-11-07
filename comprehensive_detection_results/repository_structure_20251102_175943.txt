@@ -1,0 +1,17 @@
+# 仓库结构
+生成时间: 2025-11-02 17:59:43
+项目路径: C:\Users\23208\AppData\Local\Temp\tmp_f3z609t
+最大深度: 10
+
+tmp_f3z609t/
+├── 📁 utils/
+│   ├── 📄 __init__.py
+│   └── 📄 helper.py
+├── 📄 app.py
+└── 📄 requirements.txt
+
+---
+统计信息:
+- 总目录数: 1
+- 总文件数: 4
+- 过滤的目录: .coverage, .eggs, .idea, .mypy_cache, .venv, cache, coverage, node_modules, obj, tmp...

@@ -367,12 +367,24 @@ class BugDetectionAgent(BaseAgent):
                     import traceback
                     self.logger.error(f"Mypy错误详情: {traceback.format_exc()}")
             
-            # 初始化Semgrep工具（方案B必需）
+            # 初始化Semgrep工具（方案B必需）- 添加超时保护
             if settings.TOOLS.get("semgrep", {}).get("enabled", True):
                 try:
                     self.logger.info("正在初始化Semgrep工具...")
-                    self.semgrep_tool = SemgrepTool(settings.TOOLS.get("semgrep", {}))
-                    self.logger.info("✅ Semgrep工具初始化成功")
+                    # 在后台线程中初始化，避免阻塞
+                    import concurrent.futures
+                    loop = asyncio.get_event_loop()
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        future = executor.submit(SemgrepTool, settings.TOOLS.get("semgrep", {}))
+                        try:
+                            self.semgrep_tool = await asyncio.wait_for(
+                                loop.run_in_executor(None, lambda: future.result()),
+                                timeout=10.0  # 10秒超时
+                            )
+                            self.logger.info("✅ Semgrep工具初始化成功")
+                        except asyncio.TimeoutError:
+                            self.logger.warning("⚠️ Semgrep工具初始化超时，跳过")
+                            self.semgrep_tool = None
                 except Exception as e:
                     self.logger.warning(f"⚠️ Semgrep工具初始化失败（可能未安装）: {e}")
                     self.semgrep_tool = None
@@ -2241,7 +2253,15 @@ class BugDetectionAgent(BaseAgent):
             from tools.github_project_filter import github_filter
             
             # 使用GitHub项目过滤器进行文件过滤
-            filter_result = github_filter.filter_project_files(project_path)
+            # 在后台线程中执行，避免阻塞
+            import concurrent.futures
+            loop = asyncio.get_event_loop()
+            print(f"📂 [BugDetectionAgent] 开始执行文件过滤（GitHub过滤器）...")
+            filter_result = await loop.run_in_executor(
+                None,
+                lambda: github_filter.filter_project_files(project_path)
+            )
+            print(f"📂 [BugDetectionAgent] GitHub过滤器执行完成")
             
             core_files = filter_result.get('analyze_files', [])
             excluded_files = filter_result.get('skip_files', [])
@@ -2387,9 +2407,12 @@ class BugDetectionAgent(BaseAgent):
         """分析整个项目 - 增强版静态分析"""
         try:
             self.logger.info(f"开始分析项目: {project_path}")
+            print(f"📋 [BugDetectionAgent] 开始分析项目: {project_path}")
             
             # 执行增强的静态分析
+            print(f"🔍 [BugDetectionAgent] 开始执行增强静态分析...")
             analysis_result = await self._perform_enhanced_static_analysis(project_path, options)
+            print(f"✅ [BugDetectionAgent] 增强静态分析完成")
             
             if analysis_result.get("success", False):
                 return {
@@ -2444,7 +2467,9 @@ class BugDetectionAgent(BaseAgent):
             
             # ========== 步骤1: 文件过滤（排除第三方库等）==========
             self.logger.info("开始过滤项目文件，排除第三方库...")
+            print(f"📁 [BugDetectionAgent] 开始过滤项目文件...")
             filtered_files_info = await self._filter_project_files(project_path)
+            print(f"✅ [BugDetectionAgent] 文件过滤完成")
             
             core_files = filtered_files_info.get("core_files", [])
             excluded_files = filtered_files_info.get("excluded_files", [])

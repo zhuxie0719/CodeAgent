@@ -100,10 +100,25 @@ class BaseAgent(ABC):
             # 停止接收新任务
             self._running = False
             
-            # 等待所有工作线程完成
+            # 等待所有工作线程完成（添加超时保护）
             if self._worker_tasks:
-                await asyncio.gather(*self._worker_tasks, return_exceptions=True)
-                self._worker_tasks.clear()
+                try:
+                    # 取消所有未完成的任务
+                    for task in self._worker_tasks:
+                        if not task.done():
+                            task.cancel()
+                    
+                    # 等待任务完成或取消（最多等待3秒）
+                    await asyncio.wait_for(
+                        asyncio.gather(*self._worker_tasks, return_exceptions=True),
+                        timeout=3.0
+                    )
+                except asyncio.TimeoutError:
+                    self.logger.warning(f"Agent {self.agent_id} 工作线程停止超时，强制取消")
+                except Exception as e:
+                    self.logger.warning(f"Agent {self.agent_id} 停止工作线程时异常: {e}")
+                finally:
+                    self._worker_tasks.clear()
             
             self.status = AgentStatus.STOPPED
             self.logger.info(f"Agent {self.agent_id} 已停止")

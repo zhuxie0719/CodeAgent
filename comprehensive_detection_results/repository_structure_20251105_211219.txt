@@ -1,0 +1,17 @@
+# 仓库结构
+生成时间: 2025-11-05 21:12:19
+项目路径: C:\Users\23208\AppData\Local\Temp\tmpox2nwgpp
+最大深度: 10
+
+tmpox2nwgpp/
+└── 📁 测试项目/
+    ├── 📄 app.py
+    ├── 📄 README.md
+    ├── 📄 requirements.txt
+    └── 📄 vulnerable.py
+
+---
+统计信息:
+- 总目录数: 1
+- 总文件数: 4
+- 过滤的目录: .coverage, .env, .pytest_cache, .tox, __pycache__, backup, build, env, obj, temp...

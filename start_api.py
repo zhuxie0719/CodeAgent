@@ -58,13 +58,27 @@ def start_api_server():
         print("架构: Coordinator + Agent Manager + 模块化路由")
         print("包含功能: 真实静态分析 + Pylint/Flake8/Bandit + AI分析 + Coordinator协调 + 动态检测")
         print("支持: 单文件检测 + 项目压缩包检测 + 代码质量分析 + 深度代码分析 + 动态缺陷检测")
-        subprocess.run([
+        
+        # 检查是否在Windows上，如果是则禁用reload模式（Windows上的reload模式可能不稳定）
+        import platform
+        is_windows = platform.system() == "Windows"
+        use_reload = not is_windows  # Windows上禁用reload
+        
+        if is_windows:
+            print("⚠️  检测到Windows系统，禁用--reload模式（避免稳定性问题）")
+            print("   如需启用reload，请手动修改start_api.py")
+        
+        uvicorn_cmd = [
             sys.executable, "-m", "uvicorn", 
             "main_api:app", 
             "--host", "0.0.0.0", 
-            "--port", "8001", 
-            "--reload"
-        ])
+            "--port", "8001"
+        ]
+        
+        if use_reload:
+            uvicorn_cmd.append("--reload")
+        
+        subprocess.run(uvicorn_cmd)
     except KeyboardInterrupt:
         print("\n👋 服务器已停止")
     except Exception as e:

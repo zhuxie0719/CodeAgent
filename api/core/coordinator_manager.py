@@ -28,8 +28,13 @@ class CoordinatorManager:
     async def stop(self):
         """停止 Coordinator"""
         if self.coordinator:
-            await self.coordinator.stop()
-            print("✅ Coordinator 已停止")
+            try:
+                await self.coordinator.stop()
+                print("✅ Coordinator 已停止")
+            except Exception as e:
+                print(f"⚠️ Coordinator 停止异常: {e}")
+                import traceback
+                traceback.print_exc()
     
     def get_status(self):
         """获取 Coordinator 状态"""

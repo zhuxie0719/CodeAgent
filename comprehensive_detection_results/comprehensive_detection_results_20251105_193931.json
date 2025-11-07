@@ -1,0 +1,120 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-11-05T19:37:25.557829",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpn224p3dl.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true,
+    "enable_pylint": true,
+    "enable_mypy": true,
+    "enable_semgrep": true,
+    "enable_ruff": true,
+    "enable_bandit": true,
+    "enable_llm_filter": true
+  },
+  "extracted_path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpd3mhvssu",
+  "files": [
+    "test_zip\\test_java.java",
+    "test_zip\\test_python_bad.py"
+  ],
+  "preliminary_analysis": {
+    "success": true,
+    "project_structure": {
+      "path": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpd3mhvssu",
+      "total_files": 2,
+      "total_lines": 94,
+      "file_types": {
+        ".java": 1,
+        ".py": 1
+      },
+      "directories": [
+        "test_zip"
+      ],
+      "files": [
+        {
+          "path": "test_zip\\test_java.java",
+          "lines": 31,
+          "size": 888
+        },
+        {
+          "path": "test_zip\\test_python_bad.py",
+          "lines": 63,
+          "size": 1458
+        }
+      ],
+      "project_type": "unknown",
+      "framework": "unknown",
+      "primary_language": "python",
+      "has_tests": true,
+      "has_docs": false,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 2,
+      "analyzed_files": 2,
+      "total_lines": 94,
+      "total_functions": 8,
+      "total_classes": 1,
+      "average_complexity": 2.0,
+      "max_complexity": 2,
+      "total_issues": 0,
+      "issues_by_type": {},
+      "complexity_distribution": {
+        "2": 2
+      },
+      "maintainability_score": 100,
+      "file_analysis": [
+        {
+          "file_path": "test_zip\\test_java.java",
+          "lines_of_code": 31,
+          "function_count": 0,
+          "class_count": 1,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 2,
+            "cognitive_complexity": 0,
+            "lines_of_code": 31,
+            "function_count": 0,
+            "class_count": 1,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": []
+        },
+        {
+          "file_path": "test_zip\\test_python_bad.py",
+          "lines_of_code": 63,
+          "function_count": 8,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 2,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 8,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 5
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "test_zip\\test_python_bad.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "test_zip\\test_python_bad.py": 

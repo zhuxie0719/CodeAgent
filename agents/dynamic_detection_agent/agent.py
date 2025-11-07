@@ -559,9 +559,9 @@ class DynamicDetectionAgent(BaseAgent):
             # 根据选项决定是否启用Web应用测试
             enable_web_test = enable_server_tests and enable_flask_tests
             
-            # 运行动态测试 - 使用修复版检测包
+            # 运行动态测试 - 优先使用修复版检测包，否则使用新的检测逻辑
             try:
-                # 首先尝试使用修复版检测包
+                # 首先尝试使用修复版检测包（如果存在）
                 fixed_detection_path = os.path.join(project_path, "fixed_detection.py")
                 if os.path.exists(fixed_detection_path):
                     self.logger.info("使用修复版检测包进行检测...")
@@ -581,13 +581,13 @@ class DynamicDetectionAgent(BaseAgent):
                         self.logger.info("修复版检测包执行成功")
                         
                     except Exception as e:
-                        self.logger.warning(f"修复版检测包执行失败: {e}")
-                        # 回退到原始检测逻辑
-                        test_results = await self._run_original_detection_logic(project_path, enable_web_test)
+                        self.logger.warning(f"修复版检测包执行失败: {e}，回退到新检测逻辑")
+                        # 回退到新的检测逻辑
+                        test_results = await self._run_new_detection_logic(project_path, enable_web_test)
                 else:
-                    self.logger.info("未找到修复版检测包，使用原始检测逻辑...")
-                    # 使用原始检测逻辑
-                    test_results = await self._run_original_detection_logic(project_path, enable_web_test)
+                    self.logger.info("未找到修复版检测包，使用新检测逻辑...")
+                    # 使用新的检测逻辑
+                    test_results = await self._run_new_detection_logic(project_path, enable_web_test)
                     
             except Exception as e:
                 self.logger.error(f"动态检测失败: {e}")
@@ -1462,6 +1462,74 @@ class DynamicDetectionAgent(BaseAgent):
                 "tests": {},
                 "summary": {"success_rate": 0}
             }
+    
+    async def _run_new_detection_logic(self, project_path: str, enable_web_test: bool) -> Dict[str, Any]:
+        """运行新的检测逻辑（使用NoFlaskDynamicTest和Flask测试）"""
+        try:
+            # 首先使用NoFlaskDynamicTest进行无Flask测试（导入检测等）
+            try:
+                from flask_simple_test.no_flask_dynamic_test import NoFlaskDynamicTest
+                
+                self.logger.info("使用NoFlaskDynamicTest进行导入检测...")
+                no_flask_tester = NoFlaskDynamicTest(project_path=project_path)
+                no_flask_results = no_flask_tester.run_no_flask_tests(project_path=project_path)
+                
+                # 转换NoFlaskDynamicTest结果为导入分析格式
+                import_issues = []
+                if "tests" in no_flask_results:
+                    import_check = no_flask_results.get("tests", {}).get("import_check", {})
+                    if "import_issues" in import_check:
+                        import_issues = import_check["import_issues"]
+                
+                import_test_results = {
+                    "status": "success",
+                    "tests": {
+                        "import_check": {
+                            "import_issues": import_issues
+                        }
+                    }
+                }
+                
+            except Exception as e:
+                self.logger.warning(f"NoFlaskDynamicTest执行失败: {e}，回退到简单导入检测")
+                # 回退到简单导入检测
+                import_test_results = await self._run_simple_import_check(project_path)
+            
+            # 然后运行Flask功能测试
+            try:
+                flask_test_results = await self._run_simple_flask_tests(project_path, enable_web_test)
+                
+                # 合并测试结果
+                test_results = {
+                    "import_analysis": import_test_results,
+                    "flask_functionality": flask_test_results,
+                    "combined_summary": {
+                        "import_issues": import_test_results.get("tests", {}).get("import_check", {}).get("import_issues", []),
+                        "flask_success_rate": flask_test_results.get("summary", {}).get("success_rate", 0)
+                    }
+                }
+            except Exception as e:
+                self.logger.warning(f"Flask功能测试失败，仅使用导入检测结果: {e}")
+                test_results = {
+                    "import_analysis": import_test_results,
+                    "flask_functionality": {"status": "failed", "error": str(e)},
+                    "combined_summary": {
+                        "import_issues": import_test_results.get("tests", {}).get("import_check", {}).get("import_issues", []),
+                        "flask_success_rate": 0
+                    }
+                }
+        except Exception as e:
+            self.logger.error(f"新检测逻辑执行失败: {e}")
+            test_results = {
+                "import_analysis": {"status": "failed", "error": str(e)},
+                "flask_functionality": {"status": "failed", "error": str(e)},
+                "combined_summary": {
+                    "import_issues": [],
+                    "flask_success_rate": 0
+                }
+            }
+        
+        return test_results
     
     async def _run_original_detection_logic(self, project_path: str, enable_web_test: bool) -> Dict[str, Any]:
         """运行原始检测逻辑（作为回退方案）"""

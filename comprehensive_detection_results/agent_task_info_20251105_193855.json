@@ -1,0 +1,80 @@
+[
+  {
+    "task": "在 test_zip\\test_python_bad.py 的第 4 行，存在未使用的变量或参数：Unable to import 'unused_module'",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/test_zip/test_python_bad.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/backup-agent",
+    "defect_info": {
+      "line": 4,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 test_zip\\test_python_bad.py 的第 8 行，发现安全问题（检测项：）：Possible hardcoded password: 'admin123'",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/test_zip/test_python_bad.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/backup-agent",
+    "defect_info": {
+      "line": 8,
+      "severity": "low",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 test_zip\\test_python_bad.py 的第 20 行，pylint 检测到问题：Use of eval",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/test_zip/test_python_bad.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/backup-agent",
+    "defect_info": {
+      "line": 20,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 test_zip\\test_python_bad.py 的第 20 行，发现安全问题（检测项：）：Use of possibly insecure function - consider using safer ast.literal_eval.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/test_zip/test_python_bad.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/backup-agent",
+    "defect_info": {
+      "line": 20,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 test_zip\\test_python_bad.py 的第 45 行，pylint 检测到问题：Using open without explicitly specifying an encoding",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/test_zip/test_python_bad.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/backup-agent",
+    "defect_info": {
+      "line": 45,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 test_zip\\test_python_bad.py 的第 61 行，发现安全问题（检测项：）：Possible SQL injection vector through string-based query construction.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/test_zip/test_python_bad.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpd3mhvssu/backup-agent",
+    "defect_info": {
+      "line": 61,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  }
+]

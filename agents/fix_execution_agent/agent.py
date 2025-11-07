@@ -136,7 +136,7 @@ class FixExecutionAgent(BaseAgent):
             self.logger.info(f"   该文件的问题数量: {len(file_issues)}")
             self.logger.info(f"   进度: {processed_files}/{total_files} ({processed_files*100//total_files}%)")
             self.logger.info(f"{'='*60}")
-        try:
+            try:
                 # file_key 已经是完整的文件路径
                 abs_path = file_key
                 self.logger.info(f"🔧 检查文件是否存在: {abs_path}")

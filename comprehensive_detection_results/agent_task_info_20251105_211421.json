@@ -1,0 +1,184 @@
+[
+  {
+    "task": "在 测试项目\\app.py 的第 3 行，存在未使用的变量或参数：Unused import os",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 3,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 22 行，发现安全问题（检测项：）：Possible SQL injection vector through string-based query construction.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 22,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 91,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 131 行，发现安全问题（检测项：）：A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 131,
+      "severity": "high",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 131 行，发现安全问题（检测项：）：Possible binding to all interfaces.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 131,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 4 行，发现安全问题（检测项：）：Consider possible security implications associated with the subprocess module.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 4,
+      "severity": "low",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 5 行，发现安全问题（检测项：）：Consider possible security implications associated with pickle module.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 5,
+      "severity": "low",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 29 行，pylint 检测到问题：'subprocess.run' used without explicitly defining the value for 'check'.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 29,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 29 行，发现安全问题（检测项：）：subprocess call with shell=True identified, security issue.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 29,
+      "severity": "high",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 47 行，发现安全问题（检测项：）：Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 47,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 49 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 49,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 59 行，发现安全问题（检测项：）：Possible hardcoded password: 'admin123'",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 59,
+      "severity": "low",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 95 行，发现安全问题（检测项：）：A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 95,
+      "severity": "high",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 95 行，发现安全问题（检测项：）：Possible binding to all interfaces.",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/测试项目/vulnerable.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpox2nwgpp/backup-agent",
+    "defect_info": {
+      "line": 95,
+      "severity": "medium",
+      "tool": "bandit",
+      "source": "static"
+    }
+  }
+]

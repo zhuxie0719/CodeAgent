@@ -63,16 +63,26 @@ class AgentManager:
     
     async def stop_all_agents(self):
         """停止所有 Agent"""
+        import asyncio
+        
         print("\n" + "="*60)
         print("👋 停止所有 Agent...")
         print("="*60)
         
         for agent_id, agent in self.agents.items():
             try:
-                await agent.stop()
+                # 为每个agent的停止操作添加超时保护
+                await asyncio.wait_for(
+                    agent.stop(),
+                    timeout=5.0  # 每个agent最多等待5秒
+                )
                 print(f"✅ {agent_id} 已停止")
+            except asyncio.TimeoutError:
+                print(f"⚠️  {agent_id} 停止超时，跳过")
             except Exception as e:
                 print(f"⚠️  {agent_id} 停止失败: {e}")
+                import traceback
+                traceback.print_exc()
     
     @property
     def active_count(self):

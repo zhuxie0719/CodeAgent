@@ -457,30 +457,76 @@ class ComprehensiveDetector:
             # 确保静态检测agent已初始化（工具初始化）
             if not hasattr(self.static_agent, '_tools_initialized') or not self.static_agent._tools_initialized:
                 print("🔧 初始化静态检测工具...")
-                await self.static_agent.initialize()
-                self.static_agent._tools_initialized = True
-                print("✅ 静态检测工具初始化完成")
+                try:
+                    # 添加超时保护，避免初始化卡死
+                    await asyncio.wait_for(
+                        self.static_agent.initialize(),
+                        timeout=30.0  # 30秒超时
+                    )
+                    self.static_agent._tools_initialized = True
+                    print("✅ 静态检测工具初始化完成")
+                except asyncio.TimeoutError:
+                    print("⚠️ 静态检测工具初始化超时，继续使用部分工具")
+                    self.static_agent._tools_initialized = True  # 标记为已初始化，避免重复尝试
+                except Exception as e:
+                    print(f"⚠️ 静态检测工具初始化异常: {e}")
+                    self.static_agent._tools_initialized = True  # 标记为已初始化，避免重复尝试
             
             # 获取初步分析结果（如果已执行）
             preliminary_analysis = None
             if hasattr(self, '_current_preliminary_analysis'):
                 preliminary_analysis = self._current_preliminary_analysis
             
+            print(f"🚀 开始调用静态检测agent分析项目: {project_path}")
+            print(f"   工具选择: pylint={enable_pylint}, mypy={enable_mypy}, semgrep={enable_semgrep}, ruff={enable_ruff}, bandit={enable_bandit}")
+            
             # 调用静态检测agent（传递初步分析结果和工具选择）
-            analysis_result = await self.static_agent.analyze_project(project_path, {
-                "enable_static": True,
-                "enable_pylint": enable_pylint,
-                "enable_mypy": enable_mypy,
-                "enable_semgrep": enable_semgrep,
-                "enable_ruff": enable_ruff,
-                "enable_bandit": enable_bandit,
-                "enable_llm_filter": enable_llm_filter,
-                "enable_ai_analysis": True,
-                "preliminary_analysis": preliminary_analysis,  # 传递初步分析结果
-                "pylint_directory_mode": False,  # 禁用目录模式，使用单文件模式以确保问题不被过滤掉
-                "max_parallel_files": 10,  # 并行文件数限制
-                "max_issues_to_return": 1000  # 限制返回的问题数量，避免数据过大
-            })
+            # 添加超时保护和进度日志
+            try:
+                analysis_result = await asyncio.wait_for(
+                    self.static_agent.analyze_project(project_path, {
+                        "enable_static": True,
+                        "enable_pylint": enable_pylint,
+                        "enable_mypy": enable_mypy,
+                        "enable_semgrep": enable_semgrep,
+                        "enable_ruff": enable_ruff,
+                        "enable_bandit": enable_bandit,
+                        "enable_llm_filter": enable_llm_filter,
+                        "enable_ai_analysis": True,
+                        "preliminary_analysis": preliminary_analysis,  # 传递初步分析结果
+                        "pylint_directory_mode": False,  # 禁用目录模式，使用单文件模式以确保问题不被过滤掉
+                        "max_parallel_files": 10,  # 并行文件数限制
+                        "max_issues_to_return": 1000  # 限制返回的问题数量，避免数据过大
+                    }),
+                    timeout=300.0  # 5分钟超时
+                )
+                print(f"✅ 静态检测分析完成")
+            except asyncio.TimeoutError:
+                print(f"⚠️ 静态检测分析超时（5分钟），返回部分结果")
+                analysis_result = {
+                    "success": False,
+                    "error": "静态检测分析超时",
+                    "detection_results": {
+                        "project_path": project_path,
+                        "total_issues": 0,
+                        "issues": [],
+                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                    }
+                }
+            except Exception as e:
+                print(f"❌ 静态检测分析异常: {e}")
+                import traceback
+                print(f"错误详情:\n{traceback.format_exc()}")
+                analysis_result = {
+                    "success": False,
+                    "error": str(e),
+                    "detection_results": {
+                        "project_path": project_path,
+                        "total_issues": 0,
+                        "issues": [],
+                        "summary": {"error_count": 0, "warning_count": 0, "info_count": 0}
+                    }
+                }
             
             if analysis_result.get("success", False):
                 detection_results = analysis_result.get("detection_results", {})

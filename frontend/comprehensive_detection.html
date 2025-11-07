@@ -1021,6 +1021,60 @@
                 displayAIReport(data.ai_report);
                 document.getElementById('aiReportCard').style.display = 'block';
             }
+            
+            // 保存任务信息到localStorage，用于修复页面
+            if (results.task_info_file || results.task_info) {
+                // 保存任务信息文件路径或任务信息列表
+                if (results.task_info_file) {
+                    localStorage.setItem('fixTaskInfoFile', results.task_info_file);
+                }
+                if (results.task_info) {
+                    localStorage.setItem('fixTaskInfo', JSON.stringify(results.task_info));
+                }
+                // 保存完整结果
+                localStorage.setItem('comprehensiveDetectionResults', JSON.stringify(results));
+                
+                // 显示修复按钮
+                showFixButton();
+            }
+        }
+        
+        // 显示修复按钮
+        function showFixButton() {
+            const resultsSection = document.getElementById('resultsSection');
+            let fixButton = document.getElementById('fixButton');
+            
+            if (!fixButton) {
+                fixButton = document.createElement('button');
+                fixButton.id = 'fixButton';
+                fixButton.className = 'upload-button';
+                fixButton.innerHTML = '<i class="fas fa-tools"></i> 修复问题';
+                fixButton.style.cssText = 'margin: 20px 0; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 1em; font-weight: 500;';
+                fixButton.onclick = goToFixPage;
+                
+                // 插入到结果区域的开头
+                const summaryGrid = document.getElementById('summaryGrid');
+                if (summaryGrid && summaryGrid.parentElement) {
+                    summaryGrid.parentElement.insertBefore(fixButton, summaryGrid);
+                }
+            }
+            
+            fixButton.style.display = 'block';
+        }
+        
+        // 跳转到修复页面
+        function goToFixPage() {
+            const taskInfoFile = localStorage.getItem('fixTaskInfoFile');
+            const taskInfo = localStorage.getItem('fixTaskInfo');
+            const results = localStorage.getItem('comprehensiveDetectionResults');
+            
+            if (!taskInfoFile && !taskInfo) {
+                alert('未找到任务信息，无法跳转到修复页面');
+                return;
+            }
+            
+            // 跳转到修复页面
+            window.location.href = 'fix_execution.html';
         }
 
         // 显示问题列表

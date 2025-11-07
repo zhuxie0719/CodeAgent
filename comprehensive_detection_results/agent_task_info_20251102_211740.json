@@ -1,0 +1,107 @@
+[
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\app.py 中的 157 个严重问题和 4 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/app.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\cli.py 中的 154 个严重问题和 2 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/cli.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\config.py 中的 154 个严重问题和 2 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/config.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\ctx.py 中的 154 个严重问题和 2 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\debughelpers.py 中的 154 个严重问题和 1 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/debughelpers.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\globals.py 中的 154 个严重问题和 0 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/globals.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\helpers.py 中的 7 个严重问题和 2 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 340 行，pylint 检测到问题：Unnecessary \"elif\" after \"raise\", remove the leading \"el\" from \"elif\"",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\json\\tag.py 中的 8 个问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\scaffold.py 中的 11 个问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\sessions.py 中的 9 个问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\signals.py 中的 7 个问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/signals.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\templating.py 中的 2 个问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/templating.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\testing.py 中的 4 个严重问题和 2 个警告问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/testing.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  },
+  {
+    "task": "修复 flask-2.0.0\\src\\flask\\wrappers.py 中的 4 个问题",
+    "problem_file": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/flask-2.0.0/src/flask/wrappers.py",
+    "project_root": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita",
+    "agent_test_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/agent-test",
+    "backup_agent_path": "C:/Users/23208/AppData/Local/Temp/tmpj_rteita/backup-agent"
+  }
+]

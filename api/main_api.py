@@ -4,6 +4,7 @@ AI Agent 系统主入口
 """
 
 import sys
+import asyncio
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -154,6 +155,7 @@ async def startup_event():
     # 挂载修复执行 API
     try:
         import fix_execution_api
+        fix_execution_api.set_managers(coordinator_manager, agent_manager)
         app.include_router(fix_execution_api.router)
         print("✅ Fix Execution API 路由已挂载")
     except Exception as e:
@@ -190,13 +192,33 @@ async def shutdown_event():
     print("👋 AI Agent 系统正在关闭...")
     print("="*60)
     
-    # 停止所有 Agent
+    # 停止所有 Agent（添加超时和异常处理）
     if agent_manager:
-        await agent_manager.stop_all_agents()
+        try:
+            await asyncio.wait_for(
+                agent_manager.stop_all_agents(),
+                timeout=10.0  # 10秒超时
+            )
+        except asyncio.TimeoutError:
+            print("⚠️ Agent 停止超时，强制继续关闭")
+        except Exception as e:
+            print(f"⚠️ Agent 停止异常: {e}")
+            import traceback
+            traceback.print_exc()
     
-    # 停止 Coordinator
+    # 停止 Coordinator（添加超时和异常处理）
     if coordinator_manager:
-        await coordinator_manager.stop()
+        try:
+            await asyncio.wait_for(
+                coordinator_manager.stop(),
+                timeout=5.0  # 5秒超时
+            )
+        except asyncio.TimeoutError:
+            print("⚠️ Coordinator 停止超时，强制继续关闭")
+        except Exception as e:
+            print(f"⚠️ Coordinator 停止异常: {e}")
+            import traceback
+            traceback.print_exc()
     
     print("="*60)
     print("🎉 系统已安全关闭")

@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码修复系统 - AI Agent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #111827;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 70px;
+            height: 100vh;
+            background: #1c2330;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            justify-content: flex-start;
+        }
+
+        .sidebar .logo {
+            width: 40px;
+            height: 40px;
+            background: #f7d78c;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+            color: #bbb;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.2s;
+            text-decoration: none;
+        }
+
+        .sidebar .nav-item i {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar .nav-item:hover {
+            color: #fff;
+        }
+
+        /* Header */
+        .header {
+            margin-left: 70px;
+            height: 60px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #444;
+            font-weight: 500;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 70px;
+            padding: 20px;
+        }
+
+        .hero-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .hero-section h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: #111827;
+        }
+
+        .hero-section p {
+            font-size: 16px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        /* 问题列表区域 */
+        .issues-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .issues-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .issue-item {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .issue-item:hover {
+            background: #f9fafb;
+        }
+
+        .issue-item:last-child {
+            border-bottom: none;
+        }
+
+        .issue-item.selected {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .issue-checkbox {
+            margin-top: 3px;
+            transform: scale(1.1);
+        }
+
+        .issue-severity {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .severity-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .severity-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .severity-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .issue-content {
+            flex: 1;
+        }
+
+        .issue-message {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        .issue-details {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        /* 修复操作区域 */
+        .fix-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #4b5563;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 加载状态 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* 结果区域 */
+        .results-section {
+            display: none;
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.8em;
+            display: inline-block;
+        }
+
+        .status-processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* 代码对比区域 */
+        .code-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .code-block {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #f9fafb;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .code-content {
+            padding: 15px;
+            background: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-content.before {
+            color: #dc3545;
+        }
+
+        .code-content.after {
+            color: #28a745;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #111827;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+
+        /* 错误消息 */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #d1d5db;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            
+            .main {
+                margin-left: 60px;
+                padding: 15px;
+            }
+            
+            .header {
+                margin-left: 60px;
+                padding: 0 15px;
+            }
+            
+            .code-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">AI</div>
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="projects.html" class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>项目</span>
+        </a>
+        <a href="fix_execution.html" class="nav-item" style="color: #fff;">
+            <i class="fas fa-tools"></i>
+            <span>修复</span>
+        </a>
+    </aside>
+
+    <!-- Header -->
+    <header class="header">
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="projects.html">我的项目</a>
+            <a href="fix_execution.html">代码修复</a>
+        </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="hero-section">
+            <h1>🔧 代码修复系统</h1>
+            <p>选择需要修复的问题，一键自动修复代码缺陷</p>
+        </div>
+
+        <!-- 问题列表区域 -->
+        <div class="issues-section" id="issuesSection">
+            <div class="section-title">
+                <i class="fas fa-list"></i>
+                <span>问题列表</span>
+            </div>
+            
+            <div id="issuesList" class="issues-list">
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>暂无问题数据</p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">请从检测结果页面跳转过来，或手动输入问题数据</p>
+                </div>
+            </div>
+
+            <div class="fix-actions">
+                <button class="btn btn-secondary" onclick="selectAllIssues()">
+                    <i class="fas fa-check-square"></i> 全选
+                </button>
+                <button class="btn btn-secondary" onclick="deselectAllIssues()">
+                    <i class="fas fa-square"></i> 取消全选
+                </button>
+                <button class="btn btn-primary" onclick="startFix()" id="fixButton">
+                    <i class="fas fa-magic"></i> 开始修复
+                </button>
+            </div>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <h3>正在修复代码，请稍候...</h3>
+            <p id="loadingMessage">准备中...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- 结果区域 -->
+        <div class="results-section" id="resultsSection">
+            <div class="section-title">
+                <i class="fas fa-check-circle"></i>
+                <span>修复结果</span>
+                <span class="status-badge" id="statusBadge">处理中</span>
+            </div>
+
+            <div class="stats-grid" id="statsGrid">
+                <!-- 统计数据将在这里动态生成 -->
+            </div>
+
+            <div id="fixResults">
+                <!-- 修复结果将在这里显示 -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8001/api/v1/fix';
+        let currentTaskId = null;
+        let pollInterval = null;
+        let issuesData = [];
+        let selectedIssues = new Set();
+
+        // 页面加载时检查是否有传递的问题数据
+        window.addEventListener('load', function() {
+            // 优先检查综合检测结果（task_info）
+            const taskInfoFile = localStorage.getItem('fixTaskInfoFile');
+            const taskInfo = localStorage.getItem('fixTaskInfo');
+            const comprehensiveResults = localStorage.getItem('comprehensiveDetectionResults');
+            
+            if (taskInfo || taskInfoFile) {
+                // 从综合检测结果加载
+                console.log('从综合检测结果加载任务信息');
+                if (taskInfo) {
+                    try {
+                        const taskInfoList = JSON.parse(taskInfo);
+                        // 将task_info转换为issues格式
+                        issuesData = taskInfoList.map(task => {
+                            const defectInfo = task.defect_info || {};
+                            return {
+                                file: task.problem_file,
+                                file_path: task.problem_file,
+                                line: defectInfo.line || 0,
+                                message: task.task || '',
+                                severity: defectInfo.severity || 'info',
+                                type: defectInfo.tool || 'unknown',
+                                tool: defectInfo.tool || 'unknown',
+                                source: defectInfo.source || 'static',
+                                original_task: task
+                            };
+                        });
+                        displayIssues(issuesData);
+                        // 保存到全局变量，用于修复时使用
+                        window.comprehensiveTaskInfo = taskInfoList;
+                        window.comprehensiveTaskInfoFile = taskInfoFile;
+                    } catch (e) {
+                        console.error('解析任务信息失败:', e);
+                    }
+                }
+            } else {
+                // 从传统检测结果加载
+                const analysisResult = localStorage.getItem('analysisResult');
+                const issues = localStorage.getItem('fixIssues');
+                
+                if (issues) {
+                    try {
+                        issuesData = JSON.parse(issues);
+                        displayIssues(issuesData);
+                    } catch (e) {
+                        console.error('解析问题数据失败:', e);
+                    }
+                } else if (analysisResult) {
+                    try {
+                        const result = JSON.parse(analysisResult);
+                        if (result.detection_results && result.detection_results.issues) {
+                            issuesData = result.detection_results.issues;
+                            displayIssues(issuesData);
+                        }
+                    } catch (e) {
+                        console.error('解析分析结果失败:', e);
+                    }
+                }
+            }
+        });
+
+        // 显示问题列表
+        function displayIssues(issues) {
+            const issuesList = document.getElementById('issuesList');
+            
+            if (!issues || issues.length === 0) {
+                issuesList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>暂无问题</p>
+                    </div>
+                `;
+                return;
+            }
+
+            issuesList.innerHTML = issues.map((issue, index) => {
+                const severity = issue.severity || 'info';
+                const severityText = {
+                    'error': '错误',
+                    'warning': '警告',
+                    'info': '信息'
+                }[severity] || '信息';
+
+                return `
+                    <div class="issue-item" data-index="${index}">
+                        <input type="checkbox" class="issue-checkbox" data-index="${index}" 
+                               onchange="toggleIssue(${index})" checked>
+                        <div class="issue-severity severity-${severity}">${severityText}</div>
+                        <div class="issue-content">
+                            <div class="issue-message">${issue.message || issue.detailed_description || '未知问题'}</div>
+                            <div class="issue-details">
+                                文件: ${issue.file || issue.file_path || '未知'} | 
+                                行: ${issue.line || '未知'} | 
+                                类型: ${issue.type || '未知'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 默认全选
+            selectedIssues = new Set(issues.map((_, index) => index));
+            updateSelectedCount();
+        }
+
+        // 切换问题选择
+        function toggleIssue(index) {
+            if (selectedIssues.has(index)) {
+                selectedIssues.delete(index);
+            } else {
+                selectedIssues.add(index);
+            }
+            updateSelectedCount();
+        }
+
+        // 全选
+        function selectAllIssues() {
+            selectedIssues = new Set(issuesData.map((_, index) => index));
+            document.querySelectorAll('.issue-checkbox').forEach(cb => cb.checked = true);
+            updateSelectedCount();
+        }
+
+        // 取消全选
+        function deselectAllIssues() {
+            selectedIssues.clear();
+            document.querySelectorAll('.issue-checkbox').forEach(cb => cb.checked = false);
+            updateSelectedCount();
+        }
+
+        // 更新选中数量
+        function updateSelectedCount() {
+            const fixButton = document.getElementById('fixButton');
+            const count = selectedIssues.size;
+            fixButton.textContent = `🔧 修复选中问题 (${count})`;
+            fixButton.disabled = count === 0;
+        }
+
+        // 开始修复
+        async function startFix() {
+            if (selectedIssues.size === 0) {
+                alert('请至少选择一个需要修复的问题');
+                return;
+            }
+
+            // 显示加载状态
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('issuesSection').style.display = 'none';
+            document.getElementById('fixButton').disabled = true;
+
+            try {
+                let requestBody;
+                
+                // 检查是否有综合检测的任务信息
+                if (window.comprehensiveTaskInfo || window.comprehensiveTaskInfoFile) {
+                    // 使用综合检测结果模式
+                    const selectedIssuesList = Array.from(selectedIssues).map(idx => issuesData[idx]);
+                    
+                    // 从选中的问题中提取对应的task_info
+                    const selectedTaskInfo = selectedIssuesList
+                        .filter(issue => issue.original_task)
+                        .map(issue => issue.original_task);
+                    
+                    if (selectedTaskInfo.length === 0) {
+                        throw new Error('无法从选中的问题中提取任务信息');
+                    }
+                    
+                    requestBody = {
+                        task_info: selectedTaskInfo,
+                        task_info_file: window.comprehensiveTaskInfoFile || null
+                    };
+                    
+                    console.log('使用综合检测结果模式，任务数量:', selectedTaskInfo.length);
+                } else {
+                    // 使用传统模式
+                    const selectedIssuesList = Array.from(selectedIssues).map(idx => issuesData[idx]);
+                    
+                    // 获取文件路径（从第一个问题中获取）
+                    const filePath = selectedIssuesList[0].file || selectedIssuesList[0].file_path;
+                    if (!filePath) {
+                        throw new Error('无法获取文件路径，请确保问题数据包含文件信息');
+                    }
+                    
+                    requestBody = {
+                        file_path: filePath,
+                        issues: selectedIssuesList,
+                        decisions: {}
+                    };
+                    
+                    console.log('使用传统模式，问题数量:', selectedIssuesList.length);
+                }
+
+                // 调用修复API
+                const response = await fetch(`${API_BASE_URL}/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentTaskId = result.data.task_id;
+                    document.getElementById('loadingMessage').textContent = '修复任务已提交，正在处理...';
+                    startPolling();
+                } else {
+                    throw new Error(result.message || '修复请求失败');
+                }
+            } catch (error) {
+                console.error('修复失败:', error);
+                showError('修复失败: ' + error.message);
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('issuesSection').style.display = 'block';
+                document.getElementById('fixButton').disabled = false;
+            }
+        }
+
+        // 开始轮询任务状态
+        function startPolling() {
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/status/${currentTaskId}`);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const status = result.data.status;
+                        const progress = result.data.progress || 0;
+                        const currentStep = result.data.current_step || '';
+                        const fixedFiles = result.data.fixed_files || 0;
+                        const totalFiles = result.data.total_files || 0;
+                        const fixedIssues = result.data.fixed_issues || 0;
+                        const issuesCount = result.data.issues_count || 0;
+                        
+                        // 更新进度
+                        document.getElementById('progressFill').style.width = `${progress}%`;
+                        
+                        // 构建详细的进度消息
+                        let progressMessage = `修复进度: ${progress}%`;
+                        if (currentStep) {
+                            progressMessage += ` - ${currentStep}`;
+                        }
+                        if (totalFiles > 0) {
+                            progressMessage += `\n已修复: ${fixedFiles}/${totalFiles} 个文件`;
+                        }
+                        if (issuesCount > 0 && fixedIssues > 0) {
+                            progressMessage += `, ${fixedIssues}/${issuesCount} 个问题`;
+                        }
+                        
+                        document.getElementById('loadingMessage').innerHTML = progressMessage.replace(/\n/g, '<br>');
+                        
+                        if (status === 'completed' || status === 'failed') {
+                            clearInterval(pollInterval);
+                            document.getElementById('loading').classList.remove('show');
+                            
+                            if (status === 'completed') {
+                                await loadFixResult();
+                            } else {
+                                showError('修复失败: ' + (result.data.error || '未知错误'));
+                                document.getElementById('issuesSection').style.display = 'block';
+                                document.getElementById('fixButton').disabled = false;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('轮询状态失败:', error);
+                }
+            }, 2000);
+        }
+
+        // 加载修复结果
+        async function loadFixResult() {
+            try {
+                console.log('正在获取修复结果，任务ID:', currentTaskId);
+                const response = await fetch(`${API_BASE_URL}/result/${currentTaskId}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('获取修复结果失败:', response.status, errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                console.log('修复结果响应:', result);
+                
+                if (result.success && result.data) {
+                    displayFixResults(result.data);
+                } else {
+                    throw new Error(result.message || '获取修复结果失败');
+                }
+            } catch (error) {
+                console.error('加载修复结果失败:', error);
+                showError('加载修复结果失败: ' + error.message);
+                
+                // 尝试再次获取状态以获取更多信息
+                try {
+                    const statusResponse = await fetch(`${API_BASE_URL}/status/${currentTaskId}`);
+                    const statusResult = await statusResponse.json();
+                    console.log('当前任务状态:', statusResult);
+                    if (statusResult.success && statusResult.data.result) {
+                        displayFixResults(statusResult.data.result);
+                    }
+                } catch (e) {
+                    console.error('获取状态也失败:', e);
+                }
+            }
+        }
+
+        // 显示修复结果
+        function displayFixResults(result) {
+            const resultsSection = document.getElementById('resultsSection');
+            const statsGrid = document.getElementById('statsGrid');
+            const fixResults = document.getElementById('fixResults');
+            const statusBadge = document.getElementById('statusBadge');
+
+            // 更新状态
+            statusBadge.textContent = result.success ? '修复成功' : '修复失败';
+            statusBadge.className = `status-badge ${result.success ? 'status-completed' : 'status-failed'}`;
+
+            // 显示统计信息
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${result.total_issues || 0}</div>
+                    <div class="stat-label">总问题数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${result.fixed_issues || 0}</div>
+                    <div class="stat-label">已修复</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${result.failed_issues || 0}</div>
+                    <div class="stat-label">修复失败</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${result.fix_results?.length || 0}</div>
+                    <div class="stat-label">修复文件数</div>
+                </div>
+            `;
+
+            // 显示修复结果详情
+            if (result.fix_results && result.fix_results.length > 0) {
+                fixResults.innerHTML = `
+                    <div style="margin-bottom: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                        <h4 style="margin: 0 0 10px 0; color: #1e40af;">📁 修复结果位置</h4>
+                        <p style="margin: 0; color: #1e3a8a; font-family: monospace; font-size: 0.9em;">
+                            ${result.output_dir || '输出目录信息不可用'}
+                        </p>
+                    </div>
+                ` + result.fix_results.map((fixResult, index) => {
+                    const fileName = fixResult.file_name || fixResult.file.split(/[/\\]/).pop() || '未知文件';
+                    const fixedIssues = fixResult.fixed_issues_details || [];
+                    
+                    return `
+                        <div style="margin-bottom: 30px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                            <div style="background: #f9fafb; padding: 15px; border-bottom: 1px solid #e5e7eb;">
+                                <h4 style="margin: 0 0 10px 0;">📄 文件 ${index + 1}: ${fileName}</h4>
+                                <div style="font-size: 0.9em; color: #6b7280;">
+                                    <div><strong>修复前文件:</strong> <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">${fixResult.before || 'N/A'}</code></div>
+                                    <div style="margin-top: 5px;"><strong>修复后文件:</strong> <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">${fixResult.after || 'N/A'}</code></div>
+                                    <div style="margin-top: 10px; padding: 8px; background: #d1fae5; border-radius: 4px; color: #065f46;">
+                                        <strong>✅ 已修复问题数:</strong> ${fixResult.issues_fixed}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${fixedIssues.length > 0 ? `
+                            <div style="padding: 15px; background: #fff; border-bottom: 1px solid #e5e7eb;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                                    <h5 style="margin: 0; color: #111827; font-size: 1em; font-weight: 600;">
+                                        <i class="fas fa-check-circle" style="color: #28a745; margin-right: 8px;"></i>
+                                        修复成功的问题详情
+                                    </h5>
+                                    <span style="padding: 4px 12px; background: #d1fae5; color: #065f46; border-radius: 12px; font-size: 0.85em; font-weight: 500;">
+                                        ${fixedIssues.length} 个问题已修复
+                                    </span>
+                                </div>
+                                <div style="max-height: 500px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; background: #fafafa;">
+                                    ${fixedIssues.map((issue, issueIndex) => {
+                                        const severity = (issue.severity || 'info').toLowerCase();
+                                        const severityColors = {
+                                            'error': { bg: '#fee2e2', color: '#991b1b', text: '错误', icon: 'fas fa-exclamation-circle' },
+                                            'warning': { bg: '#fef3c7', color: '#92400e', text: '警告', icon: 'fas fa-exclamation-triangle' },
+                                            'info': { bg: '#dbeafe', color: '#1e40af', text: '信息', icon: 'fas fa-info-circle' }
+                                        };
+                                        const severityStyle = severityColors[severity] || severityColors['info'];
+                                        
+                                        // 获取工具显示名称
+                                        const toolName = issue.tool || issue.type || 'unknown';
+                                        const toolDisplayNames = {
+                                            'pylint': 'Pylint',
+                                            'mypy': 'Mypy',
+                                            'semgrep': 'Semgrep',
+                                            'ruff': 'Ruff',
+                                            'bandit': 'Bandit',
+                                            'dynamic_monitoring': '动态监控',
+                                            'dynamic_detection': '动态检测'
+                                        };
+                                        const toolDisplay = toolDisplayNames[toolName.toLowerCase()] || toolName;
+                                        
+                                        return `
+                                            <div style="margin-bottom: 15px; padding: 15px; background: #fff; border: 1px solid #e5e7eb; border-left: 4px solid ${severityStyle.color}; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                                    <div style="padding: 8px; background: ${severityStyle.bg}; border-radius: 6px; color: ${severityStyle.color}; font-size: 1.2em;">
+                                                        <i class="${severityStyle.icon}"></i>
+                                                    </div>
+                                                    <div style="flex: 1;">
+                                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                                                            <span style="padding: 4px 10px; border-radius: 4px; font-size: 0.75em; font-weight: 600; background: ${severityStyle.bg}; color: ${severityStyle.color};">
+                                                                ${severityStyle.text}
+                                                            </span>
+                                                            <span style="font-size: 0.85em; color: #6b7280; display: flex; align-items: center; gap: 4px;">
+                                                                <i class="fas fa-code" style="font-size: 0.8em;"></i>
+                                                                第 ${issue.line || 'N/A'} 行
+                                                            </span>
+                                                            <span style="font-size: 0.85em; color: #6b7280; padding: 4px 8px; background: #e5e7eb; border-radius: 4px; font-weight: 500;">
+                                                                ${toolDisplay}
+                                                            </span>
+                                                            ${issue.source ? `
+                                                            <span style="font-size: 0.75em; color: #9ca3af; padding: 4px 8px; background: #f3f4f6; border-radius: 4px;">
+                                                                ${issue.source === 'static' ? '静态检测' : issue.source === 'dynamic' ? '动态检测' : issue.source}
+                                                            </span>
+                                                            ` : ''}
+                                                        </div>
+                                                        <div style="font-size: 0.95em; color: #374151; line-height: 1.6; margin-bottom: 8px; padding: 10px; background: #f9fafb; border-radius: 4px;">
+                                                            <strong style="color: #111827;">问题描述:</strong><br>
+                                                            <span style="color: #4b5563;">${escapeHtml(issue.message || '无描述')}</span>
+                                                        </div>
+                                                        <div style="display: flex; gap: 15px; font-size: 0.8em; color: #6b7280;">
+                                                            ${issue.type && issue.type !== toolName ? `
+                                                            <span style="display: flex; align-items: center; gap: 4px;">
+                                                                <i class="fas fa-tag" style="font-size: 0.7em;"></i>
+                                                                类型: ${issue.type}
+                                                            </span>
+                                                            ` : ''}
+                                                            ${issue.file ? `
+                                                            <span style="display: flex; align-items: center; gap: 4px; color: #9ca3af;">
+                                                                <i class="fas fa-file-code" style="font-size: 0.7em;"></i>
+                                                                ${issue.file.split(/[/\\]/).pop()}
+                                                            </span>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                            ` : `
+                            <div style="padding: 15px; background: #fff; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280;">
+                                <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                                该文件修复成功，但问题详情信息不可用
+                            </div>
+                            `}
+                            
+                            <div class="code-comparison">
+                                <div class="code-block">
+                                    <div class="code-header">修复前: ${fileName}</div>
+                                    <div class="code-content before" id="before-${index}">
+                                        <div style="padding: 10px; color: #6b7280;">
+                                            <p>文件路径: ${fixResult.before || 'N/A'}</p>
+                                            <p>修复前文件已保存到服务器，请查看文件内容。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-header">修复后: ${fileName}</div>
+                                    <div class="code-content after" id="after-${index}">
+                                        <div style="padding: 10px; color: #6b7280;">
+                                            <p>文件路径: ${fixResult.after || 'N/A'}</p>
+                                            <p>修复后文件已保存到服务器，请查看文件内容。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                fixResults.innerHTML = '<div class="empty-state"><p>暂无修复结果</p></div>';
+            }
+
+            // 显示错误信息
+            if (result.errors && result.errors.length > 0) {
+                fixResults.innerHTML += `
+                    <div class="error-message">
+                        <strong>错误信息:</strong>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            ${result.errors.map(err => `<li>${err}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // 显示结果区域
+            resultsSection.classList.add('show');
+        }
+
+        // 获取状态消息
+        function getStatusMessage(status) {
+            const messages = {
+                'processing': '正在处理...',
+                'completed': '已完成',
+                'failed': '失败'
+            };
+            return messages[status] || status;
+        }
+
+        // 显示错误
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.querySelector('.main').insertBefore(errorDiv, document.querySelector('.main').firstChild);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+        
+        // HTML转义函数，防止XSS攻击
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
