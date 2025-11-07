@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  flask-test-env:
+    build:
+      context: .
+      dockerfile: Dockerfile.flask-test
+    image: flask-2.0.0-test:latest
+    container_name: flask-test-env
+    volumes:
+      - ./temp_extract:/app/test_project:rw
+      - ./api/dynamic_detection_results:/app/results:rw
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FLASK_APP=app.py
+      - FLASK_ENV=testing
+    working_dir: /app/test_project
+    stdin_open: true
+    tty: true
+    # 不自动启动，仅用于执行命令
+    command: tail -f /dev/null
+
+
+
+
+
+
+
+
+

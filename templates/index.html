@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask测试应用</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .user-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .api-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Flask测试应用</h1>
+        
+        <div class="api-section">
+            <h3>📊 用户管理</h3>
+            <p>当前用户数量: <strong>{{ users|length }}</strong></p>
+            
+            <div id="users-list">
+                {% for user in users %}
+                <div class="user-card">
+                    <strong>{{ user.name }}</strong><br>
+                    <small>{{ user.email }}</small>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button onclick="loadUsers()">刷新用户列表</button>
+            <button onclick="testAPI()">测试API</button>
+            <button onclick="testError()">测试错误处理</button>
+        </div>
+        
+        <div class="api-section">
+            <h3>🔗 快速链接</h3>
+            <a href="/test" target="_blank">
+                <button>测试页面</button>
+            </a>
+            <a href="/api/users" target="_blank">
+                <button>用户API</button>
+            </a>
+            <a href="/error-test" target="_blank">
+                <button>错误测试</button>
+            </a>
+        </div>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(`✅ 成功加载 ${data.count} 个用户`);
+                } else {
+                    showStatus(`❌ 加载失败: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ 请求失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAPI() {
+            try {
+                // 测试GET请求
+                const getResponse = await fetch('/api/users/1');
+                const getData = await getResponse.json();
+                
+                if (getData.success) {
+                    showStatus(`✅ GET API测试成功: ${getData.data.name}`);
+                } else {
+                    showStatus(`❌ GET API测试失败: ${getData.error}`, 'error');
+                }
+                
+                // 测试POST请求
+                const postResponse = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: '测试用户',
+                        email: 'test@example.com'
+                    })
+                });
+                
+                const postData = await postResponse.json();
+                if (postData.success) {
+                    showStatus(`✅ POST API测试成功: 创建用户 ${postData.data.name}`);
+                } else {
+                    showStatus(`❌ POST API测试失败: ${postData.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showStatus(`❌ API测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testError() {
+            try {
+                const response = await fetch('/error-test');
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(`✅ 错误处理测试成功`);
+                } else {
+                    showStatus(`✅ 错误处理测试成功: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`✅ 错误处理测试成功: 捕获到错误`, 'error');
+            }
+        }
+
+        // 页面加载时自动测试
+        window.addEventListener('load', function() {
+            showStatus('🚀 Flask测试应用已加载');
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
