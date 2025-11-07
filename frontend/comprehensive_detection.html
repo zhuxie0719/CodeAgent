@@ -336,6 +336,17 @@
             border-radius: 10px;
             font-size: 0.8em;
         }
+        
+        .tool-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            margin-left: 8px;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+        }
 
         .loading {
             display: none;
@@ -1018,7 +1029,18 @@
             let html = '';
 
             // 静态分析问题 - 按严重程度排序显示
-            const staticIssues = results.static_analysis?.issues || [];
+            // 尝试多个可能的数据路径
+            let staticIssues = [];
+            if (results.static_analysis) {
+                staticIssues = results.static_analysis.issues || results.static_analysis.detection_results?.issues || [];
+            }
+            
+            // 调试信息
+            console.log('静态分析结果:', results.static_analysis);
+            console.log('找到的问题数量:', staticIssues.length);
+            if (staticIssues.length > 0) {
+                console.log('第一个问题示例:', staticIssues[0]);
+            }
             
             // 按严重程度排序：error > warning > info
             const severityOrder = { 'error': 0, 'warning': 1, 'info': 2 };
@@ -1030,13 +1052,16 @@
 
             // 显示所有级别的问题，但按严重程度排序
             sortedIssues.forEach(issue => {
+                const toolName = issue.tool || issue.detection_tool || '未知工具';
+                const toolBadge = toolName !== '未知工具' ? `<span class="tool-badge">${toolName}</span>` : '';
                 html += `
                     <div class="issue-item">
                         <div>
-                            <strong>${issue.file || 'N/A'}</strong><br>
-                            <small>第 ${issue.line || 'N/A'} 行: ${issue.message}</small>
+                            <strong>${issue.file || 'N/A'}</strong> ${toolBadge}<br>
+                            <small>第 ${issue.line || 'N/A'} 行: ${issue.message || issue.description || 'N/A'}</small>
+                            ${issue.type ? `<br><small style="color: #666;">类型: ${issue.type}</small>` : ''}
                         </div>
-                        <span class="issue-severity severity-${issue.severity}">${issue.severity}</span>
+                        <span class="issue-severity severity-${issue.severity || 'info'}">${issue.severity || 'info'}</span>
                     </div>
                 `;
             });
@@ -1115,11 +1140,170 @@
 
             // 静态分析结果
             if (results.static_analysis) {
+                const staticAnalysis = results.static_analysis;
+                const statistics = staticAnalysis.statistics || {};
+                const staticIssues = staticAnalysis.issues || [];
+                const filesAnalyzed = staticAnalysis.files_analyzed || 0;
+                
                 html += `
                     <h4>静态分析</h4>
-                    <p><strong>分析文件数:</strong> ${results.static_analysis.files_analyzed || 0}</p>
-                    <p><strong>发现问题数:</strong> ${results.static_analysis.issues?.length || 0}</p>
+                    <p><strong>分析类型:</strong> ${staticAnalysis.analysis_type || 'standard_analysis'}</p>
+                    <p><strong>分析文件数:</strong> ${filesAnalyzed}</p>
+                    <p><strong>发现问题数:</strong> ${staticIssues.length}</p>
                 `;
+                
+                // 显示Python和其他语言文件分析信息
+                if (staticAnalysis.python_files_analyzed !== undefined || staticAnalysis.other_language_files_analyzed !== undefined) {
+                    html += `<h5>文件类型统计:</h5>`;
+                    if (staticAnalysis.python_files_analyzed !== undefined) {
+                        html += `<p><strong>Python文件:</strong> ${staticAnalysis.python_files_analyzed}</p>`;
+                    }
+                    if (staticAnalysis.other_language_files_analyzed !== undefined) {
+                        html += `<p><strong>其他语言文件:</strong> ${staticAnalysis.other_language_files_analyzed}</p>`;
+                    }
+                }
+                
+                // 显示静态分析统计信息（总是显示）
+                html += `<h5>统计信息:</h5>`;
+                
+                // 总文件数（优先使用statistics中的，否则使用files_analyzed）
+                const totalFiles = statistics.total_files || filesAnalyzed;
+                html += `<p><strong>总文件数:</strong> ${totalFiles}</p>`;
+                
+                // 总代码行数（总是显示，即使为0也显示）
+                const totalLines = statistics.total_lines || 0;
+                if (totalLines > 0) {
+                    html += `<p><strong>总代码行数:</strong> ${totalLines.toLocaleString()}</p>`;
+                } else {
+                    html += `<p><strong>总代码行数:</strong> <em>未统计</em></p>`;
+                }
+                
+                // 平均复杂度（总是显示）
+                const avgComplexity = statistics.average_complexity !== undefined ? statistics.average_complexity : null;
+                if (avgComplexity !== null && avgComplexity > 0) {
+                    html += `<p><strong>平均复杂度:</strong> ${avgComplexity.toFixed(2)}</p>`;
+                } else {
+                    html += `<p><strong>平均复杂度:</strong> <em>未计算</em></p>`;
+                }
+                
+                // 可维护性评分（总是显示）
+                const maintainability = statistics.maintainability_score !== undefined ? statistics.maintainability_score : null;
+                if (maintainability !== null && maintainability > 0) {
+                    html += `<p><strong>可维护性评分:</strong> ${maintainability}/100</p>`;
+                } else {
+                    html += `<p><strong>可维护性评分:</strong> <em>未计算</em></p>`;
+                }
+                
+                // 显示project_structure和code_quality的详细信息（如果存在）
+                if (staticAnalysis.project_structure) {
+                    const ps = staticAnalysis.project_structure;
+                    html += `<h6>项目结构信息:</h6>`;
+                    html += `<ul>`;
+                    if (ps.total_files !== undefined) {
+                        html += `<li><strong>总文件数:</strong> ${ps.total_files}</li>`;
+                    }
+                    if (ps.total_lines !== undefined) {
+                        html += `<li><strong>总代码行数:</strong> ${ps.total_lines.toLocaleString()}</li>`;
+                    }
+                    if (ps.file_types && Object.keys(ps.file_types).length > 0) {
+                        html += `<li><strong>文件类型:</strong> ${Object.entries(ps.file_types).map(([type, count]) => `${type}: ${count}`).join(', ')}</li>`;
+                    }
+                    html += `</ul>`;
+                }
+                
+                if (staticAnalysis.code_quality) {
+                    const cq = staticAnalysis.code_quality;
+                    html += `<h6>代码质量信息:</h6>`;
+                    html += `<ul>`;
+                    if (cq.average_complexity !== undefined) {
+                        html += `<li><strong>平均复杂度:</strong> ${cq.average_complexity.toFixed(2)}</li>`;
+                    }
+                    if (cq.maintainability_score !== undefined) {
+                        html += `<li><strong>可维护性评分:</strong> ${cq.maintainability_score}/100</li>`;
+                    }
+                    if (cq.code_smells !== undefined) {
+                        html += `<li><strong>代码异味:</strong> ${cq.code_smells}</li>`;
+                    }
+                    html += `</ul>`;
+                }
+                
+                // 显示问题严重程度分布
+                if (statistics.issues_by_severity && Object.keys(statistics.issues_by_severity).length > 0) {
+                    html += `<p><strong>问题严重程度分布:</strong> `;
+                    const severityMap = {
+                        'error': '错误',
+                        'warning': '警告',
+                        'info': '信息'
+                    };
+                    const severityList = [];
+                    for (const [severity, count] of Object.entries(statistics.issues_by_severity)) {
+                        if (count > 0) {
+                            severityList.push(`${severityMap[severity] || severity}: ${count}个`);
+                        }
+                    }
+                    html += (severityList.length > 0 ? severityList.join(', ') : '无') + `</p>`;
+                }
+                
+                // 显示分析工具统计
+                if (statistics.issues_by_tool && Object.keys(statistics.issues_by_tool).length > 0) {
+                    html += `<p><strong>分析工具:</strong> `;
+                    const toolList = [];
+                    for (const [tool, count] of Object.entries(statistics.issues_by_tool)) {
+                        if (count > 0) {
+                            toolList.push(`${tool}: ${count}个问题`);
+                        }
+                    }
+                    // 如果没有问题，也要显示使用的工具
+                    if (toolList.length === 0 && staticAnalysis.analysis_type) {
+                        toolList.push('pylint, flake8, bandit, mypy, AI分析');
+                    }
+                    html += (toolList.length > 0 ? toolList.join(', ') : '未使用工具') + `</p>`;
+                } else if (filesAnalyzed > 0) {
+                    // 如果进行了分析但工具统计为空，说明使用了标准工具
+                    html += `<p><strong>分析工具:</strong> pylint, flake8, bandit, mypy, AI分析</p>`;
+                }
+                
+                // 显示多语言分析信息（如果有）
+                if (staticAnalysis.multi_language_analysis) {
+                    const mlAnalysis = staticAnalysis.multi_language_analysis;
+                    html += `<h5>多语言分析:</h5>`;
+                    if (mlAnalysis.python_issues !== undefined) {
+                        html += `<p><strong>Python问题:</strong> ${mlAnalysis.python_issues}</p>`;
+                    }
+                    if (mlAnalysis.ai_issues !== undefined) {
+                        html += `<p><strong>AI分析问题:</strong> ${mlAnalysis.ai_issues}</p>`;
+                    }
+                    if (mlAnalysis.supported_languages && mlAnalysis.supported_languages.length > 0) {
+                        html += `<p><strong>支持的语言:</strong> ${mlAnalysis.supported_languages.join(', ')}</p>`;
+                    }
+                }
+                
+                // 显示问题详情（如果有）
+                if (staticIssues.length > 0) {
+                    html += `<h5>问题详情:</h5><ul>`;
+                    staticIssues.slice(0, 10).forEach(issue => {
+                        const file = issue.file || '未知文件';
+                        const line = issue.line || '?';
+                        const severity = issue.severity || 'info';
+                        const message = issue.message || issue.description || '无描述';
+                        html += `<li><strong>[${severity}]</strong> ${file}:${line} - ${message}</li>`;
+                    });
+                    if (staticIssues.length > 10) {
+                        html += `<li><em>...还有 ${staticIssues.length - 10} 个问题（见问题列表）</em></li>`;
+                    }
+                    html += `</ul>`;
+                } else if (filesAnalyzed > 0) {
+                    // 如果分析了文件但没有问题，显示更详细的信息
+                    html += `<p><strong>✅ 未发现静态分析问题</strong></p>`;
+                    html += `<p><em>已对所有 ${filesAnalyzed} 个文件进行了静态代码分析，未发现代码质量问题。</em></p>`;
+                } else {
+                    html += `<p><em>未进行静态分析或分析失败</em></p>`;
+                }
+                
+                // 显示错误信息（如果有）
+                if (staticAnalysis.error) {
+                    html += `<p><strong style="color: red;">分析错误:</strong> ${staticAnalysis.error}</p>`;
+                }
             }
 
             // 运行时分析结果
@@ -1127,11 +1311,12 @@
                 html += `
                     <h4>运行时分析</h4>
                     <p><strong>主文件:</strong> ${results.runtime_analysis.main_file || 'N/A'}</p>
-                    <p><strong>执行状态:</strong> ${results.runtime_analysis.execution_successful ? '成功' : '失败'}</p>
+                    <p><strong>执行状态:</strong> ${results.runtime_analysis.execution_successful ? '✅ 成功' : '❌ 失败'}</p>
                 `;
                 if (results.runtime_analysis.error) {
                     html += `<p><strong>错误信息:</strong> ${results.runtime_analysis.error}</p>`;
                 }
+                html += `<p><em>注意：运行时分析用于检查项目能否直接执行，与动态检测的测试成功率是独立的。</em></p>`;
             }
 
             // 动态监控结果
@@ -1146,13 +1331,17 @@
             // 动态检测结果
             if (results.dynamic_detection) {
                 const dynamicDetection = results.dynamic_detection;
+                const statusText = dynamicDetection.status || 'unknown';
+                const statusIcon = dynamicDetection.tests_completed && dynamicDetection.success_rate >= 100 ? '✅' : 
+                                 (dynamicDetection.tests_completed ? '⚠️' : '❌');
                 html += `
                     <h4>动态缺陷检测</h4>
-                    <p><strong>检测状态:</strong> ${dynamicDetection.status || 'unknown'}</p>
-                    <p><strong>Flask项目:</strong> ${dynamicDetection.is_flask_project ? '是' : '否'}</p>
-                    <p><strong>测试完成:</strong> ${dynamicDetection.tests_completed ? '是' : '否'}</p>
-                    <p><strong>成功率:</strong> ${dynamicDetection.success_rate || 0}%</p>
+                    <p><strong>检测状态:</strong> ${statusIcon} ${statusText}</p>
+                    <p><strong>Flask项目:</strong> ${dynamicDetection.is_flask_project ? '✅ 是' : '❌ 否'}</p>
+                    <p><strong>测试完成:</strong> ${dynamicDetection.tests_completed ? '✅ 是' : '❌ 否'}</p>
+                    <p><strong>测试成功率:</strong> ${dynamicDetection.success_rate || 0}%</p>
                     <p><strong>发现问题:</strong> ${dynamicDetection.issues?.length || 0}个</p>
+                    <p><em>说明：动态检测通过实际运行Flask应用并执行功能测试来检测缺陷，与运行时分析（直接执行主文件）是独立的检测模块。</em></p>
                 `;
             }
 

@@ -578,3 +578,53 @@ python compare_flask_bugs.py --agent-json path/to/report.json
 ---
 
 *最后更新: 2024年10月*
+
+## 🐳 使用 Docker 运行（推荐，解决本地依赖卡顿/兼容性问题）
+
+本项目已提供容器化方案，适用于在 Windows 上因虚拟环境/依赖安装卡住的场景。容器内将隔离运行依赖安装、静态/动态检测以及针对上传的测试包创建独立 venv。
+
+### 快速开始
+
+```bash
+# 1) 构建镜像（初次或依赖变更后）
+docker compose build
+
+# 2) 启动服务（默认映射到宿主 8000）
+docker compose up -d
+
+# 3) 查看日志
+docker compose logs -f
+
+# 4) 关闭服务
+docker compose down
+```
+
+启动成功后访问：
+- API 文档: http://localhost:8000/docs
+- 前端页面: 打开 `frontend/index.html`（或按你现有前端入口）
+
+### 前端上传与动态检测
+- 上传的压缩包将保存到容器内 `/app/api/uploads`（宿主机同步映射到 `api/uploads/`）。
+- 系统会读取压缩包内的 `requirements.txt`，在容器内为该次任务创建隔离的虚拟环境（默认目录：`/tmp/venvs/<task-id>`），再安装依赖（如 Flask==2.0.0、兼容的 Werkzeug 等），随后执行静态+动态检测。
+
+如需修改任务虚拟环境位置，可设置环境变量：
+```bash
+docker compose down
+# 修改或追加环境变量
+# 例如 docker-compose.yml 中 environment: CODEAGENT_JOB_VENVS_DIR=/tmp/venvs
+# 然后重新启动
+docker compose up -d
+```
+
+### 常见问题
+- 依赖安装仍然缓慢：首次构建镜像时尽量保持网络可用；`.dockerignore` 已忽略大体积目录，加速构建；镜像内已安装基础编译依赖，避免 C 扩展安装失败。
+- 端口冲突：修改 `docker-compose.yml` 中 `ports: - "8000:8000"` 的左侧宿主端口，例如改为 `18000:8000`。
+- Windows 路径/权限问题：通过卷挂载（volumes）将项目同步到容器内 `/app`，避免在宿主创建虚拟环境失败。
+
+### 目录映射（摘录）
+- `./api/uploads -> /app/api/uploads`: 前端上传目录
+- `./api/reports -> /app/api/reports`: 报告输出目录
+- `./api/comprehensive_detection_results -> /app/api/comprehensive_detection_results`
+- `./api/dynamic_detection_results -> /app/api/dynamic_detection_results`
+
+> 提示：如需对 Flask 2.0.0 的 32 个问题进行回归测试，请参考文档 `docs/Flask版本选择与Issue策略.md`，并在上传的压缩包中包含对应的 `requirements.txt`（指定 Flask==2.0.0 及其兼容依赖）。

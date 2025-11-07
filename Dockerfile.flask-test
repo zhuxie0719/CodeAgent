@@ -1,0 +1,52 @@
+# Dockerfile for Flask 2.0.0 Testing Environment
+# 使用官方源（如果 Docker Desktop 配置了镜像源，会自动代理）
+FROM python:3.9-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 配置 apt 使用清华源（加速系统包下载）
+RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || \
+    sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list 2>/dev/null || true
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# 配置 pip 使用清华源并升级pip
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
+
+# 设置环境变量
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# 复制requirements.txt（如果存在）
+COPY requirements.txt* /tmp/
+
+# 安装Flask 2.0.0和兼容依赖（使用清华源）
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    Flask==2.0.0 \
+    Werkzeug==2.0.0 \
+    click>=8.0 \
+    itsdangerous>=2.0 \
+    Jinja2>=3.0 \
+    MarkupSafe>=2.0 \
+    "httpx>=0.27,<0.28" \
+    pytest>=7.0 \
+    pytest-asyncio>=0.21
+
+# 创建测试目录
+RUN mkdir -p /app/test_project
+
+# 设置默认命令
+CMD ["python", "--version"]
+
+
+
+
+
+
+
+
+
