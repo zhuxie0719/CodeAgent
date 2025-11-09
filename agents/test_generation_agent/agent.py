@@ -23,14 +23,31 @@ class TestGenerationAgent(BaseAgent):
     def __init__(self, config: Dict[str, Any]):
         super().__init__("test_generation_agent", config)
         
+        # 检查是否启用Docker支持
+        self.use_docker = config.get("use_docker", False)
+        self.docker_runner = None
+        if self.use_docker:
+            try:
+                from utils.docker_runner import get_docker_runner
+                self.docker_runner = get_docker_runner()
+                self.logger.info("Docker支持已启用")
+            except Exception as e:
+                self.logger.warning(f"Docker支持初始化失败: {e}，将使用本地执行")
+                self.use_docker = False
+        
         # 语言检测器
         self.language_detector = LanguageDetector()
         
         # 测试文件夹检查器
         self.tests_folder_checker = TestsFolderChecker()
         
-        # 多语言测试生成协调器
-        self.test_generator = MultiLanguageTestGenerator(config)
+        # 多语言测试生成协调器（传递docker_runner）
+        generator_config = {
+            **config,
+            "docker_runner": self.docker_runner,
+            "use_docker": self.use_docker
+        }
+        self.test_generator = MultiLanguageTestGenerator(generator_config)
     
     async def initialize(self) -> bool:
         """初始化Agent"""

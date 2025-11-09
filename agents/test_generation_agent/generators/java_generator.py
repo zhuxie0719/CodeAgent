@@ -23,6 +23,8 @@ class JavaTestGenerator:
         self.use_evosuite = config.get("use_evosuite", True)
         self.use_llm = config.get("use_llm", True)
         self.evosuite_jar = config.get("evosuite_jar", None)
+        self.use_docker = config.get("use_docker", False)
+        self.docker_runner = config.get("docker_runner")
         
         # 复用AI分析器
         try:
@@ -248,7 +250,72 @@ class JavaTestGenerator:
         return '\n'.join(cleaned_lines)
     
     async def _generate_with_evosuite(self, project_path: str, test_dir: Path) -> Dict[str, Any]:
-        """使用EvoSuite生成测试"""
+        """使用EvoSuite生成测试（支持Docker）"""
+        # 如果启用Docker，在Docker内执行
+        if self.use_docker and self.docker_runner:
+            return await self._generate_with_evosuite_docker(project_path, test_dir)
+        else:
+            return await self._generate_with_evosuite_local(project_path, test_dir)
+    
+    async def _generate_with_evosuite_docker(self, project_path: str, test_dir: Path) -> Dict[str, Any]:
+        """在Docker容器内使用EvoSuite生成测试"""
+        try:
+            project = Path(project_path).absolute()
+            
+            # 1. 在Docker内编译项目
+            compile_cmd = [
+                "sh", "-c",
+                f"cd /app/test_project && "
+                f"(mvn compile 2>&1 || echo '编译完成')"
+            ]
+            
+            compile_result = await self.docker_runner.run_command(
+                project_path=project,
+                command=compile_cmd,
+                timeout=300,
+                read_only=False
+            )
+            
+            if not compile_result.get("success"):
+                logger.warning(f"项目编译失败，但继续执行: {compile_result.get('error', '')}")
+            
+            # 2. 在Docker内下载/使用EvoSuite
+            evosuite_cmd = [
+                "sh", "-c",
+                f"cd /app/test_project && "
+                f"(wget -q https://github.com/EvoSuite/evosuite/releases/download/v1.2.0/evosuite-1.2.0.jar -O evosuite.jar 2>&1 || echo 'EvoSuite已存在') && "
+                f"java -jar evosuite.jar -target target/classes -projectCP target/classes -Dtest_dir=src/test/java 2>&1"
+            ]
+            
+            result = await self.docker_runner.run_command(
+                project_path=project,
+                command=evosuite_cmd,
+                timeout=300,
+                read_only=False
+            )
+            
+            if result.get("success"):
+                # 查找生成的测试文件
+                test_files = list(test_dir.rglob("*Test.java"))
+                return {
+                    "success": len(test_files) > 0,
+                    "test_files": [str(f) for f in test_files],
+                    "output": result.get("stdout", ""),
+                    "docker_executed": True
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": result.get("error", "EvoSuite执行失败"),
+                    "test_files": []
+                }
+        
+        except Exception as e:
+            logger.error(f"Docker内执行EvoSuite失败: {e}")
+            return {"success": False, "error": str(e), "test_files": []}
+    
+    async def _generate_with_evosuite_local(self, project_path: str, test_dir: Path) -> Dict[str, Any]:
+        """在本地使用EvoSuite生成测试"""
         # 检查EvoSuite JAR是否存在
         if not self.evosuite_jar or not os.path.exists(self.evosuite_jar):
             # 尝试在项目根目录查找

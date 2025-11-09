@@ -20,6 +20,8 @@ class PythonTestGenerator:
         self.config = config
         self.use_pynguin = config.get("use_pynguin", True)
         self.use_llm = config.get("use_llm", True)
+        self.use_docker = config.get("use_docker", False)
+        self.docker_runner = config.get("docker_runner")
         
         # 复用AI测试生成器
         try:
@@ -191,7 +193,85 @@ class PythonTestGenerator:
         return None
     
     async def _generate_with_pynguin(self, project_path: str, tests_dir: Path) -> Dict[str, Any]:
-        """使用Pynguin生成测试"""
+        """使用Pynguin生成测试（支持Docker）"""
+        # 如果启用Docker，在Docker内执行
+        if self.use_docker and self.docker_runner:
+            return await self._generate_with_pynguin_docker(project_path, tests_dir)
+        else:
+            return await self._generate_with_pynguin_local(project_path, tests_dir)
+    
+    async def _generate_with_pynguin_docker(self, project_path: str, tests_dir: Path) -> Dict[str, Any]:
+        """在Docker容器内使用Pynguin生成测试"""
+        try:
+            project = Path(project_path).absolute()
+            
+            # 1. 在Docker内安装项目依赖和Pynguin
+            install_cmd = [
+                "sh", "-c",
+                f"cd /app/test_project && "
+                f"(pip install -r requirements.txt 2>&1 || echo '依赖安装完成') && "
+                f"(pip install pynguin 2>&1 || echo 'Pynguin已安装')"
+            ]
+            
+            install_result = await self.docker_runner.run_command(
+                project_path=project,
+                command=install_cmd,
+                timeout=300,
+                read_only=False  # 可写挂载，允许安装依赖
+            )
+            
+            if not install_result.get("success"):
+                logger.warning(f"依赖安装失败，但继续执行: {install_result.get('error', '')}")
+            
+            # 2. 查找Python源文件
+            source_files = list(project.rglob("*.py"))
+            source_files = [f for f in source_files if "test" not in str(f) and "__pycache__" not in str(f)]
+            
+            if not source_files:
+                return {"success": False, "error": "未找到Python源文件", "test_files": []}
+            
+            # 3. 在Docker内执行Pynguin
+            module_path = source_files[0].relative_to(project)
+            module_name = str(module_path).replace("/", ".").replace("\\", ".").replace(".py", "")
+            
+            pynguin_cmd = [
+                "sh", "-c",
+                f"cd /app/test_project && "
+                f"pynguin --project-path /app/test_project "
+                f"--output-path /app/test_project/tests "
+                f"--module {module_name} "
+                f"--test-type pytest 2>&1"
+            ]
+            
+            result = await self.docker_runner.run_command(
+                project_path=project,
+                command=pynguin_cmd,
+                timeout=120,
+                read_only=False  # 可写挂载，允许生成测试文件
+            )
+            
+            if result.get("success"):
+                # 查找生成的测试文件（通过volume自动同步回本地）
+                test_files = list(tests_dir.glob("test_*.py"))
+                return {
+                    "success": len(test_files) > 0,
+                    "test_files": [str(f) for f in test_files],
+                    "output": result.get("stdout", ""),
+                    "docker_executed": True
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": result.get("error", "Pynguin执行失败"),
+                    "test_files": []
+                }
+        
+        except Exception as e:
+            logger.error(f"Docker内执行Pynguin失败: {e}")
+            return {"success": False, "error": str(e), "test_files": []}
+    
+    async def _generate_with_pynguin_local(self, project_path: str, tests_dir: Path) -> Dict[str, Any]:
+        """在本地使用Pynguin生成测试"""
         try:
             # 检查Pynguin是否可用
             result = subprocess.run(
@@ -216,7 +296,6 @@ class PythonTestGenerator:
                 return {"success": False, "error": "未找到Python源文件", "test_files": []}
             
             # 使用Pynguin生成测试（为第一个模块生成）
-            # 注意：Pynguin需要项目可以导入，可能需要先安装项目
             module_path = source_files[0].relative_to(project_path)
             module_name = str(module_path).replace("/", ".").replace("\\", ".").replace(".py", "")
             

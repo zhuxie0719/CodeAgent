@@ -200,7 +200,8 @@ class DockerRunner:
                          command: List[str],
                          working_dir: Optional[str] = None,
                          timeout: int = 300,
-                         environment: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+                         environment: Optional[Dict[str, str]] = None,
+                         read_only: bool = True) -> Dict[str, Any]:
         """在Docker容器中运行命令
         
         Args:
@@ -209,6 +210,7 @@ class DockerRunner:
             working_dir: 容器内的工作目录（可选）
             timeout: 超时时间（秒）
             environment: 环境变量字典（可选）
+            read_only: 是否只读挂载（默认True，保持向后兼容）
             
         Returns:
             包含执行结果的字典
@@ -257,11 +259,14 @@ class DockerRunner:
                     env_vars.extend(["-e", f"{key}={value}"])
             
             # 构建docker run命令
+            # 根据read_only参数决定挂载模式
+            mount_mode = ":ro" if read_only else ""  # 可写挂载不需要:rw（默认就是可写）
+            
             docker_cmd = [
                 "docker", "run",
                 "--rm",  # 自动删除容器
                 "--name", container_name,
-                "-v", f"{project_path.absolute()}:/app/test_project:ro",  # 只读挂载项目目录
+                "-v", f"{project_path.absolute()}:/app/test_project{mount_mode}",  # 根据read_only决定挂载模式
             ] + env_vars + [
                 self.image_name,
             ] + command

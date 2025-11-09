@@ -20,13 +20,20 @@ class MultiLanguageTestGenerator:
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
+        self.docker_runner = config.get("docker_runner")
+        self.use_docker = config.get("use_docker", False)
         
-        # 初始化各语言生成器
+        # 初始化各语言生成器（传递docker_runner）
+        generator_config = {
+            **config,
+            "docker_runner": self.docker_runner,
+            "use_docker": self.use_docker
+        }
         self.generators = {
-            Language.PYTHON: PythonTestGenerator(config),
-            Language.JAVA: JavaTestGenerator(config),
-            Language.CPP: CppTestGenerator(config),
-            Language.C: CppTestGenerator(config),  # C和C++使用相同的生成器
+            Language.PYTHON: PythonTestGenerator(generator_config),
+            Language.JAVA: JavaTestGenerator(generator_config),
+            Language.CPP: CppTestGenerator(generator_config),
+            Language.C: CppTestGenerator(generator_config),  # C和C++使用相同的生成器
         }
     
     async def generate_tests(
