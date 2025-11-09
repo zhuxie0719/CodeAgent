@@ -74,16 +74,23 @@ class PythonTestGenerator:
         # 2. 使用Pynguin生成覆盖性测试（如果可用）
         if self.use_pynguin:
             try:
+                logger.info(f"开始使用Pynguin生成测试，项目路径: {project_path}")
                 pynguin_result = await self._generate_with_pynguin(project_path, tests_dir)
                 if pynguin_result.get("success"):
-                    generated_tests.extend(pynguin_result.get("test_files", []))
-                    logger.info(f"✅ Pynguin生成 {len(pynguin_result.get('test_files', []))} 个测试文件")
+                    pynguin_files = pynguin_result.get("test_files", [])
+                    generated_tests.extend(pynguin_files)
+                    logger.info(f"✅ Pynguin生成 {len(pynguin_files)} 个测试文件: {pynguin_files}")
+                else:
+                    error_msg = pynguin_result.get("error", "Pynguin生成失败")
+                    logger.warning(f"⚠️ Pynguin生成失败: {error_msg}")
+                    if pynguin_result.get("output"):
+                        logger.debug(f"Pynguin输出: {pynguin_result.get('output')[:500]}")
             except Exception as e:
-                error_msg = f"Pynguin生成失败: {e}"
-                logger.warning(error_msg)
+                error_msg = f"Pynguin生成异常: {e}"
+                logger.error(error_msg, exc_info=True)
                 errors.append(error_msg)
         
-        # 3. 使用LLM生成覆盖性测试
+        # 3. 使用LLM生成覆盖性测试（如果没有生成重现测试，至少生成覆盖性测试）
         if self.use_llm and self.ai_generator:
             try:
                 llm_result = await self._generate_with_llm(project_path, tests_dir, issues)
@@ -92,6 +99,21 @@ class PythonTestGenerator:
                     logger.info(f"✅ LLM生成 {len(llm_result.get('test_files', []))} 个测试文件")
             except Exception as e:
                 error_msg = f"LLM生成失败: {e}"
+                logger.warning(error_msg)
+                errors.append(error_msg)
+        
+        # 如果没有任何测试文件生成，尝试生成基本的覆盖性测试
+        if len(generated_tests) == 0 and self.use_llm and self.ai_generator:
+            try:
+                logger.info("未生成任何测试文件，尝试生成基本覆盖性测试...")
+                basic_test = await self._generate_basic_coverage_test(project_path, tests_dir)
+                if basic_test:
+                    test_path = tests_dir / "test_basic.py"
+                    test_path.write_text(basic_test, encoding="utf-8")
+                    generated_tests.append(str(test_path))
+                    logger.info(f"✅ 生成基本覆盖性测试: {test_path}")
+            except Exception as e:
+                error_msg = f"生成基本覆盖性测试失败: {e}"
                 logger.warning(error_msg)
                 errors.append(error_msg)
         
@@ -112,11 +134,18 @@ class PythonTestGenerator:
         if not init_path.exists():
             init_path.write_text("# Tests package\n", encoding="utf-8")
         
+        # 最终统计：确保包含所有生成的测试文件
+        final_test_files = list(tests_dir.glob("test_*.py"))
+        final_count = len(final_test_files)
+        
+        logger.info(f"测试生成完成: 统计={len(generated_tests)}, 实际文件数={final_count}")
+        
         return {
-            "success": len(generated_tests) > 0 or len(errors) == 0,
+            "success": len(generated_tests) > 0 or final_count > 0,
             "tests_dir": str(tests_dir),
             "generated_tests": generated_tests,
-            "total_tests": len(generated_tests),
+            "total_tests": len(generated_tests) if len(generated_tests) > 0 else final_count,
+            "actual_file_count": final_count,  # 实际文件数
             "errors": errors
         }
     
@@ -129,6 +158,52 @@ class PythonTestGenerator:
         """生成重现问题的测试"""
         if not self.ai_generator:
             return None
+        
+        # 查找项目中的主要Python源文件
+        project = Path(project_path).resolve()  # 使用绝对路径
+        if not project.exists():
+            logger.warning(f"项目路径不存在: {project_path}, 绝对路径: {project}")
+            return None
+        
+        # 先尝试直接查找项目根目录下的.py文件
+        source_files = []
+        # 1. 查找项目根目录下的.py文件
+        root_py_files = [f for f in project.glob("*.py") if f.is_file()]
+        source_files.extend(root_py_files)
+        
+        # 2. 递归查找子目录中的.py文件（排除tests目录）
+        for py_file in project.rglob("*.py"):
+            if (py_file.is_file() and 
+                "test" not in str(py_file).lower() and 
+                "__pycache__" not in str(py_file) and
+                "__init__.py" != py_file.name and
+                "temp" not in py_file.name.lower() and
+                py_file not in source_files):  # 避免重复
+                source_files.append(py_file)
+        
+        # 过滤：确保文件存在且不是测试文件
+        source_files = [f for f in source_files if f.exists() and f.is_file()]
+        
+        if not source_files:
+            # 列出项目目录内容以便调试
+            try:
+                all_items = list(project.iterdir())
+                print(f"[DEBUG] 项目目录内容: {[item.name for item in all_items]}")
+                # 列出所有.py文件
+                all_py = list(project.rglob("*.py"))
+                print(f"[DEBUG] 所有Python文件: {[str(f) for f in all_py]}")
+                # 列出根目录的.py文件
+                root_py = list(project.glob("*.py"))
+                print(f"[DEBUG] 根目录Python文件: {[str(f) for f in root_py]}")
+            except Exception as e:
+                print(f"[DEBUG] 无法列出项目目录: {e}")
+            logger.warning(f"未找到Python源文件，无法生成重现测试。项目路径: {project_path}, 绝对路径: {project}")
+            return None
+        
+        # 使用第一个源文件（通常是主文件）
+        main_source_file = source_files[0]
+        source_content = main_source_file.read_text(encoding="utf-8")
+        module_name = main_source_file.stem  # 文件名（不含扩展名）
         
         # 构建提示词
         prompt_parts = []
@@ -144,53 +219,258 @@ class PythonTestGenerator:
         if not prompt_parts:
             return None
         
-        prompt = f"""
-根据以下信息，生成一个能重现问题的pytest测试：
+        # 限制源代码长度
+        if len(source_content) > 2000:
+            source_content = source_content[:2000] + "\n# ... (代码已截断)"
+        
+        prompt = f"""为以下Python文件生成pytest重现测试：
 
+文件：{main_source_file.name}
+模块名：{module_name}
+
+源代码：
+{source_content}
+
+问题信息：
 {chr(10).join(prompt_parts)}
 
 要求：
-1. 生成pytest格式的测试
+1. 生成pytest格式的测试（使用pytest，不是unittest）
 2. 测试应该能够重现问题
 3. 包含必要的断言
 4. 测试文件应该命名为test_reproduction.py
-5. 只返回Python代码，不要包含markdown标记
-"""
+5. 只返回Python代码，不要包含markdown标记（如```python或```）
+6. 确保代码语法正确，可以直接运行
+
+重要：模块导入设置
+- 测试文件位于 tests/ 目录下
+- 被测试文件位于项目根目录
+- 必须在文件开头添加以下导入路径设置：
+```python
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import {module_name}
+```
+
+7. 确保所有函数调用语法正确
+8. 使用pytest的断言方式（assert语句），不要使用unittest的断言方法
+
+只返回Python代码，不要其他内容。"""
         
-        # 使用AI生成器生成测试
+        # 直接调用LLM API生成测试
         try:
-            # 创建一个临时源文件用于生成测试
-            temp_source = Path(project_path) / "temp_reproduction_source.py"
-            temp_source.write_text("# Temporary file for reproduction test generation\n", encoding="utf-8")
+            # 使用aiohttp（已在requirements.txt中）
+            import aiohttp
+            from api.deepseek_config import deepseek_config
             
-            result = await self.ai_generator.generate_test_file(
-                str(temp_source),
-                project_path
-            )
+            if not deepseek_config or not deepseek_config.is_configured():
+                logger.warning("DeepSeek配置不可用，无法生成重现测试")
+                return None
             
-            # 清理临时文件
-            if temp_source.exists():
-                temp_source.unlink()
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {deepseek_config.api_key}"
+            }
             
-            if result.get("success"):
-                # 读取生成的测试文件内容
-                test_file_path = result.get("test_file_path")
-                if test_file_path and os.path.exists(test_file_path):
-                    with open(test_file_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                    
-                    # 修改内容以适应重现测试
-                    content = content.replace("unittest", "pytest")
-                    content = content.replace("import unittest", "import pytest")
-                    # 移除unittest.TestCase继承
-                    content = content.replace("(unittest.TestCase)", "")
-                    
-                    return content
+            data = {
+                "model": deepseek_config.model,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "temperature": deepseek_config.temperature,
+                "max_tokens": deepseek_config.max_tokens
+            }
             
+            timeout = aiohttp.ClientTimeout(total=60.0)
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(
+                    f"{deepseek_config.base_url}/chat/completions",
+                    headers=headers,
+                    json=data
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        test_code = result["choices"][0]["message"]["content"]
+                        
+                        # 清理markdown标记
+                        test_code = self._clean_markdown(test_code)
+                        
+                        return test_code
+                    else:
+                        error_text = await response.text()
+                        logger.error(f"LLM API调用失败: {response.status} - {error_text}")
+                        return None
+        
         except Exception as e:
             logger.error(f"生成重现测试时出错: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
         
         return None
+    
+    def _clean_markdown(self, content: str) -> str:
+        """清理markdown标记"""
+        if not content:
+            return content
+        
+        lines = content.split('\n')
+        cleaned_lines = []
+        skip_start = False
+        
+        for line in lines:
+            if line.strip().startswith('```'):
+                if not skip_start:
+                    skip_start = True
+                    continue
+                else:
+                    break
+            
+            if skip_start:
+                cleaned_lines.append(line)
+        
+        # 移除末尾的markdown标记
+        while cleaned_lines and cleaned_lines[-1].strip().startswith('```'):
+            cleaned_lines.pop()
+        
+        # 移除末尾空行
+        while cleaned_lines and not cleaned_lines[-1].strip():
+            cleaned_lines.pop()
+        
+        return '\n'.join(cleaned_lines)
+    
+    async def _generate_basic_coverage_test(
+        self, 
+        project_path: str, 
+        tests_dir: Path
+    ) -> Optional[str]:
+        """生成基本的覆盖性测试（当重现测试生成失败时使用）"""
+        # 查找项目中的主要Python源文件
+        project = Path(project_path).resolve()
+        if not project.exists():
+            logger.warning(f"项目路径不存在: {project}")
+            return None
+        
+        # 先尝试直接查找项目根目录下的.py文件
+        source_files = []
+        root_py_files = [f for f in project.glob("*.py") if f.is_file()]
+        source_files.extend(root_py_files)
+        
+        # 递归查找子目录中的.py文件（排除tests目录）
+        for py_file in project.rglob("*.py"):
+            if (py_file.is_file() and 
+                "test" not in str(py_file).lower() and 
+                "__pycache__" not in str(py_file) and
+                "__init__.py" != py_file.name and
+                "temp" not in py_file.name.lower() and
+                py_file not in source_files):
+                source_files.append(py_file)
+        
+        # 过滤：确保文件存在且不是测试文件
+        source_files = [f for f in source_files if f.exists() and f.is_file()]
+        
+        if not source_files:
+            logger.warning(f"未找到Python源文件。项目路径: {project}")
+            # 列出项目目录内容以便调试
+            try:
+                all_items = list(project.iterdir())
+                logger.info(f"项目目录内容: {[item.name for item in all_items]}")
+                all_py = list(project.rglob("*.py"))
+                logger.info(f"所有Python文件: {[str(f) for f in all_py]}")
+            except Exception as e:
+                logger.info(f"无法列出项目目录: {e}")
+            return None
+        
+        # 使用第一个源文件
+        main_source_file = source_files[0]
+        source_content = main_source_file.read_text(encoding="utf-8")
+        module_name = main_source_file.stem
+        
+        # 限制源代码长度
+        if len(source_content) > 2000:
+            source_content = source_content[:2000] + "\n# ... (代码已截断)"
+        
+        prompt = f"""为以下Python文件生成pytest测试：
+
+文件：{main_source_file.name}
+模块名：{module_name}
+
+源代码：
+{source_content}
+
+要求：
+1. 生成pytest格式的测试（使用pytest，不是unittest）
+2. 测试所有公共函数
+3. 包含正常和异常情况
+4. 只返回Python代码，不要包含markdown标记
+
+重要：模块导入设置
+- 测试文件位于 tests/ 目录下
+- 被测试文件位于项目根目录
+- 必须在文件开头添加以下导入路径设置：
+```python
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import {module_name}
+```
+
+5. 使用pytest的断言方式（assert语句）
+6. 确保代码语法正确，可以直接运行
+
+只返回Python代码，不要其他内容。"""
+        
+        # 调用LLM API生成测试
+        try:
+            import aiohttp
+            from api.deepseek_config import deepseek_config
+            
+            if not deepseek_config or not deepseek_config.is_configured():
+                logger.warning("DeepSeek配置不可用")
+                return None
+            
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {deepseek_config.api_key}"
+            }
+            
+            data = {
+                "model": deepseek_config.model,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "temperature": deepseek_config.temperature,
+                "max_tokens": deepseek_config.max_tokens
+            }
+            
+            timeout = aiohttp.ClientTimeout(total=60.0)
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(
+                    f"{deepseek_config.base_url}/chat/completions",
+                    headers=headers,
+                    json=data
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        test_code = result["choices"][0]["message"]["content"]
+                        test_code = self._clean_markdown(test_code)
+                        return test_code
+                    else:
+                        error_text = await response.text()
+                        logger.error(f"LLM API调用失败: {response.status} - {error_text}")
+                        return None
+        
+        except Exception as e:
+            logger.error(f"生成基本覆盖性测试时出错: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return None
     
     async def _generate_with_pynguin(self, project_path: str, tests_dir: Path) -> Dict[str, Any]:
         """使用Pynguin生成测试（支持Docker）"""
@@ -243,6 +523,7 @@ class PythonTestGenerator:
                 f"--test-type pytest 2>&1"
             ]
             
+            logger.info(f"执行Pynguin命令: {' '.join(pynguin_cmd)}")
             result = await self.docker_runner.run_command(
                 project_path=project,
                 command=pynguin_cmd,
@@ -250,9 +531,16 @@ class PythonTestGenerator:
                 read_only=False  # 可写挂载，允许生成测试文件
             )
             
+            logger.info(f"Pynguin执行结果: success={result.get('success')}, error={result.get('error', 'None')}")
+            if result.get("stdout"):
+                logger.debug(f"Pynguin stdout: {result.get('stdout')[:500]}")
+            if result.get("stderr"):
+                logger.debug(f"Pynguin stderr: {result.get('stderr')[:500]}")
+            
             if result.get("success"):
                 # 查找生成的测试文件（通过volume自动同步回本地）
                 test_files = list(tests_dir.glob("test_*.py"))
+                logger.info(f"找到 {len(test_files)} 个Pynguin生成的测试文件")
                 return {
                     "success": len(test_files) > 0,
                     "test_files": [str(f) for f in test_files],
@@ -260,10 +548,14 @@ class PythonTestGenerator:
                     "docker_executed": True
                 }
             else:
+                error_msg = result.get("error", "Pynguin执行失败")
+                logger.warning(f"Pynguin执行失败: {error_msg}")
                 return {
                     "success": False,
-                    "error": result.get("error", "Pynguin执行失败"),
-                    "test_files": []
+                    "error": error_msg,
+                    "test_files": [],
+                    "output": result.get("stdout", ""),
+                    "stderr": result.get("stderr", "")
                 }
         
         except Exception as e:
