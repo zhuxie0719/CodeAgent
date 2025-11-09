@@ -13,11 +13,15 @@ flowchart TD
     A[项目接入] --> B[Bug Detection Agent]
     B --> C[生成缺陷清单]
     C --> D[决策引擎Decision Engine]
-    D --> E[Fix Execution Agent]
-    E --> F[Test Validation Agent]
-    F --> G[验证结果]
+    D --> TGA[Test Generation Agent]
+    TGA --> E[Fix Execution Agent]
+    E --> G[修复完成]
     G --> H[提交修复代码]
+    
+    style TGA fill:#e8f5e8
 ```
+
+**注意：** TestValidationAgent已从主工作流中移除，TestGenerationAgent在修复前生成tests文件夹。
 
 ## 🤖 Agent分类和职责
 
@@ -124,46 +128,52 @@ flowchart TD
 }
 ```
 
-#### 3. **Test Validation Agent (测试验证Agent)** ❌ 待实现
+#### 3. **Test Generation Agent (测试生成Agent)** ✅ 已实现
 
-**在流程中的位置**：主工作流程的第4步（最后一步）
+**在流程中的位置**：主工作流程的第2.5步（在Decision Engine之后，Fix Execution Agent之前）
 
 **主要职责**：
-- 验证修复后的代码正确性
-- 运行单元测试、API测试、集成测试
-- 分析测试覆盖率
-- 确保修复没有引入新问题
+- 为没有tests文件夹的项目生成标准测试文件夹
+- 支持多语言测试生成（Python, Java, C/C++）
+- 生成重现测试和覆盖性测试
+- 建立测试基线，用于回归测试
 
 **核心功能**：
 ```python
-# 验证能力
-- 单元测试生成和执行
-- API测试自动化 (Postman集成)
-- 集成测试支持 (Selenium)
-- 测试覆盖率分析
-- 性能回归测试
-- 修复验证报告
+# 生成能力
+- 语言检测（Python, Java, C/C++等）
+- 测试文件夹检查
+- 重现测试生成（基于问题描述）
+- 覆盖性测试生成（LLM）
+- 工具生成（Pynguin/EvoSuite，可选）
+- Docker支持（可选）
 ```
 
 **输入输出**：
 ```python
 输入: {
     "project_path": "/path/to/project",
-    "fix_result": {...},  # 来自Fix Execution Agent
-    "test_types": ["unit", "api", "integration"]
+    "issues": [...],  # 来自Bug Detection Agent
+    "issue_description": "问题描述"  # 可选
 }
 
 输出: {
-    "test_results": {
-        "unit_tests": {"passed": 95, "failed": 5, "coverage": 85},
-        "api_tests": {"passed": 100, "failed": 0},
-        "integration_tests": {"passed": 90, "failed": 10}
+    "success": True,
+    "languages": ["python"],
+    "results": {
+        "python": {
+            "success": True,
+            "tests_dir": "/path/to/project/tests",
+            "generated_tests": ["test_reproduction.py", "test_main.py"],
+            "total_tests": 2
+        }
     },
-    "validation_status": "passed",  # passed, failed, partial
-    "regression_detected": False,
-    "recommendations": [...]
+    "tests_dir": "/path/to/project/tests",
+    "total_tests": 2
 }
 ```
+
+**注意：** TestValidationAgent已从主工作流中移除。
 
 #### 4. **Code Analysis Agent (代码分析Agent)** ❌ 待实现
 
@@ -433,14 +443,15 @@ flowchart TD
     A[项目接入] --> B[Bug Detection Agent]
     B --> C[生成缺陷清单]
     C --> D[Decision Engine]
-    D --> E[Fix Execution Agent]
-    E --> F[Test Validation Agent]
-    F --> G[验证结果]
+    D --> TGA[Test Generation Agent]
+    TGA --> E[Fix Execution Agent]
+    E --> G[修复完成]
     G --> H[提交修复代码]
     
     I[Code Analysis Agent] -.-> B
     J[Code Quality Agent] -.-> H
     
+    style TGA fill:#e8f5e8
     style I fill:#f9f9f9,stroke:#999,stroke-dasharray: 5 5
     style J fill:#f9f9f9,stroke:#999,stroke-dasharray: 5 5
 ```
@@ -448,6 +459,8 @@ flowchart TD
 **说明**：
 - **实线箭头**：主工作流程，必须按顺序执行
 - **虚线箭头**：辅助功能，为其他Agent提供支持
+- **TestGenerationAgent**：在修复前生成tests文件夹（如果项目没有tests文件夹）
+- **TestValidationAgent**：已从主工作流中移除
 
 ### 协调中心的优势
 
@@ -461,13 +474,28 @@ flowchart TD
 ### 实现建议
 
 1. **优先实现主流程Agent**：
-   - Bug Detection Agent（已实现）
-   - Fix Execution Agent
-   - Test Validation Agent
+   - Bug Detection Agent（已实现）✅
+   - Test Generation Agent（已实现）✅
+   - Fix Execution Agent（已实现）✅
 
 2. **辅助功能Agent**：
-   - Code Analysis Agent（集成到Bug Detection Agent中）
-   - Code Quality Agent（集成到最终报告生成中）
+   - Code Analysis Agent（已实现）✅
+   - Code Quality Agent（已实现）✅
+   - Dynamic Detection Agent（已实现）✅
 
 3. **保持接口稳定** - 确保所有Agent都实现标准接口
 4. **充分测试** - 每个Agent都要与协调中心集成测试
+
+### 工作流变更说明
+
+**原工作流（4个阶段）：**
+1. Bug Detection Agent
+2. Decision Engine
+3. Fix Execution Agent
+4. Test Validation Agent ❌ 已移除
+
+**新工作流（3个阶段 + 1个可选阶段）：**
+1. Bug Detection Agent
+2. Decision Engine
+2.5. Test Generation Agent ✅ 新增（可选，仅在项目没有tests文件夹时执行）
+3. Fix Execution Agent
