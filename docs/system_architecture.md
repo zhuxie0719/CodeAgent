@@ -38,8 +38,8 @@ graph TB
         end
         
         subgraph "决策执行组"
+            TGA[TestGenerationAgent<br/>测试生成]
             FEA[FixExecutionAgent<br/>修复执行]
-            TVA[TestValidationAgent<br/>测试验证]
             POA[PerformanceOptAgent<br/>性能优化]
         end
         
@@ -206,10 +206,11 @@ graph TB
   - 简单缺陷自动修复
   - AI辅助修复方案生成
   - 修复回滚机制
-- **TestValidationAgent**: 验证修复效果
-  - 单元测试执行
-  - 集成测试验证
-  - 测试覆盖率分析
+- **TestGenerationAgent**: 生成tests文件夹，建立测试基线
+  - 语言检测（Python, Java, C/C++）
+  - 测试文件夹检查
+  - 重现测试生成
+  - 覆盖性测试生成（LLM + 工具）
 - **PerformanceOptimizationAgent**: 性能优化
   - 性能监控
   - 瓶颈识别

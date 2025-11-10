@@ -38,6 +38,26 @@ class Coordinator:
             "total_fixes_applied": 0
         }
     
+    def _has_tests_folder(self, project_path: str) -> bool:
+        """检查项目是否已有tests文件夹"""
+        from pathlib import Path
+        from agents.test_generation_agent.tests_folder_checker import TestsFolderChecker
+        from agents.test_generation_agent.language_detector import LanguageDetector
+        
+        try:
+            project = Path(project_path)
+            if not project.exists():
+                return False
+            
+            checker = TestsFolderChecker()
+            detector = LanguageDetector()
+            languages = detector.detect_languages(str(project))
+            
+            return checker.has_tests_folder(str(project), languages)
+        except Exception as e:
+            self.logger.warning(f"检查tests文件夹时出错: {e}，假设没有tests文件夹")
+            return False
+    
     async def start(self):
         """启动协调中心"""
         self.logger.info("协调中心启动中...")
@@ -369,11 +389,11 @@ class Coordinator:
             # 缺陷检测完成，启动决策流程
             await self._process_detection_completion(task, result)
         elif task_type == 'fix_issues':
-            # 修复完成，启动验证流程
-            await self._process_fix_completion(task, result)
-        elif task_type == 'validate_fix':
-            # 验证完成，工作流结束
-            await self._process_validation_completion(task, result)
+            # 修复完成，工作流结束
+            self.logger.info("修复完成，工作流结束")
+        elif task_type == 'generate_tests':
+            # 测试生成完成
+            self.logger.info(f"测试生成完成: {result.get('total_tests', 0)} 个测试文件")
     
     async def _process_detection_completion(self, task, result):
         """处理缺陷检测完成（透传 file_path / project_path）"""
@@ -409,27 +429,6 @@ class Coordinator:
         else:
             self.logger.info("未发现需要修复的缺陷")
     
-    async def _process_fix_completion(self, task, result):
-        """处理修复完成（透传 file_path / project_path）"""
-        # 原样携带 file_path 或 project_path
-        payload = {
-            'fix_result': result
-        }
-        if 'project_path' in task['data'] and task['data']['project_path']:
-            payload['project_path'] = task['data']['project_path']
-        if 'file_path' in task['data'] and task['data']['file_path']:
-            payload['file_path'] = task['data']['file_path']
-
-        # 创建验证任务
-        validation_task_id = await self.create_task('validate_fix', payload, TaskPriority.HIGH)
-        
-        # 分配给测试验证Agent
-        await self.assign_task(validation_task_id, 'test_validation_agent')
-    
-    async def _process_validation_completion(self, task, result):
-        """处理验证完成"""
-        self.logger.info("工作流验证完成")
-        # 这里可以添加最终报告生成等逻辑
     
     async def process_workflow(self, file_path: Optional[str] = None, project_path: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -438,8 +437,8 @@ class Coordinator:
         主工作流程（按照workflow_diagram.md）：
         1. Bug Detection Agent - 检测缺陷，生成缺陷清单
         2. Decision Engine - 判断缺陷复杂度
+        2.5. Test Generation Agent - 生成tests文件夹（如果项目没有tests文件夹）
         3. Fix Execution Agent - 执行修复
-        4. Test Validation Agent - 验证修复结果
         """
         workflow_id = f"workflow_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         self.current_workflow = {
@@ -545,6 +544,44 @@ class Coordinator:
             
             self.logger.info(f"决策分析完成: 自动修复={auto_fixable_count}, AI辅助={ai_assisted_count}, 人工审查={manual_review_count}")
             
+            # ===== 阶段2.5: 测试生成（新增）=====
+            test_gen_result = None
+            if project_path:
+                self.logger.info("=== 阶段2.5: Test Generation Agent - 测试生成 ===")
+                if not self._has_tests_folder(project_path):
+                    self.logger.info("检测到项目没有tests文件夹，开始生成测试...")
+                    test_gen_task_id = await self.create_task('generate_tests', {
+                        'project_path': project_path,
+                        'issues': issues,
+                        'issue_description': None  # 可以从detection_result中提取
+                    }, TaskPriority.HIGH)
+                    
+                    self.current_workflow['tasks'].append({
+                        'task_id': test_gen_task_id,
+                        'type': 'generate_tests',
+                        'status': 'created',
+                        'stage': 2.5,
+                        'agent': 'test_generation_agent'
+                    })
+                    
+                    # 分配给Test Generation Agent
+                    if 'test_generation_agent' in self.agents:
+                        await self.assign_task(test_gen_task_id, 'test_generation_agent')
+                        self.logger.info("测试生成任务已分配给Test Generation Agent")
+                        
+                        # 等待测试生成完成
+                        self.logger.info("等待测试生成完成...")
+                        test_gen_result = await self.task_manager.get_task_result(test_gen_task_id, timeout=300)
+                        
+                        if test_gen_result.get('success'):
+                            self.logger.info(f"测试生成成功: 生成 {test_gen_result.get('total_tests', 0)} 个测试文件")
+                        else:
+                            self.logger.warning(f"测试生成失败: {test_gen_result.get('error', '未知错误')}，但继续执行修复流程")
+                    else:
+                        self.logger.warning("Test Generation Agent未注册，跳过测试生成步骤")
+                else:
+                    self.logger.info("项目已有tests文件夹，跳过测试生成")
+            
             # ===== 阶段3: 修复执行 =====
             self.logger.info("=== 阶段3: Fix Execution Agent - 修复执行 ===")
             fix_task_id = await self.create_task('fix_issues', {
@@ -583,45 +620,6 @@ class Coordinator:
             
             self.stats["total_fixes_applied"] += len(fix_result.get('fix_results', []))
             
-            # ===== 阶段4: 验证与反馈 =====
-            self.logger.info("=== 阶段4: Test Validation Agent - 验证与反馈 ===")
-            validation_task_id = await self.create_task('validate_fix', {
-                'project_path': project_path,
-                'file_path': file_path,
-                'fix_result': fix_result,
-                'original_issues': issues,
-                'test_options': {
-                    'enable_unit_tests': True,
-                    'enable_api_tests': True,
-                    'enable_integration_tests': True,
-                    'enable_regression_tests': True
-                }
-            }, TaskPriority.HIGH)
-            
-            self.current_workflow['tasks'].append({
-                'task_id': validation_task_id,
-                'type': 'validate_fix',
-                'status': 'created',
-                'stage': 4,
-                'agent': 'test_validation_agent'
-            })
-            
-            # 分配给Test Validation Agent
-            if 'test_validation_agent' in self.agents:
-                await self.assign_task(validation_task_id, 'test_validation_agent')
-                self.logger.info("验证任务已分配给Test Validation Agent")
-                
-                # 等待验证完成
-                self.logger.info("等待验证完成...")
-                validation_result = await self.task_manager.get_task_result(validation_task_id, timeout=300)
-            else:
-                self.logger.warning("Test Validation Agent未注册，跳过验证步骤")
-                validation_result = {
-                    'success': True, 
-                    'message': '验证Agent未注册，跳过验证',
-                    'validation_status': 'skipped'
-                }
-            
             # ===== 工作流完成 =====
             self.logger.info("=== 工作流完成 ===")
             self.current_workflow['status'] = 'completed'
@@ -640,13 +638,13 @@ class Coordinator:
                     'ai_assisted': ai_assisted_count,
                     'manual_review': manual_review_count,
                     'workflow_duration_seconds': workflow_duration,
-                    'stages_completed': 4
+                    'stages_completed': 3  # 检测、决策、修复（测试生成是2.5阶段）
                 },
                 'results': {
                     'detection_result': detection_result,
                     'decisions': decisions,
-                    'fix_result': fix_result,
-                    'validation_result': validation_result
+                    'test_generation_result': test_gen_result,
+                    'fix_result': fix_result
                 },
                 'summary': {
                     'total_issues': len(issues),

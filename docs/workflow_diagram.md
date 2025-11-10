@@ -18,12 +18,14 @@ flowchart TD
     
     AGENT_MGR --> REG[注册所有 Agent 到 Coordinator]
     REG --> BDA[BugDetectionAgent]
+    REG --> TGA[TestGenerationAgent]
     REG --> FEA[FixExecutionAgent]
     REG --> CAA[CodeAnalysisAgent]
     REG --> CQA[CodeQualityAgent]
     REG --> DDA[DynamicDetectionAgent]
     
     BDA --> MOUNT[3. 挂载 API 路由]
+    TGA --> MOUNT
     FEA --> MOUNT
     CAA --> MOUNT
     CQA --> MOUNT
@@ -246,7 +248,7 @@ flowchart TD
 
 ### 2. 修复失败处理
 - 自动修复失败: 回滚到原始状态
-- 验证失败: 返回决策引擎重新分析
+- 测试生成失败: 记录警告，继续执行修复流程
 - 多次失败: 标记为需要人工干预
 
 ### 3. 系统异常处理
