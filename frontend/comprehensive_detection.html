@@ -988,7 +988,13 @@
             }
 
             // 显示结果区域
-            document.getElementById('resultsSection').classList.add('show');
+            const resultsSection = document.getElementById('resultsSection');
+            if (!resultsSection) {
+                console.error('找不到resultsSection元素');
+                showError('页面元素缺失，请刷新页面重试');
+                return;
+            }
+            resultsSection.classList.add('show');
 
             // 更新整体状态
             const overallStatus = document.getElementById('overallStatus');
@@ -999,6 +1005,11 @@
 
             // 更新摘要
             const summaryGrid = document.getElementById('summaryGrid');
+            if (!summaryGrid) {
+                console.error('找不到summaryGrid元素');
+                showError('页面元素缺失，请刷新页面重试');
+                return;
+            }
             summaryGrid.innerHTML = `
                 <div class="summary-item">
                     <div class="number">${summary.total_issues}</div>

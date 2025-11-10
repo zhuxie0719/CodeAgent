@@ -130,18 +130,26 @@ class TaskManager:
         start_time = datetime.now()
         timeout_seconds = timeout or self.task_timeout
         
-        while task['status'] in [TaskStatus.PENDING, TaskStatus.ASSIGNED, TaskStatus.RUNNING]:
+        # 等待任务完成，包括PROCESSING状态
+        while task['status'] in [TaskStatus.PENDING, TaskStatus.ASSIGNED, TaskStatus.RUNNING, TaskStatus.PROCESSING]:
             await asyncio.sleep(0.1)
             
             # 检查超时
-            if (datetime.now() - start_time).total_seconds() > timeout_seconds:
-                self.logger.warning(f"获取任务结果超时: {task_id}")
+            elapsed = (datetime.now() - start_time).total_seconds()
+            if elapsed > timeout_seconds:
+                self.logger.warning(f"获取任务结果超时: {task_id} (已等待 {elapsed:.1f}秒)")
                 return {'error': 'Timeout waiting for task result', 'success': False}
+            
+            # 每10秒记录一次等待日志（避免日志过多）
+            if int(elapsed) % 10 == 0 and elapsed > 0:
+                self.logger.debug(f"等待任务完成: {task_id}, 状态: {task['status'].value}, 已等待: {elapsed:.1f}秒")
         
         # 返回最终结果
         if task['status'] == TaskStatus.COMPLETED:
+            self.logger.info(f"任务完成: {task_id}, 耗时: {(datetime.now() - start_time).total_seconds():.2f}秒")
             return task['result']
         else:
+            self.logger.warning(f"任务失败: {task_id}, 状态: {task['status'].value}, 错误: {task.get('error', 'Unknown error')}")
             return {'error': task.get('error', 'Unknown error'), 'success': False}
     
     async def update_task_result(self, task_id: str, result: Dict[str, Any], success: bool = True):

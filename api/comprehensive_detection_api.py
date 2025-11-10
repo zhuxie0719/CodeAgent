@@ -630,17 +630,22 @@ class ComprehensiveDetector:
                     
                     # 等待任务完成（最多30分钟）
                     try:
+                        print(f"⏳ [Coordinator] 开始等待静态检测任务完成 (task_id: {task_id})...")
                         analysis_result = await coordinator.task_manager.get_task_result(task_id, timeout=1800.0)
-                        print(f"✅ [Coordinator] 静态检测任务完成")
+                        print(f"✅ [Coordinator] 静态检测任务完成，收到结果")
+                        print(f"📊 [Coordinator] 结果类型: {type(analysis_result)}, 成功: {analysis_result.get('success') if analysis_result else 'None'}")
                         
                         if analysis_result and analysis_result.get("success", False):
                             detection_results = analysis_result.get("detection_results", {})
                             if preliminary_analysis and preliminary_analysis.get("success"):
                                 detection_results["preliminary_analysis"] = preliminary_analysis
+                            print(f"✅ [Coordinator] 返回检测结果，问题数量: {len(detection_results.get('issues', []))}")
                             return detection_results
                         else:
+                            error_msg = analysis_result.get("error", "静态分析失败") if analysis_result else "任务执行失败"
+                            print(f"⚠️ [Coordinator] 静态分析失败: {error_msg}")
                             return {
-                                "error": analysis_result.get("error", "静态分析失败") if analysis_result else "任务执行失败",
+                                "error": error_msg,
                                 "issues": [],
                                 "statistics": {
                                     "total_files": 0,
@@ -1342,11 +1347,29 @@ class ComprehensiveDetector:
     def save_results(self, results: Dict[str, Any], file_path: str):
         """保存结果到文件"""
         try:
+            # 递归处理不可序列化的对象（如set类型）
+            def convert_to_serializable(obj):
+                if isinstance(obj, set):
+                    return list(obj)
+                elif isinstance(obj, dict):
+                    return {k: convert_to_serializable(v) for k, v in obj.items()}
+                elif isinstance(obj, (list, tuple)):
+                    return [convert_to_serializable(item) for item in obj]
+                elif hasattr(obj, '__dict__'):
+                    return convert_to_serializable(obj.__dict__)
+                else:
+                    return obj
+            
+            # 转换结果数据
+            serializable_results = convert_to_serializable(results)
+            
             with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(results, f, indent=2, ensure_ascii=False)
+                json.dump(serializable_results, f, indent=2, ensure_ascii=False)
             print(f"检测结果已保存到: {file_path}")
         except Exception as e:
             print(f"保存结果失败: {e}")
+            import traceback
+            traceback.print_exc()
     
     def generate_severe_issues_report(self, results: Dict[str, Any], filename: str) -> str:
         """生成严重问题汇总文档"""

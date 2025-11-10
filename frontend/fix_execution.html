@@ -647,7 +647,7 @@
                 return `
                     <div class="issue-item" data-index="${index}">
                         <input type="checkbox" class="issue-checkbox" data-index="${index}" 
-                               onchange="toggleIssue(${index})" checked>
+                               onchange="toggleIssue(${index})">
                         <div class="issue-severity severity-${severity}">${severityText}</div>
                         <div class="issue-content">
                             <div class="issue-message">${issue.message || issue.detailed_description || '未知问题'}</div>
@@ -661,8 +661,10 @@
                 `;
             }).join('');
 
-            // 默认全选
-            selectedIssues = new Set(issues.map((_, index) => index));
+            // 默认不选中，让用户手动选择要修复的问题
+            selectedIssues = new Set();
+            // 取消所有复选框的选中状态
+            document.querySelectorAll('.issue-checkbox').forEach(cb => cb.checked = false);
             updateSelectedCount();
         }
 

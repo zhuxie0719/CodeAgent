@@ -396,38 +396,19 @@ class Coordinator:
             self.logger.info(f"测试生成完成: {result.get('total_tests', 0)} 个测试文件")
     
     async def _process_detection_completion(self, task, result):
-        """处理缺陷检测完成（透传 file_path / project_path）"""
+        """处理缺陷检测完成（不再自动创建修复任务，等待前端API调用）"""
         issues = result.get('detection_results', {}).get('issues', [])
         
         print(f"\n{'='*60}")
-        print(f"🔍 缺陷检测完成，开始处理")
+        print(f"🔍 缺陷检测完成")
         print(f"发现 {len(issues)} 个缺陷")
+        print(f"ℹ️  修复任务将由前端API调用时创建，不会自动开始修复")
         print(f"{'='*60}\n")
 
-        if issues:
-            print(f"🧠 使用决策引擎分析缺陷...")
-            # 使用决策引擎分析缺陷
-            decisions = await self.decision_engine.analyze_complexity(issues)
-
-            # 原样携带 file_path 或 project_path（不做父目录推断）
-            payload = {
-                'issues': issues,
-                'decisions': decisions
-            }
-            if 'project_path' in task['data'] and task['data']['project_path']:
-                payload['project_path'] = task['data']['project_path']
-            if 'file_path' in task['data'] and task['data']['file_path']:
-                payload['file_path'] = task['data']['file_path']
-
-            print(f"🔧 创建修复任务...")
-            # 创建修复任务
-            fix_task_id = await self.create_task('fix_issues', payload, TaskPriority.HIGH)
-
-            print(f"📤 分配修复任务给 fix_execution_agent (task_id: {fix_task_id})")
-            # 分配给修复执行Agent
-            await self.assign_task(fix_task_id, 'fix_execution_agent')
-        else:
-            self.logger.info("未发现需要修复的缺陷")
+        self.logger.info(f"缺陷检测完成: 发现 {len(issues)} 个缺陷，等待前端API调用修复任务")
+        
+        # 不再自动创建修复任务，等待前端通过API调用修复接口
+        # 修复任务应该由前端用户选择要修复的问题后，通过 /api/v1/fix/execute 接口创建
     
     
     async def process_workflow(self, file_path: Optional[str] = None, project_path: Optional[str] = None) -> Dict[str, Any]:
