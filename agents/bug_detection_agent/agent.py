@@ -79,7 +79,7 @@ class BugDetectionAgent(BaseAgent):
                         raise Exception("Docker服务未运行或不可用")
                 except FileNotFoundError:
                     raise Exception("Docker未安装或不在PATH中")
-                except subprocess.TimeoutError:
+                except subprocess.TimeoutExpired:
                     raise Exception("Docker服务响应超时")
                 
                 # 初始化Docker运行器
@@ -2869,6 +2869,15 @@ class BugDetectionAgent(BaseAgent):
             # 合并所有问题（方案B标准工具集，Ruff替代Flake8）
             all_issues = pylint_issues + mypy_issues + semgrep_issues + ruff_issues + bandit_issues + ai_issues
             
+            # 可选：如果项目包含 tests/test 目录，则运行项目测试并将失败作为缺陷输出
+            try:
+                test_issues = await self._maybe_run_project_tests(project_path)
+                if test_issues:
+                    self.logger.info(f"项目测试发现 {len(test_issues)} 个失败用例，纳入缺陷列表")
+                    all_issues.extend(test_issues)
+            except Exception as e:
+                self.logger.warning(f"运行项目测试时发生异常，跳过测试集成: {e}")
+            
             self.logger.info(f"=== 静态分析完成统计 ===")
             self.logger.info(f"Pylint: {len(pylint_issues)} 个问题")
             self.logger.info(f"Mypy: {len(mypy_issues)} 个问题")
@@ -3191,6 +3200,86 @@ class BugDetectionAgent(BaseAgent):
                 "issues": [],
                 "error": str(e)
             }
+    
+    async def _maybe_run_project_tests(self, project_path: str) -> List[Dict[str, Any]]:
+        """如果项目包含 tests/test 目录，则尝试运行测试并将失败转换为缺陷"""
+        try:
+            root = Path(project_path)
+            candidates = [root / "tests", root / "test"]
+            test_files: List[Path] = []
+            
+            for d in candidates:
+                if d.exists() and d.is_dir():
+                    for py in d.rglob("*.py"):
+                        name = py.name
+                        if name.startswith("test_") or name.endswith("_test.py"):
+                            test_files.append(py)
+            
+            if not test_files:
+                return []
+            
+            # 优先在Docker中运行测试，避免本地环境差异
+            stdout = ""
+            stderr = ""
+            success = False
+            if getattr(self, "use_docker", False) and getattr(self, "docker_runner", None):
+                try:
+                    await self.docker_runner.ensure_image_exists()
+                    result = await self.docker_runner.run_tests(Path(project_path))
+                    success = bool(result.get("success")) and int(result.get("returncode", result.get("code", 1) or 1)) == 0
+                    stdout = result.get("stdout", "") or ""
+                    stderr = result.get("stderr", "") or ""
+                except Exception as e:
+                    self.logger.warning(f"Docker测试运行失败，回退到本地运行: {e}")
+            
+            if not success and (not getattr(self, "use_docker", False) or not getattr(self, "docker_runner", None)):
+                try:
+                    proc = await asyncio.create_subprocess_shell(
+                        "python -m pytest -v",
+                        cwd=project_path,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE
+                    )
+                    out, err = await proc.communicate()
+                    stdout = out.decode(errors="ignore") if out else ""
+                    stderr = err.decode(errors="ignore") if err else ""
+                    success = (proc.returncode == 0)
+                except Exception as e:
+                    stderr = f"本地运行pytest失败: {e}"
+                    success = False
+            
+            if success:
+                return []
+            
+            # 解析失败摘要（尽量抓取关键信息）
+            lines = (stdout or "").splitlines() + (stderr or "").splitlines()
+            summaries: List[str] = []
+            for ln in lines:
+                s = ln.strip()
+                if s.startswith("FAILED") or s.startswith("ERROR") or s.startswith("E   ") or s.startswith("F   "):
+                    summaries.append(s)
+            # 限制信息长度
+            if summaries:
+                message_block = "\n".join(summaries[:50])
+            else:
+                clip_src = stdout if stdout else stderr
+                message_block = (clip_src[-2000:] if clip_src else "测试失败但没有可用输出")
+            
+            # 输出为一个聚合的“测试失败”缺陷；前端像普通缺陷一样展示
+            return [{
+                "file": "tests/",
+                "line": 1,
+                "column": 0,
+                "type": "test_failure",
+                "severity": "error",
+                "message": "项目单元测试失败",
+                "details": message_block,
+                "tool": "pytest"
+            }]
+        
+        except Exception as e:
+            self.logger.warning(f"测试检测与执行失败: {e}")
+            return []
     
     async def _enhance_detection_results(self, detection_results: Dict[str, Any], file_path: str) -> Dict[str, Any]:
         """增强检测结果，添加代码片段和详细说明"""

@@ -24,6 +24,7 @@ import time
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from ..base_agent import BaseAgent, TaskStatus
+from .generic_bug_detector import GenericBugDetector
 
 class DynamicDetectionAgent(BaseAgent):
     """
@@ -56,6 +57,9 @@ class DynamicDetectionAgent(BaseAgent):
         
         # 初始化日志
         self.logger = logging.getLogger(__name__)
+        
+        # 初始化通用bug检测器
+        self.generic_bug_detector = GenericBugDetector()
     
     async def initialize(self) -> bool:
         """初始化动态监控Agent"""
@@ -81,7 +85,13 @@ class DynamicDetectionAgent(BaseAgent):
             "performance_monitoring", 
             "resource_monitoring",
             "anomaly_detection",
-            "alert_management"
+            "alert_management",
+            "input_interaction_detection",
+            "resource_management_detection",
+            "concurrency_detection",
+            "boundary_condition_detection",
+            "environment_dependency_detection",
+            "dynamic_code_execution_detection"
         ]
     
     async def process_task(self, task_id: str, task_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -549,11 +559,40 @@ class DynamicDetectionAgent(BaseAgent):
             # 检查是否是Flask项目
             is_flask_project = await self._detect_flask_project(project_path)
             
+            # 执行通用bug检测（对所有项目类型都适用）
+            self.logger.info("开始通用bug检测...")
+            generic_issues = []
+            generic_bug_results = {}
+            try:
+                generic_bug_results = self.generic_bug_detector.detect_all_issues(project_path)
+                if generic_bug_results.get("status") == "completed":
+                    generic_issues = generic_bug_results.get("issues", [])
+                    self.logger.info(f"通用bug检测完成，发现 {len(generic_issues)} 个问题")
+                else:
+                    self.logger.warning(f"通用bug检测失败: {generic_bug_results.get('error', '未知错误')}")
+            except Exception as e:
+                self.logger.error(f"通用bug检测异常: {e}")
+            
+            # 如果不是Flask项目，只返回通用bug检测结果
             if not is_flask_project:
                 return {
-                    "status": "skipped",
-                    "reason": "不是Flask项目",
-                    "tests_completed": False
+                    "status": "completed",
+                    "is_flask_project": False,
+                    "enable_web_test": False,
+                    "test_results": {
+                        "generic_bug_detection": {
+                            "status": "completed",
+                            "total_issues": len(generic_issues),
+                            "issues_by_category": generic_bug_results.get("issues_by_category", {}),
+                            "files_scanned": generic_bug_results.get("files_scanned", 0)
+                        }
+                    },
+                    "issues": generic_issues,
+                    "recommendations": [
+                        f"发现{len(generic_issues)}个通用bug，建议检查代码安全性和可靠性"
+                    ] if generic_issues else [],
+                    "tests_completed": True,
+                    "success_rate": 100.0 if generic_issues else 0.0
                 }
             
             # 根据选项决定是否启用Web应用测试
@@ -725,6 +764,17 @@ class DynamicDetectionAgent(BaseAgent):
             flask_d_issues = self._detect_flask_d_class_issues(project_path, flask_functionality)
             issues.extend(flask_d_issues)
             
+            # 添加通用bug检测结果到issues列表
+            issues.extend(generic_issues)
+            
+            # 添加通用bug检测的统计信息到test_results
+            test_results["generic_bug_detection"] = {
+                "status": "completed",
+                "total_issues": len(generic_issues),
+                "issues_by_category": generic_bug_results.get("issues_by_category", {}),
+                "files_scanned": generic_bug_results.get("files_scanned", 0)
+            }
+            
             # 基于测试结果生成建议
             flask_summary = flask_functionality.get("summary", {})
             success_rate = flask_summary.get("success_rate", 0)
@@ -742,6 +792,14 @@ class DynamicDetectionAgent(BaseAgent):
             # 如果有Flask D类问题，添加相应建议
             if flask_d_issues:
                 recommendations.append(f"发现{len(flask_d_issues)}个Flask D类问题，建议检查Flask版本兼容性")
+            
+            # 添加通用bug检测的建议
+            generic_issues_count = len([i for i in issues if i.get("type") in [
+                "input_interaction", "resource_management", "concurrency", 
+                "boundary_condition", "environment_dependency", "dynamic_code_execution"
+            ]])
+            if generic_issues_count > 0:
+                recommendations.append(f"发现{generic_issues_count}个通用bug，建议检查代码安全性和可靠性")
             
             return {
                 "status": "completed",
@@ -1326,10 +1384,11 @@ class DynamicDetectionAgent(BaseAgent):
         
         # 检查Flask版本
         flask_info = flask_functionality.get("flask_info", {})
-        flask_version = flask_info.get("flask_version", "")
+        flask_installed = flask_info.get("flask_installed", False)
+        flask_version = flask_info.get("flask_version", "") or ""
         
-        # 如果Flask版本是2.0.0，检测已知的D类问题
-        if flask_version.startswith("2.0.0"):
+        # 仅当确实安装了Flask且版本为2.0.0时才检测D类问题
+        if flask_installed and flask_version.startswith("2.0.0"):
             print("检测到Flask 2.0.0，开始检测D类问题...")
             
             # 问题27: URL匹配顺序恢复为在session加载之后
@@ -1406,12 +1465,31 @@ class DynamicDetectionAgent(BaseAgent):
         """转换Flask测试结果格式以匹配动态检测Agent的期望"""
         try:
             # 提取Flask信息
-            flask_info = flask_test_results.get("flask_info", {
-                "flask_installed": True,
-                "flask_version": "2.0.0",  # 从测试结果中提取
-                "werkzeug_installed": True,
-                "werkzeug_version": "2.0.0"  # 从测试结果中提取
-            })
+            flask_info = flask_test_results.get("flask_info")
+            if not flask_info:
+                # 尝试从当前环境探测（非强依赖）
+                detected_flask_installed = False
+                detected_flask_version = ""
+                detected_werkzeug_installed = False
+                detected_werkzeug_version = ""
+                try:
+                    import flask  # type: ignore
+                    detected_flask_installed = True
+                    detected_flask_version = getattr(flask, "__version__", "") or ""
+                except Exception:
+                    detected_flask_installed = False
+                try:
+                    import werkzeug  # type: ignore
+                    detected_werkzeug_installed = True
+                    detected_werkzeug_version = getattr(werkzeug, "__version__", "") or ""
+                except Exception:
+                    detected_werkzeug_installed = False
+                flask_info = {
+                    "flask_installed": detected_flask_installed,
+                    "flask_version": detected_flask_version,
+                    "werkzeug_installed": detected_werkzeug_installed,
+                    "werkzeug_version": detected_werkzeug_version
+                }
             
             # 转换测试结果格式
             converted_tests = {}

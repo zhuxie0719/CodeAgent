@@ -1044,13 +1044,16 @@
             const dynamicDetection = results.dynamic_detection || {};
             const dynamicIssues = dynamicDetection.issues || [];
             dynamicIssues.forEach(issue => {
+                const title = issue.test || issue.message || issue.category || issue.type || '未知测试';
+                const msg = issue.message || issue.description || issue.details || '';
+                const sev = issue.severity || 'info';
                 html += `
                     <div class="issue-item">
                         <div>
-                            <strong>动态检测 - ${issue.test || '未知测试'}</strong><br>
-                            <small>${issue.message}</small>
+                            <strong>动态检测 - ${title}</strong><br>
+                            <small>${msg}</small>
                         </div>
-                        <span class="issue-severity severity-${issue.severity}">${issue.severity}</span>
+                        <span class="issue-severity severity-${sev}">${sev}</span>
                     </div>
                 `;
             });
