@@ -266,9 +266,7 @@ Docker 无法拉取基础镜像，显示 "authorization failed" 错误。
   "registry-mirrors": [
     "https://docker.1ms.run",
     "https://docker.xuanyuan.me",
-    "https://dislabaiot.xyz",
-    "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com"
+    "https://dislabaiot.xyz"
   ]
 }
 ```
@@ -302,12 +300,17 @@ Docker 无法拉取基础镜像，显示 "authorization failed" 错误。
 
 ```json
 {
-  "registryMirrors": [
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "registry-mirrors": [
     "https://docker.1ms.run",
     "https://docker.xuanyuan.me",
-    "https://dislabaiot.xyz",
-    "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com"
+    "https://dislabaiot.xyz"
   ]
 }
 ```
@@ -339,11 +342,10 @@ docker build -f Dockerfile.flask-test -t flask-2.0.0-test:latest .
 
 ## 可用的国内镜像源
 
-- **毫秒镜像**: `https://docker.1ms.run` ✅ 推荐
-- **轩辕镜像**: `https://docker.xuanyuan.me` ✅ 推荐
-- **dislabaiot**: `https://dislabaiot.xyz` ✅ 推荐
-- **网易镜像**: `https://hub-mirror.c.163.com`
-- **百度云镜像**: `https://mirror.baidubce.com`
+    "https://docker.1ms.run",
+    "https://docker.xuanyuan.me",
+    "https://dislabaiot.xyz"
+
 
 ## 故障排除
 
@@ -505,95 +507,3 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 .\configure_docker_mirror.ps1
 ```
 
-### Windows PowerShell 脚本（自动配置镜像加速器）
-
-已创建文件 `configure_docker_mirror.ps1`：
-
-```powershell
-# 配置 Docker Desktop 镜像加速器
-$configPath = "$env:APPDATA\Docker\settings.json"
-
-# 检查 Docker Desktop 是否运行
-$dockerRunning = docker info 2>&1 | Select-String -Pattern "Server Version"
-if (-not $dockerRunning) {
-    Write-Host "错误: Docker Desktop 未运行，请先启动 Docker Desktop" -ForegroundColor Red
-    exit 1
-}
-
-Write-Host "正在配置 Docker 镜像加速器..." -ForegroundColor Yellow
-
-# 注意：这需要手动编辑 settings.json，因为 Docker Desktop 需要重启才能生效
-Write-Host ""
-Write-Host "请按照以下步骤手动配置:" -ForegroundColor Cyan
-Write-Host "1. 右键点击系统托盘中的 Docker 图标" -ForegroundColor White
-Write-Host "2. 选择 'Settings'（设置）" -ForegroundColor White
-Write-Host "3. 进入 'Docker Engine'" -ForegroundColor White
-Write-Host "4. 添加以下配置到 JSON 中:" -ForegroundColor White
-Write-Host ""
-Write-Host '  "registry-mirrors": [' -ForegroundColor Green
-Write-Host '    "https://docker.mirrors.ustc.edu.cn",' -ForegroundColor Green
-Write-Host '    "https://hub-mirror.c.163.com",' -ForegroundColor Green
-Write-Host '    "https://mirror.baidubce.com"' -ForegroundColor Green
-Write-Host '  ]' -ForegroundColor Green
-Write-Host ""
-Write-Host "5. 点击 'Apply & Restart'" -ForegroundColor White
-```
-
-## 验证修复
-
-配置完成后，重新构建镜像：
-
-```powershell
-docker build -f Dockerfile.flask-test -t flask-2.0.0-test:latest .
-```
-
-如果看到镜像开始下载并构建，说明配置成功。
-
-## 仍然无法解决？
-
-如果以上方法都不行：
-
-1. **检查网络连接**
-   ```powershell
-   # 测试网络连接
-   ping docker.io
-   ping auth.docker.io
-   ```
-
-2. **检查防火墙设置**
-   - 确保防火墙允许 Docker Desktop 访问网络
-
-3. **使用 VPN 或更换网络**
-   - 临时使用 VPN 或切换到其他网络环境
-
-4. **联系网络管理员**
-   - 如果是企业网络，可能需要网络管理员配置代理或白名单
-
-## 临时解决方案：禁用 Docker
-
-如果暂时无法解决网络问题，可以禁用 Docker 模式，使用虚拟环境：
-
-```powershell
-# 不设置 USE_DOCKER 环境变量，或设置为 false
-$env:USE_DOCKER="false"
-python start_api.py
-```
-
-系统会自动回退到虚拟环境方式运行。
-
-{
-  "builder": {
-    "gc": {
-      "defaultKeepStorage": "20GB",
-      "enabled": true
-    }
-  },
-  "experimental": false,
-  "registry-mirrors": [
-    "https://docker.1ms.run",
-    "https://docker.xuanyuan.me",
-    "https://dislabaiot.xyz",
-    "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com"
-  ]
-}

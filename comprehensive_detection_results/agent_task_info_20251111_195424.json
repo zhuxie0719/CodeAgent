@@ -1,0 +1,171 @@
+[
+  {
+    "task": "在 src\\calculator.py 的第 1 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251111_195319/src/calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 1,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 src\\calculator.py 的第 5 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251111_195319/src/calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 5,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 src\\calculator.py 的第 10 行，pylint 检测到问题：Trailing newlines",
+    "problem_file": "temp_extract/project_20251111_195319/src/calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 10,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 temp_extract\\project_20251111_195319\\src\\calculator.py 的第 8 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251111_195319/temp_extract/project_20251111_195319/src/calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 8,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 temp_extract\\project_20251111_195319\\tests\\test_calculator.py 的第 7 行，发现安全问题（检测项：）：Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.",
+    "problem_file": "temp_extract/project_20251111_195319/temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 7,
+      "severity": "low",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 temp_extract\\project_20251111_195319\\tests\\test_calculator.py 的第 13 行，发现安全问题（检测项：）：Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.",
+    "problem_file": "temp_extract/project_20251111_195319/temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 13,
+      "severity": "low",
+      "tool": "bandit",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 tests/ 的第 1 行，pytest 检测到error级别问题：项目单元测试失败",
+    "problem_file": "temp_extract/project_20251111_195319/tests/",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 1,
+      "severity": "error",
+      "tool": "pytest",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 tests\\test_calculator.py 的第 1 行，存在未使用的变量或参数：Unused import pytest",
+    "problem_file": "temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 1,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 tests\\test_calculator.py 的第 3 行，发现严重错误：Unable to import 'src.calculator'",
+    "problem_file": "temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 3,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 tests\\test_calculator.py 的第 3 行，类型检查发现问题：Cannot",
+    "problem_file": "temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 3,
+      "severity": "error",
+      "tool": "mypy",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 tests\\test_calculator.py 的第 6 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 6,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 tests\\test_calculator.py 的第 10 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 10,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 tests\\test_calculator.py 的第 15 行，pylint 检测到问题：Trailing newlines",
+    "problem_file": "temp_extract/project_20251111_195319/tests/test_calculator.py",
+    "project_root": "temp_extract/project_20251111_195319",
+    "agent_test_path": "temp_extract/project_20251111_195319/agent-test",
+    "backup_agent_path": "temp_extract/project_20251111_195319/backup-agent",
+    "defect_info": {
+      "line": 15,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  }
+]

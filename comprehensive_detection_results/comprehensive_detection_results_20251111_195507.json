@@ -1,0 +1,130 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-11-11T19:53:19.285417",
+  "zip_file": "C:\\Users\\Ding\\AppData\\Local\\Temp\\tmpd54rayb2.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true,
+    "enable_pylint": true,
+    "enable_mypy": true,
+    "enable_semgrep": true,
+    "enable_ruff": true,
+    "enable_bandit": true,
+    "enable_llm_filter": true
+  },
+  "extracted_path": "temp_extract\\project_20251111_195319",
+  "removed_virtualenv_dirs": [],
+  "files": [
+    "README.md",
+    "src\\calculator.py",
+    "tests\\test_calculator.py"
+  ],
+  "preliminary_analysis": {
+    "success": true,
+    "project_structure": {
+      "path": "temp_extract\\project_20251111_195319",
+      "total_files": 1,
+      "total_lines": 15,
+      "file_types": {
+        ".py": 1
+      },
+      "directories": [
+        "tests"
+      ],
+      "files": [
+        {
+          "path": "tests\\test_calculator.py",
+          "lines": 15,
+          "size": 330
+        }
+      ],
+      "project_type": "unknown",
+      "framework": "unknown",
+      "primary_language": "python",
+      "has_tests": true,
+      "has_docs": false,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 2,
+      "analyzed_files": 2,
+      "total_lines": 25,
+      "total_functions": 4,
+      "total_classes": 0,
+      "average_complexity": 0.5,
+      "max_complexity": 1,
+      "total_issues": 1,
+      "issues_by_type": {
+        "import_style": 1
+      },
+      "complexity_distribution": {
+        "1": 1,
+        "0": 1
+      },
+      "maintainability_score": 99.5,
+      "file_analysis": [
+        {
+          "file_path": "src\\calculator.py",
+          "lines_of_code": 10,
+          "function_count": 2,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 1,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 2,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 4
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "src\\calculator.py"
+          }
+        },
+        {
+          "file_path": "tests\\test_calculator.py",
+          "lines_of_code": 15,
+          "function_count": 2,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 0,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 2,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [
+            {
+              "type": "import_style",
+              "message": "建议使用相对导入: src.calculator",
+              "line": 3
+            }
+          ],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "tests\\test_calculator.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "tests\\test_calculator.py": 

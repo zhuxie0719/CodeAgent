@@ -196,6 +196,18 @@ class ComprehensiveDetector:
                 return results
             
             results["extracted_path"] = extract_dir
+
+            # 在分析前移除常见虚拟环境目录，避免第三方库干扰
+            removed_virtualenvs = self._prune_virtualenv_dirs(
+                extract_dir,
+                virtualenv_names=["venv", ".venv", "env", ".env"]
+            )
+            if removed_virtualenvs:
+                print("🧹 [DEBUG] 已排除虚拟环境目录:")
+                for removed_dir in removed_virtualenvs:
+                    print(f"   - {removed_dir}")
+            results["removed_virtualenv_dirs"] = removed_virtualenvs
+
             results["files"] = self._list_files(extract_dir)
             
             # 限制文件数量，避免处理过多文件
@@ -448,7 +460,7 @@ class ComprehensiveDetector:
     def _list_files(self, project_path: str) -> List[str]:
         """列出项目文件（排除虚拟环境和缓存文件）"""
         files = []
-        skip_dirs = {'venv', '__pycache__', '.git', 'node_modules', '.pytest_cache', '.mypy_cache'}
+        skip_dirs = {'venv', '.venv', 'env', '.env', '__pycache__', '.git', 'node_modules', '.pytest_cache', '.mypy_cache'}
         
         for root, dirs, filenames in os.walk(project_path):
             # 跳过不需要的目录
@@ -462,6 +474,32 @@ class ComprehensiveDetector:
                 file_path = os.path.relpath(os.path.join(root, filename), project_path)
                 files.append(file_path)
         return files
+
+    def _prune_virtualenv_dirs(self, project_path: str, virtualenv_names: Optional[List[str]] = None) -> List[str]:
+        """删除项目中的虚拟环境目录，避免将第三方依赖纳入分析结果"""
+        if virtualenv_names is None:
+            virtualenv_names = ["venv", ".venv", "env", ".env"]
+
+        normalized_targets = {name.lower() for name in virtualenv_names}
+        removed_dirs: List[str] = []
+
+        for root, dirs, _ in os.walk(project_path, topdown=True):
+            # 找到需要删除的目录（大小写不敏感）
+            target_dirs = [d for d in dirs if d.lower() in normalized_targets]
+
+            for target in target_dirs:
+                full_path = os.path.join(root, target)
+                rel_path = os.path.relpath(full_path, project_path)
+                try:
+                    shutil.rmtree(full_path, ignore_errors=True)
+                    removed_dirs.append(rel_path)
+                except Exception as exc:
+                    print(f"⚠️ [DEBUG] 删除虚拟环境目录失败: {full_path} -> {exc}")
+
+            # 从遍历列表中移除已删除的目录，避免继续深入
+            dirs[:] = [d for d in dirs if d.lower() not in normalized_targets]
+
+        return removed_dirs
     
     async def _perform_preliminary_analysis(self, project_path: str) -> Dict[str, Any]:
         """执行初步代码分析（项目结构、代码质量、依赖关系）"""
