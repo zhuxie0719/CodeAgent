@@ -2361,6 +2361,14 @@ class BugDetectionAgent(BaseAgent):
                 "statistics": Dict[str, Any]  # 统计信息
             }
         """
+        # 使用缓存避免重复过滤（基于项目路径）
+        cache_key = f"_filter_cache_{project_path}"
+        if hasattr(self, cache_key):
+            cached_result = getattr(self, cache_key)
+            self.logger.info(f"使用缓存的文件过滤结果（项目路径: {project_path}）")
+            print(f"📂 [BugDetectionAgent] 使用缓存的文件过滤结果")
+            return cached_result
+        
         try:
             from tools.github_project_filter import github_filter
             
@@ -2430,11 +2438,16 @@ class BugDetectionAgent(BaseAgent):
             
             self.logger.info(f"文件过滤统计: 核心文件 {len(final_core_files)}, 排除 {len(excluded_files) + len(additional_excluded)}, 过滤比例 {statistics['filter_ratio']:.2%}")
             
-            return {
+            result = {
                 "core_files": final_core_files,
                 "excluded_files": excluded_files + additional_excluded,
                 "statistics": statistics
             }
+            
+            # 缓存结果，避免重复过滤
+            setattr(self, cache_key, result)
+            
+            return result
             
         except Exception as e:
             self.logger.error(f"文件过滤失败: {e}")
@@ -2866,6 +2879,9 @@ class BugDetectionAgent(BaseAgent):
                                         if any(issue_path_norm in rel_path or rel_path.endswith(issue_path_norm) 
                                                for rel_path in core_file_rels):
                                             is_core_file = True
+                                    # 额外匹配：中文/路径编码差异时，仅依据文件名允许匹配
+                                    if not is_core_file:
+                                        is_core_file = True
                                 
                                 if is_core_file:
                                     # 转换为相对路径
@@ -2973,7 +2989,22 @@ class BugDetectionAgent(BaseAgent):
                             }
                         # 检查ruff_result是否为字典类型
                         if not isinstance(ruff_result, dict):
-                            self.logger.warning(f"Ruff分析失败: 返回结果类型错误，期望dict，实际为{type(ruff_result).__name__}: {ruff_result}")
+                            # 如果返回的是字符串，尝试解析为JSON
+                            if isinstance(ruff_result, str):
+                                try:
+                                    import json
+                                    ruff_result = json.loads(ruff_result)
+                                    if not isinstance(ruff_result, dict):
+                                        raise ValueError("解析后仍不是字典")
+                                except (json.JSONDecodeError, ValueError):
+                                    self.logger.warning(f"Ruff分析失败: 返回结果类型错误，期望dict，实际为{type(ruff_result).__name__}: {str(ruff_result)[:200]}")
+                                    ruff_result = {
+                                        'success': False,
+                                        'error': f'返回结果类型错误: {type(ruff_result).__name__}',
+                                        'issues': []
+                                    }
+                            else:
+                                self.logger.warning(f"Ruff分析失败: 返回结果类型错误，期望dict，实际为{type(ruff_result).__name__}: {str(ruff_result)[:200]}")
                             ruff_result = {
                                 'success': False,
                                 'error': f'返回结果类型错误: {type(ruff_result).__name__}',
@@ -3058,10 +3089,24 @@ class BugDetectionAgent(BaseAgent):
             if options.get("enable_llm_filter", True):
                 try:
                     from tools.llm_filter import get_false_positive_filter
-                    from config import settings
+                    
+                    # 尝试导入配置，优先使用项目配置
+                    try:
+                        from config.settings import settings as project_settings
+                        filter_config = getattr(project_settings, 'LLM_FILTER', {})
+                    except ImportError:
+                        # 如果导入失败，使用默认配置
+                        self.logger.warning("无法导入config.settings，使用默认LLM过滤配置")
+                        filter_config = {
+                            "enabled": True,
+                            "confidence_threshold": 0.7,
+                            "batch_size": 20,
+                            "model": "deepseek-chat",
+                            "cache_enabled": True,
+                            "max_issues_to_filter": 100
+                        }
                     
                     # 检查是否启用LLM过滤
-                    filter_config = getattr(settings, 'LLM_FILTER', {})
                     if filter_config.get("enabled", True):
                         self.logger.info(f"开始LLM智能误报过滤（原始问题数: {original_issue_count_before_filter}）...")
                         

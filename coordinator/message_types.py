@@ -23,6 +23,7 @@ class TaskStatus(Enum):
     PENDING = "pending"     # 等待中
     ASSIGNED = "assigned"   # 已分配
     RUNNING = "running"     # 运行中
+    PROCESSING = "processing"  # 处理中
     COMPLETED = "completed" # 已完成
     FAILED = "failed"       # 失败
     CANCELLED = "cancelled" # 已取消

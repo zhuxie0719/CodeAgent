@@ -1,0 +1,1767 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-11-12T15:16:57.210060",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmpum2myaos.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_web_app_test": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true,
+    "enable_pylint": true,
+    "enable_mypy": true,
+    "enable_semgrep": true,
+    "enable_ruff": true,
+    "enable_bandit": true,
+    "enable_llm_filter": true
+  },
+  "extracted_path": "temp_extract\\project_20251112_151657_210060_3164c17a",
+  "removed_virtualenv_dirs": [],
+  "files": [
+    "测试项目\\app.py",
+    "测试项目\\README.md",
+    "测试项目\\requirements.txt",
+    "测试项目\\vulnerable.py"
+  ],
+  "preliminary_analysis": {
+    "success": true,
+    "project_structure": {
+      "path": "temp_extract\\project_20251112_151657_210060_3164c17a",
+      "total_files": 4,
+      "total_lines": 337,
+      "file_types": {
+        ".py": 2,
+        ".md": 1,
+        ".txt": 1
+      },
+      "directories": [
+        "测试项目"
+      ],
+      "files": [
+        {
+          "path": "测试项目\\app.py",
+          "lines": 132,
+          "size": 5001
+        },
+        {
+          "path": "测试项目\\README.md",
+          "lines": 107,
+          "size": 4322
+        },
+        {
+          "path": "测试项目\\requirements.txt",
+          "lines": 2,
+          "size": 16
+        },
+        {
+          "path": "测试项目\\vulnerable.py",
+          "lines": 96,
+          "size": 3668
+        }
+      ],
+      "project_type": "python",
+      "framework": "unknown",
+      "primary_language": "python",
+      "has_tests": false,
+      "has_docs": true,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 2,
+      "analyzed_files": 2,
+      "total_lines": 228,
+      "total_functions": 9,
+      "total_classes": 0,
+      "average_complexity": 4.5,
+      "max_complexity": 5,
+      "total_issues": 0,
+      "issues_by_type": {},
+      "complexity_distribution": {
+        "4": 1,
+        "5": 1
+      },
+      "maintainability_score": 100,
+      "file_analysis": [
+        {
+          "file_path": "测试项目\\app.py",
+          "lines_of_code": 132,
+          "function_count": 4,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 4,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 4,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\app.py"
+          }
+        },
+        {
+          "file_path": "测试项目\\vulnerable.py",
+          "lines_of_code": 96,
+          "function_count": 5,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 5,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 5,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\vulnerable.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "测试项目\\app.py": [
+          "flask",
+          "os",
+          "sqlite3"
+        ],
+        "测试项目\\vulnerable.py": [
+          "base64",
+          "flask",
+          "pickle",
+          "sys",
+          "subprocess",
+          "os"
+        ]
+      },
+      "circular_dependencies": [],
+      "dependency_metrics": {
+        "total_packages": 0,
+        "total_imports": 9,
+        "circular_dependency_count": 0,
+        "dependency_depth": 0,
+        "coupling_score": 0.0
+      },
+      "internal_modules": []
+    }
+  },
+  "repository_structure_file": "C:\\Users\\23208\\Desktop\\CodeAgent2\\comprehensive_detection_results\\repository_structure_20251112_151706.txt",
+  "static_analysis": {
+    "success": true,
+    "analysis_type": "enhanced_static_analysis",
+    "project_path": "temp_extract\\project_20251112_151657_210060_3164c17a",
+    "files_analyzed": 2,
+    "python_files_analyzed": 2,
+    "other_language_files_analyzed": 0,
+    "issues_found": 4,
+    "issues": [
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\app.py",
+        "line": 91,
+        "column": 15,
+        "symbol": "broad-exception-caught",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖真实的错误，影响错误处理和调试"
+      },
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Unused import os",
+        "file": "测试项目\\app.py",
+        "line": 3,
+        "column": 0,
+        "symbol": "unused-import",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "未使用的导入可能增加不必要的依赖和内存占用，建议清理"
+      },
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "'subprocess.run' used without explicitly defining the value for 'check'.",
+        "file": "测试项目\\vulnerable.py",
+        "line": 29,
+        "column": 13,
+        "symbol": "subprocess-run-check",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "subprocess.run未设置check参数可能导致命令执行失败时不被检测，存在潜在的安全风险"
+      },
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\vulnerable.py",
+        "line": 49,
+        "column": 11,
+        "symbol": "broad-exception-caught",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖重要的错误信息，影响调试和错误处理"
+      }
+    ],
+    "issues_truncated": false,
+    "total_issues_count": 4,
+    "project_structure": {
+      "path": "temp_extract\\project_20251112_151657_210060_3164c17a",
+      "total_files": 4,
+      "total_lines": 337,
+      "file_types": {
+        ".py": 2,
+        ".md": 1,
+        ".txt": 1
+      },
+      "directories": [
+        "测试项目"
+      ],
+      "files": [
+        {
+          "path": "测试项目\\app.py",
+          "lines": 132,
+          "size": 5001
+        },
+        {
+          "path": "测试项目\\README.md",
+          "lines": 107,
+          "size": 4322
+        },
+        {
+          "path": "测试项目\\requirements.txt",
+          "lines": 2,
+          "size": 16
+        },
+        {
+          "path": "测试项目\\vulnerable.py",
+          "lines": 96,
+          "size": 3668
+        }
+      ],
+      "project_type": "python",
+      "framework": "unknown",
+      "primary_language": "python",
+      "has_tests": false,
+      "has_docs": true,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 2,
+      "analyzed_files": 2,
+      "total_lines": 228,
+      "total_functions": 9,
+      "total_classes": 0,
+      "average_complexity": 4.5,
+      "max_complexity": 5,
+      "total_issues": 0,
+      "issues_by_type": {},
+      "complexity_distribution": {
+        "4": 1,
+        "5": 1
+      },
+      "maintainability_score": 100,
+      "file_analysis": [
+        {
+          "file_path": "测试项目\\app.py",
+          "lines_of_code": 132,
+          "function_count": 4,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 4,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 4,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\app.py"
+          }
+        },
+        {
+          "file_path": "测试项目\\vulnerable.py",
+          "lines_of_code": 96,
+          "function_count": 5,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 5,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 5,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\vulnerable.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "测试项目\\app.py": [
+          "flask",
+          "os",
+          "sqlite3"
+        ],
+        "测试项目\\vulnerable.py": [
+          "base64",
+          "flask",
+          "pickle",
+          "sys",
+          "subprocess",
+          "os"
+        ]
+      },
+      "circular_dependencies": [],
+      "dependency_metrics": {
+        "total_packages": 0,
+        "total_imports": 9,
+        "circular_dependency_count": 0,
+        "dependency_depth": 0,
+        "coupling_score": 0.0
+      },
+      "internal_modules": []
+    },
+    "ai_summary": {
+      "success": false,
+      "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+      "analysis_data": {
+        "project_structure": {
+          "path": "temp_extract\\project_20251112_151657_210060_3164c17a",
+          "total_files": 4,
+          "total_lines": 337,
+          "file_types": {
+            ".py": 2,
+            ".md": 1,
+            ".txt": 1
+          },
+          "directories": [
+            "测试项目"
+          ],
+          "files": [
+            {
+              "path": "测试项目\\app.py",
+              "lines": 132,
+              "size": 5001
+            },
+            {
+              "path": "测试项目\\README.md",
+              "lines": 107,
+              "size": 4322
+            },
+            {
+              "path": "测试项目\\requirements.txt",
+              "lines": 2,
+              "size": 16
+            },
+            {
+              "path": "测试项目\\vulnerable.py",
+              "lines": 96,
+              "size": 3668
+            }
+          ],
+          "project_type": "python",
+          "framework": "unknown",
+          "primary_language": "python",
+          "has_tests": false,
+          "has_docs": true,
+          "has_config": false,
+          "total_functions": 0,
+          "total_classes": 0
+        },
+        "code_quality": {
+          "total_files": 2,
+          "analyzed_files": 2,
+          "total_lines": 228,
+          "total_functions": 9,
+          "total_classes": 0,
+          "average_complexity": 4.5,
+          "max_complexity": 5,
+          "total_issues": 0,
+          "issues_by_type": {},
+          "complexity_distribution": {
+            "4": 1,
+            "5": 1
+          },
+          "maintainability_score": 100,
+          "file_analysis": [
+            {
+              "file_path": "测试项目\\app.py",
+              "lines_of_code": 132,
+              "function_count": 4,
+              "class_count": 0,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 4,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 4,
+                "class_count": 0,
+                "nested_depth": 0,
+                "parameter_count": 0
+              },
+              "issues": [],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "测试项目\\app.py"
+              }
+            },
+            {
+              "file_path": "测试项目\\vulnerable.py",
+              "lines_of_code": 96,
+              "function_count": 5,
+              "class_count": 0,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 5,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 5,
+                "class_count": 0,
+                "nested_depth": 0,
+                "parameter_count": 0
+              },
+              "issues": [],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "测试项目\\vulnerable.py"
+              }
+            }
+          ],
+          "ai_analysis": []
+        },
+        "dependencies": {
+          "python_packages": [],
+          "node_modules": [],
+          "rust_crates": [],
+          "java_dependencies": [],
+          "go_modules": [],
+          "import_dependencies": {
+            "测试项目\\app.py": [
+              "flask",
+              "os",
+              "sqlite3"
+            ],
+            "测试项目\\vulnerable.py": [
+              "base64",
+              "flask",
+              "pickle",
+              "sys",
+              "subprocess",
+              "os"
+            ]
+          },
+          "circular_dependencies": [],
+          "dependency_metrics": {
+            "total_packages": 0,
+            "total_imports": 9,
+            "circular_dependency_count": 0,
+            "dependency_depth": 0,
+            "coupling_score": 0.0
+          },
+          "internal_modules": []
+        }
+      }
+    },
+    "file_filtering": {
+      "core_files_count": 2,
+      "excluded_files_count": 2,
+      "filter_statistics": {
+        "total_files": 4,
+        "analyze_files": 2,
+        "skip_files": 2,
+        "project_type": "python",
+        "skip_reasons": {
+          "文档文件": 1,
+          "第三方库文件": 1
+        },
+        "additional_excluded": 0,
+        "final_core_files": 2,
+        "filter_ratio": 0.5
+      }
+    },
+    "multi_language_analysis": {
+      "python_issues": 38,
+      "semgrep_issues": 0,
+      "ruff_issues": 0,
+      "ai_issues": 0,
+      "supported_languages": []
+    },
+    "tool_coverage": {
+      "pylint": 38,
+      "mypy": 0,
+      "semgrep": 0,
+      "ruff": 0,
+      "bandit": 10,
+      "ai_analyzer": 0
+    },
+    "statistics": {
+      "issues_by_severity": {
+        "warning": 4
+      },
+      "issues_by_type": {
+        "pylint": 4
+      },
+      "issues_by_tool": {
+        "pylint": 4
+      },
+      "total_files": 4,
+      "total_lines": 337,
+      "average_complexity": 4.5,
+      "maintainability_score": 100
+    },
+    "summary": {
+      "error_count": 0,
+      "warning_count": 4,
+      "info_count": 0
+    },
+    "llm_filter": {
+      "enabled": true,
+      "original_count": 48,
+      "filtered_count": 4,
+      "removed_count": 44,
+      "code_quality_issues_count": 0
+    },
+    "preliminary_analysis": {
+      "success": true,
+      "project_structure": {
+        "path": "temp_extract\\project_20251112_151657_210060_3164c17a",
+        "total_files": 4,
+        "total_lines": 337,
+        "file_types": {
+          ".py": 2,
+          ".md": 1,
+          ".txt": 1
+        },
+        "directories": [
+          "测试项目"
+        ],
+        "files": [
+          {
+            "path": "测试项目\\app.py",
+            "lines": 132,
+            "size": 5001
+          },
+          {
+            "path": "测试项目\\README.md",
+            "lines": 107,
+            "size": 4322
+          },
+          {
+            "path": "测试项目\\requirements.txt",
+            "lines": 2,
+            "size": 16
+          },
+          {
+            "path": "测试项目\\vulnerable.py",
+            "lines": 96,
+            "size": 3668
+          }
+        ],
+        "project_type": "python",
+        "framework": "unknown",
+        "primary_language": "python",
+        "has_tests": false,
+        "has_docs": true,
+        "has_config": false,
+        "total_functions": 0,
+        "total_classes": 0
+      },
+      "code_quality": {
+        "total_files": 2,
+        "analyzed_files": 2,
+        "total_lines": 228,
+        "total_functions": 9,
+        "total_classes": 0,
+        "average_complexity": 4.5,
+        "max_complexity": 5,
+        "total_issues": 0,
+        "issues_by_type": {},
+        "complexity_distribution": {
+          "4": 1,
+          "5": 1
+        },
+        "maintainability_score": 100,
+        "file_analysis": [
+          {
+            "file_path": "测试项目\\app.py",
+            "lines_of_code": 132,
+            "function_count": 4,
+            "class_count": 0,
+            "complexity_metrics": {
+              "cyclomatic_complexity": 4,
+              "cognitive_complexity": 0,
+              "lines_of_code": 0,
+              "function_count": 4,
+              "class_count": 0,
+              "nested_depth": 0,
+              "parameter_count": 0
+            },
+            "issues": [],
+            "ai_analysis": {
+              "success": false,
+              "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+              "file_path": "测试项目\\app.py"
+            }
+          },
+          {
+            "file_path": "测试项目\\vulnerable.py",
+            "lines_of_code": 96,
+            "function_count": 5,
+            "class_count": 0,
+            "complexity_metrics": {
+              "cyclomatic_complexity": 5,
+              "cognitive_complexity": 0,
+              "lines_of_code": 0,
+              "function_count": 5,
+              "class_count": 0,
+              "nested_depth": 0,
+              "parameter_count": 0
+            },
+            "issues": [],
+            "ai_analysis": {
+              "success": false,
+              "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+              "file_path": "测试项目\\vulnerable.py"
+            }
+          }
+        ],
+        "ai_analysis": []
+      },
+      "dependencies": {
+        "python_packages": [],
+        "node_modules": [],
+        "rust_crates": [],
+        "java_dependencies": [],
+        "go_modules": [],
+        "import_dependencies": {
+          "测试项目\\app.py": [
+            "flask",
+            "os",
+            "sqlite3"
+          ],
+          "测试项目\\vulnerable.py": [
+            "base64",
+            "flask",
+            "pickle",
+            "sys",
+            "subprocess",
+            "os"
+          ]
+        },
+        "circular_dependencies": [],
+        "dependency_metrics": {
+          "total_packages": 0,
+          "total_imports": 9,
+          "circular_dependency_count": 0,
+          "dependency_depth": 0,
+          "coupling_score": 0.0
+        },
+        "internal_modules": []
+      }
+    }
+  },
+  "dynamic_monitoring": {
+    "success": true,
+    "duration": 60,
+    "metrics_count": 6,
+    "alerts_count": 0,
+    "report": {
+      "summary": {
+        "monitoring_duration": 60,
+        "total_metrics": 6,
+        "total_alerts": 0,
+        "alert_by_severity": {},
+        "alert_by_type": {},
+        "average_metrics": {
+          "avg_cpu": 10.85,
+          "max_cpu": 25.8,
+          "avg_memory": 46.13333333333333,
+          "max_memory": 46.5,
+          "avg_disk": 69.3,
+          "max_disk": 69.3
+        },
+        "monitoring_status": "completed"
+      },
+      "recommendations": [],
+      "detailed_metrics": [
+        {
+          "timestamp": "2025-11-12T15:17:06.451965",
+          "system": {
+            "cpu": {
+              "percent": 25.8,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18230669312,
+              "percent": 46.5,
+              "used": 15840571392,
+              "free": 18230669312
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148809248768,
+              "free": 65940160512,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 581233,
+              "write_count": 700041,
+              "read_bytes": 18102081024,
+              "write_bytes": 23124730368
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:17:34.775326",
+          "system": {
+            "cpu": {
+              "percent": 11.8,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                1.05,
+                0.24,
+                0.08
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18331656192,
+              "percent": 46.2,
+              "used": 15739584512,
+              "free": 18331656192
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148810289152,
+              "free": 65939120128,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 581528,
+              "write_count": 701579,
+              "read_bytes": 18136849920,
+              "write_bytes": 23174912512
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:17:44.418953",
+          "system": {
+            "cpu": {
+              "percent": 5.3,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                1.59,
+                0.38,
+                0.13
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18388357120,
+              "percent": 46.0,
+              "used": 15682883584,
+              "free": 18388357120
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148810502144,
+              "free": 65938907136,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 581623,
+              "write_count": 704048,
+              "read_bytes": 18148020736,
+              "write_bytes": 23324137984
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:17:50.437540",
+          "system": {
+            "cpu": {
+              "percent": 4.0,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                1.79,
+                0.44,
+                0.15
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18376704000,
+              "percent": 46.1,
+              "used": 15694536704,
+              "free": 18376704000
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148810506240,
+              "free": 65938903040,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 581651,
+              "write_count": 704108,
+              "read_bytes": 18151559680,
+              "write_bytes": 23325202944
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:17:56.427620",
+          "system": {
+            "cpu": {
+              "percent": 8.2,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                1.64,
+                0.43,
+                0.15
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18394550272,
+              "percent": 46.0,
+              "used": 15676690432,
+              "free": 18394550272
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148810510336,
+              "free": 65938898944,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 581676,
+              "write_count": 704299,
+              "read_bytes": 18152954368,
+              "write_bytes": 23328561664
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:18:02.430552",
+          "system": {
+            "cpu": {
+              "percent": 10.0,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                1.59,
+                0.44,
+                0.16
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18395627520,
+              "percent": 46.0,
+              "used": 15675613184,
+              "free": 18395627520
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148810706944,
+              "free": 65938702336,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 581725,
+              "write_count": 704465,
+              "read_bytes": 18158508544,
+              "write_bytes": 23331035648
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        }
+      ],
+      "recent_alerts": []
+    },
+    "timestamp": "2025-11-12T15:18:08.439241"
+  },
+  "runtime_analysis": {
+    "main_file": "测试项目\\app.py",
+    "execution_successful": false,
+    "project_type": "web_application",
+    "web_test": {
+      "success": false,
+      "error": "Web应用启动失败",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 7, in <module>\n  File \"D:\\Anaconda\\app\\Lib\\site-packages\\flask\\app.py\", line 625, in run\n    run_simple(t.cast(str, host), port, self, **options)\n  File \"D:\\Anaconda\\app\\Lib\\site-packages\\werkzeug\\serving.py\", line 1082, in run_simple\n    fd = int(os.environ[\"WERKZEUG_SERVER_FD\"])\n             ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen os>\", line 685, in __getitem__\nKeyError: 'WERKZEUG_SERVER_FD'\n",
+      "return_code": 1
+    },
+    "dynamic_test_enabled": true
+  },
+  "dynamic_detection": {
+    "task_id": "a65acbd2-6a7b-4f0e-a8fa-1f1ed99841d0",
+    "monitor_type": "comprehensive",
+    "duration": 300,
+    "metrics_count": 50,
+    "alerts_count": 0,
+    "report": {
+      "summary": {
+        "monitoring_duration": 300,
+        "total_metrics": 50,
+        "total_alerts": 0,
+        "alert_by_severity": {},
+        "alert_by_type": {},
+        "average_metrics": {
+          "avg_cpu": 13.262,
+          "max_cpu": 33.4,
+          "avg_memory": 46.456,
+          "max_memory": 47.0,
+          "avg_disk": 69.3,
+          "max_disk": 69.3
+        },
+        "monitoring_status": "completed"
+      },
+      "recommendations": [],
+      "detailed_metrics": [
+        {
+          "timestamp": "2025-11-12T15:23:34.392766",
+          "system": {
+            "cpu": {
+              "percent": 6.5,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                3.09,
+                1.73,
+                0.8
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18289426432,
+              "percent": 46.3,
+              "used": 15781814272,
+              "free": 18289426432
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148806569984,
+              "free": 65942839296,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584659,
+              "write_count": 736411,
+              "read_bytes": 18469029376,
+              "write_bytes": 24227781632
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:23:40.396766",
+          "system": {
+            "cpu": {
+              "percent": 12.1,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                2.93,
+                1.72,
+                0.8
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18310836224,
+              "percent": 46.3,
+              "used": 15760404480,
+              "free": 18310836224
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148806656000,
+              "free": 65942753280,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584690,
+              "write_count": 736480,
+              "read_bytes": 18472896000,
+              "write_bytes": 24229145600
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:23:46.408669",
+          "system": {
+            "cpu": {
+              "percent": 21.5,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                2.77,
+                1.71,
+                0.8
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18157953024,
+              "percent": 46.7,
+              "used": 15913287680,
+              "free": 18157953024
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148806795264,
+              "free": 65942614016,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584721,
+              "write_count": 736725,
+              "read_bytes": 18476582400,
+              "write_bytes": 24234818560
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:23:52.419435",
+          "system": {
+            "cpu": {
+              "percent": 5.2,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                2.79,
+                1.73,
+                0.81
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18179002368,
+              "percent": 46.6,
+              "used": 15892238336,
+              "free": 18179002368
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148806864896,
+              "free": 65942544384,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584748,
+              "write_count": 736851,
+              "read_bytes": 18479728128,
+              "write_bytes": 24237284352
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:23:58.430404",
+          "system": {
+            "cpu": {
+              "percent": 5.8,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                2.57,
+                1.7,
+                0.81
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18190651392,
+              "percent": 46.6,
+              "used": 15880589312,
+              "free": 18190651392
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148806930432,
+              "free": 65942478848,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584756,
+              "write_count": 736968,
+              "read_bytes": 18480776704,
+              "write_bytes": 24239352832
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:24:04.441399",
+          "system": {
+            "cpu": {
+              "percent": 9.7,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                3.07,
+                1.84,
+                0.86
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18202488832,
+              "percent": 46.6,
+              "used": 15868751872,
+              "free": 18202488832
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148806737920,
+              "free": 65942671360,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584788,
+              "write_count": 737197,
+              "read_bytes": 18484626944,
+              "write_bytes": 24241327104
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:24:10.423870",
+          "system": {
+            "cpu": {
+              "percent": 7.0,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                2.82,
+                1.81,
+                0.86
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18219786240,
+              "percent": 46.5,
+              "used": 15851454464,
+              "free": 18219786240
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148807008256,
+              "free": 65942401024,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584804,
+              "write_count": 737336,
+              "read_bytes": 18486609408,
+              "write_bytes": 24243813376
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:24:16.431333",
+          "system": {
+            "cpu": {
+              "percent": 15.9,
+              "count": 20,
+              "frequency": 1040.0,
+              "load_average": [
+                2.6,
+                1.78,
+                0.85
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18203672576,
+              "percent": 46.6,
+              "used": 15867568128,
+              "free": 18203672576
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148807143424,
+              "free": 65942265856,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584836,
+              "write_count": 737440,
+              "read_bytes": 18490803712,
+              "write_bytes": 24245640192
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:24:22.426712",
+          "system": {
+            "cpu": {
+              "percent": 7.7,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                2.55,
+                1.78,
+                0.86
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18226601984,
+              "percent": 46.5,
+              "used": 15844638720,
+              "free": 18226601984
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148807147520,
+              "free": 65942261760,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584857,
+              "write_count": 737520,
+              "read_bytes": 18493556224,
+              "write_bytes": 24247442432
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T15:24:28.504306",
+          "system": {
+            "cpu": {
+              "percent": 17.0,
+              "count": 20,
+              "frequency": 1200.0,
+              "load_average": [
+                2.35,
+                1.75,
+                0.86
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18190581760,
+              "percent": 46.6,
+              "used": 15880658944,
+              "free": 18190581760
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 41132032,
+              "free": 2106351616,
+              "percent": 1.9
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148807282688,
+              "free": 65942126592,
+              "percent": 69.3
+            },
+            "disk_io": {
+              "read_count": 584950,
+              "write_count": 737947,
+              "read_bytes": 18505351168,
+              "write_bytes": 24256781312
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        }
+      ],
+      "recent_alerts": []
+    },
+    "status": "completed",
+    "timestamp": "2025-11-12T15:24:34.502071"
+  },
+  "summary": {
+    "total_files": 4,
+    "analysis_completed": true,
+    "issues_summary": {
+      "static": {
+        "analysis_type": "enhanced_static_analysis",
+        "files_analyzed": 2,
+        "issues_found": 4,
+        "total_files": 4,
+        "total_lines": 337,
+        "average_complexity": 4.5,
+        "maintainability_score": 100,
+        "issues_by_severity": {
+          "warning": 4
+        },
+        "issues_by_type": {
+          "pylint": 4
+        },
+        "issues_by_tool": {
+          "pylint": 4
+        }
+      },
+      "dynamic": {
+        "monitoring_duration": 60,
+        "alerts_generated": 0
+      },
+      "runtime": {
+        "execution_successful": false,
+        "main_file": "测试项目\\app.py"
+      },
+      "dynamic_detection": {
+        "status": "completed",
+        "is_flask_project": false,
+        "tests_completed": false,
+        "success_rate": 0
+      }
+    },
+    "total_issues": 4,
+    "critical_issues": 0,
+    "warning_issues": 4,
+    "info_issues": 0,
+    "overall_status": "warning",
+    "recommendations": [
+      "发现警告问题，建议及时处理",
+      "运行时分析失败，检查项目配置和依赖"
+    ]
+  },
+  "merged_defects": [
+    {
+      "description": "在 测试项目\\app.py 的第 3 行，存在未使用的变量或参数：Unused import os",
+      "file": "测试项目\\app.py",
+      "line": 3,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Unused import os",
+        "file": "测试项目\\app.py",
+        "line": 3,
+        "column": 0,
+        "symbol": "unused-import",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "未使用的导入可能增加不必要的依赖和内存占用，建议清理"
+      }
+    },
+    {
+      "description": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+      "file": "测试项目\\app.py",
+      "line": 91,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\app.py",
+        "line": 91,
+        "column": 15,
+        "symbol": "broad-exception-caught",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖真实的错误，影响错误处理和调试"
+      }
+    },
+    {
+      "description": "在 测试项目\\vulnerable.py 的第 29 行，pylint 检测到问题：'subprocess.run' used without explicitly defining the value for 'check'.",
+      "file": "测试项目\\vulnerable.py",
+      "line": 29,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "'subprocess.run' used without explicitly defining the value for 'check'.",
+        "file": "测试项目\\vulnerable.py",
+        "line": 29,
+        "column": 13,
+        "symbol": "subprocess-run-check",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "subprocess.run未设置check参数可能导致命令执行失败时不被检测，存在潜在的安全风险"
+      }
+    },
+    {
+      "description": "在 测试项目\\vulnerable.py 的第 49 行，pylint 检测到问题：Catching too general exception Exception",
+      "file": "测试项目\\vulnerable.py",
+      "line": 49,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\vulnerable.py",
+        "line": 49,
+        "column": 11,
+        "symbol": "broad-exception-caught",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖重要的错误信息，影响调试和错误处理"
+      }
+    }
+  ],
+  "task_info_file": "C:\\Users\\23208\\Desktop\\CodeAgent2\\comprehensive_detection_results\\agent_task_info_20251112_152434.json",
+  "task_info": [
+    {
+      "task": "在 测试项目\\app.py 的第 3 行，存在未使用的变量或参数：Unused import os",
+      "problem_file": "temp_extract/project_20251112_151657_210060_3164c17a/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_151657_210060_3164c17a",
+      "agent_test_path": "temp_extract/project_20251112_151657_210060_3164c17a/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_151657_210060_3164c17a/backup-agent",
+      "defect_info": {
+        "line": 3,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+      "problem_file": "temp_extract/project_20251112_151657_210060_3164c17a/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_151657_210060_3164c17a",
+      "agent_test_path": "temp_extract/project_20251112_151657_210060_3164c17a/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_151657_210060_3164c17a/backup-agent",
+      "defect_info": {
+        "line": 91,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 测试项目\\vulnerable.py 的第 29 行，pylint 检测到问题：'subprocess.run' used without explicitly defining the value for 'check'.",
+      "problem_file": "temp_extract/project_20251112_151657_210060_3164c17a/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_151657_210060_3164c17a",
+      "agent_test_path": "temp_extract/project_20251112_151657_210060_3164c17a/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_151657_210060_3164c17a/backup-agent",
+      "defect_info": {
+        "line": 29,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 测试项目\\vulnerable.py 的第 49 行，pylint 检测到问题：Catching too general exception Exception",
+      "problem_file": "temp_extract/project_20251112_151657_210060_3164c17a/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_151657_210060_3164c17a",
+      "agent_test_path": "temp_extract/project_20251112_151657_210060_3164c17a/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_151657_210060_3164c17a/backup-agent",
+      "defect_info": {
+        "line": 49,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    }
+  ],
+  "temp_dir": "temp_extract\\project_20251112_151657_210060_3164c17a"
+}

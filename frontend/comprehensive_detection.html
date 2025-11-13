@@ -988,13 +988,29 @@
             }
 
             // 显示结果区域
-            const resultsSection = document.getElementById('resultsSection');
+            let resultsSection = document.getElementById('resultsSection');
             if (!resultsSection) {
-                console.error('找不到resultsSection元素');
-                showError('页面元素缺失，请刷新页面重试');
-                return;
+                console.warn('找不到resultsSection元素，自动创建最小结果容器以继续渲染');
+                resultsSection = document.createElement('div');
+                resultsSection.id = 'resultsSection';
+                resultsSection.className = 'results-section show';
+                // 创建最小结果卡片，包含摘要与summaryGrid
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <h3>
+                        检测摘要
+                        <span class="status-badge" id="overallStatus">良好</span>
+                    </h3>
+                    <div class="summary-grid" id="summaryGrid"></div>
+                `;
+                resultsSection.appendChild(card);
+                // 插入到main末尾，保证可见
+                const main = document.querySelector('main.main') || document.body;
+                main.appendChild(resultsSection);
+            } else {
+                resultsSection.classList.add('show');
             }
-            resultsSection.classList.add('show');
 
             // 更新整体状态
             const overallStatus = document.getElementById('overallStatus');
@@ -1003,13 +1019,37 @@
                 overallStatus.className = 'status-badge status-' + summary.overall_status;
             }
 
-            // 更新摘要
-            const summaryGrid = document.getElementById('summaryGrid');
+            // 更新摘要 - 如果不存在summaryGrid则自动创建，避免因DOM未就绪导致失败
+            let summaryGrid = document.getElementById('summaryGrid');
             if (!summaryGrid) {
-                console.error('找不到summaryGrid元素');
-                showError('页面元素缺失，请刷新页面重试');
-                return;
+                const resultsSection = document.getElementById('resultsSection');
+                // 优先在第一个result-card中插入
+                const firstCard = resultsSection ? resultsSection.querySelector('.result-card') : null;
+                const container = document.createElement('div');
+                container.className = 'summary-grid';
+                container.id = 'summaryGrid';
+                if (firstCard) {
+                    // 如果卡片内已有标题，则插入标题后
+                    const h3 = firstCard.querySelector('h3');
+                    if (h3 && h3.parentElement) {
+                        h3.parentElement.insertBefore(container, h3.nextSibling);
+                    } else {
+                        firstCard.appendChild(container);
+                    }
+                } else if (resultsSection) {
+                    resultsSection.appendChild(container);
+                } else {
+                    // 最坏情况直接添加到body，防止渲染中断
+                    document.body.appendChild(container);
+                }
+                summaryGrid = container;
             }
+            updateSummaryGrid(summaryGrid, summary, results, data.ai_report);
+        }
+        
+        // 更新摘要网格的辅助函数
+        function updateSummaryGrid(summaryGrid, summary, results, aiReport) {
+            if (!summaryGrid) return;
             summaryGrid.innerHTML = `
                 <div class="summary-item">
                     <div class="number">${summary.total_issues}</div>
@@ -1046,8 +1086,8 @@
             document.getElementById('detailsCard').style.display = 'block';
             
             // 显示AI报告
-            if (data.ai_report) {
-                displayAIReport(data.ai_report);
+            if (aiReport) {
+                displayAIReport(aiReport);
                 document.getElementById('aiReportCard').style.display = 'block';
             }
             
@@ -1108,8 +1148,61 @@
 
         // 显示问题列表
         function displayIssues(results) {
-            const issuesList = document.getElementById('issuesList');
+            let issuesList = document.getElementById('issuesList');
+            if (!issuesList) {
+                const resultsSection = document.getElementById('resultsSection');
+                if (resultsSection) {
+                    let issuesCard = document.getElementById('issuesCard');
+                    if (!issuesCard) {
+                        issuesCard = document.createElement('div');
+                        issuesCard.id = 'issuesCard';
+                        issuesCard.className = 'result-card';
+                        resultsSection.appendChild(issuesCard);
+                    }
+                    issuesCard.innerHTML = `
+                        <h3>发现的问题</h3>
+                        <div class="issues-list" id="issuesList"></div>
+                    `;
+                    issuesList = document.getElementById('issuesList');
+                }
+            }
+            if (!issuesList) {
+                console.error('无法创建issuesList元素，终止问题渲染');
+                return;
+            }
             let html = '';
+
+            // 优先使用后端合并后的缺陷清单（动态+静态）
+            const merged = Array.isArray(results.merged_defects) ? results.merged_defects : null;
+            if (merged && merged.length > 0) {
+                // 按严重程度排序：error > warning > info
+                const severityOrder = { 'error': 0, 'warning': 1, 'info': 2, 'critical': 0 };
+                const sorted = merged.slice().sort((a, b) => {
+                    const aOrder = severityOrder[(a.severity || '').toLowerCase()] ?? 3;
+                    const bOrder = severityOrder[(b.severity || '').toLowerCase()] ?? 3;
+                    return aOrder - bOrder;
+                });
+                sorted.forEach(defect => {
+                    const file = defect.file || defect.file_path || 'N/A';
+                    const line = defect.line || defect.line_number || 'N/A';
+                    const message = defect.message || defect.description || defect.detail || 'N/A';
+                    const severity = (defect.severity || 'info').toLowerCase();
+                    const toolName = defect.tool || defect.source_tool || defect.source || 'unknown';
+                    const toolBadge = toolName && toolName !== 'unknown' ? `<span class="tool-badge">${toolName}</span>` : '';
+                    html += `
+                        <div class="issue-item">
+                            <div>
+                                <strong>${file}</strong> ${toolBadge}<br>
+                                <small>第 ${line} 行: ${message}</small>
+                                ${defect.type ? `<br><small style="color: #666;">类型: ${defect.type}</small>` : ''}
+                            </div>
+                            <span class="issue-severity severity-${severity}">${severity}</span>
+                        </div>
+                    `;
+                });
+                issuesList.innerHTML = html || '<p>未发现问题</p>';
+                return;
+            }
 
             // 静态分析问题 - 按严重程度排序显示
             // 尝试多个可能的数据路径

@@ -11,6 +11,7 @@ import logging
 from datetime import datetime
 import sys
 import os
+import shutil
 from pathlib import Path
 
 # 添加项目根目录到 Python 路径
@@ -33,6 +34,59 @@ def set_managers(coord_mgr, agent_mgr):
 
 # 存储修复任务状态
 fix_tasks = {}
+
+
+def cleanup_temp_directory(project_path: str) -> bool:
+    """
+    清理临时目录
+    
+    Args:
+        project_path: 项目路径
+        
+    Returns:
+        是否成功清理
+    """
+    if not project_path:
+        return False
+    
+    try:
+        project_path_obj = Path(project_path).resolve()
+        project_path_str = str(project_path_obj)
+        
+        # 检查是否是临时目录（在 temp_extract 下）
+        if "temp_extract" not in project_path_str:
+            return False
+        
+        # 查找 project_ 开头的目录
+        temp_dir_to_clean = None
+        
+        # 检查当前路径是否是 project_ 开头的目录
+        if project_path_obj.name.startswith("project_") and project_path_obj.is_dir():
+            temp_dir_to_clean = project_path_obj
+        else:
+            # 向上查找 project_ 开头的父目录
+            current = project_path_obj
+            while current != current.parent:  # 直到根目录
+                if current.name.startswith("project_") and "temp_extract" in str(current):
+                    temp_dir_to_clean = current
+                    break
+                current = current.parent
+        
+        # 如果找到了临时目录，进行清理
+        if temp_dir_to_clean and temp_dir_to_clean.exists():
+            logger.info(f"🧹 开始清理临时目录: {temp_dir_to_clean}")
+            try:
+                shutil.rmtree(temp_dir_to_clean, ignore_errors=True)
+                logger.info(f"✅ 成功清理临时目录: {temp_dir_to_clean}")
+                return True
+            except Exception as e:
+                logger.warning(f"⚠️ 清理临时目录失败: {temp_dir_to_clean}, 错误: {e}")
+                return False
+        
+        return False
+    except Exception as e:
+        logger.warning(f"⚠️ 检查临时目录时出错: {e}")
+        return False
 
 
 class FixRequest(BaseModel):
@@ -350,6 +404,17 @@ async def _execute_fix_task(task_id: str, task_data: Dict[str, Any]):
                 if fix_result.get('output_dir'):
                     logger.info(f"   修复结果目录: {fix_result.get('output_dir')}")
                 logger.info(f"{'='*60}")
+                
+                # 修复完成后清理临时目录（后台执行，不阻塞）
+                project_path = task_data.get('project_path')
+                if project_path:
+                    try:
+                        # 在后台任务中清理，不阻塞主流程
+                        asyncio.create_task(asyncio.to_thread(cleanup_temp_directory, project_path))
+                        logger.info(f"📋 已安排清理临时目录任务: {project_path}")
+                    except Exception as e:
+                        logger.warning(f"⚠️ 安排清理任务失败: {e}")
+                
                 return
             else:
                 logger.warning("⚠️ fix_execution_agent 未注册，尝试直接创建Agent")
@@ -426,6 +491,16 @@ async def _execute_fix_task(task_id: str, task_data: Dict[str, Any]):
             logger.info(f"   修复结果目录: {result.get('output_dir')}")
         logger.info(f"{'='*60}")
         
+        # 修复完成后清理临时目录（后台执行，不阻塞）
+        project_path = task_data.get('project_path')
+        if project_path:
+            try:
+                # 在后台任务中清理，不阻塞主流程
+                asyncio.create_task(asyncio.to_thread(cleanup_temp_directory, project_path))
+                logger.info(f"📋 已安排清理临时目录任务: {project_path}")
+            except Exception as e:
+                logger.warning(f"⚠️ 安排清理任务失败: {e}")
+        
     except Exception as e:
         logger.error(f"{'='*60}")
         logger.error(f"❌ 修复任务执行失败: {task_id}")
@@ -440,6 +515,15 @@ async def _execute_fix_task(task_id: str, task_data: Dict[str, Any]):
             "completed_at": datetime.now().isoformat(),
             "current_step": "修复失败"
         })
+        
+        # 即使修复失败，也尝试清理临时目录
+        project_path = task_data.get('project_path')
+        if project_path:
+            try:
+                asyncio.create_task(asyncio.to_thread(cleanup_temp_directory, project_path))
+                logger.info(f"📋 已安排清理临时目录任务（修复失败后）: {project_path}")
+            except Exception as e:
+                logger.warning(f"⚠️ 安排清理任务失败: {e}")
 
 
 @router.get("/health")

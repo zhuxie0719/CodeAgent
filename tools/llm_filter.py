@@ -486,11 +486,25 @@ class FalsePositiveFilter:
 
 # 全局单例实例
 _false_positive_filter = None
+_last_config = None
 
 def get_false_positive_filter(config: Optional[Dict[str, Any]] = None) -> FalsePositiveFilter:
-    """获取误报过滤器单例"""
-    global _false_positive_filter
-    if _false_positive_filter is None:
+    """获取误报过滤器单例，如果配置变化则重新创建"""
+    global _false_positive_filter, _last_config
+    
+    # 如果配置变化或实例不存在，创建新实例
+    if _false_positive_filter is None or (config is not None and config != _last_config):
         _false_positive_filter = FalsePositiveFilter(config)
+        _last_config = config
+    elif config is not None:
+        # 如果配置相同但实例存在，更新配置参数
+        _false_positive_filter.config = config or {}
+        _false_positive_filter.confidence_threshold = _false_positive_filter.config.get("confidence_threshold", 0.7)
+        _false_positive_filter.batch_size = _false_positive_filter.config.get("batch_size", 20)
+        _false_positive_filter.enabled = _false_positive_filter.config.get("enabled", True)
+        _false_positive_filter.model = _false_positive_filter.config.get("model", "deepseek-chat")
+        _false_positive_filter.cache_enabled = _false_positive_filter.config.get("cache_enabled", True)
+        _false_positive_filter.cache = {} if _false_positive_filter.cache_enabled else None
+    
     return _false_positive_filter
 

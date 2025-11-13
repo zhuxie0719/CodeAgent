@@ -33,11 +33,30 @@ class GenericBugDetector:
             # 获取所有Python文件
             python_files = list(Path(project_path).rglob("*.py"))
             
-            # 跳过虚拟环境和缓存目录
-            skip_dirs = {'venv', '__pycache__', '.git', 'node_modules', 
-                        '.pytest_cache', '.mypy_cache', 'env', '.env'}
-            python_files = [f for f in python_files 
-                          if not any(skip_dir in str(f) for skip_dir in skip_dirs)]
+            # 跳过虚拟环境、缓存目录及常见第三方依赖目录
+            skip_dirs = {
+                'venv', '__pycache__', '.git', 'node_modules',
+                '.pytest_cache', '.mypy_cache', 'env', '.env',
+                'site-packages', 'dist-packages', '.eggs'
+            }
+            skip_keywords = {
+                'tests' + os.sep, os.sep + 'tests',
+                'examples' + os.sep, os.sep + 'examples',
+                'sample' + os.sep, os.sep + 'sample',
+                'demo' + os.sep, os.sep + 'demo',
+                'flask-', 'django-', 'werkzeug', 'sqlalchemy'
+            }
+            python_files = [
+                f for f in python_files
+                if not any(skip_dir in str(f) for skip_dir in skip_dirs)
+                and not any(keyword in str(f).lower() for keyword in skip_keywords)
+            ]
+            
+            # 限制扫描文件数量，避免对大量依赖库造成噪声
+            max_files = 200
+            if len(python_files) > max_files:
+                self.logger.info(f"文件数量 {len(python_files)} 超过上限 {max_files}，仅分析前 {max_files} 个文件")
+                python_files = python_files[:max_files]
             
             self.logger.info(f"开始检测 {len(python_files)} 个Python文件")
             

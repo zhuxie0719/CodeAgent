@@ -1,0 +1,28 @@
+[
+  {
+    "task": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251112_150212_671762_83953f79/测试项目/app.py",
+    "project_root": "temp_extract/project_20251112_150212_671762_83953f79",
+    "agent_test_path": "temp_extract/project_20251112_150212_671762_83953f79/agent-test",
+    "backup_agent_path": "temp_extract/project_20251112_150212_671762_83953f79/backup-agent",
+    "defect_info": {
+      "line": 91,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 49 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251112_150212_671762_83953f79/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251112_150212_671762_83953f79",
+    "agent_test_path": "temp_extract/project_20251112_150212_671762_83953f79/agent-test",
+    "backup_agent_path": "temp_extract/project_20251112_150212_671762_83953f79/backup-agent",
+    "defect_info": {
+      "line": 49,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  }
+]

@@ -72,7 +72,7 @@ dynamic_agent = DynamicDetectionAgent({
 })
 
 # 检查是否启用Docker支持（通过环境变量，默认禁用）
-use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+use_docker = os.getenv("USE_DOCKER", "true").lower() == "true"
 
 static_agent = BugDetectionAgent({
     "enable_ai_analysis": True,
@@ -229,11 +229,28 @@ class ComprehensiveDetector:
             self._current_preliminary_analysis = preliminary_analysis
             
             # ========== 步骤2: 执行静态分析和动态检测 ==========
+            # 验证两个检测都使用同一个临时目录
+            print(f"📁 [DEBUG] 验证临时目录路径:")
+            print(f"   - extract_dir: {extract_dir}")
+            print(f"   - extract_dir存在: {os.path.exists(extract_dir) if extract_dir else False}")
+            
+            # 验证Coordinator是否可用
+            coordinator_available = _coordinator_manager and _coordinator_manager.coordinator
+            print(f"🔧 [DEBUG] Coordinator状态:")
+            print(f"   - Coordinator可用: {coordinator_available}")
+            if coordinator_available:
+                coordinator = _coordinator_manager.coordinator
+                registered_agents = list(coordinator.agents.keys())
+                print(f"   - 已注册的Agent: {registered_agents}")
+                print(f"   - bug_detection_agent已注册: {'bug_detection_agent' in coordinator.agents}")
+                print(f"   - dynamic_detection_agent已注册: {'dynamic_detection_agent' in coordinator.agents}")
+            
             # 并行执行静态分析和动态检测
             tasks = []
             
             # 静态分析
             if static_analysis:
+                print(f"📋 [DEBUG] 创建静态检测任务，使用临时目录: {extract_dir}")
                 tasks.append(self._perform_static_analysis_async(
                     extract_dir,
                     enable_pylint=enable_pylint,
@@ -254,6 +271,7 @@ class ComprehensiveDetector:
             
             # 动态缺陷检测
             if enable_dynamic_detection:
+                print(f"📋 [DEBUG] 创建动态检测任务，使用临时目录: {extract_dir}")
                 tasks.append(self._perform_dynamic_detection_async(extract_dir, enable_flask_specific_tests, enable_server_testing))
             
             # 等待所有任务完成（添加超时机制）
@@ -305,8 +323,41 @@ class ComprehensiveDetector:
                         print(f"⚠️ [DEBUG] 静态分析任务异常: {task_results[task_index]}")
                         results["static_analysis"] = {"error": str(task_results[task_index]), "issues": []}
                     else:
-                        print(f"✅ [DEBUG] 静态分析任务完成，结果类型: {type(task_results[task_index])}")
-                        results["static_analysis"] = task_results[task_index]
+                        static_result = task_results[task_index]
+                        print(f"✅ [DEBUG] 静态分析任务完成，结果类型: {type(static_result)}")
+                        
+                        # 验证并记录LLM过滤状态
+                        if isinstance(static_result, dict) and not static_result.get("error"):
+                            issues_count = len(static_result.get("issues", []))
+                            llm_filter_info = static_result.get("llm_filter", {})
+                            original_count = llm_filter_info.get("original_count", issues_count)
+                            filtered_count = llm_filter_info.get("filtered_count", issues_count)
+                            is_enabled = llm_filter_info.get("enabled", False)
+                            
+                            print(f"📊 [DEBUG] 静态分析结果统计:")
+                            print(f"   - 当前问题数: {issues_count}")
+                            print(f"   - LLM过滤启用: {is_enabled}")
+                            if is_enabled:
+                                print(f"   - 原始问题数: {original_count}")
+                                print(f"   - 过滤后问题数: {filtered_count}")
+                                print(f"   - 过滤掉的问题数: {original_count - filtered_count}")
+                                
+                                # 验证是否使用了过滤后的结果
+                                if issues_count > filtered_count * 1.5:
+                                    print(f"⚠️ [DEBUG] 警告: 问题数量 ({issues_count}) 远大于过滤后预期数量 ({filtered_count})")
+                                    print(f"⚠️ [DEBUG] 可能使用了未过滤的结果，将限制为过滤后的数量")
+                                    # 如果问题数量异常，只保留前filtered_count个
+                                    if issues_count > filtered_count * 2:
+                                        static_result["issues"] = static_result["issues"][:filtered_count]
+                                        static_result["issues_truncated"] = True
+                                        print(f"⚠️ [DEBUG] 已限制问题数量为: {filtered_count}")
+                            
+                            # 确保使用过滤后的issues
+                            if static_result.get("issues_truncated", False):
+                                total_issues = static_result.get("total_issues_count", issues_count)
+                                print(f"⚠️ [DEBUG] 警告: 问题列表被截断，实际总数: {total_issues}, 返回数: {len(static_result.get('issues', []))}")
+                        
+                        results["static_analysis"] = static_result
                     task_index += 1
                 
                 if dynamic_monitoring:
@@ -333,37 +384,58 @@ class ComprehensiveDetector:
                         print(f"⚠️ [DEBUG] 动态检测任务异常: {task_results[task_index]}")
                         results["dynamic_detection"] = {"error": str(task_results[task_index]), "tests_completed": False}
                     else:
-                        results["dynamic_detection"] = task_results[task_index]
+                        dynamic_result = task_results[task_index]
+                        print(f"✅ [DEBUG] 动态检测任务完成，结果类型: {type(dynamic_result)}")
+                        if isinstance(dynamic_result, dict) and not dynamic_result.get("error"):
+                            issues_count = len(dynamic_result.get("issues", []))
+                            print(f"📊 [DEBUG] 动态检测结果统计: 问题数={issues_count}")
+                        results["dynamic_detection"] = dynamic_result
             
             # 生成综合摘要
             print("📝 [DEBUG] 开始生成综合摘要...")
             results["summary"] = self._generate_summary(results)
             print("✅ [DEBUG] 综合摘要生成完成")
             
-            # 清理临时目录和虚拟环境
-            try:
-                if extract_dir and os.path.exists(extract_dir):
-                    await self.static_agent.cleanup_project_environment(extract_dir)
-                    print(f"✅ 项目环境清理完成: {extract_dir}")
-                else:
-                    print(f"⚠️ 跳过环境清理（路径无效）: {extract_dir}")
-            except Exception as cleanup_error:
-                print(f"⚠️ 环境清理失败: {cleanup_error}")
-                import traceback
-                traceback.print_exc()
-                # 回退到手动清理
-                if extract_dir and os.path.exists(extract_dir):
-                    try:
-                        shutil.rmtree(extract_dir, ignore_errors=True)
-                    except Exception as e:
-                        print(f"⚠️ 手动清理也失败: {e}")
-            # 合并静态和动态检测缺陷清单，生成统一格式
+            # ========== 步骤3: 合并静态和动态检测缺陷清单 ==========
+            # 注意：必须在清理临时目录之前合并，因为合并时需要访问文件路径
             print("📋 [DEBUG] 开始合并缺陷清单...")
+            print(f"📁 [DEBUG] 合并时使用的临时目录: {extract_dir}")
+            print(f"📁 [DEBUG] 临时目录存在: {os.path.exists(extract_dir) if extract_dir else False}")
+            
+            # 在合并前验证静态分析结果
+            if "static_analysis" in results:
+                static_result = results["static_analysis"]
+                if isinstance(static_result, dict) and not static_result.get("error"):
+                    issues_count = len(static_result.get("issues", []))
+                    llm_filter = static_result.get("llm_filter", {})
+                    print(f"📋 [DEBUG] 合并前验证: 静态分析问题数={issues_count}, LLM过滤启用={llm_filter.get('enabled', False)}")
+                    if llm_filter.get("enabled", False):
+                        expected_count = llm_filter.get("filtered_count", issues_count)
+                        print(f"📋 [DEBUG] LLM过滤后预期数量: {expected_count}, 实际数量: {issues_count}")
+            
             merged_defects = []
             try:
                 merged_defects = self._merge_defects_list(results, extract_dir)
                 results["merged_defects"] = merged_defects
                 print(f"📋 [DEBUG] 合并后的缺陷数量: {len(merged_defects)}")
+                
+                # 如果合并后的数量异常多，发出警告并限制
+                if len(merged_defects) > 500:
+                    print(f"⚠️ [DEBUG] 警告: 合并后的缺陷数量异常多 ({len(merged_defects)})，可能使用了未过滤的结果")
+                    # 检查是否有LLM过滤信息
+                    if "static_analysis" in results:
+                        static_result = results["static_analysis"]
+                        llm_filter = static_result.get("llm_filter", {})
+                        if llm_filter.get("enabled", False):
+                            expected_count = llm_filter.get("filtered_count", len(merged_defects))
+                            print(f"⚠️ [DEBUG] LLM过滤后预期数量: {expected_count}, 实际合并数量: {len(merged_defects)}")
+                            
+                            # 如果实际数量远大于预期，只保留前expected_count个（避免前端存储溢出）
+                            if len(merged_defects) > expected_count * 2:
+                                print(f"⚠️ [DEBUG] 缺陷数量异常，限制为前{expected_count}个以避免前端存储溢出")
+                                merged_defects = merged_defects[:expected_count]
+                                results["merged_defects"] = merged_defects
+                                results["warning"] = results.get("warning", "") + f" 缺陷数量异常多，已限制为{expected_count}个"
             except Exception as merge_error:
                 print(f"❌ [DEBUG] 合并缺陷清单失败: {merge_error}")
                 import traceback
@@ -425,9 +497,10 @@ class ComprehensiveDetector:
                 results["task_info"] = []
             
             # 不删除临时目录，保留上传的文件以便后续修复使用
-            # 注意：临时目录会一直保留，需要手动清理或定期清理
+            # 注意：临时目录会在修复完成后由修复Agent清理
             print(f"📝 [DEBUG] 保留临时目录: {extract_dir}")
-            print(f"⚠️ [DEBUG] 注意: 临时目录未删除，需要定期清理以释放磁盘空间")
+            print(f"📝 [DEBUG] 注意: 临时目录将在修复完成后由修复Agent清理")
+            results["temp_dir"] = extract_dir  # 保存临时目录路径，供修复Agent使用
             
             return results
             
@@ -862,10 +935,53 @@ class ComprehensiveDetector:
                         
                         print(f"✅ [Coordinator] 动态检测任务已创建并分配: {task_id}")
                         
-                        # 等待任务完成（最多30分钟）
+                        # 等待任务完成（最多30分钟），增加进度日志
                         try:
-                            result = await coordinator.task_manager.get_task_result(task_id, timeout=1800.0)
+                            print(f"⏳ [Coordinator] 开始等待动态检测任务完成 (task_id: {task_id})，最长等待30分钟...")
+                            
+                            # 使用轮询方式等待，每30秒打印一次进度
+                            import time
+                            start_wait_time = time.time()
+                            check_interval = 30  # 每30秒检查一次
+                            last_check_time = start_wait_time
+                            
+                            # 创建一个包装函数来检查进度
+                            async def wait_with_progress():
+                                while True:
+                                    elapsed = time.time() - start_wait_time
+                                    # 每30秒打印一次进度
+                                    if time.time() - last_check_time >= check_interval:
+                                        print(f"⏳ [Coordinator] 动态检测仍在进行中... 已等待 {int(elapsed)} 秒")
+                                        last_check_time = time.time()
+                                    
+                                    # 尝试获取结果（非阻塞）
+                                    try:
+                                        # 检查任务状态
+                                        task_status = coordinator.task_manager.tasks.get(task_id)
+                                        if task_status:
+                                            status = task_status.get('status', 'unknown')
+                                            if status == 'completed':
+                                                result = await coordinator.task_manager.get_task_result(task_id, timeout=1.0)
+                                                return result
+                                            elif status == 'failed':
+                                                error = task_status.get('error', '任务执行失败')
+                                                print(f"❌ [Coordinator] 动态检测任务失败: {error}")
+                                                return {"error": error, "tests_completed": False}
+                                    except Exception:
+                                        pass  # 任务可能还在执行中
+                                    
+                                    # 等待一小段时间再检查
+                                    await asyncio.sleep(5)
+                            
+                            # 使用asyncio.wait_for包装，设置总超时时间
+                            result = await asyncio.wait_for(
+                                wait_with_progress(),
+                                timeout=1800.0  # 30分钟总超时
+                            )
+                            
                             print(f"✅ [Coordinator] 动态检测任务完成")
+                            if result:
+                                print(f"📊 [Coordinator] 动态检测结果: tests_completed={result.get('tests_completed', False)}, issues={len(result.get('issues', []))}")
                             return result if result else {"error": "任务执行失败", "tests_completed": False}
                         except Exception as e:
                             print(f"⚠️ [Coordinator] 获取动态检测结果失败: {e}，回退到直接调用")
@@ -1132,12 +1248,60 @@ class ComprehensiveDetector:
                     file_path = issue.get("file", "")
                     line = issue.get("line", 0)
                     
-                    # 转换为相对路径
-                    if file_path and os.path.isabs(file_path):
-                        try:
-                            file_path = os.path.relpath(file_path, project_path)
-                        except:
-                            pass
+                    # 规范化文件路径处理（修复路径嵌套问题）
+                    original_file_path = file_path
+                    if file_path:
+                        # 规范化路径
+                        norm_project = os.path.normpath(project_path)
+                        
+                        # 处理绝对路径
+                        if os.path.isabs(file_path):
+                            norm_file = os.path.normpath(file_path)
+                            # 检查路径是否已经包含项目路径（避免重复嵌套）
+                            if norm_project in norm_file:
+                                # 提取相对于项目路径的部分
+                                file_path = norm_file.replace(norm_project, "").lstrip(os.sep)
+                                # 如果提取后仍然包含temp_extract，说明路径被重复嵌套了
+                                if "temp_extract" in file_path:
+                                    # 移除重复的temp_extract部分
+                                    parts = file_path.split(os.sep)
+                                    # 找到第一个project_开头的部分，之前的都是重复的
+                                    project_idx = -1
+                                    for i, part in enumerate(parts):
+                                        if part.startswith("project_"):
+                                            project_idx = i
+                                            break
+                                    if project_idx > 0:
+                                        file_path = os.sep.join(parts[project_idx:])
+                                    else:
+                                        # 如果找不到，只保留最后一部分
+                                        file_path = os.path.basename(file_path)
+                            else:
+                                # 尝试使用relpath
+                                try:
+                                    file_path = os.path.relpath(file_path, project_path)
+                                    if ".." in file_path:
+                                        # 路径不在项目内，使用文件名
+                                        file_path = os.path.basename(original_file_path)
+                                except (ValueError, OSError):
+                                    file_path = os.path.basename(original_file_path)
+                        else:
+                            # 相对路径，规范化处理
+                            file_path = file_path.lstrip('./').lstrip('../')
+                            # 检查是否包含temp_extract（说明路径可能已经包含了完整路径）
+                            if "temp_extract" in file_path:
+                                # 提取project_xxx之后的部分
+                                parts = file_path.split(os.sep)
+                                project_idx = -1
+                                for i, part in enumerate(parts):
+                                    if part.startswith("project_"):
+                                        project_idx = i
+                                        break
+                                if project_idx >= 0:
+                                    file_path = os.sep.join(parts[project_idx + 1:]) if project_idx + 1 < len(parts) else os.path.basename(file_path)
+                                else:
+                                    # 如果找不到project_，只保留最后一部分
+                                    file_path = os.path.basename(file_path)
                     
                     # 生成自然语言描述时使用相对路径
                     issue_for_desc = issue.copy()
@@ -1192,11 +1356,60 @@ class ComprehensiveDetector:
                     file_path = issue.get("file", "")
                     line = issue.get("line", 0)
                     
-                    if file_path and os.path.isabs(file_path):
-                        try:
-                            file_path = os.path.relpath(file_path, project_path)
-                        except:
-                            pass
+                    # 规范化文件路径处理（修复路径嵌套问题，与静态检测一致）
+                    original_file_path = file_path
+                    if file_path and file_path not in ["system", "unknown"]:
+                        # 规范化路径
+                        norm_project = os.path.normpath(project_path)
+                        
+                        # 处理绝对路径
+                        if os.path.isabs(file_path):
+                            norm_file = os.path.normpath(file_path)
+                            # 检查路径是否已经包含项目路径（避免重复嵌套）
+                            if norm_project in norm_file:
+                                # 提取相对于项目路径的部分
+                                file_path = norm_file.replace(norm_project, "").lstrip(os.sep)
+                                # 如果提取后仍然包含temp_extract，说明路径被重复嵌套了
+                                if "temp_extract" in file_path:
+                                    # 移除重复的temp_extract部分
+                                    parts = file_path.split(os.sep)
+                                    # 找到第一个project_开头的部分，之前的都是重复的
+                                    project_idx = -1
+                                    for i, part in enumerate(parts):
+                                        if part.startswith("project_"):
+                                            project_idx = i
+                                            break
+                                    if project_idx > 0:
+                                        file_path = os.sep.join(parts[project_idx:])
+                                    else:
+                                        # 如果找不到，只保留最后一部分
+                                        file_path = os.path.basename(file_path)
+                            else:
+                                # 尝试使用relpath
+                                try:
+                                    file_path = os.path.relpath(file_path, project_path)
+                                    if ".." in file_path:
+                                        # 路径不在项目内，使用文件名
+                                        file_path = os.path.basename(original_file_path)
+                                except (ValueError, OSError):
+                                    file_path = os.path.basename(original_file_path)
+                        elif file_path:
+                            # 相对路径，规范化处理
+                            file_path = file_path.lstrip('./').lstrip('../')
+                            # 检查是否包含temp_extract（说明路径可能已经包含了完整路径）
+                            if "temp_extract" in file_path:
+                                # 提取project_xxx之后的部分
+                                parts = file_path.split(os.sep)
+                                project_idx = -1
+                                for i, part in enumerate(parts):
+                                    if part.startswith("project_"):
+                                        project_idx = i
+                                        break
+                                if project_idx >= 0:
+                                    file_path = os.sep.join(parts[project_idx + 1:]) if project_idx + 1 < len(parts) else os.path.basename(file_path)
+                                else:
+                                    # 如果找不到project_，只保留最后一部分
+                                    file_path = os.path.basename(file_path)
                     
                     # 生成自然语言描述时使用相对路径
                     issue_for_desc = issue.copy()
@@ -1244,17 +1457,16 @@ class ComprehensiveDetector:
                     print(f"  ⚠️ [DEBUG] 跳过无效文件路径的缺陷: {file_path}")
                     continue
                 
-                # 规范化文件路径：如果已经是绝对路径，直接使用；否则拼接项目路径
+                # 规范化文件路径：修复路径嵌套问题
+                norm_project_path = os.path.normpath(project_path)
+                
                 if os.path.isabs(file_path):
                     # 已经是绝对路径
                     abs_file_path = os.path.normpath(file_path)
                     
                     # 检查路径是否包含project_path（避免重复嵌套）
-                    # 使用规范化后的路径进行比较
-                    norm_project_path = os.path.normpath(project_path)
                     if norm_project_path in abs_file_path:
-                        # 路径已经包含项目路径，直接使用
-                        # 但需要检查是否有重复嵌套
+                        # 路径已经包含项目路径，检查是否有重复嵌套
                         # 例如：project_path/temp_extract/project_xxx/temp_extract/project_xxx/file.py
                         # 应该变成：project_path/temp_extract/project_xxx/file.py
                         path_parts = abs_file_path.split(os.sep)
@@ -1279,9 +1491,28 @@ class ComprehensiveDetector:
                         # 这种情况可能发生在Docker环境下，路径映射不同
                         print(f"  ⚠️ [DEBUG] 绝对路径不包含项目路径，直接使用: {abs_file_path}")
                 else:
-                    # 相对路径，拼接项目路径
-                    # 先规范化相对路径，移除开头的./或../
-                    file_path = file_path.lstrip('./').lstrip('../')
+                    # 相对路径，先检查是否包含temp_extract（说明可能已经包含了完整路径）
+                    original_relative_path = file_path.lstrip('./').lstrip('../')
+                    
+                    if "temp_extract" in original_relative_path:
+                        # 路径可能已经包含了temp_extract，提取project_xxx之后的部分
+                        parts = original_relative_path.split(os.sep)
+                        project_idx = -1
+                        for i, part in enumerate(parts):
+                            if part.startswith("project_"):
+                                project_idx = i
+                                break
+                        if project_idx >= 0:
+                            # 提取project_xxx之后的部分作为相对路径
+                            file_path = os.sep.join(parts[project_idx + 1:]) if project_idx + 1 < len(parts) else os.path.basename(original_relative_path)
+                        else:
+                            # 如果找不到project_，只保留最后一部分
+                            file_path = os.path.basename(original_relative_path)
+                    else:
+                        # 正常的相对路径，直接使用
+                        file_path = original_relative_path
+                    
+                    # 拼接项目路径
                     abs_file_path = os.path.normpath(os.path.join(project_path, file_path))
                 
                 # 最终规范化路径

@@ -1,0 +1,236 @@
+[
+  {
+    "task": "在 测试项目\\app.py 的第 3 行，存在未使用的变量或参数：Unused import os",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 3,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 10 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 10,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 13 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 13,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 33 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 33,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 68 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 68,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 69 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 69,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 91,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\app.py 的第 91 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/app.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 91,
+      "severity": "medium",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 12 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 12,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 25 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 25,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 29 行，pylint 检测到问题：'subprocess.run' used without explicitly defining the value for 'check'.",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 29,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 40 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 40,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 47 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 47,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 49 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 49,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 49 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 49,
+      "severity": "medium",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 55 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 55,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 56 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 56,
+      "severity": "high",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 测试项目\\vulnerable.py 的第 86 行，动态检测发现问题：",
+    "problem_file": "temp_extract/project_20251113_151013_068601_5e53aaab/测试项目/vulnerable.py",
+    "project_root": "temp_extract/project_20251113_151013_068601_5e53aaab",
+    "agent_test_path": "temp_extract/project_20251113_151013_068601_5e53aaab/agent-test",
+    "backup_agent_path": "temp_extract/project_20251113_151013_068601_5e53aaab/backup-agent",
+    "defect_info": {
+      "line": 86,
+      "severity": "low",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  }
+]

@@ -1,0 +1,1988 @@
+{
+  "detection_type": "comprehensive",
+  "timestamp": "2025-11-12T14:35:16.936151",
+  "zip_file": "C:\\Users\\23208\\AppData\\Local\\Temp\\tmp8pfjh7_q.zip",
+  "analysis_options": {
+    "static_analysis": true,
+    "dynamic_monitoring": true,
+    "runtime_analysis": true,
+    "enable_web_app_test": true,
+    "enable_dynamic_detection": true,
+    "enable_flask_specific_tests": true,
+    "enable_server_testing": true,
+    "enable_pylint": true,
+    "enable_mypy": true,
+    "enable_semgrep": true,
+    "enable_ruff": true,
+    "enable_bandit": true,
+    "enable_llm_filter": true
+  },
+  "extracted_path": "temp_extract\\project_20251112_143516_936151_a8f66caa",
+  "removed_virtualenv_dirs": [],
+  "files": [
+    "测试项目\\app.py",
+    "测试项目\\README.md",
+    "测试项目\\requirements.txt",
+    "测试项目\\vulnerable.py"
+  ],
+  "preliminary_analysis": {
+    "success": true,
+    "project_structure": {
+      "path": "temp_extract\\project_20251112_143516_936151_a8f66caa",
+      "total_files": 4,
+      "total_lines": 337,
+      "file_types": {
+        ".py": 2,
+        ".md": 1,
+        ".txt": 1
+      },
+      "directories": [
+        "测试项目"
+      ],
+      "files": [
+        {
+          "path": "测试项目\\app.py",
+          "lines": 132,
+          "size": 5001
+        },
+        {
+          "path": "测试项目\\README.md",
+          "lines": 107,
+          "size": 4322
+        },
+        {
+          "path": "测试项目\\requirements.txt",
+          "lines": 2,
+          "size": 16
+        },
+        {
+          "path": "测试项目\\vulnerable.py",
+          "lines": 96,
+          "size": 3668
+        }
+      ],
+      "project_type": "python",
+      "framework": "unknown",
+      "primary_language": "python",
+      "has_tests": false,
+      "has_docs": true,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 2,
+      "analyzed_files": 2,
+      "total_lines": 228,
+      "total_functions": 9,
+      "total_classes": 0,
+      "average_complexity": 4.5,
+      "max_complexity": 5,
+      "total_issues": 0,
+      "issues_by_type": {},
+      "complexity_distribution": {
+        "4": 1,
+        "5": 1
+      },
+      "maintainability_score": 100,
+      "file_analysis": [
+        {
+          "file_path": "测试项目\\app.py",
+          "lines_of_code": 132,
+          "function_count": 4,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 4,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 4,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\app.py"
+          }
+        },
+        {
+          "file_path": "测试项目\\vulnerable.py",
+          "lines_of_code": 96,
+          "function_count": 5,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 5,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 5,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\vulnerable.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "测试项目\\app.py": [
+          "os",
+          "sqlite3",
+          "flask"
+        ],
+        "测试项目\\vulnerable.py": [
+          "subprocess",
+          "os",
+          "sys",
+          "flask",
+          "pickle",
+          "base64"
+        ]
+      },
+      "circular_dependencies": [],
+      "dependency_metrics": {
+        "total_packages": 0,
+        "total_imports": 9,
+        "circular_dependency_count": 0,
+        "dependency_depth": 0,
+        "coupling_score": 0.0
+      },
+      "internal_modules": []
+    }
+  },
+  "repository_structure_file": "C:\\Users\\23208\\Desktop\\CodeAgent2\\comprehensive_detection_results\\repository_structure_20251112_143526.txt",
+  "static_analysis": {
+    "success": true,
+    "analysis_type": "enhanced_static_analysis",
+    "project_path": "temp_extract\\project_20251112_143516_936151_a8f66caa",
+    "files_analyzed": 2,
+    "python_files_analyzed": 2,
+    "other_language_files_analyzed": 0,
+    "issues_found": 9,
+    "issues": [
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\app.py",
+        "line": 91,
+        "column": 15,
+        "symbol": "broad-exception-caught",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖重要的运行时错误，属于不良编程实践"
+      },
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Unused import os",
+        "file": "测试项目\\app.py",
+        "line": 3,
+        "column": 0,
+        "symbol": "unused-import",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "未使用的导入可能表明代码冗余或潜在的错误，虽然不会直接导致运行时错误，但属于代码质量问题"
+      },
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "'subprocess.run' used without explicitly defining the value for 'check'.",
+        "file": "测试项目\\vulnerable.py",
+        "line": 29,
+        "column": 13,
+        "symbol": "subprocess-run-check",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "subprocess.run未明确设置check参数可能导致命令执行失败时不被检测，存在潜在的安全风险"
+      },
+      {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\vulnerable.py",
+        "line": 49,
+        "column": 11,
+        "symbol": "broad-exception-caught",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖重要的错误信息，影响调试和错误处理"
+      },
+      {
+        "type": "bandit",
+        "severity": "high",
+        "message": "subprocess call with shell=True identified, security issue.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 29,
+        "column": 0,
+        "rule": "B602",
+        "confidence": "high",
+        "tool": "bandit",
+        "llm_confidence": 0.95,
+        "llm_reason": "subprocess调用设置shell=True存在命令注入风险，是真实的安全缺陷"
+      },
+      {
+        "type": "bandit",
+        "severity": "medium",
+        "message": "Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 47,
+        "column": 0,
+        "rule": "B301",
+        "confidence": "high",
+        "tool": "bandit",
+        "llm_confidence": 0.9,
+        "llm_reason": "pickle反序列化不可信数据存在安全风险，是真实的安全缺陷"
+      },
+      {
+        "type": "bandit",
+        "severity": "low",
+        "message": "Possible hardcoded password: 'admin123'",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 59,
+        "column": 0,
+        "rule": "B105",
+        "confidence": "medium",
+        "tool": "bandit",
+        "llm_confidence": 0.85,
+        "llm_reason": "硬编码密码存在安全风险，是真实的安全缺陷"
+      },
+      {
+        "type": "bandit",
+        "severity": "high",
+        "message": "A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 95,
+        "column": 0,
+        "rule": "B201",
+        "confidence": "medium",
+        "tool": "bandit",
+        "llm_confidence": 0.95,
+        "llm_reason": "生产环境运行Flask应用时debug=True会暴露调试器，允许任意代码执行，是严重安全缺陷"
+      },
+      {
+        "type": "bandit",
+        "severity": "medium",
+        "message": "Possible binding to all interfaces.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 95,
+        "column": 0,
+        "rule": "B104",
+        "confidence": "medium",
+        "tool": "bandit",
+        "llm_confidence": 0.8,
+        "llm_reason": "绑定到所有接口可能暴露服务到外部网络，存在安全风险"
+      }
+    ],
+    "issues_truncated": false,
+    "total_issues_count": 9,
+    "project_structure": {
+      "path": "temp_extract\\project_20251112_143516_936151_a8f66caa",
+      "total_files": 4,
+      "total_lines": 337,
+      "file_types": {
+        ".py": 2,
+        ".md": 1,
+        ".txt": 1
+      },
+      "directories": [
+        "测试项目"
+      ],
+      "files": [
+        {
+          "path": "测试项目\\app.py",
+          "lines": 132,
+          "size": 5001
+        },
+        {
+          "path": "测试项目\\README.md",
+          "lines": 107,
+          "size": 4322
+        },
+        {
+          "path": "测试项目\\requirements.txt",
+          "lines": 2,
+          "size": 16
+        },
+        {
+          "path": "测试项目\\vulnerable.py",
+          "lines": 96,
+          "size": 3668
+        }
+      ],
+      "project_type": "python",
+      "framework": "unknown",
+      "primary_language": "python",
+      "has_tests": false,
+      "has_docs": true,
+      "has_config": false,
+      "total_functions": 0,
+      "total_classes": 0
+    },
+    "code_quality": {
+      "total_files": 2,
+      "analyzed_files": 2,
+      "total_lines": 228,
+      "total_functions": 9,
+      "total_classes": 0,
+      "average_complexity": 4.5,
+      "max_complexity": 5,
+      "total_issues": 0,
+      "issues_by_type": {},
+      "complexity_distribution": {
+        "4": 1,
+        "5": 1
+      },
+      "maintainability_score": 100,
+      "file_analysis": [
+        {
+          "file_path": "测试项目\\app.py",
+          "lines_of_code": 132,
+          "function_count": 4,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 4,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 4,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\app.py"
+          }
+        },
+        {
+          "file_path": "测试项目\\vulnerable.py",
+          "lines_of_code": 96,
+          "function_count": 5,
+          "class_count": 0,
+          "complexity_metrics": {
+            "cyclomatic_complexity": 5,
+            "cognitive_complexity": 0,
+            "lines_of_code": 0,
+            "function_count": 5,
+            "class_count": 0,
+            "nested_depth": 0,
+            "parameter_count": 0
+          },
+          "issues": [],
+          "ai_analysis": {
+            "success": false,
+            "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+            "file_path": "测试项目\\vulnerable.py"
+          }
+        }
+      ],
+      "ai_analysis": []
+    },
+    "dependencies": {
+      "python_packages": [],
+      "node_modules": [],
+      "rust_crates": [],
+      "java_dependencies": [],
+      "go_modules": [],
+      "import_dependencies": {
+        "测试项目\\app.py": [
+          "os",
+          "sqlite3",
+          "flask"
+        ],
+        "测试项目\\vulnerable.py": [
+          "subprocess",
+          "os",
+          "sys",
+          "flask",
+          "pickle",
+          "base64"
+        ]
+      },
+      "circular_dependencies": [],
+      "dependency_metrics": {
+        "total_packages": 0,
+        "total_imports": 9,
+        "circular_dependency_count": 0,
+        "dependency_depth": 0,
+        "coupling_score": 0.0
+      },
+      "internal_modules": []
+    },
+    "ai_summary": {
+      "success": false,
+      "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+      "analysis_data": {
+        "project_structure": {
+          "path": "temp_extract\\project_20251112_143516_936151_a8f66caa",
+          "total_files": 4,
+          "total_lines": 337,
+          "file_types": {
+            ".py": 2,
+            ".md": 1,
+            ".txt": 1
+          },
+          "directories": [
+            "测试项目"
+          ],
+          "files": [
+            {
+              "path": "测试项目\\app.py",
+              "lines": 132,
+              "size": 5001
+            },
+            {
+              "path": "测试项目\\README.md",
+              "lines": 107,
+              "size": 4322
+            },
+            {
+              "path": "测试项目\\requirements.txt",
+              "lines": 2,
+              "size": 16
+            },
+            {
+              "path": "测试项目\\vulnerable.py",
+              "lines": 96,
+              "size": 3668
+            }
+          ],
+          "project_type": "python",
+          "framework": "unknown",
+          "primary_language": "python",
+          "has_tests": false,
+          "has_docs": true,
+          "has_config": false,
+          "total_functions": 0,
+          "total_classes": 0
+        },
+        "code_quality": {
+          "total_files": 2,
+          "analyzed_files": 2,
+          "total_lines": 228,
+          "total_functions": 9,
+          "total_classes": 0,
+          "average_complexity": 4.5,
+          "max_complexity": 5,
+          "total_issues": 0,
+          "issues_by_type": {},
+          "complexity_distribution": {
+            "4": 1,
+            "5": 1
+          },
+          "maintainability_score": 100,
+          "file_analysis": [
+            {
+              "file_path": "测试项目\\app.py",
+              "lines_of_code": 132,
+              "function_count": 4,
+              "class_count": 0,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 4,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 4,
+                "class_count": 0,
+                "nested_depth": 0,
+                "parameter_count": 0
+              },
+              "issues": [],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "测试项目\\app.py"
+              }
+            },
+            {
+              "file_path": "测试项目\\vulnerable.py",
+              "lines_of_code": 96,
+              "function_count": 5,
+              "class_count": 0,
+              "complexity_metrics": {
+                "cyclomatic_complexity": 5,
+                "cognitive_complexity": 0,
+                "lines_of_code": 0,
+                "function_count": 5,
+                "class_count": 0,
+                "nested_depth": 0,
+                "parameter_count": 0
+              },
+              "issues": [],
+              "ai_analysis": {
+                "success": false,
+                "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+                "file_path": "测试项目\\vulnerable.py"
+              }
+            }
+          ],
+          "ai_analysis": []
+        },
+        "dependencies": {
+          "python_packages": [],
+          "node_modules": [],
+          "rust_crates": [],
+          "java_dependencies": [],
+          "go_modules": [],
+          "import_dependencies": {
+            "测试项目\\app.py": [
+              "os",
+              "sqlite3",
+              "flask"
+            ],
+            "测试项目\\vulnerable.py": [
+              "subprocess",
+              "os",
+              "sys",
+              "flask",
+              "pickle",
+              "base64"
+            ]
+          },
+          "circular_dependencies": [],
+          "dependency_metrics": {
+            "total_packages": 0,
+            "total_imports": 9,
+            "circular_dependency_count": 0,
+            "dependency_depth": 0,
+            "coupling_score": 0.0
+          },
+          "internal_modules": []
+        }
+      }
+    },
+    "file_filtering": {
+      "core_files_count": 2,
+      "excluded_files_count": 2,
+      "filter_statistics": {
+        "total_files": 4,
+        "analyze_files": 2,
+        "skip_files": 2,
+        "project_type": "python",
+        "skip_reasons": {
+          "文档文件": 1,
+          "第三方库文件": 1
+        },
+        "additional_excluded": 0,
+        "final_core_files": 2,
+        "filter_ratio": 0.5
+      }
+    },
+    "multi_language_analysis": {
+      "python_issues": 38,
+      "semgrep_issues": 0,
+      "ruff_issues": 0,
+      "ai_issues": 0,
+      "supported_languages": []
+    },
+    "tool_coverage": {
+      "pylint": 38,
+      "mypy": 0,
+      "semgrep": 0,
+      "ruff": 0,
+      "bandit": 10,
+      "ai_analyzer": 0
+    },
+    "statistics": {
+      "issues_by_severity": {
+        "warning": 4,
+        "high": 2,
+        "medium": 2,
+        "low": 1
+      },
+      "issues_by_type": {
+        "pylint": 4,
+        "bandit": 5
+      },
+      "issues_by_tool": {
+        "pylint": 4,
+        "bandit": 5
+      },
+      "total_files": 4,
+      "total_lines": 337,
+      "average_complexity": 4.5,
+      "maintainability_score": 100
+    },
+    "summary": {
+      "error_count": 0,
+      "warning_count": 4,
+      "info_count": 0
+    },
+    "llm_filter": {
+      "enabled": true,
+      "original_count": 48,
+      "filtered_count": 9,
+      "removed_count": 39,
+      "code_quality_issues_count": 0
+    },
+    "preliminary_analysis": {
+      "success": true,
+      "project_structure": {
+        "path": "temp_extract\\project_20251112_143516_936151_a8f66caa",
+        "total_files": 4,
+        "total_lines": 337,
+        "file_types": {
+          ".py": 2,
+          ".md": 1,
+          ".txt": 1
+        },
+        "directories": [
+          "测试项目"
+        ],
+        "files": [
+          {
+            "path": "测试项目\\app.py",
+            "lines": 132,
+            "size": 5001
+          },
+          {
+            "path": "测试项目\\README.md",
+            "lines": 107,
+            "size": 4322
+          },
+          {
+            "path": "测试项目\\requirements.txt",
+            "lines": 2,
+            "size": 16
+          },
+          {
+            "path": "测试项目\\vulnerable.py",
+            "lines": 96,
+            "size": 3668
+          }
+        ],
+        "project_type": "python",
+        "framework": "unknown",
+        "primary_language": "python",
+        "has_tests": false,
+        "has_docs": true,
+        "has_config": false,
+        "total_functions": 0,
+        "total_classes": 0
+      },
+      "code_quality": {
+        "total_files": 2,
+        "analyzed_files": 2,
+        "total_lines": 228,
+        "total_functions": 9,
+        "total_classes": 0,
+        "average_complexity": 4.5,
+        "max_complexity": 5,
+        "total_issues": 0,
+        "issues_by_type": {},
+        "complexity_distribution": {
+          "4": 1,
+          "5": 1
+        },
+        "maintainability_score": 100,
+        "file_analysis": [
+          {
+            "file_path": "测试项目\\app.py",
+            "lines_of_code": 132,
+            "function_count": 4,
+            "class_count": 0,
+            "complexity_metrics": {
+              "cyclomatic_complexity": 4,
+              "cognitive_complexity": 0,
+              "lines_of_code": 0,
+              "function_count": 4,
+              "class_count": 0,
+              "nested_depth": 0,
+              "parameter_count": 0
+            },
+            "issues": [],
+            "ai_analysis": {
+              "success": false,
+              "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+              "file_path": "测试项目\\app.py"
+            }
+          },
+          {
+            "file_path": "测试项目\\vulnerable.py",
+            "lines_of_code": 96,
+            "function_count": 5,
+            "class_count": 0,
+            "complexity_metrics": {
+              "cyclomatic_complexity": 5,
+              "cognitive_complexity": 0,
+              "lines_of_code": 0,
+              "function_count": 5,
+              "class_count": 0,
+              "nested_depth": 0,
+              "parameter_count": 0
+            },
+            "issues": [],
+            "ai_analysis": {
+              "success": false,
+              "error": "'DeepSeekConfig' object has no attribute 'generate_response'",
+              "file_path": "测试项目\\vulnerable.py"
+            }
+          }
+        ],
+        "ai_analysis": []
+      },
+      "dependencies": {
+        "python_packages": [],
+        "node_modules": [],
+        "rust_crates": [],
+        "java_dependencies": [],
+        "go_modules": [],
+        "import_dependencies": {
+          "测试项目\\app.py": [
+            "os",
+            "sqlite3",
+            "flask"
+          ],
+          "测试项目\\vulnerable.py": [
+            "subprocess",
+            "os",
+            "sys",
+            "flask",
+            "pickle",
+            "base64"
+          ]
+        },
+        "circular_dependencies": [],
+        "dependency_metrics": {
+          "total_packages": 0,
+          "total_imports": 9,
+          "circular_dependency_count": 0,
+          "dependency_depth": 0,
+          "coupling_score": 0.0
+        },
+        "internal_modules": []
+      }
+    }
+  },
+  "dynamic_monitoring": {
+    "success": true,
+    "duration": 60,
+    "metrics_count": 3,
+    "alerts_count": 0,
+    "report": {
+      "summary": {
+        "monitoring_duration": 60,
+        "total_metrics": 3,
+        "total_alerts": 0,
+        "alert_by_severity": {},
+        "alert_by_type": {},
+        "average_metrics": {
+          "avg_cpu": 12.700000000000001,
+          "max_cpu": 15.8,
+          "avg_memory": 45.26666666666667,
+          "max_memory": 46.0,
+          "avg_disk": 69.1,
+          "max_disk": 69.1
+        },
+        "monitoring_status": "completed"
+      },
+      "recommendations": [],
+      "detailed_metrics": [
+        {
+          "timestamp": "2025-11-12T14:35:26.802327",
+          "system": {
+            "cpu": {
+              "percent": 10.9,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18724327424,
+              "percent": 45.0,
+              "used": 15346913280,
+              "free": 18724327424
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 67870720,
+              "free": 2079612928,
+              "percent": 3.2
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148348194816,
+              "free": 66401214464,
+              "percent": 69.1
+            },
+            "disk_io": {
+              "read_count": 547674,
+              "write_count": 505060,
+              "read_bytes": 15560952832,
+              "write_bytes": 14572062208
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T14:35:36.041263",
+          "system": {
+            "cpu": {
+              "percent": 15.8,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.08,
+                0.02,
+                0.01
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18791882752,
+              "percent": 44.8,
+              "used": 15279357952,
+              "free": 18791882752
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 67870720,
+              "free": 2079612928,
+              "percent": 3.2
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148348473344,
+              "free": 66400935936,
+              "percent": 69.1
+            },
+            "disk_io": {
+              "read_count": 549323,
+              "write_count": 506872,
+              "read_bytes": 15585821184,
+              "write_bytes": 14610896384
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        },
+        {
+          "timestamp": "2025-11-12T14:36:20.612936",
+          "system": {
+            "cpu": {
+              "percent": 11.4,
+              "count": 20,
+              "frequency": 2400.0,
+              "load_average": [
+                0.16,
+                0.05,
+                0.02
+              ]
+            },
+            "memory": {
+              "total": 34071240704,
+              "available": 18384572416,
+              "percent": 46.0,
+              "used": 15686668288,
+              "free": 18384572416
+            },
+            "swap": {
+              "total": 2147483648,
+              "used": 67870720,
+              "free": 2079612928,
+              "percent": 3.2
+            },
+            "disk": {
+              "total": 214749409280,
+              "used": 148351971328,
+              "free": 66397437952,
+              "percent": 69.1
+            },
+            "disk_io": {
+              "read_count": 550045,
+              "write_count": 511636,
+              "read_bytes": 15648779776,
+              "write_bytes": 14787577344
+            }
+          },
+          "performance": {
+            "response_time": 0,
+            "throughput": 0,
+            "error_rate": 0,
+            "active_connections": 0,
+            "queue_length": 0,
+            "cache_hit_rate": 0
+          },
+          "network": {},
+          "processes": {}
+        }
+      ],
+      "recent_alerts": []
+    },
+    "timestamp": "2025-11-12T14:36:50.383939"
+  },
+  "runtime_analysis": {
+    "main_file": "测试项目\\app.py",
+    "execution_successful": false,
+    "project_type": "web_application",
+    "web_test": {
+      "success": false,
+      "error": "Web应用启动失败",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 7, in <module>\n  File \"D:\\Anaconda\\app\\Lib\\site-packages\\flask\\app.py\", line 625, in run\n    run_simple(t.cast(str, host), port, self, **options)\n  File \"D:\\Anaconda\\app\\Lib\\site-packages\\werkzeug\\serving.py\", line 1082, in run_simple\n    fd = int(os.environ[\"WERKZEUG_SERVER_FD\"])\n             ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen os>\", line 685, in __getitem__\nKeyError: 'WERKZEUG_SERVER_FD'\n",
+      "return_code": 1
+    },
+    "dynamic_test_enabled": true
+  },
+  "dynamic_detection": {
+    "status": "completed",
+    "is_flask_project": true,
+    "enable_web_test": true,
+    "test_results": {
+      "import_analysis": {
+        "status": "success",
+        "tests": {
+          "import_check": {
+            "import_issues": []
+          }
+        }
+      },
+      "flask_functionality": {
+        "status": "success",
+        "tests": {
+          "flask_app_app.py": {
+            "status": "success",
+            "message": "Flask应用 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 导入成功",
+            "app_type": "Flask"
+          }
+        },
+        "summary": {
+          "success_rate": 100.0,
+          "total_tests": 1,
+          "successful_tests": 1
+        },
+        "flask_info": {
+          "flask_installed": true,
+          "flask_version": "3.0.3",
+          "werkzeug_installed": true,
+          "werkzeug_version": "3.0.3"
+        }
+      },
+      "combined_summary": {
+        "import_issues": [],
+        "flask_success_rate": 100.0
+      },
+      "generic_bug_detection": {
+        "status": "completed",
+        "total_issues": 14,
+        "issues_by_category": {
+          "input_interaction": 9,
+          "resource_management": 1,
+          "boundary_condition": 2,
+          "environment_dependency": 1,
+          "dynamic_code_execution": 1
+        },
+        "files_scanned": 2
+      }
+    },
+    "issues": [
+      {
+        "type": "compatibility_issue",
+        "component": "werkzeug",
+        "severity": "warning",
+        "message": "Werkzeug版本兼容性问题: 3.0.3",
+        "details": "Werkzeug 3.0+版本可能存在url_quote导入问题"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 10,
+        "code": "query = request.args.get('q', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 33,
+        "code": "user_comment = request.form.get('comment', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 68,
+        "code": "template_content = request.form.get('template', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 69,
+        "code": "data = request.form.get('data', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 12,
+        "code": "filename = request.args.get('name', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 25,
+        "code": "host = request.args.get('host', '127.0.0.1')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 40,
+        "code": "data = request.form.get('data', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 55,
+        "code": "username = request.args.get('username', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 56,
+        "code": "password = request.args.get('password', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      },
+      {
+        "type": "resource_management",
+        "category": "database_connection",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 13,
+        "code": "conn = sqlite3.connect('test.db')",
+        "description": "数据库连接可能未正确管理",
+        "recommendation": "使用连接池或确保连接在使用后正确关闭"
+      },
+      {
+        "type": "boundary_condition",
+        "category": "empty_except",
+        "severity": "medium",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 91,
+        "code": "except Exception as e:",
+        "description": "空的异常处理块可能隐藏错误",
+        "recommendation": "至少记录异常信息"
+      },
+      {
+        "type": "boundary_condition",
+        "category": "empty_except",
+        "severity": "medium",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 49,
+        "code": "except Exception as e:",
+        "description": "空的异常处理块可能隐藏错误",
+        "recommendation": "至少记录异常信息"
+      },
+      {
+        "type": "environment_dependency",
+        "category": "config_validation",
+        "severity": "low",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 86,
+        "code": "<p><strong>缺陷1 - 路径遍历：</strong> 尝试 <code>/file?name=../../etc/passwd</code> 或 <code>/file?name=../../windows/win.ini</code></p>",
+        "description": "配置文件读取可能缺少验证",
+        "recommendation": "验证配置文件的完整性和有效性"
+      },
+      {
+        "type": "dynamic_code_execution",
+        "category": "pickle",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 47,
+        "code": "obj = pickle.loads(decoded_data)",
+        "description": "pickle反序列化可能执行恶意代码",
+        "recommendation": "使用pickle.loads()时验证数据来源，或使用更安全的序列化格式"
+      }
+    ],
+    "recommendations": [
+      "动态测试表现良好",
+      "建议启用Web应用测试以获得更全面的检测",
+      "发现14个通用bug，建议检查代码安全性和可靠性"
+    ],
+    "tests_completed": true,
+    "success_rate": 100.0
+  },
+  "summary": {
+    "total_files": 4,
+    "analysis_completed": true,
+    "issues_summary": {
+      "static": {
+        "analysis_type": "enhanced_static_analysis",
+        "files_analyzed": 2,
+        "issues_found": 9,
+        "total_files": 4,
+        "total_lines": 337,
+        "average_complexity": 4.5,
+        "maintainability_score": 100,
+        "issues_by_severity": {
+          "warning": 4,
+          "high": 2,
+          "medium": 2,
+          "low": 1
+        },
+        "issues_by_type": {
+          "pylint": 4,
+          "bandit": 5
+        },
+        "issues_by_tool": {
+          "pylint": 4,
+          "bandit": 5
+        }
+      },
+      "dynamic": {
+        "monitoring_duration": 60,
+        "alerts_generated": 0
+      },
+      "runtime": {
+        "execution_successful": false,
+        "main_file": "测试项目\\app.py"
+      },
+      "dynamic_detection": {
+        "status": "completed",
+        "is_flask_project": true,
+        "tests_completed": true,
+        "success_rate": 100.0
+      }
+    },
+    "total_issues": 24,
+    "critical_issues": 0,
+    "warning_issues": 5,
+    "info_issues": 19,
+    "overall_status": "warning",
+    "recommendations": [
+      "发现警告问题，建议及时处理",
+      "运行时分析失败，但动态检测成功。这可能是因为项目需要Flask环境才能运行，属于正常情况"
+    ]
+  },
+  "merged_defects": [
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 10 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+      "line": 10,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 10,
+        "code": "query = request.args.get('q', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 13 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+      "line": 13,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "resource_management",
+        "category": "database_connection",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 13,
+        "code": "conn = sqlite3.connect('test.db')",
+        "description": "数据库连接可能未正确管理",
+        "recommendation": "使用连接池或确保连接在使用后正确关闭"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 33 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+      "line": 33,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 33,
+        "code": "user_comment = request.form.get('comment', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 68 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+      "line": 68,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 68,
+        "code": "template_content = request.form.get('template', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 69 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+      "line": 69,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 69,
+        "code": "data = request.form.get('data', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 91 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+      "line": 91,
+      "severity": "medium",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "boundary_condition",
+        "category": "empty_except",
+        "severity": "medium",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py",
+        "line": 91,
+        "code": "except Exception as e:",
+        "description": "空的异常处理块可能隐藏错误",
+        "recommendation": "至少记录异常信息"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 12 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 12,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 12,
+        "code": "filename = request.args.get('name', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 25 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 25,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 25,
+        "code": "host = request.args.get('host', '127.0.0.1')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 29 行，发现安全问题（检测项：）：subprocess call with shell=True identified, security issue.",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 29,
+      "severity": "high",
+      "source": "static",
+      "tool": "bandit",
+      "original_issue": {
+        "type": "bandit",
+        "severity": "high",
+        "message": "subprocess call with shell=True identified, security issue.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 29,
+        "column": 0,
+        "rule": "B602",
+        "confidence": "high",
+        "tool": "bandit",
+        "llm_confidence": 0.95,
+        "llm_reason": "subprocess调用设置shell=True存在命令注入风险，是真实的安全缺陷"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 40 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 40,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 40,
+        "code": "data = request.form.get('data', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 47 行，发现安全问题（检测项：）：Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 47,
+      "severity": "medium",
+      "source": "static",
+      "tool": "bandit",
+      "original_issue": {
+        "type": "bandit",
+        "severity": "medium",
+        "message": "Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 47,
+        "column": 0,
+        "rule": "B301",
+        "confidence": "high",
+        "tool": "bandit",
+        "llm_confidence": 0.9,
+        "llm_reason": "pickle反序列化不可信数据存在安全风险，是真实的安全缺陷"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 47 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 47,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "dynamic_code_execution",
+        "category": "pickle",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 47,
+        "code": "obj = pickle.loads(decoded_data)",
+        "description": "pickle反序列化可能执行恶意代码",
+        "recommendation": "使用pickle.loads()时验证数据来源，或使用更安全的序列化格式"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 49 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 49,
+      "severity": "medium",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "boundary_condition",
+        "category": "empty_except",
+        "severity": "medium",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 49,
+        "code": "except Exception as e:",
+        "description": "空的异常处理块可能隐藏错误",
+        "recommendation": "至少记录异常信息"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 55 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 55,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 55,
+        "code": "username = request.args.get('username', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 56 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 56,
+      "severity": "high",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "input_interaction",
+        "category": "unsafe_request_params",
+        "severity": "high",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 56,
+        "code": "password = request.args.get('password', '')",
+        "description": "HTTP请求参数未经验证直接使用",
+        "recommendation": "验证和清理所有用户输入，使用白名单验证"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 59 行，发现安全问题（检测项：）：Possible hardcoded password: 'admin123'",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 59,
+      "severity": "low",
+      "source": "static",
+      "tool": "bandit",
+      "original_issue": {
+        "type": "bandit",
+        "severity": "low",
+        "message": "Possible hardcoded password: 'admin123'",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 59,
+        "column": 0,
+        "rule": "B105",
+        "confidence": "medium",
+        "tool": "bandit",
+        "llm_confidence": 0.85,
+        "llm_reason": "硬编码密码存在安全风险，是真实的安全缺陷"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 86 行，动态检测发现问题：",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 86,
+      "severity": "low",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "environment_dependency",
+        "category": "config_validation",
+        "severity": "low",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 86,
+        "code": "<p><strong>缺陷1 - 路径遍历：</strong> 尝试 <code>/file?name=../../etc/passwd</code> 或 <code>/file?name=../../windows/win.ini</code></p>",
+        "description": "配置文件读取可能缺少验证",
+        "recommendation": "验证配置文件的完整性和有效性"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 95 行，发现安全问题（检测项：）：A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 95,
+      "severity": "high",
+      "source": "static",
+      "tool": "bandit",
+      "original_issue": {
+        "type": "bandit",
+        "severity": "high",
+        "message": "A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 95,
+        "column": 0,
+        "rule": "B201",
+        "confidence": "medium",
+        "tool": "bandit",
+        "llm_confidence": 0.95,
+        "llm_reason": "生产环境运行Flask应用时debug=True会暴露调试器，允许任意代码执行，是严重安全缺陷"
+      }
+    },
+    {
+      "description": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 95 行，发现安全问题（检测项：）：Possible binding to all interfaces.",
+      "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+      "line": 95,
+      "severity": "medium",
+      "source": "static",
+      "tool": "bandit",
+      "original_issue": {
+        "type": "bandit",
+        "severity": "medium",
+        "message": "Possible binding to all interfaces.",
+        "file": "temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py",
+        "line": 95,
+        "column": 0,
+        "rule": "B104",
+        "confidence": "medium",
+        "tool": "bandit",
+        "llm_confidence": 0.8,
+        "llm_reason": "绑定到所有接口可能暴露服务到外部网络，存在安全风险"
+      }
+    },
+    {
+      "description": "在 unknown 的第 0 行，动态检测发现问题：Werkzeug版本兼容性问题: 3.0.3",
+      "file": "unknown",
+      "line": 0,
+      "severity": "warning",
+      "source": "dynamic",
+      "tool": "dynamic_detection",
+      "original_issue": {
+        "type": "compatibility_issue",
+        "component": "werkzeug",
+        "severity": "warning",
+        "message": "Werkzeug版本兼容性问题: 3.0.3",
+        "details": "Werkzeug 3.0+版本可能存在url_quote导入问题"
+      }
+    },
+    {
+      "description": "在 测试项目\\app.py 的第 3 行，存在未使用的变量或参数：Unused import os",
+      "file": "测试项目\\app.py",
+      "line": 3,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Unused import os",
+        "file": "测试项目\\app.py",
+        "line": 3,
+        "column": 0,
+        "symbol": "unused-import",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "未使用的导入可能表明代码冗余或潜在的错误，虽然不会直接导致运行时错误，但属于代码质量问题"
+      }
+    },
+    {
+      "description": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+      "file": "测试项目\\app.py",
+      "line": 91,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\app.py",
+        "line": 91,
+        "column": 15,
+        "symbol": "broad-exception-caught",
+        "module": "app",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖重要的运行时错误，属于不良编程实践"
+      }
+    },
+    {
+      "description": "在 测试项目\\vulnerable.py 的第 29 行，pylint 检测到问题：'subprocess.run' used without explicitly defining the value for 'check'.",
+      "file": "测试项目\\vulnerable.py",
+      "line": 29,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "'subprocess.run' used without explicitly defining the value for 'check'.",
+        "file": "测试项目\\vulnerable.py",
+        "line": 29,
+        "column": 13,
+        "symbol": "subprocess-run-check",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.9,
+        "llm_reason": "subprocess.run未明确设置check参数可能导致命令执行失败时不被检测，存在潜在的安全风险"
+      }
+    },
+    {
+      "description": "在 测试项目\\vulnerable.py 的第 49 行，pylint 检测到问题：Catching too general exception Exception",
+      "file": "测试项目\\vulnerable.py",
+      "line": 49,
+      "severity": "warning",
+      "source": "static",
+      "tool": "pylint",
+      "original_issue": {
+        "type": "pylint",
+        "severity": "warning",
+        "message": "Catching too general exception Exception",
+        "file": "测试项目\\vulnerable.py",
+        "line": 49,
+        "column": 11,
+        "symbol": "broad-exception-caught",
+        "module": "vulnerable",
+        "tool": "pylint",
+        "llm_confidence": 0.8,
+        "llm_reason": "捕获过于宽泛的Exception可能掩盖重要的错误信息，影响调试和错误处理"
+      }
+    }
+  ],
+  "task_info_file": "C:\\Users\\23208\\Desktop\\CodeAgent2\\comprehensive_detection_results\\agent_task_info_20251112_143828.json",
+  "task_info": [
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 10 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 10,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 13 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 13,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 33 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 33,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 68 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 68,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 69 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 69,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\app.py 的第 91 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 91,
+        "severity": "medium",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 12 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 12,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 25 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 25,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 29 行，发现安全问题（检测项：）：subprocess call with shell=True identified, security issue.",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 29,
+        "severity": "high",
+        "tool": "bandit",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 40 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 40,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 47 行，发现安全问题（检测项：）：Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 47,
+        "severity": "medium",
+        "tool": "bandit",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 47 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 47,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 49 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 49,
+        "severity": "medium",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 55 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 55,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 56 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 56,
+        "severity": "high",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 59 行，发现安全问题（检测项：）：Possible hardcoded password: 'admin123'",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 59,
+        "severity": "low",
+        "tool": "bandit",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 86 行，动态检测发现问题：",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 86,
+        "severity": "low",
+        "tool": "dynamic_detection",
+        "source": "dynamic"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 95 行，发现安全问题（检测项：）：A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 95,
+        "severity": "high",
+        "tool": "bandit",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 temp_extract\\project_20251112_143516_936151_a8f66caa\\测试项目\\vulnerable.py 的第 95 行，发现安全问题（检测项：）：Possible binding to all interfaces.",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 95,
+        "severity": "medium",
+        "tool": "bandit",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 测试项目\\app.py 的第 3 行，存在未使用的变量或参数：Unused import os",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 3,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 测试项目\\app.py 的第 91 行，pylint 检测到问题：Catching too general exception Exception",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/app.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 91,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 测试项目\\vulnerable.py 的第 29 行，pylint 检测到问题：'subprocess.run' used without explicitly defining the value for 'check'.",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 29,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    },
+    {
+      "task": "在 测试项目\\vulnerable.py 的第 49 行，pylint 检测到问题：Catching too general exception Exception",
+      "problem_file": "temp_extract/project_20251112_143516_936151_a8f66caa/测试项目/vulnerable.py",
+      "project_root": "temp_extract/project_20251112_143516_936151_a8f66caa",
+      "agent_test_path": "temp_extract/project_20251112_143516_936151_a8f66caa/agent-test",
+      "backup_agent_path": "temp_extract/project_20251112_143516_936151_a8f66caa/backup-agent",
+      "defect_info": {
+        "line": 49,
+        "severity": "warning",
+        "tool": "pylint",
+        "source": "static"
+      }
+    }
+  ],
+  "temp_dir": "temp_extract\\project_20251112_143516_936151_a8f66caa"
+}

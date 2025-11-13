@@ -80,17 +80,29 @@ class RuffTool:
                     ruff_output = json.loads(result.stdout)
                     if isinstance(ruff_output, list):
                         for issue in ruff_output:
+                            code_info = issue.get('code', {})
+                            severity = 'warning'
+                            rule_code = ''
+                            rule_name = ''
+                            if isinstance(code_info, dict):
+                                severity = code_info.get('severity', 'WARNING').lower()
+                                rule_code = code_info.get('code', '')
+                                rule_name = code_info.get('name', '')
+                            else:
+                                # Ruff >=0.14 将 code 直接作为字符串返回
+                                rule_code = str(code_info)
+                            
                             issues.append({
                                 'type': 'ruff',
-                                'severity': issue.get('code', {}).get('severity', 'WARNING').lower(),
+                                'severity': severity,
                                 'message': issue.get('message', ''),
                                 'file': issue.get('filename', file_path),
                                 'line': issue.get('location', {}).get('row', 0),
                                 'column': issue.get('location', {}).get('column', 0),
                                 'end_line': issue.get('end_location', {}).get('row', 0),
                                 'end_column': issue.get('end_location', {}).get('column', 0),
-                                'rule_code': issue.get('code', {}).get('code', ''),
-                                'rule_name': issue.get('code', {}).get('name', '')
+                                'rule_code': rule_code,
+                                'rule_name': rule_name
                             })
                 except json.JSONDecodeError as e:
                     # JSON解析失败，尝试文本输出
@@ -208,7 +220,33 @@ class RuffTool:
                                 'rule_name': issue.get('code', {}).get('name', '')
                             })
                 except json.JSONDecodeError as e:
-                    # JSON解析失败，尝试解析文本格式输出（fallback）
+                    # JSON解析失败，检查是否是字符串类型错误
+                    if isinstance(result.stdout, str):
+                        # 尝试解析JSON字符串
+                        try:
+                            # 如果stdout是字符串但包含JSON，尝试直接解析
+                            if result.stdout.strip().startswith('[') or result.stdout.strip().startswith('{'):
+                                ruff_output = json.loads(result.stdout)
+                                if isinstance(ruff_output, list):
+                                    for issue in ruff_output:
+                                        if isinstance(issue, dict):
+                                            issues.append({
+                                                'type': 'ruff',
+                                                'severity': issue.get('code', {}).get('severity', 'WARNING').lower() if isinstance(issue.get('code'), dict) else 'warning',
+                                                'message': issue.get('message', '') if isinstance(issue.get('message'), str) else str(issue.get('message', '')),
+                                                'file': issue.get('filename', ''),
+                                                'line': issue.get('location', {}).get('row', 0) if isinstance(issue.get('location'), dict) else 0,
+                                                'column': issue.get('location', {}).get('column', 0) if isinstance(issue.get('location'), dict) else 0,
+                                                'end_line': issue.get('end_location', {}).get('row', 0) if isinstance(issue.get('end_location'), dict) else 0,
+                                                'end_column': issue.get('end_location', {}).get('column', 0) if isinstance(issue.get('end_location'), dict) else 0,
+                                                'rule_code': issue.get('code', {}).get('code', '') if isinstance(issue.get('code'), dict) else '',
+                                                'rule_name': issue.get('code', {}).get('name', '') if isinstance(issue.get('code'), dict) else ''
+                                            })
+                        except (json.JSONDecodeError, AttributeError, TypeError) as parse_error:
+                            # JSON解析仍然失败，尝试文本格式
+                            pass
+                    
+                    # 尝试解析文本格式输出（fallback）
                     stdout_preview = result.stdout[:200] if result.stdout else 'None'
                     if not result.stdout.strip():
                         # 空输出，可能是没有发现问题

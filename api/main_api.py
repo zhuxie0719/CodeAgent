@@ -5,6 +5,7 @@ AI Agent 系统主入口
 
 import sys
 import asyncio
+import logging
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +17,17 @@ from datetime import datetime
 sys.path.append(str(Path(__file__).parent.parent))
 # 添加当前目录到 Python 路径（确保可以导入core模块）
 sys.path.insert(0, str(Path(__file__).parent))
+
+# 配置日志，确保 Agent 日志和 print 输出都能实时显示
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+# 降低 uvicorn 默认控制台噪声，同时保留应用日志
+logging.getLogger("uvicorn").setLevel(logging.INFO)
+logging.getLogger("uvicorn.access").setLevel(logging.INFO)
 
 # 导入核心管理器
 from core.agent_manager import AgentManager

@@ -554,12 +554,17 @@ class DynamicDetectionAgent(BaseAgent):
     async def perform_dynamic_detection(self, project_path: str, enable_flask_tests: bool = True, enable_server_tests: bool = True) -> Dict[str, Any]:
         """执行动态缺陷检测"""
         try:
+            # 同时使用logger和print，确保日志输出到控制台
+            print("🔍 [DynamicAgent] 开始动态缺陷检测...", flush=True)
             self.logger.info("开始动态缺陷检测...")
             
             # 检查是否是Flask项目
+            print(f"🔍 [DynamicAgent] 检查项目类型: {project_path}", flush=True)
             is_flask_project = await self._detect_flask_project(project_path)
+            print(f"📋 [DynamicAgent] 项目类型检测完成: Flask项目={is_flask_project}", flush=True)
             
             # 执行通用bug检测（对所有项目类型都适用）
+            print("🔍 [DynamicAgent] 开始通用bug检测...", flush=True)
             self.logger.info("开始通用bug检测...")
             generic_issues = []
             generic_bug_results = {}
@@ -567,15 +572,20 @@ class DynamicDetectionAgent(BaseAgent):
                 generic_bug_results = self.generic_bug_detector.detect_all_issues(project_path)
                 if generic_bug_results.get("status") == "completed":
                     generic_issues = generic_bug_results.get("issues", [])
+                    print(f"✅ [DynamicAgent] 通用bug检测完成，发现 {len(generic_issues)} 个问题", flush=True)
                     self.logger.info(f"通用bug检测完成，发现 {len(generic_issues)} 个问题")
                 else:
-                    self.logger.warning(f"通用bug检测失败: {generic_bug_results.get('error', '未知错误')}")
+                    error_msg = generic_bug_results.get('error', '未知错误')
+                    print(f"⚠️ [DynamicAgent] 通用bug检测失败: {error_msg}", flush=True)
+                    self.logger.warning(f"通用bug检测失败: {error_msg}")
             except Exception as e:
+                print(f"❌ [DynamicAgent] 通用bug检测异常: {e}", flush=True)
                 self.logger.error(f"通用bug检测异常: {e}")
             
             # 如果不是Flask项目，只返回通用bug检测结果
             if not is_flask_project:
-                return {
+                print(f"📋 [DynamicAgent] 非Flask项目，返回通用bug检测结果", flush=True)
+                result = {
                     "status": "completed",
                     "is_flask_project": False,
                     "enable_web_test": False,
@@ -594,15 +604,19 @@ class DynamicDetectionAgent(BaseAgent):
                     "tests_completed": True,
                     "success_rate": 100.0 if generic_issues else 0.0
                 }
+                print(f"✅ [DynamicAgent] 动态检测完成（非Flask项目），返回结果", flush=True)
+                return result
             
             # 根据选项决定是否启用Web应用测试
             enable_web_test = enable_server_tests and enable_flask_tests
+            print(f"⚙️ [DynamicAgent] Flask项目检测配置: enable_web_test={enable_web_test}, enable_flask_tests={enable_flask_tests}, enable_server_tests={enable_server_tests}", flush=True)
             
             # 运行动态测试 - 优先使用修复版检测包，否则使用新的检测逻辑
             try:
                 # 首先尝试使用修复版检测包（如果存在）
                 fixed_detection_path = os.path.join(project_path, "fixed_detection.py")
                 if os.path.exists(fixed_detection_path):
+                    print("🔧 [DynamicAgent] 使用修复版检测包进行检测...", flush=True)
                     self.logger.info("使用修复版检测包进行检测...")
                     try:
                         # 导入修复版检测脚本
@@ -617,18 +631,24 @@ class DynamicDetectionAgent(BaseAgent):
                         # 转换修复版检测结果格式
                         test_results = self._convert_fixed_detection_results(fixed_results)
                         
+                        print("✅ [DynamicAgent] 修复版检测包执行成功", flush=True)
                         self.logger.info("修复版检测包执行成功")
                         
                     except Exception as e:
+                        print(f"⚠️ [DynamicAgent] 修复版检测包执行失败: {e}，回退到新检测逻辑", flush=True)
                         self.logger.warning(f"修复版检测包执行失败: {e}，回退到新检测逻辑")
                         # 回退到新的检测逻辑
                         test_results = await self._run_new_detection_logic(project_path, enable_web_test)
                 else:
+                    print("🔧 [DynamicAgent] 未找到修复版检测包，使用新检测逻辑...", flush=True)
                     self.logger.info("未找到修复版检测包，使用新检测逻辑...")
                     # 使用新的检测逻辑
                     test_results = await self._run_new_detection_logic(project_path, enable_web_test)
                     
             except Exception as e:
+                print(f"❌ [DynamicAgent] 动态检测失败: {e}", flush=True)
+                import traceback
+                print(f"错误详情:\n{traceback.format_exc()}", flush=True)
                 self.logger.error(f"动态检测失败: {e}")
                 test_results = {
                     "import_analysis": {"status": "failed", "error": str(e)},
@@ -801,7 +821,7 @@ class DynamicDetectionAgent(BaseAgent):
             if generic_issues_count > 0:
                 recommendations.append(f"发现{generic_issues_count}个通用bug，建议检查代码安全性和可靠性")
             
-            return {
+            result = {
                 "status": "completed",
                 "is_flask_project": is_flask_project,
                 "enable_web_test": enable_web_test,
@@ -811,8 +831,14 @@ class DynamicDetectionAgent(BaseAgent):
                 "tests_completed": True,
                 "success_rate": success_rate
             }
+            print(f"✅ [DynamicAgent] 动态检测完成（Flask项目），共发现 {len(issues)} 个问题，测试成功率: {success_rate}%", flush=True)
+            self.logger.info(f"动态检测完成，共发现 {len(issues)} 个问题，测试成功率: {success_rate}%")
+            return result
             
         except Exception as e:
+            print(f"❌ [DynamicAgent] 动态缺陷检测异常: {e}", flush=True)
+            import traceback
+            print(f"错误详情:\n{traceback.format_exc()}", flush=True)
             self.logger.error(f"动态缺陷检测异常: {e}")
             return {
                 "status": "failed",
