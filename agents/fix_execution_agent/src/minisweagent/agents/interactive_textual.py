@@ -24,7 +24,7 @@ from textual.events import Key
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Input, Static, TextArea
 
-from minisweagent.agents.default import AgentConfig, DefaultAgent, NonTerminatingException, Submitted
+from fixcodeagent.agents.default import AgentConfig, DefaultAgent, NonTerminatingException, Submitted
 
 
 @dataclass
@@ -53,7 +53,7 @@ class _TextualAgent(DefaultAgent):
         if self.config.mode == "human":
             human_input = self.app.input_container.request_input("Enter your command:")
             self._current_action_from_human = True
-            msg = {"content": f"\n```bash\n{human_input}\n```"}
+            msg = {"content": f"\n```powershell\n{human_input}\n```"}
             self.add_message("assistant", msg["content"])
             return msg
         self._current_action_from_human = False
@@ -260,7 +260,7 @@ class TextualAgent(App):
     ]
 
     def __init__(self, model, env, **kwargs):
-        css_path = os.environ.get("MSWEA_MINI_STYLE_PATH", str(Path(__file__).parent.parent / "config" / "mini.tcss"))
+        css_path = os.environ.get("FIXCODE_MINI_STYLE_PATH", str(Path(__file__).parent.parent / "config" / "mini.tcss"))
         self.__class__.CSS = Path(css_path).read_text()
         super().__init__()
         self.agent_state = "UNINITIALIZED"
@@ -370,7 +370,7 @@ class TextualAgent(App):
                 content_str = str(message["content"])
             message_container = Vertical(classes="message-container")
             container.mount(message_container)
-            role = message["role"].replace("assistant", "mini-swe-agent")
+            role = message["role"].replace("assistant", "fix-code-agent")
             message_container.mount(Static(role.upper(), classes="message-header"))
             message_container.mount(Static(Text(content_str, no_wrap=False), classes="message-content"))
 

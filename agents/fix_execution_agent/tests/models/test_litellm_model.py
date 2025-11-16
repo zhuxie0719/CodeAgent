@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import litellm
 import pytest
 
-from minisweagent.models.litellm_model import LitellmModel
+from fixcodeagent.models.litellm_model import LitellmModel
 
 
 def test_authentication_error_enhanced_message():
@@ -28,7 +28,7 @@ def test_authentication_error_enhanced_message():
             model._query([{"role": "user", "content": "test"}])
 
         # Check that the error message was enhanced
-        assert "You can permanently set your API key with `mini-extra config set KEY VALUE`." in str(exc_info.value)
+        assert "You can permanently set your API key with `fix-code-extra config set KEY VALUE`." in str(exc_info.value)
 
 
 def test_model_registry_loading():

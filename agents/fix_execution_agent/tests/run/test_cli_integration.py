@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from minisweagent.run.mini import DEFAULT_CONFIG, app, main
+from fixcodeagent.run.mini import DEFAULT_CONFIG, app, main
 
 
 def strip_ansi_codes(text: str) -> str:
@@ -17,12 +17,12 @@ def strip_ansi_codes(text: str) -> str:
 def test_configure_if_first_time_called():
     """Test that configure_if_first_time is called when running mini main."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time") as mock_configure,
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time") as mock_configure,
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -57,12 +57,12 @@ def test_configure_if_first_time_called():
 def test_mini_command_calls_run_interactive():
     """Test that mini command creates InteractiveAgent when visual=False."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -102,12 +102,12 @@ def test_mini_command_calls_run_interactive():
 def test_mini_v_command_calls_run_textual():
     """Test that mini -v command creates TextualAgent when visual=True."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.TextualAgent") as mock_textual_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.TextualAgent") as mock_textual_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -147,13 +147,13 @@ def test_mini_v_command_calls_run_textual():
 def test_mini_calls_prompt_when_no_task_provided():
     """Test that mini calls prompt when no task is provided."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.prompt_session.prompt") as mock_prompt,
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.prompt_session.prompt") as mock_prompt,
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_prompt.return_value = "User provided task"
@@ -194,13 +194,13 @@ def test_mini_calls_prompt_when_no_task_provided():
 def test_mini_v_calls_prompt_when_no_task_provided():
     """Test that mini -v calls prompt when no task is provided."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.prompt_session.prompt") as mock_prompt,
-        patch("minisweagent.run.mini.TextualAgent") as mock_textual_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.prompt_session.prompt") as mock_prompt,
+        patch("fixcodeagent.run.mini.TextualAgent") as mock_textual_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_prompt.return_value = "User provided visual task"
@@ -241,12 +241,12 @@ def test_mini_v_calls_prompt_when_no_task_provided():
 def test_mini_with_explicit_model():
     """Test that mini works with explicitly provided model."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -290,12 +290,12 @@ def test_mini_with_explicit_model():
 def test_yolo_mode_sets_correct_agent_config():
     """Test that yolo mode sets the correct agent configuration."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -335,12 +335,12 @@ def test_yolo_mode_sets_correct_agent_config():
 def test_confirm_mode_sets_correct_agent_config():
     """Test that when yolo=False, no explicit mode is set (defaults to None)."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -380,7 +380,7 @@ def test_confirm_mode_sets_correct_agent_config():
 def test_mini_help():
     """Test that mini --help works correctly."""
     result = subprocess.run(
-        [sys.executable, "-m", "minisweagent", "--help"],
+        [sys.executable, "-m", "fixcodeagent", "--help"],
         capture_output=True,
         text=True,
         timeout=10,
@@ -389,7 +389,7 @@ def test_mini_help():
     assert result.returncode == 0
     # Strip ANSI color codes for reliable text matching
     clean_output = strip_ansi_codes(result.stdout)
-    assert "Run mini-SWE-agent in your local environment." in clean_output
+    assert "Run fix-code-agent in your local environment." in clean_output
     assert "--help" in clean_output
     assert "--config" in clean_output
     assert "--model" in clean_output
@@ -409,7 +409,7 @@ def test_mini_help_with_typer_runner():
     assert result.exit_code == 0
     # Strip ANSI color codes for reliable text matching
     clean_output = strip_ansi_codes(result.stdout)
-    assert "Run mini-SWE-agent in your local environment." in clean_output
+    assert "Run fix-code-agent in your local environment." in clean_output
     assert "--help" in clean_output
     assert "--config" in clean_output
     assert "--model" in clean_output
@@ -419,17 +419,17 @@ def test_mini_help_with_typer_runner():
     assert "--visual" in clean_output
 
 
-def test_python_m_minisweagent_help():
-    """Test that python -m minisweagent --help works correctly."""
+def test_python_m_fixcodeagent_help():
+    """Test that python -m fixcodeagent --help works correctly."""
     result = subprocess.run(
-        [sys.executable, "-m", "minisweagent", "--help"],
+        [sys.executable, "-m", "fixcodeagent", "--help"],
         capture_output=True,
         text=True,
         timeout=10,
     )
 
     assert result.returncode == 0
-    assert "mini-SWE-agent" in result.stdout
+    assert "fix-code-agent" in result.stdout
 
 
 def test_mini_script_help():
@@ -442,13 +442,13 @@ def test_mini_script_help():
     )
 
     assert result.returncode == 0
-    assert "mini-SWE-agent" in result.stdout
+    assert "fix-code-agent" in result.stdout
 
 
-def test_mini_swe_agent_help():
-    """Test that mini-swe-agent --help works correctly."""
+def test_fix_code_agent_help():
+    """Test that fix-code-agent --help works correctly."""
     result = subprocess.run(
-        ["mini-swe-agent", "--help"],
+        ["fix-code-agent", "--help"],
         capture_output=True,
         text=True,
         timeout=10,
@@ -456,13 +456,13 @@ def test_mini_swe_agent_help():
 
     assert result.returncode == 0
     clean_output = strip_ansi_codes(result.stdout)
-    assert "mini-SWE-agent" in clean_output
+    assert "fix-code-agent" in clean_output
 
 
-def test_mini_extra_help():
-    """Test that mini-extra --help works correctly."""
+def test_fix_code_extra_help():
+    """Test that fix-code-extra --help works correctly."""
     result = subprocess.run(
-        ["mini-extra", "--help"],
+        ["fix-code-extra", "--help"],
         capture_output=True,
         text=True,
         timeout=10,
@@ -501,11 +501,11 @@ def test_mini_e_help():
         ("swebench-single", ["swebench-single"]),
     ],
 )
-def test_mini_extra_subcommand_help(subcommand: str, aliases: list[str]):
-    """Test that mini-extra subcommands --help work correctly."""
+def test_fix_code_extra_subcommand_help(subcommand: str, aliases: list[str]):
+    """Test that fix-code-extra subcommands --help work correctly."""
     for alias in aliases:
         result = subprocess.run(
-            ["mini-extra", alias, "--help"],
+            ["fix-code-extra", alias, "--help"],
             capture_output=True,
             text=True,
             timeout=10,
@@ -516,10 +516,10 @@ def test_mini_extra_subcommand_help(subcommand: str, aliases: list[str]):
         assert len(result.stdout) > 0
 
 
-def test_mini_extra_config_help():
-    """Test that mini-extra config --help works correctly."""
+def test_fix_code_extra_config_help():
+    """Test that fix-code-extra config --help works correctly."""
     result = subprocess.run(
-        ["mini-extra", "config", "--help"],
+        ["fix-code-extra", "config", "--help"],
         capture_output=True,
         text=True,
         timeout=10,
@@ -535,12 +535,12 @@ def test_mini_extra_config_help():
 def test_exit_immediately_flag_sets_confirm_exit_false():
     """Test that --exit-immediately flag sets confirm_exit to False in agent config."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -577,12 +577,12 @@ def test_exit_immediately_flag_sets_confirm_exit_false():
 def test_no_exit_immediately_flag_sets_confirm_exit_true():
     """Test that when --exit-immediately flag is not used, confirm_exit defaults to True."""
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
     ):
         # Setup mocks
         mock_model = Mock()
@@ -620,13 +620,13 @@ def test_exit_immediately_flag_with_typer_runner():
     from typer.testing import CliRunner
 
     with (
-        patch("minisweagent.run.mini.configure_if_first_time"),
-        patch("minisweagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
-        patch("minisweagent.run.mini.get_model") as mock_get_model,
-        patch("minisweagent.run.mini.LocalEnvironment") as mock_env,
-        patch("minisweagent.run.mini.get_config_path") as mock_get_config_path,
-        patch("minisweagent.run.mini.yaml.safe_load") as mock_yaml_load,
-        patch("minisweagent.run.mini.save_traj"),
+        patch("fixcodeagent.run.mini.configure_if_first_time"),
+        patch("fixcodeagent.run.mini.InteractiveAgent") as mock_interactive_agent_class,
+        patch("fixcodeagent.run.mini.get_model") as mock_get_model,
+        patch("fixcodeagent.run.mini.LocalEnvironment") as mock_env,
+        patch("fixcodeagent.run.mini.get_config_path") as mock_get_config_path,
+        patch("fixcodeagent.run.mini.yaml.safe_load") as mock_yaml_load,
+        patch("fixcodeagent.run.mini.save_traj"),
     ):
         # Setup mocks
         mock_model = Mock()

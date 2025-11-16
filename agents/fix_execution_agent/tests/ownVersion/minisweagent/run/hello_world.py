@@ -4,10 +4,10 @@ from pathlib import Path
 import typer
 import yaml
 
-from minisweagent import package_dir
-from minisweagent.agents.default import DefaultAgent
-from minisweagent.environments.local import LocalEnvironment
-from minisweagent.models.litellm_model import LitellmModel
+from fixcodeagent import package_dir
+from fixcodeagent.agents.default import DefaultAgent
+from fixcodeagent.environments.local import LocalEnvironment
+from fixcodeagent.models.litellm_model import LitellmModel
 
 app = typer.Typer()
 
@@ -16,10 +16,10 @@ app = typer.Typer()
 def main(
     task: str = typer.Option(..., "-t", "--task", help="Task/problem statement", show_default=False, prompt=True),
     model_name: str = typer.Option(
-        os.getenv("MSWEA_MODEL_NAME"),
+        os.getenv("FIXCODE_MODEL_NAME"),
         "-m",
         "--model",
-        help="Model name (defaults to MSWEA_MODEL_NAME env var)",
+        help="Model name (defaults to FIXCODE_MODEL_NAME env var)",
         prompt="What model do you want to use?",
     ),
 ) -> DefaultAgent:

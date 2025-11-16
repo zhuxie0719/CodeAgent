@@ -1,1 +1,1 @@
-"""Run scripts for mini-SWE-agent."""
+"""Run scripts for fix-code-agent."""

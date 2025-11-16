@@ -2,9 +2,9 @@ import os
 import warnings
 from typing import Literal
 
-from minisweagent.models.litellm_model import LitellmModel, LitellmModelConfig
-from minisweagent.models.utils.cache_control import set_cache_control
-from minisweagent.models.utils.key_per_thread import get_key_per_thread
+from fixcodeagent.models.litellm_model import LitellmModel, LitellmModelConfig
+from fixcodeagent.models.utils.cache_control import set_cache_control
+from fixcodeagent.models.utils.key_per_thread import get_key_per_thread
 
 
 class AnthropicModelConfig(LitellmModelConfig):

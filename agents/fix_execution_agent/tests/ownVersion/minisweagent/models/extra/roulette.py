@@ -2,8 +2,8 @@ import random
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
 
-from minisweagent import Model
-from minisweagent.models import get_model
+from fixcodeagent import Model
+from fixcodeagent.models import get_model
 
 
 @dataclass

@@ -15,8 +15,8 @@ from prompt_toolkit.shortcuts import PromptSession
 from rich.console import Console
 from rich.rule import Rule
 
-from minisweagent import global_config_dir
-from minisweagent.agents.default import AgentConfig, DefaultAgent, LimitsExceeded, NonTerminatingException, Submitted
+from fixcodeagent import global_config_dir
+from fixcodeagent.agents.default import AgentConfig, DefaultAgent, LimitsExceeded, NonTerminatingException, Submitted
 
 console = Console(highlight=False)
 prompt_session = PromptSession(history=FileHistory(global_config_dir / "interactive_history.txt"))
@@ -44,7 +44,7 @@ class InteractiveAgent(DefaultAgent):
         super().add_message(role, content, **kwargs)
         if role == "assistant":
             console.print(
-                f"\n[red][bold]mini-swe-agent[/bold] (step [bold]{self.model.n_calls}[/bold], [bold]${self.model.cost:.2f}[/bold]):[/red]\n",
+                f"\n[red][bold]fix-code-agent[/bold] (step [bold]{self.model.n_calls}[/bold], [bold]${self.model.cost:.2f}[/bold]):[/red]\n",
                 end="",
                 highlight=False,
             )
@@ -59,7 +59,7 @@ class InteractiveAgent(DefaultAgent):
                 case "/y" | "/c":  # Just go to the super query, which queries the LM for the next action
                     pass
                 case _:
-                    msg = {"content": f"\n```bash\n{command}\n```"}
+                    msg = {"content": f"\n```powershell\n{command}\n```"}
                     self.add_message("assistant", msg["content"])
                     return msg
         try:

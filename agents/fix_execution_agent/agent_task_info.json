@@ -1,10 +1,10 @@
 {
     "task": "Raise error when blueprint name contains a dot",
-    "problem_file": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0",
-    "project_root": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0",
-    "agent_test_path": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/agent-test",
-    "backup_agent_path": "/home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/backup-agent"
-  }
+    "problem_file": "C:/Users/86138/Desktop/白白/模式设计/大作业/CodeAgent/tests/flask-2.0.0",
+    "project_root": "C:/Users/86138/Desktop/白白/模式设计/大作业/CodeAgent/tests/flask-2.0.0",
+    "agent_test_path": "C:/Users/86138/Desktop/白白/模式设计/大作业/CodeAgent/tests/flask-2.0.0/agent-test",
+    "backup_agent_path": "C:/Users/86138/Desktop/白白/模式设计/大作业/CodeAgent/tests/flask-2.0.0/backup-agent"
+}
 
 
 

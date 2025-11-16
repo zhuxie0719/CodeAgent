@@ -2,10 +2,10 @@ import json
 import tempfile
 from pathlib import Path
 
-from minisweagent.agents.default import DefaultAgent
-from minisweagent.environments.local import LocalEnvironment
-from minisweagent.models.test_models import DeterministicModel
-from minisweagent.run.utils.save import save_traj
+from fixcodeagent.agents.default import DefaultAgent
+from fixcodeagent.environments.local import LocalEnvironment
+from fixcodeagent.models.test_models import DeterministicModel
+from fixcodeagent.run.utils.save import save_traj
 
 
 def test_save_traj_includes_class_names():
@@ -41,14 +41,14 @@ def test_save_traj_includes_class_names():
         assert "environment_type" in config
 
         # Verify the actual class names with module paths
-        assert config["agent_type"] == "minisweagent.agents.default.DefaultAgent"
-        assert config["model_type"] == "minisweagent.models.test_models.DeterministicModel"
-        assert config["environment_type"] == "minisweagent.environments.local.LocalEnvironment"
+        assert config["agent_type"] == "fixcodeagent.agents.default.DefaultAgent"
+        assert config["model_type"] == "fixcodeagent.models.test_models.DeterministicModel"
+        assert config["environment_type"] == "fixcodeagent.environments.local.LocalEnvironment"
 
         # Verify other expected data is still present
         assert saved_data["info"]["exit_status"] == "Submitted"
         assert saved_data["info"]["submission"] == "test result"
-        assert saved_data["trajectory_format"] == "mini-swe-agent-1"
+        assert saved_data["trajectory_format"] == "fix-code-agent-1"
 
 
 def test_save_traj_with_none_agent():

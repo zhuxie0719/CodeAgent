@@ -22,7 +22,7 @@ from rich.progress import (
 )
 from rich.table import Table
 
-import minisweagent.models
+import fixcodeagent.models
 
 
 def _shorten_str(s: str, max_len: int, shorten_left=False) -> str:
@@ -118,7 +118,7 @@ class RunBatchProgressManager:
         with self._lock:
             self._main_progress_bar.update(
                 self._main_task_id,
-                total_cost=f"{minisweagent.models.GLOBAL_MODEL_STATS.cost:.2f}",
+                total_cost=f"{fixcodeagent.models.GLOBAL_MODEL_STATS.cost:.2f}",
                 eta=self._get_eta_text(),
             )
 

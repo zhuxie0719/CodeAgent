@@ -1,4 +1,4 @@
-"""Basic agent class. See https://mini-swe-agent.com/latest/advanced/control_flow/ for visual explanation."""
+"""Basic agent class. See https://fix-code-agent.com/latest/advanced/control_flow/ for visual explanation."""
 
 import re
 import subprocess
@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 
 from jinja2 import StrictUndefined, Template
 
-from minisweagent import Environment, Model
+from fixcodeagent import Environment, Model
 
 
 @dataclass
@@ -106,7 +106,11 @@ class DefaultAgent:
 
     def parse_action(self, response: dict) -> dict:
         """Parse the action from the message. Returns the action."""
-        actions = re.findall(r"```bash\s*\n(.*?)\n```", response["content"], re.DOTALL)
+        # Try PowerShell first, then fallback to bash for compatibility
+        actions = re.findall(r"```powershell\s*\n(.*?)\n```", response["content"], re.DOTALL)
+        if len(actions) == 0:
+            # Fallback to bash for backward compatibility
+            actions = re.findall(r"```bash\s*\n(.*?)\n```", response["content"], re.DOTALL)
         if len(actions) == 1:
             return {"action": actions[0].strip(), **response}
         raise FormatError(self.render_template(self.config.format_error_template, actions=actions))
@@ -134,5 +138,5 @@ class DefaultAgent:
     def has_finished(self, output: dict[str, str]):
         """Raises Submitted exception with final output if the agent has finished its task."""
         lines = output.get("output", "").lstrip().splitlines(keepends=True)
-        if lines and lines[0].strip() in ["MINI_SWE_AGENT_FINAL_OUTPUT", "COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT"]:
+        if lines and lines[0].strip() in ["FIX_CODE_AGENT_FINAL_OUTPUT", "COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT"]:
             raise Submitted("".join(lines[1:]))

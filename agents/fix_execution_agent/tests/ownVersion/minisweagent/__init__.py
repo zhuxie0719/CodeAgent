@@ -3,7 +3,7 @@ This file provides:
 
 - Path settings for global config file & relative directories
 - Version numbering
-- Protocols for the core components of mini-swe-agent.
+- Protocols for the core components of fix-code-agent.
   By the magic of protocols & duck typing, you can pretty much ignore them,
   unless you want the static type checking.
 """
@@ -18,17 +18,17 @@ import dotenv
 from platformdirs import user_config_dir
 from rich.console import Console
 
-from minisweagent.utils.log import logger
+from fixcodeagent.utils.log import logger
 
 package_dir = Path(__file__).resolve().parent
 
-global_config_dir = Path(os.getenv("MSWEA_GLOBAL_CONFIG_DIR") or user_config_dir("mini-swe-agent"))
+global_config_dir = Path(os.getenv("FIXCODE_GLOBAL_CONFIG_DIR") or user_config_dir("fix-code-agent"))
 global_config_dir.mkdir(parents=True, exist_ok=True)
 global_config_file = Path(global_config_dir) / ".env"
 
-if not os.getenv("MSWEA_SILENT_STARTUP"):
+if not os.getenv("FIXCODE_SILENT_STARTUP"):
     Console().print(
-        f"👋 This is [bold green]mini-swe-agent[/bold green] version [bold green]{__version__}[/bold green].\n"
+        f"👋 This is [bold green]fix-code-agent[/bold green] version [bold green]{__version__}[/bold green].\n"
         f"Loading global config from [bold green]'{global_config_file}'[/bold green]"
     )
 dotenv.load_dotenv(dotenv_path=global_config_file)
