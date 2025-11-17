@@ -7,14 +7,14 @@ import typer
 import yaml
 from rich.console import Console
 
-from minisweagent.agents.interactive import InteractiveAgent
-from minisweagent.config import builtin_config_dir, get_config_path
-from minisweagent.environments.docker import DockerEnvironment
-from minisweagent.models import get_model
-from minisweagent.run.extra.config import configure_if_first_time
-from minisweagent.run.utils.save import save_traj
+from fixcodeagent.agents.interactive import InteractiveAgent
+from fixcodeagent.config import builtin_config_dir, get_config_path
+from fixcodeagent.environments.docker import DockerEnvironment
+from fixcodeagent.models import get_model
+from fixcodeagent.run.extra.config import configure_if_first_time
+from fixcodeagent.run.utils.save import save_traj
 
-DEFAULT_CONFIG = Path(os.getenv("MSWEA_GITHUB_CONFIG_PATH", builtin_config_dir / "github_issue.yaml"))
+DEFAULT_CONFIG = Path(os.getenv("FIXCODE_GITHUB_CONFIG_PATH", builtin_config_dir / "github_issue.yaml"))
 console = Console(highlight=False)
 app = typer.Typer(rich_markup_mode="rich", add_completion=False)
 
@@ -43,11 +43,11 @@ def main(
     issue_url: str = typer.Option(prompt="Enter GitHub issue URL", help="GitHub issue URL"),
     config: Path = typer.Option(DEFAULT_CONFIG, "-c", "--config", help="Path to config file"),
     model: str | None = typer.Option(None, "-m", "--model", help="Model to use"),
-    model_class: str | None = typer.Option(None, "--model-class", help="Model class to use (e.g., 'anthropic' or 'minisweagent.models.anthropic.AnthropicModel')", rich_help_panel="Advanced"),
+    model_class: str | None = typer.Option(None, "--model-class", help="Model class to use (e.g., 'anthropic' or 'fixcodeagent.models.anthropic.AnthropicModel')", rich_help_panel="Advanced"),
     yolo: bool = typer.Option(False, "-y", "--yolo", help="Run without confirmation"),
 ) -> InteractiveAgent:
     # fmt: on
-    """Run mini-SWE-agent on a GitHub issue"""
+    """Run fix-code-agent on a GitHub issue"""
     configure_if_first_time()
 
     config_path = get_config_path(config)

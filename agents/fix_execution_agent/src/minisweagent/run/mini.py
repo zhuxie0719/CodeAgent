@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""Run mini-SWE-agent in your local environment. This is the default executable `mini`."""
-# Read this first: https://mini-swe-agent.com/latest/usage/mini/  (usage)
+"""Run fix-code-agent in your local environment. This is the default executable `fix-code`."""
+# Read this first: https://fix-code-agent.com/latest/usage/mini/  (usage)
 
 import os
 import traceback
@@ -15,22 +15,22 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import PromptSession
 from rich.console import Console
 
-from minisweagent import global_config_dir
-from minisweagent.agents.interactive import InteractiveAgent
-from minisweagent.agents.interactive_textual import TextualAgent
-from minisweagent.config import builtin_config_dir, get_config_path
-from minisweagent.environments.local import LocalEnvironment
-from minisweagent.models import get_model
-from minisweagent.run.extra.config import configure_if_first_time
-from minisweagent.run.utils.save import save_traj
-from minisweagent.utils.log import logger
+from fixcodeagent import global_config_dir
+from fixcodeagent.agents.interactive import InteractiveAgent
+from fixcodeagent.agents.interactive_textual import TextualAgent
+from fixcodeagent.config import builtin_config_dir, get_config_path
+from fixcodeagent.environments.local import LocalEnvironment
+from fixcodeagent.models import get_model
+from fixcodeagent.run.extra.config import configure_if_first_time
+from fixcodeagent.run.utils.save import save_traj
+from fixcodeagent.utils.log import logger
 
-DEFAULT_CONFIG = Path(os.getenv("MSWEA_MINI_CONFIG_PATH", builtin_config_dir / "mini.yaml"))
+DEFAULT_CONFIG = Path(os.getenv("FIXCODE_MINI_CONFIG_PATH", builtin_config_dir / "mini.yaml"))
 DEFAULT_OUTPUT = global_config_dir / "last_mini_run.traj.json"
 console = Console(highlight=False)
 app = typer.Typer(rich_markup_mode="rich")
 prompt_session = PromptSession(history=FileHistory(global_config_dir / "mini_task_history.txt"))
-_HELP_TEXT = """Run mini-SWE-agent in your local environment.
+_HELP_TEXT = """Run fix-code-agent in your local environment.
 
 [not dim]
 There are two different user interfaces:
@@ -38,7 +38,7 @@ There are two different user interfaces:
 [bold green]mini[/bold green] Simple REPL-style interface
 [bold green]mini -v[/bold green] Pager-style interface (Textual)
 
-More information about the usage: [bold green]https://mini-swe-agent.com/latest/usage/mini/[/bold green]
+More information about the usage: [bold green]https://fix-code-agent.com/latest/usage/mini/[/bold green]
 [/not dim]
 """
 
@@ -46,9 +46,9 @@ More information about the usage: [bold green]https://mini-swe-agent.com/latest/
 # fmt: off
 @app.command(help=_HELP_TEXT)
 def main(
-    visual: bool = typer.Option(False, "-v", "--visual", help="Toggle (pager-style) UI (Textual) depending on the MSWEA_VISUAL_MODE_DEFAULT environment setting",),
+    visual: bool = typer.Option(False, "-v", "--visual", help="Toggle (pager-style) UI (Textual) depending on the FIXCODE_VISUAL_MODE_DEFAULT environment setting",),
     model_name: str | None = typer.Option( None, "-m", "--model", help="Model to use",),
-    model_class: str | None = typer.Option(None, "--model-class", help="Model class to use (e.g., 'anthropic' or 'minisweagent.models.anthropic.AnthropicModel')", rich_help_panel="Advanced"),
+    model_class: str | None = typer.Option(None, "--model-class", help="Model class to use (e.g., 'anthropic' or 'fixcodeagent.models.anthropic.AnthropicModel')", rich_help_panel="Advanced"),
     task: str | None = typer.Option(None, "-t", "--task", help="Task/problem statement", show_default=False),
     yolo: bool = typer.Option(False, "-y", "--yolo", help="Run without confirmation"),
     cost_limit: float | None = typer.Option(None, "-l", "--cost-limit", help="Cost limit. Set to 0 to disable."),
@@ -60,7 +60,21 @@ def main(
     configure_if_first_time()
     config_path = get_config_path(config_spec)
     console.print(f"Loading agent config from [bold green]'{config_path}'[/bold green]")
-    config = yaml.safe_load(config_path.read_text())
+    # Read the config file using UTF-8 by default. On Windows Path.read_text()
+    # uses the locale encoding (cp936 / gbk here) which can fail for UTF-8 files.
+    # Try sensible fallbacks so this works regardless of file BOM or system locale.
+    try:
+        text = config_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        try:
+            # Some files include a UTF-8 BOM
+            text = config_path.read_text(encoding="utf-8-sig")
+        except UnicodeDecodeError:
+            # Fall back to the system locale but don't crash; replace undecodable
+            # bytes so the YAML loader can still run and provide a helpful error.
+            text = config_path.read_text(encoding="cp936", errors="replace")
+
+    config = yaml.safe_load(text)
 
     if not task:
         console.print("[bold yellow]What do you want to do?")
@@ -86,9 +100,9 @@ def main(
     model = get_model(model_name, config.get("model", {}))
     env = LocalEnvironment(**config.get("env", {}))
 
-    # Both visual flag and the MSWEA_VISUAL_MODE_DEFAULT flip the mode, so it's essentially a XOR
+    # Both visual flag and the FIXCODE_VISUAL_MODE_DEFAULT flip the mode, so it's essentially a XOR
     agent_class = InteractiveAgent
-    if visual == (os.getenv("MSWEA_VISUAL_MODE_DEFAULT", "false") == "false"):
+    if visual == (os.getenv("FIXCODE_VISUAL_MODE_DEFAULT", "false") == "false"):
         agent_class = TextualAgent
 
     agent = agent_class(model, env, **config.get("agent", {}))

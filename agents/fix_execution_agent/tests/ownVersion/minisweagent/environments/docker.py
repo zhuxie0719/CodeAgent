@@ -21,7 +21,7 @@ class DockerEnvironmentConfig:
     """
     timeout: int = 30
     """Timeout for executing commands in the container."""
-    executable: str = os.getenv("MSWEA_DOCKER_EXECUTABLE", "docker")
+    executable: str = os.getenv("FIXCODE_DOCKER_EXECUTABLE", "docker")
     """Path to the docker/container executable."""
     run_args: list[str] = field(default_factory=lambda: ["--rm"])
     """Additional arguments to pass to the docker/container executable.
@@ -38,7 +38,7 @@ class DockerEnvironment:
         """This class executes bash commands in a Docker container using direct docker commands.
         See `DockerEnvironmentConfig` for keyword arguments.
         """
-        self.logger = logger or logging.getLogger("minisweagent.environment")
+        self.logger = logger or logging.getLogger("fixcodeagent.environment")
         self.container_id: str | None = None
         self.config = config_class(**kwargs)
         self._start_container()
@@ -48,7 +48,7 @@ class DockerEnvironment:
 
     def _start_container(self):
         """Start the Docker container and return the container ID."""
-        container_name = f"minisweagent-{uuid.uuid4().hex[:8]}"
+        container_name = f"fixcodeagent-{uuid.uuid4().hex[:8]}"
         cmd = [
             self.config.executable,
             "run",

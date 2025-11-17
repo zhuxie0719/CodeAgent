@@ -6,17 +6,17 @@ from importlib import import_module
 from rich.console import Console
 
 subcommands = [
-    ("minisweagent.run.extra.config", ["config"], "Manage the global config file"),
-    ("minisweagent.run.inspector", ["inspect", "i", "inspector"], "Run inspector (browse trajectories)"),
-    ("minisweagent.run.github_issue", ["github-issue", "gh"], "Run on a GitHub issue"),
-    ("minisweagent.run.extra.swebench", ["swebench"], "Evaluate on SWE-bench (batch mode)"),
-    ("minisweagent.run.extra.swebench_single", ["swebench-single"], "Evaluate on SWE-bench (single instance)"),
+    ("fixcodeagent.run.extra.config", ["config"], "Manage the global config file"),
+    ("fixcodeagent.run.inspector", ["inspect", "i", "inspector"], "Run inspector (browse trajectories)"),
+    ("fixcodeagent.run.github_issue", ["github-issue", "gh"], "Run on a GitHub issue"),
+    ("fixcodeagent.run.extra.swebench", ["swebench"], "Evaluate on SWE-bench (batch mode)"),
+    ("fixcodeagent.run.extra.swebench_single", ["swebench-single"], "Evaluate on SWE-bench (single instance)"),
 ]
 
 
 def get_docstring() -> str:
     lines = [
-        "This is the [yellow]central entry point for all extra commands[/yellow] from mini-swe-agent.",
+        "This is the [yellow]central entry point for all extra commands[/yellow] from fix-code-agent.",
         "",
         "Available sub-commands:",
         "",

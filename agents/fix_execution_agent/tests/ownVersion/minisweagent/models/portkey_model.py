@@ -14,8 +14,8 @@ from tenacity import (
     wait_exponential,
 )
 
-from minisweagent.models import GLOBAL_MODEL_STATS
-from minisweagent.models.utils.cache_control import set_cache_control
+from fixcodeagent.models import GLOBAL_MODEL_STATS
+from fixcodeagent.models.utils.cache_control import set_cache_control
 
 logger = logging.getLogger("portkey_model")
 

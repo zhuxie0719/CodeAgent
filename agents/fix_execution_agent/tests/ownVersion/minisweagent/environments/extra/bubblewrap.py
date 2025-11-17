@@ -30,7 +30,7 @@ class BubblewrapEnvironmentConfig:
     """Dictionary of environment variables to set in the sandbox."""
     timeout: int = 30
     """Timeout for the command in seconds."""
-    executable: str = os.getenv("MSWEA_BUBBLEWRAP_EXECUTABLE", "bwrap")
+    executable: str = os.getenv("FIXCODE_BUBBLEWRAP_EXECUTABLE", "bwrap")
     """Path to the bubblewrap executable."""
     wrapper_args: list[str] = field(
         default_factory=lambda: [
@@ -72,9 +72,9 @@ class BubblewrapEnvironment:
         """This class executes bash commands in a bubblewrap environment and a separate working
         directory for each environment. See `BubblewrapEnvironmentConfig` for kwargs.
         """
-        self.logger = logger or logging.getLogger("minisweagent.environment")
+        self.logger = logger or logging.getLogger("fixcodeagent.environment")
         self.config = config_class(**kwargs)
-        self.working_dir = Path(tempfile.gettempdir()) / f"minisweagent-{uuid.uuid4().hex[:8]}"
+        self.working_dir = Path(tempfile.gettempdir()) / f"fixcodeagent-{uuid.uuid4().hex[:8]}"
         self.working_dir.mkdir(parents=True)
 
     def execute(self, command: str, cwd: str = "", *, timeout: int | None = None) -> dict[str, Any]:

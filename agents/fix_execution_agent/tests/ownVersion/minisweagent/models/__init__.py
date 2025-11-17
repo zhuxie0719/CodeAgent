@@ -7,7 +7,7 @@ import importlib
 import os
 import threading
 
-from minisweagent import Model
+from fixcodeagent import Model
 
 
 class GlobalModelStats:
@@ -17,9 +17,9 @@ class GlobalModelStats:
         self._cost = 0.0
         self._n_calls = 0
         self._lock = threading.Lock()
-        self.cost_limit = float(os.getenv("MSWEA_GLOBAL_COST_LIMIT", "0"))
-        self.call_limit = int(os.getenv("MSWEA_GLOBAL_CALL_LIMIT", "0"))
-        if (self.cost_limit > 0 or self.call_limit > 0) and not os.getenv("MSWEA_SILENT_STARTUP"):
+        self.cost_limit = float(os.getenv("FIXCODE_GLOBAL_COST_LIMIT", "0"))
+        self.call_limit = int(os.getenv("FIXCODE_GLOBAL_CALL_LIMIT", "0"))
+        if (self.cost_limit > 0 or self.call_limit > 0) and not os.getenv("FIXCODE_SILENT_STARTUP"):
             print(f"Global cost/call limit: ${self.cost_limit:.4f} / {self.call_limit}")
 
     def add(self, cost: float) -> None:
@@ -52,7 +52,7 @@ def get_model(input_model_name: str | None = None, config: dict | None = None) -
 
     model_class = get_model_class(resolved_model_name, config.pop("model_class", ""))
 
-    if (from_env := os.getenv("MSWEA_MODEL_API_KEY")) and not str(type(model_class)).endswith("DeterministicModel"):
+    if (from_env := os.getenv("FIXCODE_MODEL_API_KEY")) and not str(type(model_class)).endswith("DeterministicModel"):
         config.setdefault("model_kwargs", {})["api_key"] = from_env
 
     if (
@@ -73,17 +73,17 @@ def get_model_name(input_model_name: str | None = None, config: dict | None = No
         return input_model_name
     if from_config := config.get("model_name"):
         return from_config
-    if from_env := os.getenv("MSWEA_MODEL_NAME"):
+    if from_env := os.getenv("FIXCODE_MODEL_NAME"):
         return from_env
     raise ValueError("No default model set. Please run `mini-extra config setup` to set one.")
 
 
 _MODEL_CLASS_MAPPING = {
-    "anthropic": "minisweagent.models.anthropic.AnthropicModel",
-    "litellm": "minisweagent.models.litellm_model.LitellmModel",
-    "openrouter": "minisweagent.models.openrouter_model.OpenRouterModel",
-    "portkey": "minisweagent.models.portkey_model.PortkeyModel",
-    "deterministic": "minisweagent.models.test_models.DeterministicModel",
+    "anthropic": "fixcodeagent.models.anthropic.AnthropicModel",
+    "litellm": "fixcodeagent.models.litellm_model.LitellmModel",
+    "openrouter": "fixcodeagent.models.openrouter_model.OpenRouterModel",
+    "portkey": "fixcodeagent.models.portkey_model.PortkeyModel",
+    "deterministic": "fixcodeagent.models.test_models.DeterministicModel",
 }
 
 
@@ -91,7 +91,7 @@ def get_model_class(model_name: str, model_class: str = "") -> type:
     """Select the best model class.
 
     If a model_class is provided (as shortcut name, or as full import path,
-    e.g., "anthropic" or "minisweagent.models.anthropic.AnthropicModel"),
+    e.g., "anthropic" or "fixcodeagent.models.anthropic.AnthropicModel"),
     it takes precedence over the `model_name`.
     Otherwise, the model_name is used to select the best model class.
     """
@@ -106,6 +106,6 @@ def get_model_class(model_name: str, model_class: str = "") -> type:
             raise ValueError(msg)
 
     # Default to LitellmModel
-    from minisweagent.models.litellm_model import LitellmModel
+    from fixcodeagent.models.litellm_model import LitellmModel
 
     return LitellmModel

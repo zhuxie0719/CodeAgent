@@ -1,1 +1,1 @@
-"""Extra configuration files for mini-SWE-agent."""
+"""Extra configuration files for fix-code-agent."""

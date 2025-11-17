@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from minisweagent.models.test_models import DeterministicModel
-from minisweagent.run.hello_world import main
+from fixcodeagent.models.test_models import DeterministicModel
+from fixcodeagent.run.hello_world import main
 from tests.run.test_github_issue import assert_observations_match
 
 
@@ -12,8 +12,8 @@ def test_run_hello_world_end_to_end(local_test_data):
     expected_observations = local_test_data["expected_observations"]
 
     with (
-        patch("minisweagent.run.hello_world.LitellmModel") as mock_model_class,
-        patch("os.environ", {"MSWEA_MODEL_NAME": "tardis"}),
+        patch("fixcodeagent.run.hello_world.LitellmModel") as mock_model_class,
+        patch("os.environ", {"FIXCODE_MODEL_NAME": "tardis"}),
     ):
         mock_model_class.return_value = DeterministicModel(outputs=model_responses)
         agent = main(task="Blah blah blah")

@@ -1,14 +1,14 @@
 from unittest.mock import patch
 
-from minisweagent.agents.interactive import InteractiveAgent
-from minisweagent.environments.local import LocalEnvironment
-from minisweagent.models.test_models import DeterministicModel
+from fixcodeagent.agents.interactive import InteractiveAgent
+from fixcodeagent.environments.local import LocalEnvironment
+from fixcodeagent.models.test_models import DeterministicModel
 
 
 def test_successful_completion_with_confirmation():
     """Test agent completes successfully when user confirms all actions."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt", side_effect=["", ""]
+        "fixcodeagent.agents.interactive.prompt_session.prompt", side_effect=["", ""]
     ):  # Confirm action with Enter, then no new task
         agent = InteractiveAgent(
             model=DeterministicModel(
@@ -26,7 +26,7 @@ def test_successful_completion_with_confirmation():
 def test_action_rejection_and_recovery():
     """Test agent handles action rejection and can recover."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "User rejected this action",  # Reject first action
             "",  # Confirm second action
@@ -55,7 +55,7 @@ def test_action_rejection_and_recovery():
 def test_yolo_mode_activation():
     """Test entering yolo mode disables confirmations."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/y",  # Enter yolo mode
             "",  # This should be ignored since yolo mode is on
@@ -78,14 +78,14 @@ def test_yolo_mode_activation():
 def test_help_command():
     """Test help command shows help and continues normally."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/h",  # Show help
             "",  # Confirm action after help
             "",  # No new task when agent wants to finish
         ],
     ):
-        with patch("minisweagent.agents.interactive.console.print") as mock_print:
+        with patch("fixcodeagent.agents.interactive.console.print") as mock_print:
             agent = InteractiveAgent(
                 model=DeterministicModel(
                     outputs=["Test help\n```bash\necho 'COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT'\necho 'help shown'\n```"]
@@ -104,7 +104,7 @@ def test_help_command():
 def test_whitelisted_actions_skip_confirmation():
     """Test that whitelisted actions don't require confirmation."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[""],  # No new task when agent wants to finish
     ):
         agent = InteractiveAgent(
@@ -155,7 +155,7 @@ def _test_interruption_helper(interruption_input, expected_message_fragment, pro
             return interruption_input  # For the interruption handling
         return ""  # Confirm all subsequent actions
 
-    with patch("minisweagent.agents.interactive.prompt_session.prompt", side_effect=mock_input):
+    with patch("fixcodeagent.agents.interactive.prompt_session.prompt", side_effect=mock_input):
         with patch.object(agent, "query", side_effect=mock_query):
             exit_status, result = agent.run(problem_statement)
 
@@ -184,7 +184,7 @@ def test_interruption_handling_empty_message():
 def test_multiple_confirmations_and_commands():
     """Test complex interaction with multiple confirmations and commands."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "reject first",  # Reject first action
             "/h",  # Show help for second action
@@ -213,7 +213,7 @@ def test_multiple_confirmations_and_commands():
 def test_non_whitelisted_action_requires_confirmation():
     """Test that non-whitelisted actions still require confirmation."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=["", ""],  # Confirm action, then no new task
     ):
         agent = InteractiveAgent(
@@ -237,7 +237,7 @@ def test_non_whitelisted_action_requires_confirmation():
 def test_human_mode_basic_functionality():
     """Test human mode where user enters shell commands directly."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "echo 'user command'",  # User enters shell command
             "echo 'COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT'\necho 'human mode works'",  # User enters final command
@@ -260,7 +260,7 @@ def test_human_mode_basic_functionality():
 def test_human_mode_switch_to_yolo():
     """Test switching from human mode to yolo mode."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/y",  # Switch to yolo mode from human mode
             "",  # Confirm action in yolo mode (though no confirmation needed)
@@ -287,7 +287,7 @@ def test_human_mode_switch_to_yolo():
 def test_human_mode_switch_to_confirm():
     """Test switching from human mode to confirm mode."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/c",  # Switch to confirm mode from human mode
             "",  # Confirm action in confirm mode
@@ -314,7 +314,7 @@ def test_human_mode_switch_to_confirm():
 def test_confirmation_mode_switch_to_human_with_rejection():
     """Test switching from confirm mode to human mode with /u command."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/u",  # Switch to human mode and reject action
             "echo 'COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT'\necho 'human command after rejection'",  # Human command
@@ -344,7 +344,7 @@ def test_confirmation_mode_switch_to_human_with_rejection():
 def test_confirmation_mode_switch_to_yolo_and_continue():
     """Test switching from confirm mode to yolo mode with /y and continuing with action."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/y",  # Switch to yolo mode and confirm current action
             "",  # No new task when agent wants to finish
@@ -391,7 +391,7 @@ def test_mode_switch_during_keyboard_interrupt():
         return original_query(*args, **kwargs)
 
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/y",  # Switch to yolo mode during interrupt
             "",  # Confirm subsequent actions (though yolo mode won't ask)
@@ -411,7 +411,7 @@ def test_mode_switch_during_keyboard_interrupt():
 def test_already_in_mode_behavior():
     """Test behavior when trying to switch to the same mode."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/c",  # Try to switch to confirm mode when already in confirm mode
             "",  # Confirm action after the "already in mode" recursive prompt
@@ -437,7 +437,7 @@ def test_already_in_mode_behavior():
 def test_all_mode_transitions_yolo_to_others():
     """Test transitions from yolo mode to other modes."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/c",  # Switch from yolo to confirm
             "",  # Confirm action in confirm mode
@@ -478,7 +478,7 @@ def test_all_mode_transitions_yolo_to_others():
 def test_all_mode_transitions_confirm_to_human():
     """Test transition from confirm mode to human mode."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/u",  # Switch from confirm to human (rejecting action)
             "echo 'COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT'\necho 'human command'",  # User enters command in human mode
@@ -501,14 +501,14 @@ def test_help_command_from_different_contexts():
     """Test help command works from different contexts (confirmation, interrupt, human mode)."""
     # Test help during confirmation
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/h",  # Show help during confirmation
             "",  # Confirm after help
             "",  # No new task when agent wants to finish
         ],
     ):
-        with patch("minisweagent.agents.interactive.console.print") as mock_print:
+        with patch("fixcodeagent.agents.interactive.console.print") as mock_print:
             agent = InteractiveAgent(
                 model=DeterministicModel(
                     outputs=[
@@ -530,14 +530,14 @@ def test_help_command_from_different_contexts():
 def test_help_command_from_human_mode():
     """Test help command works from human mode."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/h",  # Show help in human mode
             "echo 'COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT'\necho 'help in human mode'",  # User command after help
             "",  # No new task when agent wants to finish
         ],
     ):
-        with patch("minisweagent.agents.interactive.console.print") as mock_print:
+        with patch("fixcodeagent.agents.interactive.console.print") as mock_print:
             agent = InteractiveAgent(
                 model=DeterministicModel(outputs=[]),  # LM shouldn't be called
                 env=LocalEnvironment(),
@@ -578,7 +578,7 @@ def test_complex_mode_switching_sequence():
         return original_query(*args, **kwargs)
 
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "/y",  # Confirm->Yolo during first action confirmation
             "/u",  # Yolo->Human during interrupt
@@ -617,8 +617,8 @@ def test_limits_exceeded_with_user_continuation():
 
     # Mock input() to provide new limits when prompted
     with patch("builtins.input", side_effect=["10", "5.0"]):  # New step_limit=10, cost_limit=5.0
-        with patch("minisweagent.agents.interactive.prompt_session.prompt", side_effect=[""]):  # No new task
-            with patch("minisweagent.agents.interactive.console.print"):  # Suppress console output
+        with patch("fixcodeagent.agents.interactive.prompt_session.prompt", side_effect=[""]):  # No new task
+            with patch("fixcodeagent.agents.interactive.console.print"):  # Suppress console output
                 exit_status, result = agent.run("Test limits exceeded with continuation")
 
     assert exit_status == "Submitted"
@@ -650,8 +650,8 @@ def test_limits_exceeded_multiple_times_with_continuation():
     # Mock input() to provide new limits multiple times
     # First limit increase: step_limit=2, then step_limit=10 when exceeded again
     with patch("builtins.input", side_effect=["2", "100.0", "10", "100.0"]):
-        with patch("minisweagent.agents.interactive.prompt_session.prompt", side_effect=[""]):  # No new task
-            with patch("minisweagent.agents.interactive.console.print"):
+        with patch("fixcodeagent.agents.interactive.prompt_session.prompt", side_effect=[""]):  # No new task
+            with patch("fixcodeagent.agents.interactive.console.print"):
                 exit_status, result = agent.run("Test multiple limit increases")
 
     assert exit_status == "Submitted"
@@ -663,7 +663,7 @@ def test_limits_exceeded_multiple_times_with_continuation():
 def test_continue_after_completion_with_new_task():
     """Test that user can provide a new task when agent wants to finish."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "",  # Confirm first action
             "Create a new file",  # Provide new task when agent wants to finish
@@ -695,7 +695,7 @@ def test_continue_after_completion_with_new_task():
 def test_continue_after_completion_without_new_task():
     """Test that agent finishes normally when user doesn't provide a new task."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "",  # Confirm first action
             "",  # Don't provide new task when agent wants to finish (empty input)
@@ -722,7 +722,7 @@ def test_continue_after_completion_without_new_task():
 def test_continue_after_completion_multiple_cycles():
     """Test multiple continuation cycles with new tasks."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "",  # Confirm first action
             "Second task",  # Provide first new task
@@ -757,7 +757,7 @@ def test_continue_after_completion_multiple_cycles():
 def test_continue_after_completion_in_yolo_mode():
     """Test continuation when starting in yolo mode (no confirmations needed)."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "Create a second task",  # Provide new task when agent wants to finish
             "",  # Don't provide another task after second completion (finish)
@@ -787,7 +787,7 @@ def test_continue_after_completion_in_yolo_mode():
 def test_confirm_exit_enabled_asks_for_confirmation():
     """Test that when confirm_exit=True, agent asks for confirmation before finishing."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=["", ""],  # Confirm action, then no new task (empty string to exit)
     ):
         agent = InteractiveAgent(
@@ -807,7 +807,7 @@ def test_confirm_exit_enabled_asks_for_confirmation():
 def test_confirm_exit_disabled_exits_immediately():
     """Test that when confirm_exit=False, agent exits immediately without asking."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[""],  # Only confirm action, no exit confirmation needed
     ):
         agent = InteractiveAgent(
@@ -827,7 +827,7 @@ def test_confirm_exit_disabled_exits_immediately():
 def test_confirm_exit_with_new_task_continues_execution():
     """Test that when user provides new task at exit confirmation, agent continues."""
     with patch(
-        "minisweagent.agents.interactive.prompt_session.prompt",
+        "fixcodeagent.agents.interactive.prompt_session.prompt",
         side_effect=[
             "",  # Confirm first action
             "Please do one more thing",  # Provide new task instead of exiting

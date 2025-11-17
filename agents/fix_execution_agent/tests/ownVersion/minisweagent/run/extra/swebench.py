@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""Run mini-SWE-agent on SWE-bench instances in batch mode."""
-# Read this first: https://mini-swe-agent.com/latest/usage/swebench/  (usage docs)
+"""Run fix-code-agent on SWE-bench instances in batch mode."""
+# Read this first: https://fix-code-agent.com/latest/usage/swebench/  (usage docs)
 
 import concurrent.futures
 import json
@@ -18,19 +18,19 @@ from datasets import load_dataset
 from jinja2 import StrictUndefined, Template
 from rich.live import Live
 
-from minisweagent import Environment
-from minisweagent.agents.default import DefaultAgent
-from minisweagent.config import builtin_config_dir, get_config_path
-from minisweagent.environments import get_environment
-from minisweagent.models import get_model
-from minisweagent.run.extra.utils.batch_progress import RunBatchProgressManager
-from minisweagent.run.utils.save import save_traj
-from minisweagent.utils.log import add_file_handler, logger
+from fixcodeagent import Environment
+from fixcodeagent.agents.default import DefaultAgent
+from fixcodeagent.config import builtin_config_dir, get_config_path
+from fixcodeagent.environments import get_environment
+from fixcodeagent.models import get_model
+from fixcodeagent.run.extra.utils.batch_progress import RunBatchProgressManager
+from fixcodeagent.run.utils.save import save_traj
+from fixcodeagent.utils.log import add_file_handler, logger
 
-_HELP_TEXT = """Run mini-SWE-agent on SWEBench instances.
+_HELP_TEXT = """Run fix-code-agent on SWEBench instances.
 
 [not dim]
-More information about the usage: [bold green]https://mini-swe-agent.com/latest/usage/swebench/[/bold green]
+More information about the usage: [bold green]https://fix-code-agent.com/latest/usage/swebench/[/bold green]
 [/not dim]
 """
 
@@ -199,7 +199,7 @@ def main(
     output: str = typer.Option("", "-o", "--output", help="Output directory", rich_help_panel="Basic"),
     workers: int = typer.Option(1, "-w", "--workers", help="Number of worker threads for parallel processing", rich_help_panel="Basic"),
     model: str | None = typer.Option(None, "-m", "--model", help="Model to use", rich_help_panel="Basic"),
-    model_class: str | None = typer.Option(None, "-c", "--model-class", help="Model class to use (e.g., 'anthropic' or 'minisweagent.models.anthropic.AnthropicModel')", rich_help_panel="Advanced"),
+    model_class: str | None = typer.Option(None, "-c", "--model-class", help="Model class to use (e.g., 'anthropic' or 'fixcodeagent.models.anthropic.AnthropicModel')", rich_help_panel="Advanced"),
     redo_existing: bool = typer.Option(False, "--redo-existing", help="Redo existing instances", rich_help_panel="Data selection"),
     config_spec: Path = typer.Option( builtin_config_dir / "extra" / "swebench.yaml", "-c", "--config", help="Path to a config file", rich_help_panel="Basic"),
     environment_class: str | None = typer.Option( None, "--environment-class", help="Environment type to use. Recommended are docker or singularity", rich_help_panel="Advanced"),
@@ -208,7 +208,7 @@ def main(
     output_path = Path(output)
     output_path.mkdir(parents=True, exist_ok=True)
     logger.info(f"Results will be saved to {output_path}")
-    add_file_handler(output_path / "minisweagent.log")
+    add_file_handler(output_path / "fixcodeagent.log")
 
     dataset_path = DATASET_MAPPING.get(subset, subset)
     logger.info(f"Loading dataset {dataset_path}, split {split}...")

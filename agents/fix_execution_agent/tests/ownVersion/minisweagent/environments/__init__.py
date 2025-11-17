@@ -1,16 +1,16 @@
-"""Environment implementations for mini-SWE-agent."""
+"""Environment implementations for fix-code-agent."""
 
 import copy
 import importlib
 
-from minisweagent import Environment
+from fixcodeagent import Environment
 
 _ENVIRONMENT_MAPPING = {
-    "docker": "minisweagent.environments.docker.DockerEnvironment",
-    "singularity": "minisweagent.environments.singularity.SingularityEnvironment",
-    "local": "minisweagent.environments.local.LocalEnvironment",
-    "swerex_docker": "minisweagent.environments.extra.swerex_docker.SwerexDockerEnvironment",
-    "bubblewrap": "minisweagent.environments.extra.bubblewrap.BubblewrapEnvironment",
+    "docker": "fixcodeagent.environments.docker.DockerEnvironment",
+    "singularity": "fixcodeagent.environments.singularity.SingularityEnvironment",
+    "local": "fixcodeagent.environments.local.LocalEnvironment",
+    "swerex_docker": "fixcodeagent.environments.extra.swerex_docker.SwerexDockerEnvironment",
+    "bubblewrap": "fixcodeagent.environments.extra.bubblewrap.BubblewrapEnvironment",
 }
 
 

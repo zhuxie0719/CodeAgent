@@ -4,7 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from minisweagent import Agent, __version__
+from fixcodeagent import Agent, __version__
 
 
 def _get_class_name_with_module(obj: Any) -> str:
@@ -53,7 +53,7 @@ def save_traj(
             "mini_version": __version__,
         },
         "messages": [],
-        "trajectory_format": "mini-swe-agent-1",
+        "trajectory_format": "fix-code-agent-1",
     } | kwargs
     if agent is not None:
         data["info"]["model_stats"]["instance_cost"] = agent.model.cost

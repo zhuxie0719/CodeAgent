@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from minisweagent.models import GLOBAL_MODEL_STATS
-from minisweagent.models.openrouter_model import (
+from fixcodeagent.models import GLOBAL_MODEL_STATS
+from fixcodeagent.models.openrouter_model import (
     OpenRouterAPIError,
     OpenRouterAuthenticationError,
     OpenRouterModel,
@@ -104,12 +104,12 @@ def test_openrouter_model_authentication_error():
             messages = [{"role": "user", "content": "test"}]
 
             # Patch the retry decorator to avoid waiting (auth errors don't retry anyway)
-            with patch("minisweagent.models.openrouter_model.retry", lambda **kwargs: lambda f: f):
+            with patch("fixcodeagent.models.openrouter_model.retry", lambda **kwargs: lambda f: f):
                 with pytest.raises(OpenRouterAuthenticationError) as exc_info:
                     model._query(messages)
 
                 assert "Authentication failed" in str(exc_info.value)
-                assert "mini-extra config set OPENROUTER_API_KEY" in str(exc_info.value)
+                assert "fix-code-extra config set OPENROUTER_API_KEY" in str(exc_info.value)
 
 
 def test_openrouter_model_no_cost_information(mock_response_no_cost):
@@ -179,6 +179,6 @@ def test_openrouter_model_no_api_key():
             messages = [{"role": "user", "content": "test"}]
 
             # Patch the retry decorator to avoid waiting
-            with patch("minisweagent.models.openrouter_model.retry", lambda **kwargs: lambda f: f):
+            with patch("fixcodeagent.models.openrouter_model.retry", lambda **kwargs: lambda f: f):
                 with pytest.raises(OpenRouterAuthenticationError):
                     model._query(messages)

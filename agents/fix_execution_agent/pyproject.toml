@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "mini-swe-agent"
+name = "fix-code-agent"
 dynamic = ["version"]
-description = "Nano SWE Agent - A simple AI software engineering agent"
+description = "Fix Code Agent - A simple AI software engineering agent"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE.md"}
@@ -42,12 +42,12 @@ dependencies = [
     "platformdirs",
     "textual",
     "prompt_toolkit",
-    "openai != 1.100.0,!=1.100.1",  # https://github.com/SWE-agent/mini-swe-agent/issues/446
+    "openai != 1.100.0,!=1.100.1",  # https://github.com/SWE-agent/fix-code-agent/issues/446
 ]
 
 [project.optional-dependencies]
 full = [
-    "mini-swe-agent[dev]",
+    "fix-code-agent[dev]",
     "swe-rex>=1.4.0",
 ]
 
@@ -68,28 +68,28 @@ dev = [
 ]
 
 [project.urls]
-Documentation = "https://mini-swe-agent.com/latest/"
-Repository = "https://github.com/SWE-agent/mini-SWE-agent"
-"Bug Tracker" = "https://github.com/SWE-agent/mini-SWE-agent/issues"
+Documentation = "https://fix-code-agent.com/latest/"
+Repository = "https://github.com/SWE-agent/fix-code-agent"
+"Bug Tracker" = "https://github.com/SWE-agent/fix-code-agent/issues"
 
 [project.scripts]
-mini = "minisweagent.run.mini:app"
-mini-swe-agent = "minisweagent.run.mini:app"
-mini-extra = "minisweagent.run.mini_extra:main"
-mini-e= "minisweagent.run.mini_extra:main"
+fix-code = "fixcodeagent.run.mini:app"
+fix-code-agent = "fixcodeagent.run.mini:app"
+fix-code-extra = "fixcodeagent.run.mini_extra:main"
+fix-e= "fixcodeagent.run.mini_extra:main"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.dynamic]
-version = {attr = "minisweagent.__version__"}
+version = {attr = "fixcodeagent.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["minisweagent*"]
+include = ["fixcodeagent*"]
 
 [tool.setuptools.package-data]
-minisweagent = ["config/**/*"]
+fixcodeagent = ["config/**/*"]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.

@@ -82,16 +82,74 @@ def install_python_package(project_root):
     # Fall back to installing editable package
     subprocess.run([sys.executable, "-m", "pip", "install", "-e", project_root], check=True)
 
-def generate_file_tree(project_root):
-    tree_output = subprocess.check_output(["tree", "-L", "2", project_root], text=True)
+def generate_file_tree(project_root, max_depth=2):
+    """Generate a file tree structure using Python (cross-platform compatible)."""
+    def _generate_tree(path, prefix="", depth=0, is_last=True):
+        if depth > max_depth:
+            return []
+        
+        lines = []
+        # Get the name to display
+        name = os.path.basename(path) if path != project_root else os.path.basename(project_root) or project_root
+        
+        # Add current item
+        if path != project_root:
+            connector = "└── " if is_last else "├── "
+            lines.append(prefix + connector + name)
+            new_prefix = prefix + ("    " if is_last else "│   ")
+        else:
+            lines.append(name)
+            new_prefix = prefix
+        
+        # Add children if directory and not at max depth
+        if depth < max_depth and os.path.isdir(path):
+            try:
+                entries = sorted(os.listdir(path))
+                # Filter out hidden files/directories (starting with .)
+                entries = [e for e in entries if not e.startswith('.')]
+                
+                for i, entry in enumerate(entries):
+                    entry_path = os.path.join(path, entry)
+                    is_last_entry = (i == len(entries) - 1)
+                    lines.extend(_generate_tree(entry_path, new_prefix, depth + 1, is_last_entry))
+            except PermissionError:
+                pass
+        
+        return lines
+    
+    tree_lines = _generate_tree(project_root)
+    tree_output = "\n".join(tree_lines)
+    
     tree_file_path = os.path.join(project_root, "file_tree.txt")
-    with open(tree_file_path, "w") as tree_file:
+    with open(tree_file_path, "w", encoding="utf-8") as tree_file:
         tree_file.write(tree_output)
     return tree_output
 
+def run_pytest_if_available(project_root):
+    """Run pytest if available, otherwise skip with a message."""
+    try:
+        # Check if pytest is available
+        result = subprocess.run(
+            [sys.executable, "-m", "pytest", "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        if result.returncode == 0:
+            subprocess.run([sys.executable, "-m", "pytest", "--cov", project_root], cwd=project_root)
+        else:
+            print("pytest not available, skipping tests.")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("pytest not available, skipping tests.")
+
 def main():
+    # Set UTF-8 encoding for Windows compatibility
+    if sys.platform == "win32":
+        os.environ["PYTHONIOENCODING"] = "utf-8"
+        os.environ["FIXCODE_SILENT_STARTUP"] = "1"  # Suppress emoji output that causes encoding issues
+    
     # Read important info from JSON
-    with open("agent_task_info.json", "r") as f:
+    with open("agent_task_info.json", "r", encoding="utf-8") as f:
         info = json.load(f)
     project_root = info["project_root"]
     agent_test_path = info["agent_test_path"]
@@ -110,21 +168,27 @@ def main():
 
     # Run all tests before fix and show coverage
     print("Running all tests BEFORE fix (baseline)...")
-    subprocess.run([sys.executable, "-m", "pytest", "--cov", project_root], cwd=project_root)
+    run_pytest_if_available(project_root)
 
     os.environ["AGENT_TEST_PATH"] = agent_test_path
     os.environ["BACKUP_AGENT_PATH"] = backup_agent_path
     import time
     start_time = time.time()
+    
+    # Prepare environment for subprocess with UTF-8 encoding
+    env = os.environ.copy()
+    if sys.platform == "win32":
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["FIXCODE_SILENT_STARTUP"] = "1"
+    
+    # Use --yolo and --exit-immediately to avoid interactive prompts
+    # Don't redirect stdout/stderr to avoid prompt_toolkit console issues on Windows
     process = subprocess.Popen(
-        [sys.executable, "-m", "src.minisweagent", "--task", f"{task}\n\n{tree_output}"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True
+        [sys.executable, "-m", "src.fixcodeagent", "--task", f"{task}\n\n{tree_output}", "--yolo", "--exit-immediately"],
+        env=env
     )
     try:
-        for line in process.stdout:
-            print(line, end='')  # Print each line as it arrives
+        process.wait()  # Wait for process to complete
     except KeyboardInterrupt:
         process.terminate()
         print("\nProcess terminated by user.")
@@ -133,7 +197,7 @@ def main():
 
     # Run all tests after fix and show coverage
     print("Running all tests AFTER fix...")
-    subprocess.run([sys.executable, "-m", "pytest", "--cov", project_root], cwd=project_root)
+    run_pytest_if_available(project_root)
 
 if __name__ == "__main__":
     main()

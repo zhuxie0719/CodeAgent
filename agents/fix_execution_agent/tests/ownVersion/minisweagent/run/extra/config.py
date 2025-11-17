@@ -14,7 +14,7 @@ from rich.console import Console
 from rich.rule import Rule
 from typer import Argument, Typer
 
-from minisweagent import global_config_file
+from fixcodeagent import global_config_file
 
 app = Typer(
     help=__doc__.format(global_config_file=global_config_file),  # type: ignore
@@ -41,13 +41,13 @@ Here's a few popular models and the required API keys:
 
 [bold yellow]You can leave any setting blank to skip it.[/bold yellow]
 
-More information at https://mini-swe-agent.com/latest/quickstart/
+More information at https://fix-code-agent.com/latest/quickstart/
 To find the best model, check the leaderboard at https://swebench.com/
 """
 
 
 def configure_if_first_time():
-    if not os.getenv("MSWEA_CONFIGURED"):
+    if not os.getenv("FIXCODE_CONFIGURED"):
         console.print(Rule())
         setup()
         console.print(Rule())
@@ -59,10 +59,10 @@ def setup():
     console.print(_SETUP_HELP.format(global_config_file=global_config_file))
     default_model = prompt(
         "Enter your default model (e.g., anthropic/claude-sonnet-4-5-20250929): ",
-        default=os.getenv("MSWEA_MODEL_NAME", ""),
+        default=os.getenv("FIXCODE_MODEL_NAME", ""),
     ).strip()
     if default_model:
-        set_key(global_config_file, "MSWEA_MODEL_NAME", default_model)
+        set_key(global_config_file, "FIXCODE_MODEL_NAME", default_model)
     console.print(
         "[bold yellow]If you already have your API keys set as environment variables, you can ignore the next question.[/bold yellow]"
     )
@@ -76,7 +76,7 @@ def setup():
         console.print(
             "[bold red]API key setup not completed.[/bold red] Totally fine if you have your keys as environment variables."
         )
-    set_key(global_config_file, "MSWEA_CONFIGURED", "true")
+    set_key(global_config_file, "FIXCODE_CONFIGURED", "true")
     console.print(
         "\n[bold yellow]Config finished.[/bold yellow] If you want to revisit it, run [bold green]mini-extra config setup[/bold green]."
     )

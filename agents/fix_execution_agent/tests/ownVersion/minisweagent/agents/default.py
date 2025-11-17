@@ -1,4 +1,4 @@
-"""Basic agent class. See https://mini-swe-agent.com/latest/advanced/control_flow/ for visual explanation."""
+"""Basic agent class. See https://fix-code-agent.com/latest/advanced/control_flow/ for visual explanation."""
 
 import re
 import subprocess
@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 
 from jinja2 import StrictUndefined, Template
 
-from minisweagent import Environment, Model
+from fixcodeagent import Environment, Model
 
 
 @dataclass
@@ -127,5 +127,5 @@ class DefaultAgent:
     def has_finished(self, output: dict[str, str]):
         """Raises Submitted exception with final output if the agent has finished its task."""
         lines = output.get("output", "").lstrip().splitlines(keepends=True)
-        if lines and lines[0].strip() in ["MINI_SWE_AGENT_FINAL_OUTPUT", "COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT"]:
+        if lines and lines[0].strip() in ["FIX_CODE_AGENT_FINAL_OUTPUT", "COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT"]:
             raise Submitted("".join(lines[1:]))

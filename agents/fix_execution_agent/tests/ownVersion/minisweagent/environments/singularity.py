@@ -21,7 +21,7 @@ class SingularityEnvironmentConfig:
     """Environment variables to forward to the container."""
     timeout: int = 30
     """Timeout for executing commands in the container."""
-    executable: str = os.getenv("MSWEA_SINGULARITY_EXECUTABLE", "singularity")
+    executable: str = os.getenv("FIXCODE_SINGULARITY_EXECUTABLE", "singularity")
     """Path to the singularity executable."""
     sandbox_build_retries: int = 3
     """Number of retries for building the sandbox if an error occurs."""
@@ -32,7 +32,7 @@ class SingularityEnvironment:
         self, *, config_class: type = SingularityEnvironmentConfig, logger: logging.Logger | None = None, **kwargs
     ):
         """Singularity environment. See `SingularityEnvironmentConfig` for kwargs."""
-        self.logger = logger or logging.getLogger("minisweagent.environment")
+        self.logger = logger or logging.getLogger("fixcodeagent.environment")
         self.config = config_class(**kwargs)
         self.sandbox_dir = self._build_sandbox()
 
@@ -40,7 +40,7 @@ class SingularityEnvironment:
         # Building the sandbox can fail (very rarely), so we retry it
         max_retries = self.config.sandbox_build_retries
         for attempt in range(max_retries):
-            sandbox_dir = Path(tempfile.gettempdir()) / f"minisweagent-{uuid.uuid4().hex[:8]}"
+            sandbox_dir = Path(tempfile.gettempdir()) / f"fixcodeagent-{uuid.uuid4().hex[:8]}"
             try:
                 subprocess.run(
                     [self.config.executable, "build", "--sandbox", sandbox_dir, self.config.image],

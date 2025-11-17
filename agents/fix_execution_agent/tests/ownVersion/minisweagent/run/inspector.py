@@ -3,7 +3,7 @@
 Simple trajectory inspector for browsing agent conversation trajectories.
 
 [not dim]
-More information about the usage: [bold green]https://mini-swe-agent.com/latest/usage/inspector/[/bold green]
+More information about the usage: [bold green]https://fix-code-agent.com/latest/usage/inspector/[/bold green]
 [/not dim]
 """
 
@@ -18,7 +18,7 @@ from textual.binding import Binding
 from textual.containers import Container, Vertical, VerticalScroll
 from textual.widgets import Footer, Header, Static
 
-from minisweagent.agents.interactive_textual import _messages_to_steps
+from fixcodeagent.agents.interactive_textual import _messages_to_steps
 
 app = typer.Typer(rich_markup_mode="rich", add_completion=False)
 
@@ -38,7 +38,7 @@ class TrajectoryInspector(App):
 
     def __init__(self, trajectory_files: list[Path]):
         css_path = os.environ.get(
-            "MSWEA_INSPECTOR_STYLE_PATH", str(Path(__file__).parent.parent / "config" / "mini.tcss")
+            "FIXCODE_INSPECTOR_STYLE_PATH", str(Path(__file__).parent.parent / "config" / "mini.tcss")
         )
         self.__class__.CSS = Path(css_path).read_text()
 
@@ -150,7 +150,7 @@ class TrajectoryInspector(App):
                 content_str = str(message["content"])
             message_container = Vertical(classes="message-container")
             container.mount(message_container)
-            role = message["role"].replace("assistant", "mini-swe-agent")
+            role = message["role"].replace("assistant", "fix-code-agent")
             message_container.mount(Static(role.upper(), classes="message-header"))
             message_container.mount(Static(Text(content_str, no_wrap=False), classes="message-content"))
 
