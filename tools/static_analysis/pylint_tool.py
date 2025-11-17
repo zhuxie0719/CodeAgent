@@ -6,6 +6,7 @@ Pylint工具封装
 import subprocess
 import json
 import os
+import sys
 from typing import Dict, List, Any, Optional
 
 
@@ -27,7 +28,8 @@ class PylintTool:
                     'issues': []
                 }
             
-            cmd = ['python', '-m', 'pylint', file_path, '--output-format=json'] + self.pylint_args
+            # 使用当前 Python 解释器（虚拟环境中的 Python）
+            cmd = [sys.executable, '-m', 'pylint', file_path, '--output-format=json'] + self.pylint_args
             
             # 设置环境变量避免pager问题
             env = os.environ.copy()
@@ -127,8 +129,8 @@ class PylintTool:
                     'issues': []
                 }
             
-            # 构建命令
-            cmd = ['python', '-m', 'pylint', '--output-format=json'] + self.pylint_args
+            # 构建命令 - 使用当前 Python 解释器（虚拟环境中的 Python）
+            cmd = [sys.executable, '-m', 'pylint', '--output-format=json'] + self.pylint_args
             
             # 设置环境变量
             env = os.environ.copy()
@@ -187,9 +189,24 @@ class PylintTool:
                                 'symbol': issue.get('symbol', ''),
                                 'module': issue.get('module', '')
                             })
-                except json.JSONDecodeError:
-                    # JSON解析失败，返回空结果
-                    pass
+                except json.JSONDecodeError as e:
+                    # JSON解析失败，记录错误信息
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.warning(f"Pylint JSON解析失败: {e}, stdout前500字符: {result.stdout[:500]}")
+                    # 如果JSON解析失败，尝试解析文本输出
+                    if result.stdout.strip():
+                        lines = result.stdout.strip().split('\n')
+                        for line in lines[:10]:  # 只解析前10行
+                            logger.debug(f"Pylint输出行: {line}")
+            else:
+                # 没有stdout输出，记录stderr
+                import logging
+                logger = logging.getLogger(__name__)
+                if result.stderr:
+                    logger.warning(f"Pylint无stdout输出，stderr: {result.stderr[:500]}")
+                else:
+                    logger.info(f"Pylint无输出，return_code={result.returncode}")
             
             # 即使有很多问题，也不认为是失败（除非是致命错误）
             success = result.returncode != 1
