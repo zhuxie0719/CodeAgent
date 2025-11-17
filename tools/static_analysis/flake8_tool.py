@@ -4,6 +4,7 @@ Flake8工具封装
 
 import subprocess
 import os
+import sys
 from typing import Dict, List, Any, Optional
 
 
@@ -25,7 +26,8 @@ class Flake8Tool:
                     'issues': []
                 }
             
-            cmd = ['python', '-m', 'flake8', file_path] + self.flake8_args
+            # 使用当前 Python 解释器（虚拟环境中的 Python）
+            cmd = [sys.executable, '-m', 'flake8', file_path] + self.flake8_args
             
             # 设置环境变量避免pager问题
             env = os.environ.copy()
