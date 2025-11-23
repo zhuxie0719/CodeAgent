@@ -1,0 +1,275 @@
+# 仓库结构
+生成时间: 2025-11-19 13:45:43
+项目路径: temp_extract\project_20251119_134538_571467_1f92395f
+最大深度: 10
+
+project_20251119_134538_571467_1f92395f/
+└── 📁 flask-2.0.0/
+    ├── 📁 artwork/
+    │   ├── 📄 LICENSE.rst
+    │   ├── 📄 logo-full.svg
+    │   └── 📄 logo-lineart.svg
+    ├── 📁 docs/
+    │   ├── 📁 _static/
+    │   │   ├── 📄 debugger.png
+    │   │   ├── 📄 flask-icon.png
+    │   │   ├── 📄 flask-logo.png
+    │   │   ├── 📄 no.png
+    │   │   ├── 📄 pycharm-runconfig.png
+    │   │   └── 📄 yes.png
+    │   ├── 📁 deploying/
+    │   │   ├── 📄 asgi.rst
+    │   │   ├── 📄 cgi.rst
+    │   │   ├── 📄 fastcgi.rst
+    │   │   ├── 📄 index.rst
+    │   │   ├── 📄 mod_wsgi.rst
+    │   │   ├── 📄 uwsgi.rst
+    │   │   └── 📄 wsgi-standalone.rst
+    │   ├── 📁 patterns/
+    │   │   ├── 📄 appdispatch.rst
+    │   │   ├── 📄 appfactories.rst
+    │   │   ├── 📄 caching.rst
+    │   │   ├── 📄 celery.rst
+    │   │   ├── 📄 deferredcallbacks.rst
+    │   │   ├── 📄 distribute.rst
+    │   │   ├── 📄 fabric.rst
+    │   │   ├── 📄 favicon.rst
+    │   │   ├── 📄 fileuploads.rst
+    │   │   ├── 📄 flashing.rst
+    │   │   ├── 📄 index.rst
+    │   │   ├── 📄 jquery.rst
+    │   │   ├── 📄 lazyloading.rst
+    │   │   ├── 📄 methodoverrides.rst
+    │   │   ├── 📄 mongoengine.rst
+    │   │   ├── 📄 packages.rst
+    │   │   ├── 📄 requestchecksum.rst
+    │   │   ├── 📄 singlepageapplications.rst
+    │   │   ├── 📄 sqlalchemy.rst
+    │   │   ├── 📄 sqlite3.rst
+    │   │   ├── 📄 streaming.rst
+    │   │   ├── 📄 subclassing.rst
+    │   │   ├── 📄 templateinheritance.rst
+    │   │   ├── 📄 urlprocessors.rst
+    │   │   ├── 📄 viewdecorators.rst
+    │   │   └── 📄 wtforms.rst
+    │   ├── 📁 tutorial/
+    │   │   ├── 📄 blog.rst
+    │   │   ├── 📄 database.rst
+    │   │   ├── 📄 deploy.rst
+    │   │   ├── 📄 factory.rst
+    │   │   ├── 📄 flaskr_edit.png
+    │   │   ├── 📄 flaskr_index.png
+    │   │   ├── 📄 flaskr_login.png
+    │   │   ├── 📄 index.rst
+    │   │   ├── 📄 install.rst
+    │   │   ├── 📄 layout.rst
+    │   │   ├── 📄 next.rst
+    │   │   ├── 📄 static.rst
+    │   │   ├── 📄 templates.rst
+    │   │   ├── 📄 tests.rst
+    │   │   └── 📄 views.rst
+    │   ├── 📄 advanced_foreword.rst
+    │   ├── 📄 api.rst
+    │   ├── 📄 appcontext.rst
+    │   ├── 📄 async-await.rst
+    │   ├── 📄 becomingbig.rst
+    │   ├── 📄 blueprints.rst
+    │   ├── 📄 changes.rst
+    │   ├── 📄 cli.rst
+    │   ├── 📄 conf.py
+    │   ├── 📄 config.rst
+    │   ├── 📄 contributing.rst
+    │   ├── 📄 debugging.rst
+    │   ├── 📄 design.rst
+    │   ├── 📄 errorhandling.rst
+    │   ├── 📄 extensiondev.rst
+    │   ├── 📄 extensions.rst
+    │   ├── 📄 foreword.rst
+    │   ├── 📄 htmlfaq.rst
+    │   ├── 📄 index.rst
+    │   ├── 📄 installation.rst
+    │   ├── 📄 license.rst
+    │   ├── 📄 logging.rst
+    │   ├── 📄 make.bat
+    │   ├── 📄 Makefile
+    │   ├── 📄 quickstart.rst
+    │   ├── 📄 reqcontext.rst
+    │   ├── 📄 security.rst
+    │   ├── 📄 server.rst
+    │   ├── 📄 shell.rst
+    │   ├── 📄 signals.rst
+    │   ├── 📄 templating.rst
+    │   ├── 📄 testing.rst
+    │   └── 📄 views.rst
+    ├── 📁 examples/
+    │   ├── 📁 javascript/
+    │   │   ├── 📁 js_example/
+    │   │   │   ├── 📁 templates/
+    │   │   │   │   ├── 📄 base.html
+    │   │   │   │   ├── 📄 fetch.html
+    │   │   │   │   ├── 📄 jquery.html
+    │   │   │   │   └── 📄 plain.html
+    │   │   │   ├── 📄 __init__.py
+    │   │   │   └── 📄 views.py
+    │   │   ├── 📁 tests/
+    │   │   │   ├── 📄 conftest.py
+    │   │   │   └── 📄 test_js_example.py
+    │   │   ├── 📄 LICENSE.rst
+    │   │   ├── 📄 MANIFEST.in
+    │   │   ├── 📄 README.rst
+    │   │   ├── 📄 setup.cfg
+    │   │   └── 📄 setup.py
+    │   └── 📁 tutorial/
+    │       ├── 📁 flaskr/
+    │       │   ├── 📁 static/
+    │       │   │   └── 📄 style.css
+    │       │   ├── 📁 templates/
+    │       │   │   ├── 📁 auth/
+    │       │   │   │   ├── 📄 login.html
+    │       │   │   │   └── 📄 register.html
+    │       │   │   ├── 📁 blog/
+    │       │   │   │   ├── 📄 create.html
+    │       │   │   │   ├── 📄 index.html
+    │       │   │   │   └── 📄 update.html
+    │       │   │   └── 📄 base.html
+    │       │   ├── 📄 __init__.py
+    │       │   ├── 📄 auth.py
+    │       │   ├── 📄 blog.py
+    │       │   ├── 📄 db.py
+    │       │   └── 📄 schema.sql
+    │       ├── 📁 tests/
+    │       │   ├── 📄 conftest.py
+    │       │   ├── 📄 data.sql
+    │       │   ├── 📄 test_auth.py
+    │       │   ├── 📄 test_blog.py
+    │       │   ├── 📄 test_db.py
+    │       │   └── 📄 test_factory.py
+    │       ├── 📄 LICENSE.rst
+    │       ├── 📄 MANIFEST.in
+    │       ├── 📄 README.rst
+    │       ├── 📄 setup.cfg
+    │       └── 📄 setup.py
+    ├── 📁 requirements/
+    │   ├── 📄 dev.in
+    │   ├── 📄 dev.txt
+    │   ├── 📄 docs.in
+    │   ├── 📄 docs.txt
+    │   ├── 📄 tests.in
+    │   ├── 📄 tests.txt
+    │   ├── 📄 typing.in
+    │   └── 📄 typing.txt
+    ├── 📁 src/
+    │   └── 📁 flask/
+    │       ├── 📁 json/
+    │       │   ├── 📄 __init__.py
+    │       │   └── 📄 tag.py
+    │       ├── 📄 __init__.py
+    │       ├── 📄 __main__.py
+    │       ├── 📄 app.py
+    │       ├── 📄 blueprints.py
+    │       ├── 📄 cli.py
+    │       ├── 📄 config.py
+    │       ├── 📄 ctx.py
+    │       ├── 📄 debughelpers.py
+    │       ├── 📄 globals.py
+    │       ├── 📄 helpers.py
+    │       ├── 📄 logging.py
+    │       ├── 📄 py.typed
+    │       ├── 📄 scaffold.py
+    │       ├── 📄 sessions.py
+    │       ├── 📄 signals.py
+    │       ├── 📄 templating.py
+    │       ├── 📄 testing.py
+    │       ├── 📄 typing.py
+    │       ├── 📄 views.py
+    │       └── 📄 wrappers.py
+    ├── 📁 tests/
+    │   ├── 📁 static/
+    │   │   ├── 📄 config.json
+    │   │   └── 📄 index.html
+    │   ├── 📁 templates/
+    │   │   ├── 📁 nested/
+    │   │   │   └── 📄 nested.txt
+    │   │   ├── 📄 _macro.html
+    │   │   ├── 📄 context_template.html
+    │   │   ├── 📄 escaping_template.html
+    │   │   ├── 📄 mail.txt
+    │   │   ├── 📄 non_escaping_template.txt
+    │   │   ├── 📄 simple_template.html
+    │   │   ├── 📄 template_filter.html
+    │   │   └── 📄 template_test.html
+    │   ├── 📁 test_apps/
+    │   │   ├── 📁 blueprintapp/
+    │   │   │   ├── 📁 apps/
+    │   │   │   │   ├── 📁 admin/
+    │   │   │   │   │   ├── 📁 static/
+    │   │   │   │   │   │   ├── 📁 css/
+    │   │   │   │   │   │   │   └── 📄 test.css
+    │   │   │   │   │   │   └── 📄 test.txt
+    │   │   │   │   │   ├── 📁 templates/
+    │   │   │   │   │   │   └── 📁 admin/
+    │   │   │   │   │   │       └── 📄 index.html
+    │   │   │   │   │   └── 📄 __init__.py
+    │   │   │   │   ├── 📁 frontend/
+    │   │   │   │   │   ├── 📁 templates/
+    │   │   │   │   │   │   └── 📁 frontend/
+    │   │   │   │   │   │       └── 📄 index.html
+    │   │   │   │   │   └── 📄 __init__.py
+    │   │   │   │   └── 📄 __init__.py
+    │   │   │   └── 📄 __init__.py
+    │   │   ├── 📁 cliapp/
+    │   │   │   ├── 📁 inner1/
+    │   │   │   │   ├── 📁 inner2/
+    │   │   │   │   │   ├── 📄 __init__.py
+    │   │   │   │   │   └── 📄 flask.py
+    │   │   │   │   └── 📄 __init__.py
+    │   │   │   ├── 📄 __init__.py
+    │   │   │   ├── 📄 app.py
+    │   │   │   ├── 📄 factory.py
+    │   │   │   ├── 📄 importerrorapp.py
+    │   │   │   ├── 📄 message.txt
+    │   │   │   └── 📄 multiapp.py
+    │   │   ├── 📁 helloworld/
+    │   │   │   ├── 📄 hello.py
+    │   │   │   └── 📄 wsgi.py
+    │   │   └── 📁 subdomaintestmodule/
+    │   │       ├── 📁 static/
+    │   │       │   └── 📄 hello.txt
+    │   │       └── 📄 __init__.py
+    │   ├── 📄 conftest.py
+    │   ├── 📄 test_appctx.py
+    │   ├── 📄 test_async.py
+    │   ├── 📄 test_basic.py
+    │   ├── 📄 test_blueprints.py
+    │   ├── 📄 test_cli.py
+    │   ├── 📄 test_config.py
+    │   ├── 📄 test_converters.py
+    │   ├── 📄 test_helpers.py
+    │   ├── 📄 test_instance_config.py
+    │   ├── 📄 test_json.py
+    │   ├── 📄 test_json_tag.py
+    │   ├── 📄 test_logging.py
+    │   ├── 📄 test_regression.py
+    │   ├── 📄 test_reqctx.py
+    │   ├── 📄 test_session_interface.py
+    │   ├── 📄 test_signals.py
+    │   ├── 📄 test_subclassing.py
+    │   ├── 📄 test_templating.py
+    │   ├── 📄 test_testing.py
+    │   ├── 📄 test_user_error_handler.py
+    │   └── 📄 test_views.py
+    ├── 📄 CHANGES.rst
+    ├── 📄 CODE_OF_CONDUCT.md
+    ├── 📄 CONTRIBUTING.rst
+    ├── 📄 LICENSE.rst
+    ├── 📄 MANIFEST.in
+    ├── 📄 README.rst
+    ├── 📄 setup.cfg
+    ├── 📄 setup.py
+    └── 📄 tox.ini
+
+---
+统计信息:
+- 总目录数: 44
+- 总文件数: 219
+- 过滤的目录: .coverage, .tox, .venv, backup, backups, dist, logs, target, tmp, venv...

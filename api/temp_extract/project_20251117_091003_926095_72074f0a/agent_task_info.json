@@ -1,0 +1,2797 @@
+[
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 100 行，pylint 检测到问题：Too many public methods (57/20)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 100,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 654 行，pylint 检测到问题：Using open without explicitly specifying an encoding",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 654,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1120 行，发现严重错误：Method 'jinja_env' has no 'filters' member",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1120,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1161 行，发现严重错误：Method 'jinja_env' has no 'tests' member",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1161,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1197 行，发现严重错误：Method 'jinja_env' has no 'globals' member",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1197,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1374 行，发现严重错误：The raise statement is not inside an except clause",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1374,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1413 行，发现严重错误：The raise statement is not inside an except clause",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1413,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1440 行，发现严重错误：Method 'logger' has no 'error' member",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1440,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1444 行，pylint 检测到问题：Redefining name 'request' from outer scope (line 37)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1444,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1459 行，pylint 检测到问题：Import outside toplevel (debughelpers.FormDataRoutingRedirect)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1459,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1497 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1497,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1499 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1499,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1500 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1500,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1500 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1500,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1501 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1501,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1506 行，pylint 检测到问题：Argument name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1506,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1525 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1525,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1528 行，发现严重错误：Method 'logger' has no 'exception' member",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1528,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1558 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1558,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1562 行，存在未使用的变量或参数：Unused argument 'error'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1562,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1601 行，pylint 检测到问题：Import outside toplevel (asgiref.sync.async_to_sync)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1601,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1603 行，存在导入错误：Consider explicitly re-raising using 'except ImportError as exc' and 'raise RuntimeError(\"Install Flask with the 'async' extra in order to use async views.\") from exc'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1603,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1616 行，pylint 检测到问题：Argument name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1616,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1616 行，pylint 检测到问题：Too many branches (17/12)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1616,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1705 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1705,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1735 行，pylint 检测到问题：Redefining name 'request' from outer scope (line 37)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1735,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1785 行，pylint 检测到问题：Variable name \"bp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1785,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1798 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1798,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1799 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1799,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1809 行，发现严重错误：The raise statement is not inside an except clause",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1809,
+      "severity": "error",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1827 行，pylint 检测到问题：Variable name \"bp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1827,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1834 行，pylint 检测到问题：Variable name \"bp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1834,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1838 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1838,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1858 行，pylint 检测到问题：Access to a protected member _after_request_functions of a client class",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1858,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1859 行，pylint 检测到问题：Variable name \"bp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1859,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 1898 行，pylint 检测到问题：Variable name \"bp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 1898,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 2012 行，pylint 检测到问题：Import outside toplevel (testing.EnvironBuilder)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 2012,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 2052 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 2052,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 2052 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 2052,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\app.py 的第 2072 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/app.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 2072,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 304 行，pylint 检测到问题：Too few public methods (1/2)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 304,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 331 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 331,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 345 行，存在未使用的变量或参数：Unused variable '__traceback_hide__'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 345,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 346 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 346,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 351 行，存在未使用的变量或参数：Unused variable '__traceback_hide__'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 351,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 357 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 357,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 359 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 359,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 363 行，pylint 检测到问题：Too few public methods (1/2)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 363,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 389 行，存在未使用的变量或参数：Unused variable '__traceback_hide__'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 389,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 430 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 430,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 460 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 460,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 499 行，pylint 检测到问题：Too many arguments (6/5)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 499,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 504 行，pylint 检测到问题：Redefining name 'load_dotenv' from outer scope (line 606)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 504,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 529 行，pylint 检测到问题：Import outside toplevel (pkg_resources)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 529,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 534 行，pylint 检测到问题：Variable name \"ep\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 534,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 538 行，pylint 检测到问题：Parameter 'cmd_name' has been renamed to 'name' in overriding 'FlaskGroup.get_command' method",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 538,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 538 行，pylint 检测到问题：Either all return statements in a function should return an expression, or none of them should.",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 538,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 542 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 542,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 553 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 553,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 559 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 559,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 566 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 566,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 570 行，pylint 检测到问题：Catching too general exception Exception",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 570,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 718 行，pylint 检测到问题：Import outside toplevel (cryptography)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 718,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 718 行，存在未使用的变量或参数：Unused import cryptography",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 718,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 720 行，存在导入错误：Consider explicitly re-raising using 'except ImportError as exc' and 'raise click.BadParameter('Using ad-hoc certificates requires the cryptography library.', ctx, param) from exc'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 720,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 825 行，pylint 检测到问题：Too many arguments (9/5)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 825,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 847 行，pylint 检测到问题：Import outside toplevel (werkzeug.serving.run_simple)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 847,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 871 行，pylint 检测到问题：Import outside toplevel (code)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 871,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 872 行，pylint 检测到问题：Import outside toplevel (globals._app_ctx_stack)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 872,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 886 行，pylint 检测到问题：Using open without explicitly specifying an encoding",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 886,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 886 行，pylint 检测到问题：Variable name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 886,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 887 行，pylint 检测到问题：Use of eval",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 887,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 898 行，pylint 检测到问题：Import outside toplevel (readline)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 898,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 899 行，pylint 检测到问题：Import outside toplevel (rlcompleter.Completer)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 899,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 952 行，pylint 检测到问题：Formatting a regular string which could be a f-string",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 952,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\cli.py 的第 981 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/cli.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 981,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 19 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 19,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 21 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 21,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 88 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 88,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 115 行，pylint 检测到问题：Variable name \"d\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 115,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 119 行，pylint 检测到问题：Use of exec",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 119,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 120 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 120,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 194 行，pylint 检测到问题：Using open without explicitly specifying an encoding",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 194,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 194 行，pylint 检测到问题：Variable name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 194,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 196 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 196,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 252 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 252,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\config.py 的第 253 行，pylint 检测到问题：Variable name \"v\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 253,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 64 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 64,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 94 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 94,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 115 行，pylint 检测到问题：Access to a protected member _after_request_functions of a client class",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 115,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 119 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 119,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 213 行，pylint 检测到问题：Attribute name \"g\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 213,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 234 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 234,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 243 行，pylint 检测到问题：Argument name \"tb\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 243,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 248 行，pylint 检测到问题：Too many instance attributes (9/7)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 248,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 292 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 292,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 317 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 317,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 317 行，pylint 检测到问题：Attribute name \"g\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 317,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 321 行，pylint 检测到问题：Attribute name \"g\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 321,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 351 行，pylint 检测到问题：Variable name \"e\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 351,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 366 行，pylint 检测到问题：Access to a protected member _preserved_exc of a client class",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 366,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 418 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 418,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 433 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 433,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\ctx.py 的第 447 行，pylint 检测到问题：Argument name \"tb\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/ctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 447,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\debughelpers.py 的第 82 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/debughelpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 82,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\debughelpers.py 的第 82 行，pylint 检测到问题：Class name \"newcls\" doesn't conform to PascalCase naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/debughelpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 82,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\debughelpers.py 的第 82 行，pylint 检测到问题：Too few public methods (1/2)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/debughelpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 82,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\debughelpers.py 的第 89 行，pylint 检测到问题：Consider explicitly re-raising using 'except KeyError as exc' and 'raise DebugFilesKeyError(request, key) from exc'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/debughelpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 89,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\debughelpers.py 的第 101 行，pylint 检测到问题：Unnecessary \"elif\" after \"continue\", remove the leading \"el\" from \"elif\"",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/debughelpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 101,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\debughelpers.py 的第 161 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/debughelpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 161,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\globals.py 的第 13 行，pylint 检测到问题：Constant name \"_request_ctx_err_msg\" doesn't conform to UPPER_CASE naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/globals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 13,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\globals.py 的第 20 行，pylint 检测到问题：Constant name \"_app_ctx_err_msg\" doesn't conform to UPPER_CASE naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/globals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 20,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\globals.py 的第 56 行，pylint 检测到问题：Line too long (105/100)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/globals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 56,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 190 行，pylint 检测到问题：Too many branches (14/12)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 190,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 321 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 321,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 337 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 337,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 389 行，pylint 检测到问题：Access to a protected member _get_current_object of a client class",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 389,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 438 行，pylint 检测到问题：Too many arguments (6/5)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 438,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 490 行，pylint 检测到问题：Too many arguments (11/5)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 490,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 729 行，pylint 检测到问题：Class name \"locked_cached_property\" doesn't conform to PascalCase naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 729,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 747 行，pylint 检测到问题：Redefining built-in 'type'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 747,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\helpers.py 的第 763 行，pylint 检测到问题：Argument name \"td\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 763,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 79 行，pylint 检测到问题：Variable name \"bp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 79,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 100 行，pylint 检测到问题：Variable name \"bp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 100,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 129 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 129,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 145 行，pylint 检测到问题：Argument name \"fp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 145,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 183 行，pylint 检测到问题：Argument name \"s\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 183,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 219 行，pylint 检测到问题：Argument name \"fp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 219,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 276 行，pylint 检测到问题：Argument name \"fp\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 276,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\__init__.py 的第 340 行，pylint 检测到问题：Unnecessary \"elif\" after \"raise\", remove the leading \"el\" from \"elif\"",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/__init__.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 340,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 116 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 116,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 116 行，pylint 检测到问题：Method 'to_python' is abstract in class 'JSONTag' but is not overridden in child class 'PassDict'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 116,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 130 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 130,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 144 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 144,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 144 行，pylint 检测到问题：Method 'to_python' is abstract in class 'JSONTag' but is not overridden in child class 'PassList'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 144,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 156 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 156,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 188 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 188,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\json\\tag.py 的第 202 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/json/tag.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 202,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 37 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 37,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 43 行，pylint 检测到问题：Access to a protected member _is_setup_finished of a client class",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 43,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 59 行，pylint 检测到问题：Too many instance attributes (16/7)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 59,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 59 行，pylint 检测到问题：Too many public methods (23/20)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 59,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 89 行，pylint 检测到问题：Too many arguments (6/5)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 89,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 248 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 248,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 291 行，存在未使用的变量或参数：Unused argument 'filename'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 291,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 338 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 338,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 364 行，pylint 检测到问题：Using open without explicitly specifying an encoding",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 364,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 431 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 431,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 523 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 523,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 530 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 530,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 552 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 552,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 568 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 568,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 608 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 608,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 616 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 616,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 634 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 634,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 675 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 675,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 685 行，pylint 检测到问题：Argument name \"f\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 685,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 703 行，pylint 检测到问题：Consider explicitly re-raising using 'except KeyError as exc' and 'raise KeyError(f\"'{code_or_exception}' is not a recognized HTTP error code. Use a subclass of HTTPException with that code instead.\") from exc'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 703,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 732 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 732,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\scaffold.py 的第 787 行，pylint 检测到问题：Unnecessary \"elif\" after \"return\", remove the leading \"el\" from \"elif\"",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/scaffold.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 787,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 19 行，pylint 检测到问题：Method '__delitem__' is abstract in class 'MutableMapping' but is not overridden in child class 'SessionMixin'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 19,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 19 行，pylint 检测到问题：Method '__getitem__' is abstract in class 'Mapping' but is not overridden in child class 'SessionMixin'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 19,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 19 行，pylint 检测到问题：Method '__iter__' is abstract in class 'Iterable' but is not overridden in child class 'SessionMixin'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 19,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 19 行，pylint 检测到问题：Method '__len__' is abstract in class 'Sized' but is not overridden in child class 'SessionMixin'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 19,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 19 行，pylint 检测到问题：Method '__setitem__' is abstract in class 'MutableMapping' but is not overridden in child class 'SessionMixin'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 19,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 102 行，pylint 检测到问题：Line too long (112/100)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 102,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 149 行，存在未使用的变量或参数：Unused argument 'app'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 149,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 187 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 187,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 194 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 194,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 203 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 203,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 217 行，pylint 检测到问题：Variable name \"ip\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 217,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 230 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 230,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 334 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 334,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 339 行，pylint 检测到问题：Consider using '{\"key_derivation\": self.key_derivation, \"digest_method\": self.digest_method, ... }' instead of a call to 'dict'.",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 339,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\sessions.py 的第 352 行，pylint 检测到问题：Variable name \"s\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/sessions.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 352,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\signals.py 的第 6 行，pylint 检测到问题：Constant name \"signals_available\" doesn't conform to UPPER_CASE naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 6,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\signals.py 的第 8 行，pylint 检测到问题：Constant name \"signals_available\" doesn't conform to UPPER_CASE naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 8,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\signals.py 的第 10 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 10,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\signals.py 的第 10 行，pylint 检测到问题：Too few public methods (1/2)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 10,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\signals.py 的第 11 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 11,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\signals.py 的第 14 行，pylint 检测到问题：Too few public methods (1/2)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 14,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\signals.py 的第 25 行，缺少函数或方法的文档字符串",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 25,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\templating.py 的第 24 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 24,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\templating.py 的第 65 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 65,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\templating.py 的第 72 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 72,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\templating.py 的第 76 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 76,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\templating.py 的第 79 行，pylint 检测到问题：Import outside toplevel (debughelpers.explain_template_loading_attempts)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 79,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\templating.py 的第 98 行，存在未使用的变量或参数：Unused argument 'template'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 98,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\templating.py 的第 128 行，pylint 检测到问题：Variable name \"rv\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 128,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\testing.py 的第 44 行，pylint 检测到问题：Too many arguments (6/5)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/testing.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 44,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\testing.py 的第 44 行，pylint 检测到问题：Keyword argument before variable positional arguments list in the definition of __init__ function",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/testing.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 44,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\testing.py 的第 147 行，pylint 检测到问题：Variable name \"c\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/testing.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 147,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\testing.py 的第 230 行，pylint 检测到问题：Argument name \"tb\" doesn't conform to snake_case naming style",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/testing.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 230,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\testing.py 的第 257 行，pylint 检测到问题：Number of parameters was 8 in 'CliRunner.invoke' and is now 4 in overriding 'FlaskCliRunner.invoke' method",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/testing.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 257,
+      "severity": "warning",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\wrappers.py 的第 54 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/wrappers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 54,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\wrappers.py 的第 66 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/wrappers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 66,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\wrappers.py 的第 74 行，pylint 检测到问题：Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/wrappers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 74,
+      "severity": "refactor",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\src\\flask\\wrappers.py 的第 90 行，存在导入错误：Import outside toplevel (debughelpers.attach_enctype_error_multidict)",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/src/flask/wrappers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 90,
+      "severity": "convention",
+      "tool": "pylint",
+      "source": "static"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\conftest.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/conftest.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_appctx.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_appctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_basic.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_basic.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_blueprints.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_blueprints.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_config.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_helpers.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_helpers.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_instance_config.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_instance_config.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_json.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_json.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_regression.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_regression.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_reqctx.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_reqctx.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_session_interface.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_session_interface.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_signals.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_signals.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_subclassing.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_subclassing.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_templating.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_templating.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_testing.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_testing.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_user_error_handler.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_user_error_handler.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_views.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_091003_926095_72074f0a/flask-2.0.0/tests/test_views.py",
+    "project_root": "temp_extract/project_20251117_091003_926095_72074f0a",
+    "agent_test_path": "temp_extract/project_20251117_091003_926095_72074f0a/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_091003_926095_72074f0a/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  }
+]
