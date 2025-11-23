@@ -1,73 +1,79 @@
 # AI Agent 多语言代码检测系统
 
-一个基于多Agent协作的智能软件开发系统，专注于多语言代码缺陷检测与AI智能分析。
+一个基于多Agent协作的智能软件开发系统，专注于多语言代码缺陷检测、智能分析与自动修复。
 
 ## 🌟 主要特性
 
 - **🌍 多语言支持**: Python, Java, C/C++, JavaScript, Go
-- **🤖 AI智能分析**: 集成DeepSeek API进行智能代码分析
-- **📁 项目级检测**: 支持大型项目文件上传和分析
-- **📊 自然语言报告**: 生成专业的AI分析报告
-- **🔧 实时检测**: 支持单文件和项目批量检测
-- **📈 可视化界面**: 现代化的Web前端界面
+- **🤖 AI智能分析**: 集成DeepSeek API进行智能代码分析和修复建议
+- **📁 项目级检测**: 支持大型项目文件上传和分析（支持.zip, .tar.gz等格式）
+- **📊 自然语言报告**: 生成专业的AI分析报告和结构化数据导出
+- **🔧 多种检测模式**: 支持静态检测、动态检测、综合检测
+- **⚡ 自动修复**: 集成FixExecutionAgent，支持代码自动修复
+- **🧪 测试生成与验证**: 自动生成测试用例并验证修复效果
+- **📈 可视化界面**: 现代化的Web前端界面（10个专业页面）
+- **🐳 Docker支持**: 提供容器化方案，解决依赖和环境问题
+- **🔄 协调中心**: 基于Coordinator的任务调度和Agent协作机制
 
 ## 🏗️ 系统架构
 
-# 系统架构分层详解
+系统采用分层架构设计，从用户接口到数据存储共分为5层：
 
-## 1. 用户接口层
-这是系统与用户（开发者、测试人员等）交互的入口，提供了多种接入方式：
-- **Web前端界面 (UI)**：提供可视化的操作界面，如提交代码、查看报告、监控状态等。
-- **REST API接口 (API)**：允许其他系统（如CI/CD流水线、Git平台Webhook）通过编程方式集成和调用平台服务。
-- **命令行接口 (CLI)**：为偏好命令行的开发者提供本地工具，方便快速调用平台功能。
+### 1. 用户接口层
+系统与用户交互的入口，提供多种接入方式：
+- **Web前端界面 (UI)**：10个专业HTML页面，提供可视化操作界面
+  - `index.html` / `login.html` - 登录页面
+  - `main.html` - 主界面
+  - `analyse.html` - 静态分析页面
+  - `deep_analysis.html` - 深度分析页面
+  - `dynamic_detection.html` - 动态检测页面
+  - `comprehensive_detection.html` - 综合检测页面
+  - `fix_execution.html` - 修复执行页面
+  - `projects.html` - 项目管理页面
+  - `explore.html` - 探索页面
+- **REST API接口**：FastAPI构建的模块化API，支持CI/CD集成
+- **命令行接口 (CLI)**：`main.py` 提供命令行工具
 
-**流向**：所有用户请求都通过API层统一接收，并向下传递给协调控制层。
+**流向**：所有用户请求通过API层统一接收，传递给协调控制层。
 
+### 2. 协调控制层
+系统的"大脑"和"中枢神经系统"，负责指挥调度：
+- **协调中心 (Coordinator)**：请求的总入口和总出口，管理所有Agent
+- **任务管理器 (TaskManager)**：核心调度器，将任务分解为子任务并调度相应Agent执行
+- **决策引擎 (DecisionEngine)**：提供智能决策，如修复方案选择
+- **事件总线 (EventBus)**：采用发布-订阅模式，实现Agent间异步通信和解耦
+- **核心管理器**：
+  - `CoordinatorManager`：管理Coordinator生命周期
+  - `AgentManager`：统一管理所有Agent的启动、停止和注册
 
-## 2. 协调控制层
-这是系统的“大脑”和“中枢神经系统”，负责指挥调度。
-- **协调中心 (COORD)**：请求的总入口和总出口。接收API请求，并负责将最终结果返回给用户。
-- **任务管理器 (TM)**：**核心调度器**。它接收COORD派发的任务，将其分解为多个子任务（例如：先分析、再修复、最后测试），并调度**Agent执行层**中相应的Agent来执行。它跟踪整个任务的生命周期。
-- **决策引擎 (DE)**：为任务处理提供智能决策。例如，当多个修复方案可用时，DE可能根据代码上下文、历史数据等决定最优方案。
-- **事件总线 (EB)**：系统的**“消息脊柱”**。采用发布-订阅模式，不同组件（特别是Agent之间）通过EB进行异步通信，实现解耦。例如，当一个Agent完成任务后，可以通过EB发布一个事件，通知其他Agent开始工作。
+### 3. Agent执行层
+系统的"四肢"，由多个职责单一的智能体组成：
 
+#### 3.1 感知分析组
+- **Bug检测Agent (BugDetectionAgent)**：代码缺陷、安全漏洞、风格问题检测
+- **代码分析Agent (CodeAnalysisAgent)**：代码理解、依赖分析、复杂度评估
+- **代码质量Agent (CodeQualityAgent)**：代码质量评估和评分报告
+- **动态检测Agent (DynamicDetectionAgent)**：运行时行为分析和动态检测
 
-## 3. Agent执行层
-这是系统的“四肢”，由多个职责单一的智能体（Agent）组成，负责具体执行任务。它们被分为三组：
+#### 3.2 决策执行组
+- **修复执行Agent (FixExecutionAgent)**：代码自动修复和格式化
+- **测试验证Agent (TestValidationAgent)**：测试用例运行和验证
+- **测试生成Agent (TestGenerationAgent)**：自动生成测试用例
+- **性能优化Agent (PerformanceOptimizationAgent)**：性能分析和优化建议
 
-### 3.1 感知分析组
-负责代码检查和分析，包含以下Agent：
-- **Bug检测Agent (BDA)**：专注于寻找代码缺陷、安全漏洞、风格问题。
-- **代码分析Agent (CAA)**：进行更深层次的代码理解、依赖分析、复杂度评估等。
-- **代码质量Agent (CQA)**：综合评估代码质量，并生成质量评分报告。
+### 4. 工具集成层
+系统的"工具箱"，Agent调用外部专业工具：
+- **静态分析工具**：Pylint, Flake8, Bandit, Mypy, Black, isort
+- **AI分析工具**：DeepSeek API（核心），支持OpenAI等大模型API
+- **测试工具**：pytest, pytest-cov等测试框架
+- **代码生成工具**：代码格式化、自动修复工具
+- **Docker支持**：可选Docker容器化运行，解决依赖问题
 
-### 3.2 决策执行组
-负责执行具体的变更和优化，包含以下Agent：
-- **修复执行Agent (FEA)**：接收分析结果，并执行具体的代码修复和格式化操作。
-- **测试验证Agent (TVA)**：为修复后的代码生成或运行测试用例，确保修复没有引入新问题。
-- **性能优化Agent (POA)**：专注于代码性能分析和优化建议。
-
-### 3.3 监控反馈组
-负责系统的观察、学习和改进，包含以下Agent：
-- **监控Agent (MA)**：持续监控系统健康、任务状态和性能指标。
-- **报告Agent (RA)**：生成各种人类可读的报告（HTML、PDF等）。
-- **学习Agent (LA)**：非常重要的一环，从历史任务、用户反馈中学习，优化决策模型和规则，使系统越来越智能。
-
-
-## 4. 工具集成层
-这是系统的“工具箱”，Agent并不直接实现所有功能，而是**调用外部专业工具**来完成工作。这种设计使系统非常灵活，可以轻松集成新的工具。
-- **静态分析工具**：Pylint, Flake8, Bandit 等用于基础代码检查。
-- **AI分析工具**：**DeepSeek、OpenAI等大模型API是核心**，用于复杂的代码理解、修复建议生成等LLM擅长的任务。也支持本地模型。
-- **测试工具**：集成各类测试框架以验证代码正确性。
-- **代码生成工具**：如代码格式化、自动修复工具，用于执行具体的代码变更。
-
-
-## 5. 数据存储层
-为整个系统提供数据持久化支持，包含以下组件：
-- **数据库 (DB)**：存储结构化数据，如用户信息、任务配置、历史记录、质量报告等。
-- **缓存 (CACHE)**：提升性能，存储临时数据（如会话、热门分析结果）。
-- **文件存储**：存储代码仓库、生成的报告文件、日志文件等。
-- **日志系统**：记录系统运行的所有细节，用于排查问题和审计。
+### 5. 数据存储层
+数据持久化支持：
+- **文件存储**：代码仓库、报告文件（`api/reports/`）、结构化数据（`api/structured_data/`）
+- **任务状态**：任务状态跟踪（`api/tasks_state.json`）
+- **日志系统**：系统运行日志记录
 
 ## 📁 项目结构
 
@@ -77,32 +83,38 @@ CodeAgent/
 │   ├── bug_detection_agent/         # 缺陷检测Agent
 │   ├── code_analysis_agent/         # 代码分析Agent
 │   ├── code_quality_agent/          # 代码质量Agent
-│   ├── fix_execution_agent/         # 修复执行Agent
+│   ├── fix_execution_agent/         # 修复执行Agent（集成MiniSWE-agent）
 │   ├── test_validation_agent/       # 测试验证Agent
+│   ├── test_generation_agent/       # 测试生成Agent
 │   ├── performance_optimization_agent/ # 性能优化Agent
-│   ├── dynamic_detection_agent/     # 动态检测Agent（新增）
+│   ├── dynamic_detection_agent/     # 动态检测Agent
 │   ├── base_agent.py               # Agent基类
-│   └── integrated_detector.py      # 集成检测器
+│   └── __init__.py
 ├── coordinator/                     # 协调中心
 │   ├── coordinator.py              # 主协调器
 │   ├── task_manager.py             # 任务管理器
 │   ├── decision_engine.py          # 决策引擎
 │   ├── event_bus.py                # 事件总线
-│   └── message_types.py            # 消息类型定义
+│   ├── message_types.py            # 消息类型定义
+│   └── __init__.py
 ├── api/                            # API接口层（统一入口）
-│   ├── main_api.py                 # 主API入口（统一启动点）
+│   ├── main_api.py                 # 主API入口（FastAPI应用）
 │   ├── coordinator_api.py          # Coordinator管理API
 │   ├── bug_detection_api.py        # 缺陷检测API
 │   ├── code_analysis_api.py        # 代码分析API
 │   ├── code_quality_api.py         # 代码质量API
 │   ├── dynamic_api.py              # 动态检测API
+│   ├── fix_execution_api.py        # 修复执行API
+│   ├── comprehensive_detection_api.py # 综合检测API
 │   ├── core/                       # 核心管理模块
-│   │   ├── agent_manager.py        #   - Agent生命周期管理
-│   │   └── coordinator_manager.py  #   - Coordinator管理
+│   │   ├── agent_manager.py        # Agent生命周期管理
+│   │   └── coordinator_manager.py  # Coordinator管理
 │   ├── deepseek_config.py          # DeepSeek配置
+│   ├── docs/                       # API文档
 │   ├── reports/                    # 检测报告目录
 │   ├── structured_data/            # 结构化数据导出
 │   ├── uploads/                    # 文件上传目录
+│   ├── comprehensive_detection_results/ # 综合检测结果
 │   └── requirements.txt            # API依赖
 ├── frontend/                       # 前端界面（多页面）
 │   ├── index.html                  # 登录页面
@@ -110,35 +122,52 @@ CodeAgent/
 │   ├── analyse.html                # 静态分析页面
 │   ├── deep_analysis.html          # 深度分析页面
 │   ├── dynamic_detection.html      # 动态检测页面
+│   ├── comprehensive_detection.html # 综合检测页面
+│   ├── fix_execution.html          # 修复执行页面
 │   ├── explore.html                # 探索页面
 │   ├── login.html                  # 登录表单
 │   └── projects.html               # 项目管理页面
 ├── tools/                          # 工具集成层
-│   └── static_analysis/            # 静态分析工具
-│       ├── custom_checker.py       #   - 自定义检查器
-│       ├── pylint_runner.py        #   - Pylint运行器
-│       └── flake8_runner.py        #   - Flake8运行器
+│   ├── static_analysis/           # 静态分析工具
+│   │   ├── custom_checker.py      # 自定义检查器
+│   │   ├── pylint_runner.py       # Pylint运行器
+│   │   └── flake8_runner.py       # Flake8运行器
+│   ├── ai_static_analyzer.py       # AI静态分析器
+│   └── flask_d_class_detector.py   # Flask装饰器检测器
 ├── config/                         # 配置文件
-│   ├── settings.py                 # 系统设置
-│   └── agent_config.py             # Agent配置
-├── docs/                           # 文档
-│   ├── Pandas测试指南.md            # Pandas测试详细指南
-│   ├── 扩展Bug列表说明.md           # 扩展Bug列表文档
-│   ├── workflow_diagram.md         # 工作流程图
-│   ├── system_architecture.md      # 系统架构说明
-│   ├── implementation_plan.md      # 实施计划
-│   ├── API_DOCUMENTATION.md        # API文档
-│   └── DEEPSEEK_API_GUIDE.md       # DeepSeek API指南
+│   ├── settings.py                # 系统设置
+│   └── agent_config.py            # Agent配置
+├── docs/                           # 文档目录（41个文档文件）
+│   ├── Pandas测试指南.md           # Pandas测试详细指南
+│   ├── Flask_2_0_0_TEST_GUIDE.md   # Flask测试指南
+│   ├── 扩展Bug列表说明.md          # 扩展Bug列表文档
+│   ├── API_DOCUMENTATION.md       # API文档
+│   ├── DEEPSEEK_API_GUIDE.md   # DeepSeek API指南
+│   ├── system_architecture.md     # 系统架构说明
+│   └── ...                        # 更多文档
+├── flask_simple_test/              # Flask测试项目
+│   ├── app.py                     # Flask应用
+│   ├── flask-2.0.0.zip            # Flask 2.0.0源码
+│   └── README.md                  # Flask测试说明
+├── examples/                       # 示例项目
+│   ├── buggy_project_simple/       # 简单Bug项目示例
+│   └── sample_py_project/          # Python项目示例
 ├── tests/                          # 测试文件和测试数据
-│   ├── test_python.py              # Python测试
-│   └── pandas-1.0.0/               # Pandas测试数据（需自行下载）
+│   ├── flask-2.0.0.zip            # Flask测试数据
+│   └── test_python.py             # Python测试
 ├── utils/                          # 工具函数
-│   └── project_runner.py           # 项目运行器
+│   ├── project_runner.py          # 项目运行器
+│   └── docker_runner.py            # Docker运行器
+├── scripts/                        # 脚本工具
+│   ├── cleanup_temp_dirs.py       # 清理临时目录
+│   └── init_db.py                 # 初始化数据库
 ├── extended_bugs.py                # 扩展Bug列表（25个已知Bug）
-├── compare_pandas_bugs.py          # Bug对比分析脚本
+├── compare_pandas_bugs.py          # Pandas Bug对比分析脚本
 ├── main.py                         # 主程序入口（命令行版本）
-├── start_api.py                    # API启动脚本
+├── start_api.py                    # API启动脚本（推荐）
 ├── requirements.txt                # 项目依赖
+├── docker-compose.flask-test.yml   # Docker Compose配置
+├── Dockerfile.flask-test           # Docker镜像定义
 └── README.md                       # 项目说明
 ```
 
@@ -223,12 +252,43 @@ main_api.py 启动
 - **根路径**: http://localhost:8001/
 
 ### 主要API端点
-- `/api/v1/detection/upload` - 上传文件进行缺陷检测
-- `/api/code-quality/analyze-upload` - 代码质量分析
-- `/api/code-analysis/analyze-upload` - 代码深度分析
-- `/api/dynamic/detect` - 动态检测
-- `/api/v1/tasks/{task_id}` - 查询任务状态
-- `/api/v1/coordinator/status` - Coordinator状态
+
+#### 系统相关
+- `GET /` - 根路径（API摘要和状态）
+- `GET /health` - 健康检查
+
+#### Coordinator管理
+- `GET /api/v1/coordinator/status` - Coordinator状态
+- `GET /api/v1/agents` - 所有Agent状态
+- `GET /api/v1/agents/{agent_id}` - 指定Agent状态
+- `GET /api/v1/tasks/{task_id}` - 查询任务状态
+- `POST /api/v1/tasks/{task_id}/cancel` - 取消任务
+
+#### 缺陷检测
+- `POST /api/v1/detection/upload` - 上传文件/项目进行检测
+- `GET /api/v1/detection/rules` - 获取检测规则
+- `GET /api/v1/ai-reports/{task_id}` - 获取AI分析报告
+- `GET /api/v1/ai-reports/{task_id}/download` - 下载AI报告
+- `GET /api/v1/structured-data/{task_id}` - 获取结构化数据
+- `GET /api/v1/reports/{task_id}` - 下载检测报告
+
+#### 代码质量分析
+- `POST /api/code-quality/analyze-file` - 分析单个文件
+- `POST /api/code-quality/analyze-upload` - 分析上传的文件
+
+#### 代码深度分析
+- `POST /api/code-analysis/analyze` - 分析项目
+- `POST /api/code-analysis/analyze-upload` - 分析上传的文件
+- `POST /api/code-analysis/analyze-file` - 分析单个文件
+- `GET /api/code-analysis/health` - 健康检查
+
+#### 动态检测
+- `POST /api/dynamic/detect` - 动态检测（运行时行为分析）
+
+#### 综合检测
+- `POST /api/comprehensive/detect` - 综合检测（静态+动态+运行时）
+- `GET /api/comprehensive/status` - 检测状态
+- `GET /api/comprehensive/health` - 健康检查
 
 ## 🚀 快速开始
 
@@ -241,7 +301,7 @@ main_api.py 启动
 1. **克隆项目**
 ```bash
 git clone <repository-url>
-cd ai_agent_system
+cd CodeAgent
 ```
 
 2. **创建虚拟环境**
@@ -435,9 +495,11 @@ python extended_bugs.py
 python compare_pandas_bugs.py
 ```
 
-### 🧪 Flask 2.0.0 测试对比（compare_flask_bugs.py）
+### 🧪 Flask 2.0.0 测试对比
 
-项目提供了 Flask 版本的评测脚本：`project/CodeAgent/compare_flask_bugs.py`。
+项目提供了 Flask 版本的评测脚本和测试项目：
+- **测试项目位置**：`flask_simple_test/` 目录
+- **评测脚本**：`compare_flask_bugs.py`（如果存在）
 
 #### 金标数据
 
@@ -497,19 +559,88 @@ python compare_flask_bugs.py --agent-json path/to/report.json
 ---
 
 ### 📖 系统文档
-- [API接口文档](API_DOCUMENTATION.md) - 详细的API使用说明
-- [DeepSeek API指南](DEEPSEEK_API_GUIDE.md) - AI分析功能配置指南
-- [Agent架构文档](AGENT_DOCUMENTATION.md) - 系统架构和Agent设计
+
+#### 核心文档
+- [API接口文档](docs/API_DOCUMENTATION.md) - 详细的API使用说明
+- [DeepSeek API指南](docs/DEEPSEEK_API_GUIDE.md) - AI分析功能配置指南
+- [系统架构说明](docs/system_architecture.md) - 系统架构和Agent设计
+- [工作流程图](docs/workflow_diagram.md) - 系统工作流程说明
+
+#### 测试指南
+- [Pandas测试指南](docs/Pandas测试指南.md) - Pandas 1.0.0测试完整指南 ⭐
+- [Flask测试指南](docs/FLASK_2_0_0_TEST_GUIDE.md) - Flask 2.0.0测试指南
+- [扩展Bug列表说明](docs/扩展Bug列表说明.md) - 25个已知Bug详细列表
 - [Flask脚本映射实现指南](docs/Flask脚本映射实现指南.md) - Flask测试脚本技术实现详解
 - [Flask版本选择与Issue策略](docs/Flask版本选择与Issue策略.md) - Flask测试项目选择策略
+
+#### Agent文档
+- [代码分析Agent说明](docs/CODE_ANALYSIS_AGENT_README.md)
+- [代码质量Agent说明](docs/CODE_QUALITY_AGENT_README.md)
+- [修复执行Agent使用指南](docs/FIX_EXECUTION_AGENT_USAGE.md)
+- [动态检测实现总结](docs/DYNAMIC_DETECTION_IMPLEMENTATION_SUMMARY.md)
+
+#### 其他文档
+- [Docker设置指南](DOCKER_SETUP_GUIDE.md) - Docker容器化部署指南
+- [数据集测试指南](docs/DATASET_TESTING_GUIDE.md) - 数据集测试说明
+
+## 🤖 Agent详细说明
+
+### 已实现的Agent
+
+1. **BugDetectionAgent** - 缺陷检测Agent
+   - 支持多语言静态分析
+   - 集成Pylint、Flake8、Bandit等工具
+   - AI智能分析代码缺陷
+   - 生成详细检测报告
+
+2. **CodeAnalysisAgent** - 代码分析Agent
+   - 代码结构分析
+   - 依赖关系分析
+   - 复杂度评估
+   - AI深度代码理解
+
+3. **CodeQualityAgent** - 代码质量Agent
+   - 代码质量评分
+   - 风格检查
+   - 最佳实践评估
+   - 质量报告生成
+
+4. **FixExecutionAgent** - 修复执行Agent
+   - 自动代码修复
+   - 集成MiniSWE-agent框架
+   - 支持多种修复策略
+   - 修复验证
+
+5. **TestValidationAgent** - 测试验证Agent
+   - 测试用例运行
+   - 修复效果验证
+   - 测试结果分析
+
+6. **TestGenerationAgent** - 测试生成Agent
+   - 自动生成测试用例
+   - 支持多语言测试生成
+   - 测试用例优化
+
+7. **DynamicDetectionAgent** - 动态检测Agent
+   - 运行时行为分析
+   - 动态缺陷检测
+   - 性能监控
+
+8. **PerformanceOptimizationAgent** - 性能优化Agent
+   - 性能分析
+   - 优化建议生成
+   - 性能报告
 
 ## 🔮 未来扩展
 
 - 支持更多编程语言（Rust, Swift, Kotlin等）
 - 集成更多专业检测工具
 - 支持自定义检测规则
-- 提供代码修复建议
+- 增强代码修复能力
 - 支持CI/CD集成
+- 支持更多AI模型（本地模型、其他API）
+- 增强动态检测能力
+- 支持增量分析
 
 ## 📄 许可证
 
@@ -529,14 +660,14 @@ python compare_flask_bugs.py --agent-json path/to/report.json
 
 ## 📝 更新日志
 
-### 最新更新（2024年10月）
+### 最新更新
 
 #### 架构升级
 - ✅ 新增 `api/core/` 核心管理层
   - `agent_manager.py`: Agent生命周期管理
   - `coordinator_manager.py`: Coordinator管理
 - ✅ API架构模块化重构
-  - 5个独立API模块，使用 APIRouter
+  - 多个独立API模块，使用 APIRouter
   - `main_api.py` 作为统一启动入口
 - ✅ 完善协调中心（Coordinator）
   - TaskManager: 任务管理器
@@ -549,35 +680,47 @@ python compare_flask_bugs.py --agent-json path/to/report.json
   - `DynamicDetectionAgent`: 运行时行为分析
   - `dynamic_api.py`: 动态检测API
   - `dynamic_detection.html`: 动态检测界面
+- ✅ 新增综合检测功能
+  - `comprehensive_detection_api.py`: 综合检测API
+  - 支持静态+动态+运行时分析
 - ✅ 三种分析模式
   - file: 单文件分析
   - project: 项目批量分析
   - dynamic: 动态检测
 - ✅ 多页面前端设计
-  - 8个专业界面页面
+  - 10个专业界面页面
   - 更好的用户体验
+
+#### Agent增强
+- ✅ 集成FixExecutionAgent（MiniSWE-agent）
+- ✅ 新增TestGenerationAgent
+- ✅ 完善所有Agent功能
+
+#### 测试支持
+- ✅ Pandas 1.0.0测试支持（25个已知Bug）
+- ✅ Flask 2.0.0测试支持（32个已知Issue）
+- ✅ 测试对比分析脚本
+
+#### Docker支持
+- ✅ Docker容器化方案
+- ✅ Docker Compose配置
+- ✅ 解决依赖和环境问题
 
 #### 工作流优化
 - ✅ Coordinator优先启动
-  - 确保协调中心先就绪
-  - 再启动和注册Agent
 - ✅ API路由分发机制
-  - 统一入口，模块化路由
-  - 清晰的职责划分
 - ✅ 任务状态跟踪
-  - 实时任务状态查询
-  - Agent状态监控
+- ✅ Agent状态监控
 
 #### 文档更新
-- ✅ 更新项目结构说明
-- ✅ 更新工作流程图
-- ✅ 更新系统架构图
-- ✅ 新增实际实现差异说明
-- ✅ 完善API文档
+- ✅ 41个文档文件
+- ✅ 完整的测试指南
+- ✅ API文档完善
+- ✅ Agent使用说明
 
 ---
 
-*最后更新: 2024年10月*
+*最后更新: 2024年*
 
 ## 🐳 使用 Docker 运行（推荐，解决本地依赖卡顿/兼容性问题）
 
@@ -604,27 +747,29 @@ docker compose down
 - 前端页面: 打开 `frontend/index.html`（或按你现有前端入口）
 
 ### 前端上传与动态检测
-- 上传的压缩包将保存到容器内 `/app/api/uploads`（宿主机同步映射到 `api/uploads/`）。
-- 系统会读取压缩包内的 `requirements.txt`，在容器内为该次任务创建隔离的虚拟环境（默认目录：`/tmp/venvs/<task-id>`），再安装依赖（如 Flask==2.0.0、兼容的 Werkzeug 等），随后执行静态+动态检测。
+- 上传的压缩包将保存到容器内 `/app/api/uploads`（宿主机同步映射到 `api/uploads/`）
+- 系统会读取压缩包内的 `requirements.txt`，在容器内为该次任务创建隔离的虚拟环境（默认目录：`/tmp/venvs/<task-id>`），再安装依赖（如 Flask==2.0.0、兼容的 Werkzeug 等），随后执行静态+动态检测
 
+### 环境变量配置
 如需修改任务虚拟环境位置，可设置环境变量：
 ```bash
 docker compose down
-# 修改或追加环境变量
-# 例如 docker-compose.yml 中 environment: CODEAGENT_JOB_VENVS_DIR=/tmp/venvs
+# 修改 docker-compose.yml 中 environment 部分
+# 例如: CODEAGENT_JOB_VENVS_DIR=/tmp/venvs
 # 然后重新启动
 docker compose up -d
 ```
 
 ### 常见问题
-- 依赖安装仍然缓慢：首次构建镜像时尽量保持网络可用；`.dockerignore` 已忽略大体积目录，加速构建；镜像内已安装基础编译依赖，避免 C 扩展安装失败。
-- 端口冲突：修改 `docker-compose.yml` 中 `ports: - "8000:8000"` 的左侧宿主端口，例如改为 `18000:8000`。
-- Windows 路径/权限问题：通过卷挂载（volumes）将项目同步到容器内 `/app`，避免在宿主创建虚拟环境失败。
+- **依赖安装缓慢**：首次构建镜像时保持网络可用；`.dockerignore` 已忽略大体积目录；镜像内已安装基础编译依赖
+- **端口冲突**：修改 `docker-compose.yml` 中 `ports: - "8000:8000"` 的左侧宿主端口，例如改为 `18000:8000`
+- **Windows路径/权限问题**：通过卷挂载（volumes）将项目同步到容器内 `/app`，避免在宿主创建虚拟环境失败
 
-### 目录映射（摘录）
+### 目录映射
 - `./api/uploads -> /app/api/uploads`: 前端上传目录
 - `./api/reports -> /app/api/reports`: 报告输出目录
-- `./api/comprehensive_detection_results -> /app/api/comprehensive_detection_results`
-- `./api/dynamic_detection_results -> /app/api/dynamic_detection_results`
+- `./api/comprehensive_detection_results -> /app/api/comprehensive_detection_results`: 综合检测结果
+- `./api/dynamic_detection_results -> /app/api/dynamic_detection_results`: 动态检测结果
 
-> 提示：如需对 Flask 2.0.0 的 32 个问题进行回归测试，请参考文档 `docs/Flask版本选择与Issue策略.md`，并在上传的压缩包中包含对应的 `requirements.txt`（指定 Flask==2.0.0 及其兼容依赖）。
+### 使用提示
+> 如需对 Flask 2.0.0 的 32 个问题进行回归测试，请参考文档 `docs/Flask版本选择与Issue策略.md`，并在上传的压缩包中包含对应的 `requirements.txt`（指定 Flask==2.0.0 及其兼容依赖）。

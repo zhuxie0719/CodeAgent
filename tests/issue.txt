@@ -1,3 +1,0 @@
-raise error when blueprint name contains a dot
-
-the problem is on the file /home/baiqinyu/Desktop/project/CodeAgent/tests/flask-2.0.0/src/flask/blueprint.py
