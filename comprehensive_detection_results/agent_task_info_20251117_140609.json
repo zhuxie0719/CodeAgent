@@ -1,0 +1,223 @@
+[
+  {
+    "task": "在 flask-2.0.0\\tests\\conftest.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/conftest.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_appctx.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_appctx.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_basic.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_basic.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_blueprints.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_blueprints.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_config.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_config.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_helpers.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_helpers.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_instance_config.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_instance_config.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_json.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_json.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_regression.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_regression.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_reqctx.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_reqctx.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_session_interface.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_session_interface.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_signals.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_signals.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_subclassing.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_subclassing.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_templating.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_templating.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_testing.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_testing.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_user_error_handler.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_user_error_handler.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  },
+  {
+    "task": "在 flask-2.0.0\\tests\\test_views.py 的第 0 行，动态检测发现导入错误：无法导入模块 'flask'",
+    "problem_file": "temp_extract/project_20251117_140048_207730_4ffc1db9/flask-2.0.0/tests/test_views.py",
+    "project_root": "temp_extract/project_20251117_140048_207730_4ffc1db9",
+    "agent_test_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/agent-test",
+    "backup_agent_path": "temp_extract/project_20251117_140048_207730_4ffc1db9/backup-agent",
+    "defect_info": {
+      "line": 0,
+      "severity": "error",
+      "tool": "dynamic_detection",
+      "source": "dynamic"
+    }
+  }
+]
