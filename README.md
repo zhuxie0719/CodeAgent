@@ -1,6 +1,8 @@
 # AI Agent 多语言代码检测系统
 
 一个基于多Agent协作的智能软件开发系统，专注于多语言代码缺陷检测、智能分析与自动修复。
+完整演示效果请查看：
+https://www.bilibili.com/video/BV1SqCdB2E9X/?vd_source=b7f6a28b749c1ab4df5026e760caa934
 
 ## 🌟 主要特性
 
